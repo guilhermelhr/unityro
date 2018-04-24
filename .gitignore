@@ -2,5 +2,7 @@
 
 !.gitignore
 !*/
-!/Assets/Scripts/*
+!/Assets/Scripts/**
 !/Assets/Resources/*.shader
+
+*.meta
