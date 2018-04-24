@@ -1,0 +1,6 @@
+*
+
+!.gitignore
+!*/
+!/Assets/Scripts/*
+!/Assets/Resources/*.shader
