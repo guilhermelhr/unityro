@@ -6,8 +6,6 @@ using static RSM;
 
 public class Models {
     private CompiledModel[] models;
-    private List<Mesh> meshes;
-    private List<Texture2D> textures;
     private Material material = (Material) Resources.Load("ModelMaterial", typeof(Material));
     private Material material2s = (Material) Resources.Load("ModelMaterial2Sided", typeof(Material));
 
@@ -39,9 +37,6 @@ public class Models {
     }
 
     public void BuildMeshes() {
-        meshes = new List<Mesh>();
-        textures = new List<Texture2D>();
-
         GameObject parent = new GameObject("_Models");
         parent.transform.parent = MapRenderer.mapParent.transform;
 
@@ -136,7 +131,7 @@ public class Models {
             } else {
                 mr.material = material;
             }
-            mr.material.mainTexture = MapLoader.Cache[model.texture] as Texture2D;
+            mr.material.mainTexture = FileManager.Load(model.texture) as Texture2D;
         }
     }
 

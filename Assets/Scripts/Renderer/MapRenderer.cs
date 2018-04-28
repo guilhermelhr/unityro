@@ -12,19 +12,19 @@ using static AltitudeLoader;
 public class MapRenderer {
     public static int MAX_VERTICES = 65532;
 
-    private Regex mapfix1 = new Regex(@"^(\d{3})(\d@)");
-    private Regex mapfix2 = new Regex(@"^\d{3}#");
-    private Regex rsw = new Regex(@"\.gat$", RegexOptions.IgnoreCase);
-
-    public string currentMap;
-    public static GameObject mapParent;
     private RSW world;
     private Water water;
-    private Models modelsRenderer;
-    public bool loading = false;
-    private MapLoader mapLoader;
+    private Models models;
 
-    public class Fog {
+    private bool worldCompleted, altitudeCompleted, groundCompleted, modelsCompleted;
+
+    public bool Ready {
+        get { return worldCompleted && altitudeCompleted && groundCompleted && modelsCompleted;  }
+    }
+    
+    public static GameObject mapParent;
+
+    /*public class Fog {
         public Fog(bool use) { this.use = use; }
         //bool use = MapPreferences.useFog; TODO
         bool use;
@@ -35,48 +35,14 @@ public class MapRenderer {
         float[] color = new float[]{1, 1, 1};
     }
 
-    public Fog fog = new Fog(false);
+    public Fog fog = new Fog(false);*/
 
-    public void SetMap(string mapname) {
-        //(TODO from robrowser) stop the map loading and start to load the new map
-        if(loading) return;
-                
-        mapname = mapfix1.Replace(mapname, @"$2");
-        mapname = mapfix2.Replace(mapname, "");
-
-        // Clean objects TODO
-        // SoundManager.stop();
-        // Renderer.stop();
-        // UIManager.removeComponents();
-        // Cursor.setType(Cursor.ACTION.DEFAULT);
-
-        // Don't reload a map when it's just a local teleportation
-        if(!string.Equals(currentMap, mapname)) {
-            loading = true;
-
-            if(mapParent != null) {
-                GameObject.Destroy(mapParent);
-                water = null;
-                world = null;
-                modelsRenderer = null;
-            }
-
+    public void OnComplete(string mapname, string id, object data) {
+        if(mapParent == null) {
             mapParent = new GameObject(mapname);
-
-            //BGM.stop();
-            currentMap = mapname;
-
-            //parse the filename
-            string filename = rsw.Replace(mapname, ".rsw");
-
-            //TODO load screen
-            mapLoader = new MapLoader();
-            mapLoader.Load(filename, OnComplete);
-            return;
         }
-    }
 
-    public void OnComplete(string id, object data) {
+        float start = Time.realtimeSinceStartup;
         switch(id) {
             case "MAP_WORLD":
                 OnWorldComplete(data as RSW);
@@ -85,32 +51,19 @@ public class MapRenderer {
                 OnAltitudeComplete(data as Altitude);
                 break;
             case "MAP_GROUND":
-                OnGroundComplete((GND.Mesh) data);
+                OnGroundComplete(data as GND.Mesh);
                 break;
             case "MAP_MODELS":
                 OnModelsComplete(data as RSM.CompiledModel[]);
-                loading = false;
-                Cursor.lockState = CursorLockMode.Locked;
                 break;
         }
-    }
+        float delta = Time.realtimeSinceStartup - start;
+        Debug.Log(id + " oncomplete time: " + delta);
 
-    private void OnModelsComplete(RSM.CompiledModel[] models) {
-        modelsRenderer = new Models(models);
-        modelsRenderer.BuildMeshes();
-        modelsRenderer.Render();
-    }
-
-    private void OnGroundComplete(GND.Mesh mesh) {
-        Ground ground = new Ground();
-        ground.BuildMesh(mesh);
-        ground.InitTextures(mesh);
-        ground.Render();
-
-        if(mesh.waterVertCount > 0) {
-            water = new Water();
-            water.InitTextures(mesh, world.water);
-            water.BuildMesh(mesh);
+        if(Ready) {
+            //everything needed was loaded, no need to keep data cached
+            FileCache.Report();
+            FileCache.ClearAll();
         }
     }
 
@@ -126,9 +79,13 @@ public class MapRenderer {
         var longitude = world.light.longitude * Math.PI / 180;
         var latitude = world.light.latitude * Math.PI / 180;
 
+
+        //TODO translate unity light to this
         world.light.direction[0] = (float) (-Math.Cos(longitude) * Math.Sin(latitude));
         world.light.direction[1] = (float) (-Math.Cos(latitude));
         world.light.direction[2] = (float) (-Math.Sin(longitude) * Math.Sin(latitude));
+
+        worldCompleted = true;
     }
 
     /// <summary>
@@ -140,11 +97,60 @@ public class MapRenderer {
         //TODO
         //var gl = Renderer.getContext();
         //GridSelector.init(gl);
+
+        altitudeCompleted = true;
+    }
+
+    private void OnGroundComplete(GND.Mesh mesh) {
+        Ground ground = new Ground();
+        ground.BuildMesh(mesh);
+        ground.InitTextures(mesh);
+        ground.Render();
+
+        if(mesh.waterVertCount > 0) {
+            water = new Water();
+            water.InitTextures(mesh, world.water);
+            water.BuildMesh(mesh);
+        }
+
+        groundCompleted = true;
+    }
+
+    private void OnModelsComplete(RSM.CompiledModel[] compiledModels) {
+        models = new Models(compiledModels);
+        models.BuildMeshes();
+        models.Render();
+
+        modelsCompleted = true;
     }
 
     public void Render() {
-        if(water != null && !loading) { 
+        if(water != null) {
             water.Render();
         }
+    }
+
+    public void Clear() {
+        //destroy map
+        if(mapParent != null) {
+            UnityEngine.Object.DestroyImmediate(mapParent);
+        }
+
+        //destroy textures
+        var ob = UnityEngine.Object.FindObjectsOfType(typeof(Texture2D));
+        int dCount = 0;
+        foreach(Texture2D t in ob) {
+            if(string.Compare(t.name, "maptexture") == 0) {
+                dCount++;
+                UnityEngine.Object.Destroy(t);
+            }
+        }
+        Debug.Log(dCount + " textures destroyed");
+
+        world = null;
+        water = null;
+        models = null;
+
+        worldCompleted = altitudeCompleted = groundCompleted = modelsCompleted = false;
     }
 }

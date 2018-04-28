@@ -17,7 +17,7 @@ public class Water {
         info = waterInfo;
 
         for(int i = 0; i < 32; i++) {
-            var texture = MapLoader.Cache[waterInfo.images[i]] as Texture2D;
+            var texture = FileManager.Load(waterInfo.images[i]) as Texture2D;
             textures[i] = texture;
         }
     }

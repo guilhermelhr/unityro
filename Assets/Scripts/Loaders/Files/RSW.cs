@@ -35,9 +35,9 @@ public class RSW {
 
     public class WaterInfo {
         public int textureSize = 256;
-        public float level;
+        public float level = float.MinValue;
         public int type;
-        public float waveHeight;
+        public float waveHeight = float.MinValue;
         public float waveSpeed;
         public float wavePitch;
         public int animSpeed;

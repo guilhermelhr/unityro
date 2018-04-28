@@ -16,20 +16,19 @@ public class Grf
     public static uint GRF_TYPE_GRF = 0x01; /** Value to distinguish a GRF file in Grf::type */
 
     string filename;
-    uint len;
-    uint type;
-    uint version;
-    uint nfiles;
+    protected uint len;
+    protected uint type;
+    protected uint version;
+    protected uint nfiles;
 
     public Hashtable files;
 
-    byte allowCrypt;
-    System.IO.BinaryReader f;
-    bool allowWrite;
+    protected byte allowCrypt;
+    protected bool allowWrite;
 
     public static Grf grf_callback_open(string fname, string mode, GrfOpenCallback callback){
         byte[] buf = new byte[GRF_HEADER_FULL_LEN];
-        uint i, zero_fcount = GrfSupport.ToLittleEndian32(7), create_ver = GrfSupport.ToLittleEndian32(0x0200);
+        uint i;//, zero_fcount = GrfSupport.ToLittleEndian32(7), create_ver = GrfSupport.ToLittleEndian32(0x0200);
         Grf grf;
 
 	    if (fname == null || mode == null) {
@@ -43,13 +42,13 @@ public class Grf
         grf.filename = fname;
 
         /* Open the file */
-        var fStream = FileManager.Load(grf.filename) as FileStream;
+        var fStream = FileManager.Load(grf.filename) as Stream;
 
 	    if (fStream == null) {
             throw new Exception("GE_ERRNO");
 	    }
 
-        var br = grf.f = new System.IO.BinaryReader(fStream);
+        var br = new System.IO.BinaryReader(fStream);
 
 
         grf.allowWrite = !mode.Contains("+") && mode.Contains("w");
@@ -108,7 +107,6 @@ public class Grf
 	    grf.type=GRF_TYPE_GRF;
 
         /* Read the version */
-        byte[] intb = new byte[4];
 	    grf.version = GrfSupport.LittleEndian32(buf, GRF_HEADER_MID_LEN + 0xC);
 
         /* Read the number of files */
@@ -129,7 +127,7 @@ public class Grf
 	     */
 	    switch (grf.version & 0xFF00) {
 	    case 0x0200:
-		    i = GRF_readVer2_info(grf, callback);
+		    i = GRF_readVer2_info(br, grf, callback);
 		    break;
 	    default:
             throw new Exception("UNSUP_GRF_VERSION");
@@ -156,9 +154,8 @@ public class Grf
      *		reading should stop), or -1 if there has been an error
      * \return 0 if everything went fine, 1 if something went wrong
      */
-    static uint GRF_readVer2_info(Grf grf, GrfOpenCallback callback) {
+    static uint GRF_readVer2_info(System.IO.BinaryReader br, Grf grf, GrfOpenCallback callback) {
         uint i, offset, len, len2;
-        ulong zlen;
         byte[] buf, zbuf;
 
         /* Check grf */
@@ -167,7 +164,6 @@ public class Grf
         }
 
         /* Read the original and compressed sizes */        
-        var br = grf.f;
         buf = br.ReadBytes(8);
 
         /* Allocate memory and read the compressed file table */
@@ -182,7 +178,6 @@ public class Grf
         Array.Resize(ref buf, (int) len2);
 
         var stream = new InflaterInputStream(new MemoryStream(zbuf));
-        zlen = len2;
 
         stream.Read(buf, 0, buf.Length);
 
@@ -244,6 +239,9 @@ public class Grf
         /* Calling functions will set success...
         GRF_SETERR(error,GE_SUCCESS,GRF_readVer2_info);
         */
+
+        br.BaseStream.Close();
+        br.Close();
         return 0;
     }
 
@@ -252,8 +250,20 @@ public class Grf
     }
 
     private byte[] getFileZBlock(GrfFile file) {
-        f.BaseStream.Seek(file.pos, SeekOrigin.Begin);
-        byte[] data = f.ReadBytes((int) file.compressed_len_aligned);
+        /* Get new stream */
+        var stream = FileManager.Load(filename) as Stream;
+
+        if(stream == null) {
+            throw new Exception("GE_ERRNO");
+        }
+
+        var br = new System.IO.BinaryReader(stream);
+
+        br.BaseStream.Seek(file.pos, SeekOrigin.Begin);
+        byte[] data = br.ReadBytes((int) file.compressed_len_aligned);
+
+        br.Close();
+        stream.Close();
 
         byte[] keyschedule = new byte[0x80];
 

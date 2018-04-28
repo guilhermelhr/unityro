@@ -1,4 +1,5 @@
-﻿using System;
+﻿using B83.Image.BMP;
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -8,7 +9,6 @@ using UnityEngine;
 /// </summary>
 public class Conversions
 {
-
     public static double SafeDivide(double a, double b) {
         if(b == 0) {
             return 0;

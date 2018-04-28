@@ -47,13 +47,13 @@
 *****/
 #endregion License and Information
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System;
 
-namespace B83.Image.BMP {
-    public enum BMPComressionMode : int {
+namespace B83.Image.BMP
+{
+    public enum BMPComressionMode : int
+    {
         BI_RGB = 0x00,
         BI_RLE8 = 0x01,
         BI_RLE4 = 0x02,
@@ -67,13 +67,15 @@ namespace B83.Image.BMP {
         BI_CMYKRLE4 = 0x0D,
 
     }
-    public struct BMPFileHeader {
+    public struct BMPFileHeader
+    {
         public ushort magic; // "BM"
         public uint filesize;
         public uint reserved;
         public uint offset;
     }
-    public struct BitmapInfoHeader {
+    public struct BitmapInfoHeader
+    {
         public uint size;
         public int width;
         public int height;
@@ -91,7 +93,8 @@ namespace B83.Image.BMP {
 
     }
 
-    public class BMPImage {
+    public class BMPImage
+    {
         public BMPFileHeader header;
         public BitmapInfoHeader info;
         public uint rMask = 0x00FF0000;
@@ -100,36 +103,32 @@ namespace B83.Image.BMP {
         public uint aMask = 0x00000000;
         public List<Color32> palette;
         public Color32[] imageData;
-
+        /*public Texture2D ToTexture2D() {
+            var tex = new Texture2D(info.absWidth, info.absHeight);
+            tex.SetPixels32(imageData);
+            tex.Apply();
+            return tex;
+        }*/
         public Texture2D ToTexture2D() {
-            for(int i = 0; i < imageData.Length; i++){
+            for(int i = 0; i < imageData.Length; i++) {
                 Color32 color = imageData[i];
-                if(color.r >= 254 && color.g == 0 && color.b >= 254) {
+                if(color.r >= 252 && color.g <= 4 && color.b >= 252) {
                     color.a = color.r = color.g = color.b = 0;
                 }
 
                 imageData[i] = color;
             }
 
-            var tex = new Texture2D(info.absWidth, info.absHeight, TextureFormat.RGBAFloat, true);
-            
+            var tex = new Texture2D(info.absWidth, info.absHeight);
             tex.SetPixels32(imageData);
             tex.Apply();
-
             return tex;
-        }
-
-        private Color32 getColor(int i) {
-            if(i >= 0 && i < imageData.Length) {
-                return imageData[i];
-            } else {
-                return new Color32(0, 0, 0, 0);
-            }
         }
     }
 
 
-    public class BMPLoader {
+    public class BMPLoader
+    {
         const ushort MAGIC = 0x4D42; // "BM" little endian
         public bool ReadPaletteAlpha = false;
         public bool ForceAlphaReadWhenPossible = false;
@@ -310,18 +309,22 @@ namespace B83.Image.BMP {
                 return;
             }
             BitStreamReader bitReader = new BitStreamReader(aReader);
+            bool outOfPalette = false;
             for(int y = 0; y < h; y++) {
                 for(int x = 0; x < w; x++) {
                     int v = (int) bitReader.ReadBits(bitCount);
                     if(v >= bmp.palette.Count) {
-                        Debug.LogError("Indexed bitmap has indices greater than it's color palette");
-                        return;
+                        outOfPalette = true;
+                        v = 0;
                     }
                     data[x + y * w] = bmp.palette[v];
                 }
                 bitReader.Flush();
                 for(int i = 0; i < pad; i++)
                     aReader.ReadByte();
+            }
+            if(outOfPalette) {
+                Debug.LogWarning("Indexed bitmap has indices greater than it's color palette");
             }
         }
         private static void ReadIndexedImageRLE4(System.IO.BinaryReader aReader, BMPImage bmp) {
@@ -461,14 +464,14 @@ namespace B83.Image.BMP {
                 byte a = aReader.ReadByte();
                 if(!aReadAlpha)
                     a = 255;
-
                 palette.Add(new Color32(r, g, b, a));
             }
             return palette;
         }
 
     }
-    public class BitStreamReader {
+    public class BitStreamReader
+    {
         System.IO.BinaryReader m_Reader;
         byte m_Data = 0;
         int m_Bits = 0;

@@ -1,16 +1,20 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class MapSelector
 {
     private LinkedList<string> mapList;
-    private readonly MapRenderer mapRenderer;
     private Dropdown dropdown;
+    private static string currentMap;
 
-    public MapSelector(Grf grf, MapRenderer mapRenderer) {
-        this.mapRenderer = mapRenderer;
+    public static string CurrentMap {
+        get { return currentMap; }
+    }
+
+    public MapSelector(Grf grf) {
         mapList = new LinkedList<string>();
         
         //build map list
@@ -60,7 +64,12 @@ public class MapSelector
         string mapname = dropdown.captionText.text;
         
         if(!mapname.Equals("Select Map")) {
-            mapRenderer.SetMap(mapname + ".rsw");
+            Core.MapRenderer.Clear();
+            currentMap = mapname;
+            float start = Time.realtimeSinceStartup;
+            Core.MapLoader.Load(mapname + ".rsw", Core.MapRenderer.OnComplete);
+            float delta = Time.realtimeSinceStartup - start;
+            Debug.Log("Total load time: " + delta);
         }
     }
 }

@@ -48,14 +48,14 @@ public class Ground {
         
         RenderTexture.active = renderTexture;
 
-        GL.Clear(false, true, Color.gray);
+        GL.Clear(false, true, Color.grey);//Color.clear); TODO fix ground texture seams when using clear bg color (is it possible?)
 
         material.SetPass(0);
         GL.PushMatrix();
         GL.LoadPixelMatrix(0, width, 0, height);
 
         for(int i = 0; i < count; i++) {
-            var texture = MapLoader.Cache[textures[i]] as Texture2D;
+            var texture = FileManager.Load(textures[i]) as Texture2D;
             var x = (int) (i % _width) * 258;
             var y = (int) Math.Floor(i / _width) * 258;
 

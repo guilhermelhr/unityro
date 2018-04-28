@@ -1,8 +1,11 @@
 ﻿using B83.Image.BMP;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -17,70 +20,124 @@ public class FileManager {
     private static Regex rext = new Regex(@".[^\.]+$");
     private static BMPLoader loader = new BMPLoader();
     private static Grf grf = null;
+    private static bool batching = false;
+    private static List<string> batch = new List<string>();
 
-    public static void setGrf(Grf grf) {
-        FileManager.grf = grf;
+    public static Grf Grf {
+        get { return grf; }
+    }
+
+    public class RawImage {
+        public byte[] data;
+    }
+
+    public static void loadGrf(string grfPath) {
+        grf = Grf.grf_callback_open(grfPath, "r", null);
+    }
+
+    public static void InitBatch() {
+        batching = true;
+    }
+
+    public static void EndBatch() {
+        batching = false;
+        if(batch.Count > 0) {
+            pendingThreads = batch.Count;
+            doneEvent = new ManualResetEvent(false);
+            for(int i = 0; i < batch.Count; i++) {
+                string ext = rext.Match(batch[i]).Value.Substring(1).ToLower();
+                BatchLoader loader = new BatchLoader(batch[i], ext);
+                ThreadPool.QueueUserWorkItem(loader.ThreadPoolCallback, i);
+            }
+            batch.Clear();
+            doneEvent.WaitOne();
+        }
     }
 
     public static object Load(string file) {
-        if(!string.IsNullOrEmpty(file)) {
-            file = file.Trim();
-            file = file.Replace("\\", "/");
-            string ext = rext.Match(file).Value.Substring(1).ToLower();
-            string fileWOExt = file.Replace("." + ext, "");
-            
-            if(!string.IsNullOrEmpty(ext)) {
-                switch(ext) {
-                    case "grf":
-                        return File.OpenRead(file);
-                    // Regular images files
-                    case "jpg":
-                    case "jpeg":
-                    case "png":
-                        var image = new Texture2D(0, 0);
-                        image.LoadImage(ReadSync(file).ToArray());
-                        return image;
-                    case "bmp":
-                        var bmp = loader.LoadBMP(ReadSync(file));
-                        return bmp.ToTexture2D();
-                    // Texts
-                    case "txt":
-                    case "xml":
-                    case "lua":
-                        BinaryReader binaryReader = ReadSync(file);
-                        if(binaryReader != null) {
-                            return Encoding.UTF8.GetString(binaryReader.ToArray());
-                        } else {
-                            return null;
-                        }
-                    // Binary
-                    case "gat":
-                        return new Altitude(ReadSync(file));
-                    case "rsw":
-                        return WorldLoader.Load(ReadSync(file));
-                    case "gnd":
-                        return GroundLoader.Load(ReadSync(file));
-                    case "rsm":
-                        return ModelLoader.Load(ReadSync(file));
-                    // Audio
-                    case "wav":
-                    case "mp3":
-                    case "ogg":
+        file = file.Trim();
+        file = file.Replace("\\", "/");
 
-                    case "act":
-                        //return new Action(ReadSync(file)).compile();
-                    case "str":
-                        //return new Str(ReadSync(file));
-                        Debug.LogWarning("Can't read " + file + "\nLoader for " + ext + " is not implemented");
-                        break;
-                    case "tga":
-                    default:
-                        Debug.LogWarning("Default reader loading " + file);
-                        return ReadSync(file);
+        if(batching) {
+            if(!batch.Contains(file)) {
+                batch.Add(file);
+            }
+            return null;
+        }
+
+        if(!string.IsNullOrEmpty(file)) {
+            string ext = rext.Match(file).Value.Substring(1).ToLower();
+            if(!string.IsNullOrEmpty(ext)) {
+                if(FileCache.Has(file)) {
+                    return FileCache.Get(file, ext);
+                } else {
+                    object data = DoLoad(file, ext);
+                    if(data != null) {
+                        if(FileCache.Add(file, ext, data)) {
+                            return FileCache.Get(file, ext);
+                        } else {
+                            return data;
+                        }
+                    }
                 }
             }
         }
 
+        return null;
+    }
+
+    private static object DoLoad(string file, string ext) {    
+        //string fileWOExt = file.Replace("." + ext, "");
+        
+        switch(ext) {
+            case "grf":
+                //maybe try opening for every threaded request?
+                return File.OpenRead(file);
+            // Regular images files
+            case "jpg":
+            case "jpeg":
+            case "png":
+                return new RawImage() {
+                    data = ReadSync(file).ToArray()
+                };
+            case "bmp":
+                return loader.LoadBMP(ReadSync(file));
+                //return bmp.ToTexture2D();
+            // Texts
+            case "txt":
+            case "xml":
+            case "lua":
+                BinaryReader binaryReader = ReadSync(file);
+                if(binaryReader != null) {
+                    return Encoding.UTF8.GetString(binaryReader.ToArray());
+                } else {
+                    return null;
+                }
+            // Binary
+            case "gat":
+                return new Altitude(ReadSync(file));
+            case "rsw":
+                return WorldLoader.Load(ReadSync(file));
+            case "gnd":
+                return GroundLoader.Load(ReadSync(file));
+            case "rsm":
+                return ModelLoader.Load(ReadSync(file));
+            // Audio
+            case "wav":
+            case "mp3":
+            case "ogg":
+
+            case "act":
+                //return new Action(ReadSync(file)).compile();
+            case "str":
+                //return new Str(ReadSync(file));
+                Debug.LogWarning("Can't read " + file + "\nLoader for " + ext + " is not implemented");
+                break;
+            case "tga":
+            default:
+                Debug.LogWarning("Default reader loading " + file);
+                return ReadSync(file);
+        }
         return null;
     }
 
@@ -119,11 +176,13 @@ public class FileManager {
 
                 if(data != null) {
                     return new BinaryReader(data);
+                } else {
+                    Debug.Log("Could not read grf data for " + path);
                 }
+            } else {
+                Debug.Log("File not found on GRF: " + path);
             }
         }
-
-        Debug.Log("File not found on GRF: " + path);
 
         //try filesystem
         if(File.Exists(Application.dataPath + "/" + path)) {
@@ -157,5 +216,35 @@ public class FileManager {
 
         result.Seek(0, SeekOrigin.Begin);
         return result;
+    }
+
+    private static int pendingThreads;
+    private static ManualResetEvent doneEvent;
+    private class BatchLoader
+    {
+        private string file;
+        private string ext;
+
+        public string File { get { return file; } }
+
+        public BatchLoader(string file, string ext) {
+            this.file = file;
+            this.ext = ext;
+        }
+
+        public void ThreadPoolCallback(object threadContext) {
+            try {
+                if(!FileCache.Has(file)) {
+                    object data = DoLoad(file, ext);
+                    if(data != null) {
+                        FileCache.Add(file, ext, data);
+                    }
+                }
+            } finally {
+                if(Interlocked.Decrement(ref pendingThreads) == 0) {
+                    doneEvent.Set();
+                }
+            }
+        }
     }
 }
