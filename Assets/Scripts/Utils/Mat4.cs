@@ -149,7 +149,7 @@ public class Mat4 {
 
     public static Mat4 Rotate(Mat4 _out, Mat4 a, float rad, Vector3 axis) {
         float x = axis[0], y = axis[1], z = axis[2];
-        float len = (float) Math.Sqrt(x * x + y * y + z * z);
+        float len = Mathf.Sqrt(x * x + y * y + z * z);
         float s, c, t;
         float a00, a01, a02, a03;
         float a10, a11, a12, a13;
@@ -158,7 +158,7 @@ public class Mat4 {
         float b10, b11, b12;
         float b20, b21, b22;
 
-        if(Math.Abs(len) < EPSILON) {
+        if(len < EPSILON) {
             return null;
         }
 
@@ -167,8 +167,8 @@ public class Mat4 {
         y *= len;
         z *= len;
 
-        s = (float) Math.Sin(rad);
-        c = (float) Math.Cos(rad);
+        s = Mathf.Sin(rad);
+        c = Mathf.Cos(rad);
         t = 1 - c;
 
         a00 = a[0];
@@ -218,8 +218,8 @@ public class Mat4 {
     }
 
     public static Mat4 RotateX(Mat4 _out, Mat4 a, float rad) {
-        float s = (float) Math.Sin(rad),
-            c = (float) Math.Cos(rad),
+        float s = Mathf.Sin(rad),
+            c = Mathf.Cos(rad),
             a10 = a[4],
             a11 = a[5],
             a12 = a[6],
@@ -253,8 +253,8 @@ public class Mat4 {
     }
 
     public static Mat4 RotateY(Mat4 _out, Mat4 a, float rad) {
-        float s = (float) Math.Sin(rad),
-            c = (float) Math.Cos(rad),
+        float s = Mathf.Sin(rad),
+            c = Mathf.Cos(rad),
             a00 = a[0],
             a01 = a[1],
             a02 = a[2],
@@ -289,8 +289,8 @@ public class Mat4 {
     }
 
     public static Mat4 RotateZ(Mat4 _out, Mat4 a, float rad) {
-        float s = (float) Math.Sin(rad),
-            c = (float) Math.Cos(rad),
+        float s = Mathf.Sin(rad),
+            c = Mathf.Cos(rad),
             a00 = a[0],
             a01 = a[1],
             a02 = a[2],
@@ -357,14 +357,14 @@ public class Mat4 {
         return _out;
     }
 
-    public static Mat4 RotateQuat(Mat4 _out, Mat4 mat, UnityEngine.Vector4 w) {
+    public static Mat4 RotateQuat(Mat4 _out, Mat4 mat, Vector4 w) {
         float a, b, c, d;
         a = w[0];
         b = w[1];
         c = w[2];
         d = w[3];
 
-        float norm = (float) Math.Sqrt(a * a + b * b + c * c + d * d);
+        float norm = Mathf.Sqrt(a * a + b * b + c * c + d * d);
         a /= norm;
         b /= norm;
         c /= norm;

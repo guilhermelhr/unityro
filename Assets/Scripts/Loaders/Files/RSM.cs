@@ -349,22 +349,12 @@ public class RSM {
 
     public void CreateInstance(RSW.Model model, float width, float height) {
         var matrix = Mat4.Identity;
-        //Mat4.Scale(matrix, matrix, new Vector3(1, 1, 1));
         Mat4.Translate(matrix, matrix, new Vector3(width + model.position[0], -model.position[1], height + model.position[2]));
-        Mat4.Rotate(matrix, matrix, -model.rotation[2] * Mathf.Deg2Rad, new Vector3(0, 0, 1));
-        Mat4.Rotate(matrix, matrix, -model.rotation[0] * Mathf.Deg2Rad, new Vector3(1, 0, 0));
-        Mat4.Rotate(matrix, matrix, model.rotation[1] * Mathf.Deg2Rad, new Vector3(0, 1, 0));
+        Mat4.RotateZ(matrix, matrix, -model.rotation[2] * Mathf.Deg2Rad);
+        Mat4.RotateX(matrix, matrix, -model.rotation[0] * Mathf.Deg2Rad);
+        Mat4.RotateY(matrix, matrix, model.rotation[1] * Mathf.Deg2Rad);
         Mat4.Scale(matrix, matrix, new Vector3(model.scale[0], -model.scale[1], model.scale[2]));
 
         instances.Add(matrix);
-
-        /*var matrix = Mat4.Identity;
-         Mat4.Translate(matrix, matrix, new Vector3(model.position[0] + width, model.position[1], model.position[2] + height));
-         Mat4.RotateZ(matrix, matrix, (float) (model.rotation[2] / 180 * Math.PI));
-         Mat4.RotateX(matrix, matrix, (float) (model.rotation[0] / 180 * Math.PI));
-         Mat4.RotateY(matrix, matrix, (float) (model.rotation[1] / 180 * Math.PI));
-         Mat4.Scale(matrix, matrix, new Vector3(model.scale[0], model.scale[1], model.scale[2]));
-
-         instances.Add(matrix);*/
     }
 }

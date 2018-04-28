@@ -127,9 +127,10 @@ public class ModelLoader {
         var nodes = node.main.nodes;
         var vertices = node.vertices;
         float x, y, z;
-
+        
         //find position
         node.matrix = _matrix.Clone();
+
         Mat4.Translate(node.matrix, node.matrix, node.pos);
 
         //dynamic or static model
@@ -266,6 +267,7 @@ public class ModelLoader {
         }
 
         node.box = new RSM.Box();
+        node.matrix = Mat4.Identity;
 
         return node;
     }
