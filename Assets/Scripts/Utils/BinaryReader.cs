@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
-using UnityEngine;
 
 /// <summary>
 /// Helper to load and parse binary data

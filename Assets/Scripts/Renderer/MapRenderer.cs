@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Audio;
-using static AltitudeLoader;
 
 /// <summary>
 /// Rendering of the map

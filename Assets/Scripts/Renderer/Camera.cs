@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System;
+using UnityEngine;
 
 public class Camera : MonoBehaviour {
     public Matrix4x4 projection;

@@ -1,5 +1,4 @@
-﻿using B83.Image.BMP;
-using System;
+﻿using System;
 using UnityEngine;
 
 /// <summary>
