@@ -64,12 +64,16 @@ public class MapSelector
         string mapname = dropdown.captionText.text;
         
         if(!mapname.Equals("Select Map")) {
-            Core.MapRenderer.Clear();
-            currentMap = mapname;
-            float start = Time.realtimeSinceStartup;
-            Core.MapLoader.Load(mapname + ".rsw", Core.MapRenderer.OnComplete);
-            float delta = Time.realtimeSinceStartup - start;
-            Debug.Log("Total load time: " + delta);
+            ChangeMap(mapname);
         }
+    }
+
+    public void ChangeMap(string mapname) {
+        Core.MapRenderer.Clear();
+        currentMap = mapname;
+        float start = Time.realtimeSinceStartup;
+        Core.MapLoader.Load(mapname + ".rsw", Core.MapRenderer.OnComplete);
+        float delta = Time.realtimeSinceStartup - start;
+        Debug.Log("Total load time: " + delta);
     }
 }

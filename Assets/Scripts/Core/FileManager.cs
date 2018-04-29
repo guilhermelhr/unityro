@@ -91,52 +91,65 @@ public class FileManager {
         
         switch(ext) {
             case "grf":
-                //maybe try opening for every threaded request?
                 return File.OpenRead(file);
             // Regular images files
             case "jpg":
             case "jpeg":
             case "png":
-                return new RawImage() {
-                    data = ReadSync(file).ToArray()
-                };
+                using(var br = ReadSync(file)) {
+                    return new RawImage() {
+                        data = br.ToArray()
+                    };
+                }
             case "bmp":
-                return loader.LoadBMP(ReadSync(file));
-                //return bmp.ToTexture2D();
+                using(var br = ReadSync(file))
+                    return loader.LoadBMP(br);
+            case "tga":
+                using(var br = ReadSync(file))
+                    return TGALoader.LoadTGA(br);
             // Texts
             case "txt":
             case "xml":
             case "lua":
-                BinaryReader binaryReader = ReadSync(file);
-                if(binaryReader != null) {
-                    return Encoding.UTF8.GetString(binaryReader.ToArray());
-                } else {
-                    return null;
+                using(var br = ReadSync(file)) {
+                    if(br != null) {
+                        return Encoding.UTF8.GetString(br.ToArray());
+                    } else {
+                        return null;
+                    }
                 }
             // Binary
             case "gat":
-                return new Altitude(ReadSync(file));
+                using(var br = ReadSync(file))
+                    return new Altitude(br);
             case "rsw":
-                return WorldLoader.Load(ReadSync(file));
+                using(var br = ReadSync(file))
+                    return WorldLoader.Load(br);
             case "gnd":
-                return GroundLoader.Load(ReadSync(file));
+                using(var br = ReadSync(file))
+                    return GroundLoader.Load(br);
             case "rsm":
-                return ModelLoader.Load(ReadSync(file));
+                using(var br = ReadSync(file))
+                    return ModelLoader.Load(br);
             // Audio
             case "wav":
+                using(var br = ReadSync(file)) {
+                    WAVLoader.WAVFile wav = WAVLoader.OpenWAV(br.ToArray());
+                    AudioClip clip = AudioClip.Create(file, wav.samples, wav.channels, wav.sampleRate, false);
+                    clip.SetData(wav.leftChannel, 0);
+                    return clip;
+                }
             case "mp3":
             case "ogg":
-
+                
             case "act":
                 //return new Action(ReadSync(file)).compile();
             case "str":
                 //return new Str(ReadSync(file));
                 Debug.LogWarning("Can't read " + file + "\nLoader for " + ext + " is not implemented");
                 break;
-            case "tga":
             default:
-                Debug.LogWarning("Default reader loading " + file);
-                return ReadSync(file);
+                throw new System.Exception("Unknown file format: " + file);
         }
         return null;
     }

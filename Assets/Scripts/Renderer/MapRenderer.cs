@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Audio;
 using static AltitudeLoader;
 
 /// <summary>
@@ -12,17 +14,19 @@ using static AltitudeLoader;
 public class MapRenderer {
     public static int MAX_VERTICES = 65532;
 
+    public static GameObject mapParent;
+    public static AudioMixerGroup SoundsMixerGroup;
+
     private RSW world;
     private Water water;
     private Models models;
+    private Sounds sounds = new Sounds();
 
     private bool worldCompleted, altitudeCompleted, groundCompleted, modelsCompleted;
 
     public bool Ready {
         get { return worldCompleted && altitudeCompleted && groundCompleted && modelsCompleted;  }
     }
-    
-    public static GameObject mapParent;
 
     /*public class Fog {
         public Fog(bool use) { this.use = use; }
@@ -61,9 +65,14 @@ public class MapRenderer {
         Debug.Log(id + " oncomplete time: " + delta);
 
         if(Ready) {
-            //everything needed was loaded, no need to keep data cached
+            //everything needed was loaded, no need to keep the current cache
             FileCache.Report();
             FileCache.ClearAll();
+
+            //add sounds to playlist (and cache)
+            foreach(var sound in world.sounds) {
+                sounds.Add(sound, null);
+            }
         }
     }
 
@@ -113,6 +122,16 @@ public class MapRenderer {
             water.BuildMesh(mesh);
         }
 
+        //initialize sounds
+        for(int i = 0; i < world.sounds.Count; i++) {
+            world.sounds[i].pos[0] += mesh.width;
+            world.sounds[i].pos[1] *= -1;
+            world.sounds[i].pos[2] += mesh.height;
+            //world.sounds[i].pos[2] = tmp;
+            world.sounds[i].range *= 0.3f;
+            world.sounds[i].tick = 0;
+        }
+
         groundCompleted = true;
     }
 
@@ -124,32 +143,39 @@ public class MapRenderer {
         modelsCompleted = true;
     }
 
-    public void Render() {
+    public void PostRender() {
         if(water != null) {
             water.Render();
         }
     }
 
+    public void FixedUpdate() {
+        sounds.Update();
+    }
+
     public void Clear() {
+        sounds.Clear();
+
+        world = null;
+        water = null;
+        models = null;
+
         //destroy map
         if(mapParent != null) {
-            UnityEngine.Object.DestroyImmediate(mapParent);
+            UnityEngine.Object.Destroy(mapParent);
+            mapParent = null;
         }
 
         //destroy textures
         var ob = UnityEngine.Object.FindObjectsOfType(typeof(Texture2D));
         int dCount = 0;
         foreach(Texture2D t in ob) {
-            if(string.Compare(t.name, "maptexture") == 0) {
+            if(t.name.StartsWith("maptexture@")) {
                 dCount++;
                 UnityEngine.Object.Destroy(t);
             }
         }
         Debug.Log(dCount + " textures destroyed");
-
-        world = null;
-        water = null;
-        models = null;
 
         worldCompleted = altitudeCompleted = groundCompleted = modelsCompleted = false;
     }

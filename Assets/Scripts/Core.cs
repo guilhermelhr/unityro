@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class Core : MonoBehaviour {
@@ -17,7 +18,10 @@ public class Core : MonoBehaviour {
         get { return mapRenderer; }
     }
 
-    public Dropdown mapDropdown;    
+    public Dropdown mapDropdown;
+    public string mapname;
+    public AudioMixerGroup soundsMixerGroup;
+
     private Hashtable configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
 
@@ -32,6 +36,12 @@ public class Core : MonoBehaviour {
         MapSelector selector = new MapSelector(FileManager.Grf);
         selector.buildDropdown(mapDropdown);
         Debug.Log("Map list has " + selector.GetMapList().Count + " entries.");
+
+        MapRenderer.SoundsMixerGroup = soundsMixerGroup;
+
+        if(!string.IsNullOrEmpty(mapname)) {
+            selector.ChangeMap(mapname);
+        }
     }
 
     private void loadConfigs() {
@@ -60,13 +70,19 @@ public class Core : MonoBehaviour {
         }
     }
 
+    void FixedUpdate() {
+        if(mapRenderer.Ready) {
+            mapRenderer.FixedUpdate();
+        }
+    }
+
     void Update() {
         mapDropdown.gameObject.SetActive(Cursor.lockState != CursorLockMode.Locked);
     }
 
     public void OnPostRender() {
         if(mapRenderer.Ready) {
-            mapRenderer.Render();
+            mapRenderer.PostRender();
         }
     }
 

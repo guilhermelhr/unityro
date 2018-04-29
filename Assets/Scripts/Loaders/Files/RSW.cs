@@ -35,9 +35,9 @@ public class RSW {
 
     public class WaterInfo {
         public int textureSize = 256;
-        public float level = float.MinValue;
+        public float level;
         public int type;
-        public float waveHeight = float.MinValue;
+        public float waveHeight;
         public float waveSpeed;
         public float wavePitch;
         public int animSpeed;
@@ -100,6 +100,7 @@ public class RSW {
         public int height;
         public float range;
         public float cycle;
+        public float tick;
     }
 
     public class Effect {

@@ -50,6 +50,7 @@ public static class FileCache
             object data = cache[file];
             Texture2D texture = toUnityTexture(data);
             if(texture != null) {
+                texture.name = "maptexture@" + file;
                 cache.Remove(file);
                 cache.Add(file, texture);
                 return texture;
@@ -59,6 +60,12 @@ public static class FileCache
         }
 
         return null;
+    }
+
+    public static void Remove(string file) {
+        foreach(Hashtable cache in caches.Values) {
+            cache.Remove(file);
+        }
     }
 
     public static bool Has(string file) {
@@ -82,18 +89,18 @@ public static class FileCache
     }
 
     private static Texture2D toUnityTexture(object texture) {
+        Texture2D t = null;
+
         if(texture is FileManager.RawImage) {
-            Texture2D t = new Texture2D(0, 0);
+            t = new Texture2D(0, 0);
             t.LoadImage(((FileManager.RawImage) texture).data);
-            t.name = "maptexture";
-            return t;
         } else if(texture is BMPImage) {
-            Texture2D t = ((BMPImage) texture).ToTexture2D();
-            t.name = "maptexture";
-            return t;
-        } else {
-            return null;
+            t = ((BMPImage) texture).ToTexture2D();
+        } else if(texture is TGALoader.TGAImage) {
+            t = ((TGALoader.TGAImage) texture).ToTexture2D();
         }
+
+        return t;
     }
 
     internal static void Report() {

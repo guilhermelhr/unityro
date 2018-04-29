@@ -48,94 +48,93 @@ public class Grf
             throw new Exception("GE_ERRNO");
 	    }
 
-        var br = new System.IO.BinaryReader(fStream);
+        using(var br = new System.IO.BinaryReader(fStream)) {
+            grf.allowWrite = !mode.Contains("+") && mode.Contains("w");
 
+            //***skipped write***/
 
-        grf.allowWrite = !mode.Contains("+") && mode.Contains("w");
+            /* Read the header */
+            buf = br.ReadBytes(GRF_HEADER_FULL_LEN);
 
-        //***skipped write***/
-
-        /* Read the header */
-        buf = br.ReadBytes(GRF_HEADER_FULL_LEN);
-
-        /* Check the header */
-        string strA = Encoding.ASCII.GetString(buf);
-        int v = string.Compare(strA, 0, GRF_HEADER, 0, GRF_HEADER_LEN);
-        if (v != 0) {
-            throw new Exception("GE_INVALID");
-	    }
-
-	    /* Continued header check...
-	     *
-	     * GRF files that allow encryption of the files inside the archive
-	     * have a hex header following "Master of Magic" (not including
-	     * the nul-terminator) that looks like:
-	     * 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E
-	     *
-	     * GRF files that do not allow it have a hex header that looks like:
-	     * 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-	     *
-	     * GRF files that do not allow it are generally found after a
-	     * "Ragnarok.exe /repak" command has been issued
-	     */
-	    if (buf[GRF_HEADER_LEN + 1] == 1) {
-		    grf.allowCrypt = 1;
-            /* 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E */
-            for(i = 0; i < 0xF; i++) {
-                if(buf[GRF_HEADER_LEN + i] != (int) i) {
-                    throw new Exception("GE_CORRUPTED");
-                }
+            /* Check the header */
+            string strA = Encoding.ASCII.GetString(buf);
+            int v = string.Compare(strA, 0, GRF_HEADER, 0, GRF_HEADER_LEN);
+            if(v != 0) {
+                throw new Exception("GE_INVALID");
             }
-	    } else if (buf[GRF_HEADER_LEN]==0) {
-		    grf.allowCrypt=0;
-            /* 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 */
-            for(i = 0; i < 0xF; i++) {
-                if(buf[GRF_HEADER_LEN + i] != 0) {
-                    new Exception("GE_CORRUPTED");
-                }
-            }
-	    } else {
-            throw new Exception("GE_CORRUPTED");
 
+            /* Continued header check...
+             *
+             * GRF files that allow encryption of the files inside the archive
+             * have a hex header following "Master of Magic" (not including
+             * the nul-terminator) that looks like:
+             * 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E
+             *
+             * GRF files that do not allow it have a hex header that looks like:
+             * 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+             *
+             * GRF files that do not allow it are generally found after a
+             * "Ragnarok.exe /repak" command has been issued
+             */
+            if(buf[GRF_HEADER_LEN + 1] == 1) {
+                grf.allowCrypt = 1;
+                /* 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E */
+                for(i = 0; i < 0xF; i++) {
+                    if(buf[GRF_HEADER_LEN + i] != (int) i) {
+                        throw new Exception("GE_CORRUPTED");
+                    }
+                }
+            } else if(buf[GRF_HEADER_LEN] == 0) {
+                grf.allowCrypt = 0;
+                /* 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 */
+                for(i = 0; i < 0xF; i++) {
+                    if(buf[GRF_HEADER_LEN + i] != 0) {
+                        new Exception("GE_CORRUPTED");
+                    }
+                }
+            } else {
+                throw new Exception("GE_CORRUPTED");
+
+            }
+
+            /* Okay, so we finally are sure that its a valid GRF/GPF file.
+             * now its time to read info from it
+             */
+
+            /* Set the type of archive this is */
+            grf.type = GRF_TYPE_GRF;
+
+            /* Read the version */
+            grf.version = GrfSupport.LittleEndian32(buf, GRF_HEADER_MID_LEN + 0xC);
+
+            /* Read the number of files */
+            grf.nfiles = GrfSupport.LittleEndian32(buf, GRF_HEADER_MID_LEN + 8);
+            grf.nfiles -= GrfSupport.LittleEndian32(buf, GRF_HEADER_MID_LEN + 4) + 7;
+
+            /* Create the array of files */
+            grf.files = new Hashtable(StringComparer.OrdinalIgnoreCase);
+
+            /* Grab the filesize */
+            grf.len = (uint) fStream.Length;
+
+            /* Seek to the offset of the file tables */
+            br.BaseStream.Seek(GrfSupport.LittleEndian32(buf, GRF_HEADER_MID_LEN) + GRF_HEADER_FULL_LEN, SeekOrigin.Begin);
+
+            /* Run a different function to read the file information based on
+             * the major version number
+             */
+            switch(grf.version & 0xFF00) {
+                case 0x0200:
+                    i = GRF_readVer2_info(br, grf, callback);
+                    break;
+                default:
+                    throw new Exception("UNSUP_GRF_VERSION");
+            }
+
+            if(i > 0) {
+                return null;
+            }
         }
-
-	    /* Okay, so we finally are sure that its a valid GRF/GPF file.
-	     * now its time to read info from it
-	     */
-
-	    /* Set the type of archive this is */
-	    grf.type=GRF_TYPE_GRF;
-
-        /* Read the version */
-	    grf.version = GrfSupport.LittleEndian32(buf, GRF_HEADER_MID_LEN + 0xC);
-
-        /* Read the number of files */
-        grf.nfiles = GrfSupport.LittleEndian32(buf, GRF_HEADER_MID_LEN + 8);
-        grf.nfiles -= GrfSupport.LittleEndian32(buf, GRF_HEADER_MID_LEN + 4) + 7;
-
-	    /* Create the array of files */
-        grf.files = new Hashtable(StringComparer.OrdinalIgnoreCase);
-
-        /* Grab the filesize */
-	    grf.len = (uint) fStream.Length;
-
-        /* Seek to the offset of the file tables */
-        br.BaseStream.Seek(GrfSupport.LittleEndian32(buf, GRF_HEADER_MID_LEN) + GRF_HEADER_FULL_LEN, SeekOrigin.Begin);
-	    
-	    /* Run a different function to read the file information based on
-	     * the major version number
-	     */
-	    switch (grf.version & 0xFF00) {
-	    case 0x0200:
-		    i = GRF_readVer2_info(br, grf, callback);
-		    break;
-	    default:
-            throw new Exception("UNSUP_GRF_VERSION");
-	    }
-
-	    if (i > 0) {
-		    return null;
-	    }
 
 	    return grf;
     }
@@ -240,8 +239,6 @@ public class Grf
         GRF_SETERR(error,GE_SUCCESS,GRF_readVer2_info);
         */
 
-        br.BaseStream.Close();
-        br.Close();
         return 0;
     }
 
@@ -257,13 +254,11 @@ public class Grf
             throw new Exception("GE_ERRNO");
         }
 
-        var br = new System.IO.BinaryReader(stream);
-
-        br.BaseStream.Seek(file.pos, SeekOrigin.Begin);
-        byte[] data = br.ReadBytes((int) file.compressed_len_aligned);
-
-        br.Close();
-        stream.Close();
+        byte[] data;
+        using(var br = new System.IO.BinaryReader(stream)) {
+            br.BaseStream.Seek(file.pos, SeekOrigin.Begin);
+            data = br.ReadBytes((int) file.compressed_len_aligned);
+        }
 
         byte[] keyschedule = new byte[0x80];
 
@@ -292,12 +287,11 @@ public class Grf
             return null;
         }
 
-        var stream = new InflaterInputStream(new MemoryStream(zbuf));
-        file.data = new byte[file.real_len];
+        using(var stream = new InflaterInputStream(new MemoryStream(zbuf))) {
+            file.data = new byte[file.real_len];
 
-        stream.Read(file.data, 0, file.data.Length);
-
-        stream.Close();
+            stream.Read(file.data, 0, file.data.Length);
+        }
 
         return file.data;
     }
