@@ -69,10 +69,12 @@ public class MapLoader {
         callback.Invoke(mapname, "MAP_WORLD", world);
         callback.Invoke(mapname, "MAP_GROUND", compiledGround);
 
-        LoadModels(world.models, ground);
+        var compiledModels = LoadModels(world.models, ground);
+
+        callback.Invoke(mapname, "MAP_MODELS", compiledModels.ToArray());
     }
 
-    private void LoadModels(List<RSW.Model> models, GND ground) {
+    private List<RSM.CompiledModel> LoadModels(List<RSW.Model> models, GND ground) {
         FileManager.InitBatch();
 
         //queue list of models to load
@@ -99,7 +101,10 @@ public class MapLoader {
         FileCache.ClearAllWithExt("rsm");
         RSM[] objects = new RSM[objectsSet.Count];
         objectsSet.CopyTo(objects);
-        LoadModelsTextures(CompileModels(objects));
+
+        var compiledModels = CompileModels(objects);
+        LoadModelsTextures(compiledModels);
+        return compiledModels;
     }
 
     private void LoadModelsTextures(List<RSM.CompiledModel> objects) {
@@ -114,8 +119,6 @@ public class MapLoader {
 
         //load textures
         FileManager.EndBatch();
-
-        callback.Invoke(null, "MAP_MODELS", objects.ToArray());
     }
 
 

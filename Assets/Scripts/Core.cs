@@ -47,7 +47,7 @@ public class Core : MonoBehaviour {
         
         string cfgTxt = null;
         if(Application.isMobilePlatform) {
-                cfgTxt = "grf=" + Application.streamingAssetsPath + "/data.grf";
+            cfgTxt = "grf=" + Application.streamingAssetsPath + "/data.grf";
         } else{
             cfgTxt = FileManager.Load("config.txt") as string;
 
@@ -77,6 +77,9 @@ public class Core : MonoBehaviour {
 
     void Update() {
         mapDropdown.gameObject.SetActive(Cursor.lockState != CursorLockMode.Locked);
+        if(mapRenderer.Ready) {
+            mapRenderer.Render();
+        }
     }
 
     public void OnPostRender() {

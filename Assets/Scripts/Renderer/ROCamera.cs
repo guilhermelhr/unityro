@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class Camera : MonoBehaviour {
+public class ROCamera : MonoBehaviour {
     public Matrix4x4 projection;
     public Matrix4x4 modelView;
     public Matrix4x4 normalMat;

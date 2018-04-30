@@ -22,6 +22,7 @@ public class Sounds
         _parent = null;
         foreach(Playing p in playing) {
             FileCache.Remove(p.info.file);
+            GameObject.Destroy(p.clip);
         }
         playing.Clear();
     }

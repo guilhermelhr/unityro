@@ -18,6 +18,7 @@ public class MapRenderer {
     private Water water;
     private Models models;
     private Sounds sounds = new Sounds();
+    private Sky sky;
 
     private bool worldCompleted, altitudeCompleted, groundCompleted, modelsCompleted;
 
@@ -62,14 +63,27 @@ public class MapRenderer {
         Debug.Log(id + " oncomplete time: " + delta);
 
         if(Ready) {
-            //everything needed was loaded, no need to keep the current cache
-            FileCache.Report();
-            FileCache.ClearAll();
+            OnMapComplete(mapname);
+        }
+    }
 
-            //add sounds to playlist (and cache)
-            foreach(var sound in world.sounds) {
-                sounds.Add(sound, null);
-            }
+    private void OnMapComplete(string mapname) {
+        //everything needed was loaded, no need to keep the current cache
+        FileCache.Report();
+        FileCache.ClearAll();
+
+        //add sounds to playlist (and cache)
+        foreach(var sound in world.sounds) {
+            sounds.Add(sound, null);
+        }
+        Debug.Log(sounds.Count() + " sounds loaded");
+
+        //initialize clouds
+        sky.Initialize(mapname);
+        if(sky.HasClouds) {
+            sky.SetupClouds();
+        } else {
+            sky = null;
         }
     }
 
@@ -129,6 +143,9 @@ public class MapRenderer {
             world.sounds[i].tick = 0;
         }
 
+        //create sky
+        sky = new Sky(mesh.width, mesh.height);
+
         groundCompleted = true;
     }
 
@@ -146,16 +163,29 @@ public class MapRenderer {
         }
     }
 
+    public void Render() {
+        if(sky != null) {
+            sky.Render();
+        }
+    }
+
     public void FixedUpdate() {
         sounds.Update();
+        if(sky != null) {
+            sky.FixedUpdate();
+        }
     }
 
     public void Clear() {
         sounds.Clear();
+        if(sky != null) {
+            sky.Clear();
+        }
 
         world = null;
         water = null;
         models = null;
+        sky = null;
 
         //destroy map
         if(mapParent != null) {
