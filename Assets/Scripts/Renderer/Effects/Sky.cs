@@ -19,7 +19,6 @@ public class Sky
 
     public static GameObject cloudsParent;
 
-    private uint width, height;
     private bool draw = false;
     private WeatherEffect.SkyPrefs prefs;
     private Texture2D[] textures;
@@ -48,9 +47,7 @@ public class Sky
         public bool fadeOut;
     }
 
-    public Sky(uint width, uint height) {
-        this.width = width;
-        this.height = height;
+    public Sky() {
         clouds = new Cloud[MAX_CLOUDS];
     }
 
@@ -67,10 +64,12 @@ public class Sky
             Camera.main.backgroundColor = prefs.skyColor;
 
             LoadCloudTextures();
+
+            SetupClouds();
         }
     }
 
-    public void SetupClouds() {
+    private void SetupClouds() {
         for(int i = 0; i < MAX_CLOUDS; i++) {
             if(clouds[i] == null) {
                 clouds[i] = new Cloud();

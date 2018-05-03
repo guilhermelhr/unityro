@@ -14,6 +14,7 @@ public class WeatherEffect
         new SkyPrefs() { mapfile = "sch_gld.rsw"     , skyColor = new Color(0.4f, 0.6f, 0.8f, 1.0f), cloudColor = new Color(1.0f, 1.0f, 1.0f, 1.0f)},
         new SkyPrefs() { mapfile = "valkyrie.rsw"    , skyColor = new Color(0.4f, 0.6f, 0.8f, 1.0f), cloudColor = new Color(1.0f, 1.0f, 1.0f, 1.0f)},
         new SkyPrefs() { mapfile = "yuno.rsw"        , skyColor = new Color(0.4f, 0.6f, 0.8f, 1.0f), cloudColor = new Color(1.0f, 1.0f, 1.0f, 1.0f)},
+        //others
         new SkyPrefs() { mapfile = "5@tower.rsw"     , skyColor = new Color(0.2f, 0.0f, 0.2f, 1.0f), cloudColor = new Color(1.0f, 0.7f, 0.7f, 1.0f)},
         new SkyPrefs() { mapfile = "thana_boss.rsw"  , skyColor = new Color(0.88f, 0.83f, 0.76f, 1.0f), cloudColor = new Color(0.37f, 0.0f, 0.0f, 1.0f)},
     };

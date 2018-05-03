@@ -63,50 +63,59 @@ public class Models {
                 normals.Add(meshData.normals);
                 uv.Add(meshData.uv);
                 //triangles.Add(i);
-                
-                if(i % 3 == 0) {
-                    //8 = flip x
-                    //0 = flip z
-                    if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] < 0 && meshData.instanceMatrix[10] < 0) {
-                        triangles.Add(i + 2);
-                        triangles.Add(i + 1);
-                        triangles.Add(i + 0);
-                    } else if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] == 0 && meshData.instanceMatrix[10] > 0) {
-                        triangles.Add(i + 0);
-                        triangles.Add(i + 1);
-                        triangles.Add(i + 2);
-                    } else if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] > 0 && meshData.instanceMatrix[10] > 0) {
-                        triangles.Add(i + 0);
-                        triangles.Add(i + 1);
-                        triangles.Add(i + 2);
-                    } else if(meshData.instanceMatrix[0] > 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] < 0 && meshData.instanceMatrix[10] < 0) {
-                        triangles.Add(i + 0);
-                        triangles.Add(i + 1);
-                        triangles.Add(i + 2);
-                    } else if(meshData.instanceMatrix[0] > 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] == 0 && meshData.instanceMatrix[10] < 0) {
-                        triangles.Add(i + 0);
-                        triangles.Add(i + 1);
-                        triangles.Add(i + 2);
-                    } else if(meshData.instanceMatrix[0] > 0 && meshData.instanceMatrix[2] > 0 && meshData.instanceMatrix[8] > 0) {
-                        triangles.Add(i + 0);
-                        triangles.Add(i + 1);
-                        triangles.Add(i + 2);
-                    } else if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[8] < 0) {
-                        triangles.Add(i + 0);
-                        triangles.Add(i + 1);
-                        triangles.Add(i + 2);
-                    } else { 
-                        triangles.Add(i + 2);
-                        triangles.Add(i + 1);
-                        triangles.Add(i + 0);
-                    }
-                }
 
                 twoSided |= meshData.twoSided != 0;
 
+                if(i % 3 == 0) {
+                    if(twoSided) {
+                        triangles.Add(i + 0);
+                        triangles.Add(i + 1);
+                        triangles.Add(i + 2);
+                    } else {
+                        //because of instancing scaling, meshes can be turned inside-out. this is an
+                        //ugly way to correct for that so that the texture is on the outsite.
+                        //it avoids having to use double-sided shaders for every model.
+                        //TODO: surely it is possible to simplify these conditions
+                        //8 = flip x
+                        //0 = flip z
+                        if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] < 0 && meshData.instanceMatrix[10] < 0) {
+                            triangles.Add(i + 2);
+                            triangles.Add(i + 1);
+                            triangles.Add(i + 0);
+                        } else if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] == 0 && meshData.instanceMatrix[10] > 0) {
+                            triangles.Add(i + 0);
+                            triangles.Add(i + 1);
+                            triangles.Add(i + 2);
+                        } else if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] > 0 && meshData.instanceMatrix[10] > 0) {
+                            triangles.Add(i + 0);
+                            triangles.Add(i + 1);
+                            triangles.Add(i + 2);
+                        } else if(meshData.instanceMatrix[0] > 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] < 0 && meshData.instanceMatrix[10] < 0) {
+                            triangles.Add(i + 0);
+                            triangles.Add(i + 1);
+                            triangles.Add(i + 2);
+                        } else if(meshData.instanceMatrix[0] > 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] == 0 && meshData.instanceMatrix[10] < 0) {
+                            triangles.Add(i + 0);
+                            triangles.Add(i + 1);
+                            triangles.Add(i + 2);
+                        } else if(meshData.instanceMatrix[0] > 0 && meshData.instanceMatrix[2] > 0 && meshData.instanceMatrix[8] > 0) {
+                            triangles.Add(i + 0);
+                            triangles.Add(i + 1);
+                            triangles.Add(i + 2);
+                        } else if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[8] < 0) {
+                            triangles.Add(i + 0);
+                            triangles.Add(i + 1);
+                            triangles.Add(i + 2);
+                        } else {
+                            triangles.Add(i + 2);
+                            triangles.Add(i + 1);
+                            triangles.Add(i + 0);
+                        }
+                    }
+                }
+
                 if(instanceNumber == -1) {
                     instanceNumber = meshData.instanceNumber;
-                    //instanceMatrix = meshData.instanceMatrix;
                 }
             }
 
@@ -115,13 +124,9 @@ public class Models {
             mesh.triangles = triangles.ToArray();
             mesh.normals = normals.ToArray();
             mesh.uv = uv.ToArray();
-            //meshes.Add(mesh);
-
-            //textures.Add(MapLoader.Cache[model.texture] as Texture2D);
 
             GameObject gameObject = new GameObject(model.source.name + "[" + instanceNumber + "]");
             gameObject.transform.parent = parent.transform;
-            //gameObject.name += " " + instanceMatrix.ToString();
             
             var mf = gameObject.AddComponent<MeshFilter>();
             mf.mesh = mesh;
@@ -136,22 +141,12 @@ public class Models {
     }
 
     public void Render() {
-        /*GameObject models = new GameObject("_Models");
+        //animate keyframed meshes
 
-        for(int i = 0; i < meshes.Count; i++) {
-            Mesh mesh = meshes[i];
+        for(int i = 0; i < models.Length; i++) {
+            RSM source = models[i].source;
 
-            GameObject gameObject = new GameObject();
-            gameObject.transform.parent = models.transform;
-            var mf = gameObject.AddComponent<MeshFilter>();
-            mf.mesh = mesh;
-            var mr = gameObject.AddComponent<MeshRenderer>();
-            mr.material = material;
-            mr.material.mainTexture = textures[i];
 
-            Vector3 scale = gameObject.transform.localScale;
-            scale.Set(1f, 1f, 1f);
-            gameObject.transform.localScale = scale;
-        }*/
-    }    
+        }
+    }
 }

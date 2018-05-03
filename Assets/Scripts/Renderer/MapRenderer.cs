@@ -78,12 +78,12 @@ public class MapRenderer {
         }
         Debug.Log(sounds.Count() + " sounds loaded");
 
-        //initialize clouds
-        sky.Initialize(mapname);
-        if(sky.HasClouds) {
-            sky.SetupClouds();
-        } else {
-            sky = null;
+
+        if(WeatherEffect.HasMap(mapname)) {
+            //create sky
+            sky = new Sky();
+            //initialize clouds
+            sky.Initialize(mapname);
         }
     }
 
@@ -142,9 +142,6 @@ public class MapRenderer {
             world.sounds[i].range *= 0.3f;
             world.sounds[i].tick = 0;
         }
-
-        //create sky
-        sky = new Sky(mesh.width, mesh.height);
 
         groundCompleted = true;
     }
