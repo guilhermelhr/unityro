@@ -4,17 +4,19 @@
 // - no Main Color
 // - fully supports only 1 directional light. Other lights can affect it, but it will be per-vertex/SH.
 
-Shader "Custom/ModelShader2Sided" {
+Shader "Custom/2SidedAlphaClipped" {
 	Properties{
 		_MainTex("Base (RGB)", 2D) = "white" {}
 	}
-		SubShader{
-		Tags{ "Queue" = "Transparent" "RenderType" = "TransparentCutout" "IgnoreProjector" = "True" }
+		
+	SubShader{
+		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" "IgnoreProjector" = "True" "PreviewType" = "Plane" }
 		LOD 200
 		Cull Off
 
 		CGPROGRAM
-		#pragma surface surf Lambert
+
+		#pragma surface surf Lambert 
 
 		sampler2D _MainTex;
 
@@ -31,7 +33,7 @@ Shader "Custom/ModelShader2Sided" {
 			o.Alpha = c.a;
 		}
 		ENDCG
-		}
+	}
 
 	Fallback "Mobile/VertexLit"
 }

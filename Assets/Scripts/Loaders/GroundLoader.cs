@@ -191,6 +191,12 @@ public class GroundLoader {
             }
         }
 
+        Texture2D t = new Texture2D((int) _width, (int) _height, TextureFormat.RGBA32, false);
+        t.LoadRawTextureData(image);
+        t.Apply();
+
+        System.IO.File.WriteAllBytes(Application.dataPath + MapSelector.CurrentMap + "-LightmapImage.png", t.EncodeToPNG());
+
         return image;
     }
 
@@ -208,6 +214,12 @@ public class GroundLoader {
                 }
             }
         }
+
+        Texture2D t = new Texture2D((int) gnd.width, (int) gnd.height, TextureFormat.RGBA32, false);
+        t.LoadRawTextureData(data);
+        t.Apply();
+
+        System.IO.File.WriteAllBytes(Application.dataPath + MapSelector.CurrentMap + "-TilesColorImage.png", t.EncodeToPNG());
 
         return data;
     }

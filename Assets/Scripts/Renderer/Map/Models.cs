@@ -56,15 +56,22 @@ public class Models {
                         nodeObj.transform.parent = modelObj.transform;
                     }
 
+                    string textureFile = model.rsm.textures[textureId];
+
                     var mf = nodeObj.AddComponent<MeshFilter>();
                     mf.mesh = mesh;
                     var mr = nodeObj.AddComponent<MeshRenderer>();
                     if(meshData.twoSided) {
                         mr.material = material2s;
+                        if(textureFile.EndsWith("tga")) {
+                            mr.material.shader = Resources.Load("2SidedAlpha") as Shader;
+                            mr.material.renderQueue += 1;
+                        }
                     } else {
                         mr.material = material;
                     }
-                    mr.material.mainTexture = FileManager.Load("data/texture/" + model.rsm.textures[textureId]) as Texture2D;
+                    
+                    mr.material.mainTexture = FileManager.Load("data/texture/" + textureFile) as Texture2D;
 
                     if(model.rsm.shadeType == SHADING.SMOOTH) {
                         smooth++;

@@ -4,17 +4,19 @@
 // - no Main Color
 // - fully supports only 1 directional light. Other lights can affect it, but it will be per-vertex/SH.
 
-Shader "Custom/ModelShader" {
+Shader "Custom/2SidedAlpha" {
 	Properties{
 		_MainTex("Base (RGB)", 2D) = "white" {}
 	}
 		
 	SubShader{
-		Tags{ "RenderType" = "Opaque" "Queue" = "Transparent" "PreviewType" = "Plane" }
+		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" "IgnoreProjector" = "True" "PreviewType" = "Plane" }
 		LOD 200
-		
+		Cull Off
+
 		CGPROGRAM
-		#pragma surface surf Lambert
+
+		#pragma surface surf Lambert alpha
 
 		sampler2D _MainTex;
 
@@ -24,8 +26,6 @@ Shader "Custom/ModelShader" {
 
 		void surf(Input IN, inout SurfaceOutput o) {
 			half4 c = tex2D(_MainTex, IN.uv_MainTex);
-
-			clip(c.a - 0.5f);
 
 			o.Albedo = c.rgb;
 			o.Alpha = c.a;
