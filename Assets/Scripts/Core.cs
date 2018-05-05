@@ -20,6 +20,7 @@ public class Core : MonoBehaviour {
     public Dropdown mapDropdown;
     public string mapname;
     public AudioMixerGroup soundsMixerGroup;
+    public Light worldLight;
 
     private Hashtable configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
@@ -37,6 +38,7 @@ public class Core : MonoBehaviour {
         Debug.Log("Map list has " + selector.GetMapList().Count + " entries.");
 
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
+        MapRenderer.WorldLight = worldLight;
 
         if(!string.IsNullOrEmpty(mapname)) {
             selector.ChangeMap(mapname);

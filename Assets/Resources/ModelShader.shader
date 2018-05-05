@@ -8,11 +8,11 @@ Shader "Custom/ModelShader" {
 	Properties{
 		_MainTex("Base (RGB)", 2D) = "white" {}
 	}
-		SubShader{
-		Tags{ "RenderType" = "Opaque" "Queue" = "Transparent" }
+		
+	SubShader{
+		Tags{ "RenderType" = "Opaque" "Queue" = "Transparent"}
 		LOD 200
 		
-
 		CGPROGRAM
 		#pragma surface surf Lambert
 
@@ -31,7 +31,7 @@ Shader "Custom/ModelShader" {
 			o.Alpha = c.a;
 		}
 		ENDCG
-		}
+	}
 
 	Fallback "Mobile/VertexLit"
 }

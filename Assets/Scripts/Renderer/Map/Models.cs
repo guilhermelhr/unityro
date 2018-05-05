@@ -1,152 +1,143 @@
 ﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static RSM;
 
 public class Models {
-    private CompiledModel[] models;
+    private List<CompiledModel> models;
+    //private Hashtable animsTable;
+
     private Material material = (Material) Resources.Load("ModelMaterial", typeof(Material));
     private Material material2s = (Material) Resources.Load("ModelMaterial2Sided", typeof(Material));
 
-    public Models(CompiledModel[] models) {
+    public Models(List<CompiledModel> models) {
         this.models = models;
-    }
-
-    private class MeshData {
-        public static int FloatsPerVert = 27;
-        public Vector3 position;
-        public Vector3 normals;
-        public Vector2 uv;
-        public float alpha;
-        public Mat4 instanceMatrix;
-        public int instanceNumber;
-        public long twoSided;
-
-        public MeshData(float[] data) {
-            position = new Vector3(data[0], data[1], data[2]);
-            normals = new Vector3(data[3], data[4], data[5]);
-            uv = new Vector2(data[6], -data[7]);
-            alpha = data[8];
-            float[] mat = new float[16];
-            Array.ConstrainedCopy(data, 9, mat, 0, mat.Length);
-            instanceMatrix = Mat4.FromValues(mat);
-            instanceNumber = (int) data[25];
-            twoSided = (long) data[26];
-        }
     }
 
     public void BuildMeshes() {
         GameObject parent = new GameObject("_Models");
         parent.transform.parent = MapRenderer.mapParent.transform;
 
+        //animsTable = new Hashtable();
+
+        int smooth, others;
+        smooth = others = 0;
+
         foreach(CompiledModel model in models) {
-            List<Vector3> vertices = new List<Vector3>();
-            List<int> triangles = new List<int>();
-            List<Vector3> normals = new List<Vector3>();
-            List<Vector2> uv = new List<Vector2>();
+            GameObject modelObj = new GameObject(model.rsm.name);
+            modelObj.transform.parent = parent.transform;
 
-            //I'm ignoring unity's vertex limit per mesh here because
-            //models hopefully are optimized enough not to surpass 65532 vertexes
+            foreach(var nodeData in model.nodesData) {
+                foreach(var meshesByTexture in nodeData) {
+                    long textureId = meshesByTexture.Key;
+                    NodeMeshData meshData = meshesByTexture.Value;
+                    Node node = meshData.node;
 
-            float[] data = new float[MeshData.FloatsPerVert];
-            int instanceNumber = -1;
-            //Mat4 instanceMatrix = null;
+                    for(int i = 0; i < meshData.vertices.Count; i += 3) {
+                        meshData.triangles.AddRange(new int[] {
+                                i + 0 , i + 1, i + 2
+                            });
+                    }                   
 
-            bool twoSided = false;
+                    //create node unity mesh
+                    Mesh mesh = new Mesh();
+                    mesh.vertices = meshData.vertices.ToArray();
+                    mesh.triangles = meshData.triangles.ToArray();
+                    //mesh.normals = meshData.normals.ToArray();
+                    mesh.uv = meshData.uv.ToArray();
 
-            for(int i = 0; i < model.mesh.Length / MeshData.FloatsPerVert; i++) {
-                Array.ConstrainedCopy(model.mesh, i * data.Length, data, 0, data.Length);
-                MeshData meshData = new MeshData(data);
-
-                vertices.Add(meshData.position);
-                normals.Add(meshData.normals);
-                uv.Add(meshData.uv);
-                //triangles.Add(i);
-
-                twoSided |= meshData.twoSided != 0;
-
-                if(i % 3 == 0) {
-                    if(twoSided) {
-                        triangles.Add(i + 0);
-                        triangles.Add(i + 1);
-                        triangles.Add(i + 2);
+                    GameObject nodeObj;
+                    if(model.nodesData.Length == 1 && nodeData.Count == 1) {
+                        nodeObj = modelObj;
                     } else {
-                        //because of instancing scaling, meshes can be turned inside-out. this is an
-                        //ugly way to correct for that so that the texture is on the outsite.
-                        //it avoids having to use double-sided shaders for every model.
-                        //TODO: surely it is possible to simplify these conditions
-                        //8 = flip x
-                        //0 = flip z
-                        if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] < 0 && meshData.instanceMatrix[10] < 0) {
-                            triangles.Add(i + 2);
-                            triangles.Add(i + 1);
-                            triangles.Add(i + 0);
-                        } else if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] == 0 && meshData.instanceMatrix[10] > 0) {
-                            triangles.Add(i + 0);
-                            triangles.Add(i + 1);
-                            triangles.Add(i + 2);
-                        } else if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] > 0 && meshData.instanceMatrix[10] > 0) {
-                            triangles.Add(i + 0);
-                            triangles.Add(i + 1);
-                            triangles.Add(i + 2);
-                        } else if(meshData.instanceMatrix[0] > 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] < 0 && meshData.instanceMatrix[10] < 0) {
-                            triangles.Add(i + 0);
-                            triangles.Add(i + 1);
-                            triangles.Add(i + 2);
-                        } else if(meshData.instanceMatrix[0] > 0 && meshData.instanceMatrix[5] < 0 && meshData.instanceMatrix[8] == 0 && meshData.instanceMatrix[10] < 0) {
-                            triangles.Add(i + 0);
-                            triangles.Add(i + 1);
-                            triangles.Add(i + 2);
-                        } else if(meshData.instanceMatrix[0] > 0 && meshData.instanceMatrix[2] > 0 && meshData.instanceMatrix[8] > 0) {
-                            triangles.Add(i + 0);
-                            triangles.Add(i + 1);
-                            triangles.Add(i + 2);
-                        } else if(meshData.instanceMatrix[0] < 0 && meshData.instanceMatrix[8] < 0) {
-                            triangles.Add(i + 0);
-                            triangles.Add(i + 1);
-                            triangles.Add(i + 2);
-                        } else {
-                            triangles.Add(i + 2);
-                            triangles.Add(i + 1);
-                            triangles.Add(i + 0);
-                        }
+                        nodeObj = new GameObject(node.name);
+                        nodeObj.transform.parent = modelObj.transform;
+                    }
+
+                    var mf = nodeObj.AddComponent<MeshFilter>();
+                    mf.mesh = mesh;
+                    var mr = nodeObj.AddComponent<MeshRenderer>();
+                    if(meshData.twoSided) {
+                        mr.material = material2s;
+                    } else {
+                        mr.material = material;
+                    }
+                    mr.material.mainTexture = FileManager.Load("data/texture/" + model.rsm.textures[textureId]) as Texture2D;
+
+                    if(model.rsm.shadeType == SHADING.SMOOTH) {
+                        smooth++;
+                        NormalSolver.RecalculateNormals(mf.mesh, 60);
+                    } else {
+                        others++;
+                        mf.mesh.RecalculateNormals();
                     }
                 }
-
-                if(instanceNumber == -1) {
-                    instanceNumber = meshData.instanceNumber;
-                }
             }
 
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices.ToArray();
-            mesh.triangles = triangles.ToArray();
-            mesh.normals = normals.ToArray();
-            mesh.uv = uv.ToArray();
+            modelObj.SetActive(false);
 
-            GameObject gameObject = new GameObject(model.source.name + "[" + instanceNumber + "]");
-            gameObject.transform.parent = parent.transform;
+            //instantiate model
+            for(int i = 0; i < model.rsm.instances.Count; i++) {
+                var instanceObj = UnityEngine.Object.Instantiate(modelObj);
+                instanceObj.transform.parent = parent.transform;
+                instanceObj.SetActive(true);
+                instanceObj.name += "[" + i + "]";
+
+                RSW.ModelDescriptor descriptor = model.rsm.instances[i];
+
+                //avoid z fighting between models
+                float xRandom = UnityEngine.Random.Range(-0.002f, 0.002f);
+                float yRandom = UnityEngine.Random.Range(-0.002f, 0.002f);
+                float zRandom = UnityEngine.Random.Range(-0.002f, 0.002f);
+
+                Vector3 position = new Vector3(descriptor.position[0] + xRandom, descriptor.position[1] + yRandom, descriptor.position[2] + zRandom);
+                position.x += MapRenderer.width;
+                position.y *= -1;
+                position.z += MapRenderer.height;
+                instanceObj.transform.position = position;
+
+                Vector3 rotation = new Vector3(-descriptor.rotation[0], descriptor.rotation[1], -descriptor.rotation[2]);
+                instanceObj.transform.Rotate(rotation, Space.World);
+
+                Vector3 scale = new Vector3(descriptor.scale[0], -descriptor.scale[1], descriptor.scale[2]);
+                instanceObj.transform.localScale = scale;
+            }
+
+            //foreach(var node in model.source.nodes) {
+            //    if(node.posKeyframes.Count > 0 || node.rotKeyframes.Count > 0) {
+            //        animsTable.Add(gameObject, node);
+            //        break;
+            //    }
+            //}
             
-            var mf = gameObject.AddComponent<MeshFilter>();
-            mf.mesh = mesh;
-            var mr = gameObject.AddComponent<MeshRenderer>();
-            if(twoSided) {
-                mr.material = material2s;
-            } else {
-                mr.material = material;
-            }
-            mr.material.mainTexture = FileManager.Load(model.texture) as Texture2D;
         }
     }
 
     public void Render() {
-        //animate keyframed meshes
+        //animate keyframed objects
 
-        for(int i = 0; i < models.Length; i++) {
-            RSM source = models[i].source;
+        //int keyframe = Mathf.FloorToInt(Time.fixedTime * 1000);
 
+        /*foreach(DictionaryEntry entry in animsTable) {
+            GameObject gameObject = entry.Key as GameObject;
+            Node node = entry.Value as Node;
 
-        }
+            for(int i = node.rotKeyframes.Count - 1; i >= 0; i--) {
+                var key = node.rotKeyframes.Keys[i];
+                if(keyframe % node.main.animLen >= key) {
+                    Quaternion rot = node.rotKeyframes[key];
+                    Vector3 center = gameObject.GetComponent<MeshFilter>().mesh.bounds.center;
+
+                    float angle;
+                    Vector3 axis;
+                    rot.ToAngleAxis(out angle, out axis);
+
+                    gameObject.transform.RotateAround(center, axis, (angle / (node.main.animLen * Time.deltaTime)));
+                    break;
+                }
+            }
+        }*/
     }
 }

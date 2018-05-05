@@ -10,7 +10,7 @@ public class RSW {
     public List<Sound> sounds;
     public List<Light> lights;
     public List<Effect> effects;
-    public List<Model> models;
+    public List<ModelDescriptor> modelDescriptors;
     public GroundInfo ground = new GroundInfo(-500, 500, -500, 500);
     public WaterInfo water = new WaterInfo(0.0f, 0, 0.2f, 2f, 50f, 3, new string[32]);
     public LightInfo light = new LightInfo(45, 45, new float[]{1f, 1f, 1f}, new float[]{0.3f, 0.3f, 0.3f}, 1f, new Vector3());
@@ -59,20 +59,20 @@ public class RSW {
         public int latitude;
         public float[] diffuse;
         public float[] ambient;
-        public float opacity;
+        public float intensity;
         public Vector3 direction;
 
-        public LightInfo(int longitude, int latitude, float[] diffuse, float[] ambient, float opacity, Vector3 direction) {
+        public LightInfo(int longitude, int latitude, float[] diffuse, float[] ambient, float intensity, Vector3 direction) {
             this.longitude = longitude;
             this.latitude = latitude;
             this.diffuse = diffuse;
             this.ambient = ambient;
-            this.opacity = opacity;
+            this.intensity = intensity;
             this.direction = direction;
         }
     }
 
-    public class Model {
+    public class ModelDescriptor {
         public string name;
         public int animType;
         public float animSpeed;
@@ -87,7 +87,7 @@ public class RSW {
     public class Light {
         public string name;
         public float[] pos;
-        public int[] color;
+        public float[] color;
         public float range;
     }
 

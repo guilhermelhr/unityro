@@ -69,7 +69,7 @@ public class WorldLoader {
             }
 
             if(dversion >= 1.7) {
-                rsw.light.opacity = data.ReadFloat();
+                rsw.light.intensity = data.ReadFloat();
             }
         }
 
@@ -83,7 +83,7 @@ public class WorldLoader {
 
         // Read Object
         int count = data.ReadLong();
-        var models = rsw.models = new List<RSW.Model>(count);
+        var models = rsw.modelDescriptors = new List<RSW.ModelDescriptor>(count);
         var lights = rsw.lights = new List<RSW.Light>(count);
         var sounds = rsw.sounds = new List<RSW.Sound>(count);
         var effects = rsw.effects = new List<RSW.Effect>(count);
@@ -91,7 +91,7 @@ public class WorldLoader {
         for(int i = 0; i < count; i++) {
             switch(data.ReadLong()) {
                 case 1: //load model
-                    var model = new RSW.Model();
+                    var model = new RSW.ModelDescriptor();
                     model.name = dversion >= 1.3 ? data.ReadBinaryString(40) : null;
                     model.animType = dversion >= 1.3 ? data.ReadLong() : 0;
                     model.animSpeed = dversion >= 1.3 ? data.ReadFloat() : 0f;
@@ -119,9 +119,9 @@ public class WorldLoader {
                     for(int j = 0; j < light.pos.Length; j++) {
                         light.pos[j] = data.ReadFloat() / 5;
                     }
-                    light.color = new int[3];
+                    light.color = new float[3];
                     for(int j = 0; j < light.color.Length; j++) {
-                        light.color[j] = data.ReadLong();
+                        light.color[j] = data.ReadFloat();
                     }
                     light.range = data.ReadFloat();
                     lights.Add(light);

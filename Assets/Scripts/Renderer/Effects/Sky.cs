@@ -54,10 +54,7 @@ public class Sky
     internal void Initialize(string mapname) {
         draw = (prefs = WeatherEffect.GetPrefs(mapname)) != null;
 
-        if(!draw) {
-            //no preferences, set sky to black
-            Camera.main.backgroundColor = Color.black;
-        } else {
+        if(draw) {
             cloudsParent = new GameObject("_clouds");
             cloudsParent.transform.parent = MapRenderer.mapParent.transform;
 

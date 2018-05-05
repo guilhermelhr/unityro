@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -13,6 +14,8 @@ public class MapRenderer {
 
     public static GameObject mapParent;
     public static AudioMixerGroup SoundsMixerGroup;
+    public static Light WorldLight;
+    public static uint width, height;
 
     private RSW world;
     private Water water;
@@ -56,7 +59,7 @@ public class MapRenderer {
                 OnGroundComplete(data as GND.Mesh);
                 break;
             case "MAP_MODELS":
-                OnModelsComplete(data as RSM.CompiledModel[]);
+                OnModelsComplete(data as List<RSM.CompiledModel>);
                 break;
         }
         float delta = Time.realtimeSinceStartup - start;
@@ -84,6 +87,25 @@ public class MapRenderer {
             sky = new Sky();
             //initialize clouds
             sky.Initialize(mapname);
+        } else {
+            //no weather effects, set sky to black
+            Camera.main.backgroundColor = Color.black;
+        }
+
+        //add lights
+        GameObject lightsParent = new GameObject("_lights");
+        lightsParent.transform.parent = mapParent.transform;
+        
+        foreach(var light in world.lights) {
+            GameObject lightObj = new GameObject(light.name);            
+            lightObj.transform.parent = lightsParent.transform;
+            Light lightComponent = lightObj.AddComponent<Light>();
+            lightComponent.lightmapBakeType = LightmapBakeType.Baked;
+            lightComponent.color = new Color(light.color[0], light.color[1], light.color[2]);
+            Debug.Log("color: " + lightComponent.color);
+            lightComponent.range = light.range;
+            Vector3 position = new Vector3(light.pos[0] + width, -light.pos[1], light.pos[2] + height);
+            lightObj.transform.position = position;
         }
     }
 
@@ -95,15 +117,20 @@ public class MapRenderer {
         this.world = world;
 
         //calculate light direction
-        world.light.direction = new Vector3();
-        var longitude = world.light.longitude * Math.PI / 180;
-        var latitude = world.light.latitude * Math.PI / 180;
+        RSW.LightInfo lightInfo = world.light;
+        lightInfo.direction = new Vector3();
 
+        Vector3 lightRotation = new Vector3(lightInfo.longitude, lightInfo.latitude, 0);
+        WorldLight.transform.Rotate(lightRotation);
 
-        //TODO translate unity light to this
-        world.light.direction[0] = (float) (-Math.Cos(longitude) * Math.Sin(latitude));
-        world.light.direction[1] = (float) (-Math.Cos(latitude));
-        world.light.direction[2] = (float) (-Math.Sin(longitude) * Math.Sin(latitude));
+        Color ambient = new Color(lightInfo.ambient[0], lightInfo.ambient[1], lightInfo.ambient[2]);
+        Color diffuse = new Color(lightInfo.diffuse[0], lightInfo.diffuse[1], lightInfo.diffuse[2]);
+
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+        RenderSettings.ambientLight = ambient * lightInfo.intensity;
+
+        Debug.Log("diffuse: " + diffuse);
+        WorldLight.color = diffuse;
 
         worldCompleted = true;
     }
@@ -122,6 +149,9 @@ public class MapRenderer {
     }
 
     private void OnGroundComplete(GND.Mesh mesh) {
+        width = mesh.width;
+        height = mesh.height;
+
         Ground ground = new Ground();
         ground.BuildMesh(mesh);
         ground.InitTextures(mesh);
@@ -146,10 +176,9 @@ public class MapRenderer {
         groundCompleted = true;
     }
 
-    private void OnModelsComplete(RSM.CompiledModel[] compiledModels) {
+    private void OnModelsComplete(List<RSM.CompiledModel> compiledModels) {
         models = new Models(compiledModels);
         models.BuildMeshes();
-        models.Render();
 
         modelsCompleted = true;
     }
@@ -164,6 +193,8 @@ public class MapRenderer {
         if(sky != null) {
             sky.Render();
         }
+        
+        models.Render();
     }
 
     public void FixedUpdate() {

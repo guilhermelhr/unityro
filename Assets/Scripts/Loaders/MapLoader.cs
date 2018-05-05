@@ -9,8 +9,6 @@ using UnityEngine;
 /// Based on ROBrowser by Vincent Thibault (robrowser.com)
 /// </summary>
 public class MapLoader {
-
-    private Action<string, string, object> callback;
     private int progress = 0;
     public Action<int> onProgress = null;
 
@@ -29,7 +27,6 @@ public class MapLoader {
     }
 
     public void Load(string mapname, Action<string, string, object> callback) {
-        this.callback = callback;
         Progress = 0;
 
         // Load RSW
@@ -56,33 +53,25 @@ public class MapLoader {
 
         var compiledGround = GroundLoader.Compile(ground, world.water.level, world.water.waveHeight);
 
-        // Just to approximate, guess we have 2 textures for each models
-        // To get a more linear loading
-        //fileCount = ground.textures.Length + world.models.Count * 3;
-        // account for water
-        //if(compiledGround.waterVertCount > 0) {
-        //    fileCount += 32;
-        //}
-
         LoadGroundTexture(world, compiledGround);
 
         callback.Invoke(mapname, "MAP_WORLD", world);
         callback.Invoke(mapname, "MAP_GROUND", compiledGround);
 
-        var compiledModels = LoadModels(world.models, ground);
+        var compiledModels = LoadModels(world.modelDescriptors, ground);
 
-        callback.Invoke(mapname, "MAP_MODELS", compiledModels.ToArray());
+        callback.Invoke(mapname, "MAP_MODELS", compiledModels);
     }
 
-    private List<RSM.CompiledModel> LoadModels(List<RSW.Model> models, GND ground) {
+    private List<RSM.CompiledModel> LoadModels(List<RSW.ModelDescriptor> modelDescriptors, GND ground) {
         FileManager.InitBatch();
 
         //queue list of models to load
-        for(int i = 0; i < models.Count; i++) {
-            var model = models[i];
-            var path = model.filename = "data/model/" + model.filename;
+        for(int i = 0; i < modelDescriptors.Count; i++) {
+            var model = modelDescriptors[i];
+            model.filename = "data/model/" + model.filename;
 
-            FileManager.Load(path);
+            FileManager.Load(model.filename);
         }
 
         //load models
@@ -90,11 +79,10 @@ public class MapLoader {
 
         //create model instances
         HashSet<RSM> objectsSet = new HashSet<RSM>();
-        for(int i = 0; i < models.Count; i++) {
-            RSM model = (RSM) FileManager.Load(models[i].filename);
+        for(int i = 0; i < modelDescriptors.Count; i++) {
+            RSM model = (RSM) FileManager.Load(modelDescriptors[i].filename);
             if(model != null) {
-                model.filename = models[i].filename;
-                model.CreateInstance(models[i], ground.width, ground.height);
+                model.CreateInstance(modelDescriptors[i]);
                 objectsSet.Add(model);
             }
         }
@@ -107,21 +95,38 @@ public class MapLoader {
         return compiledModels;
     }
 
-    private void LoadModelsTextures(List<RSM.CompiledModel> objects) {
+    private void LoadModelsTextures(List<RSM.CompiledModel> compiledModels) {
+        HashSet<string> textures = new HashSet<string>();
+
+        //enqueue textures
         FileManager.InitBatch();
 
-        //enqueue texture
-        for(int i = 0; i < objects.Count; i++) {
-            //load texture
-            var texture = objects[i].texture;
-            FileManager.Load(texture);
+        //for each model
+        foreach(var model in compiledModels) { 
+            //and each of its nodes
+            foreach(var nodeMesh in model.nodesData) {
+                //load its textures
+                foreach(var textureId in nodeMesh.Keys) {
+                    var texture = "data/texture/" + model.rsm.textures[textureId];
+                    //load texture
+                    if(!textures.Contains(texture)) {
+                        textures.Add(texture);
+                        FileManager.Load(texture);
+                    }
+
+                    if(textures.Count == model.rsm.textures.Length) {
+                        //we found every possible texture, no need to keep looking for new ones
+                        FileManager.EndBatch();
+
+                        return;
+                    }
+                }
+            }
         }
 
         //load textures
         FileManager.EndBatch();
     }
-
-
 
     private void LoadGroundTexture(RSW world, GND.Mesh ground) {
         LinkedList<string> textures = new LinkedList<string>();
@@ -171,9 +176,9 @@ public class MapLoader {
     private class ModelCompiler
     {
         private RSM _obj;
-        private RSM.Model compiledModel;
+        private RSM.CompiledModel compiledModel;
 
-        public RSM.Model CompiledModel { get { return compiledModel; } }
+        public RSM.CompiledModel CompiledModel { get { return compiledModel; } }
         public RSM Source { get { return _obj; } }
 
         public ModelCompiler(RSM obj) {
@@ -214,21 +219,7 @@ public class MapLoader {
         start = Time.realtimeSinceStartup;
         for(int i = 0; i < objects.Length; i++) {
             ModelCompiler compiler = compilerArray[i];
-            var _object = compiler.CompiledModel;
-            var nodes = _object.meshes;
-
-            for(int j = 0; j < nodes.Length; ++j) {
-                var meshes = nodes[j];
-
-                foreach(long index in meshes.Keys) {
-                    models.Add(new RSM.CompiledModel() {
-                        source = compiler.Source,
-                        texture = "data/texture/" + _object.textures[index],
-                        alpha = compiler.Source.alpha,
-                        mesh = (float[]) meshes[index]
-                    });
-                }
-            }
+            models.Add(compiler.CompiledModel);
         }
         delta = Time.realtimeSinceStartup - start;
         Debug.Log("Models gathering time: " + delta);

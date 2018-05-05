@@ -450,9 +450,16 @@ public class Mat4 {
 		return _out;
 	}
 
-
     public void Copy(Mat4 dest) {
         Array.Copy(data, dest.data, data.Length);
+    }
+
+    public Matrix4x4 ToMatrix4x4() {
+        var m = new Matrix4x4();
+        for(int i = 0; i < data.Length; i++) {
+            m[i] = data[i];
+        }
+        return m;
     }
 
     public static Mat4 FromValues(float[] values) {

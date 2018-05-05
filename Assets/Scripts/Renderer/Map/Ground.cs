@@ -33,6 +33,12 @@ public class Ground {
             Vector3 scale = gameObject.transform.localScale;
             scale.Set(1f, -1f, 1f);
             gameObject.transform.localScale = scale;
+
+            //smooth out mesh
+            NormalSolver.RecalculateNormals(mf.mesh, 60);
+
+            //avoid z fighting between ground and models
+            gameObject.transform.Translate(0, -0.002f, 0);
         }
     }
 
@@ -47,7 +53,8 @@ public class Ground {
         
         RenderTexture.active = renderTexture;
 
-        GL.Clear(false, true, Color.grey);//Color.clear); TODO fix ground texture seams when using clear bg color (is it possible?)
+        //GL.Clear(false, true, Color.grey);//Color.clear); TODO fix ground texture seams when using clear bg color (is it possible?)
+        GL.Clear(false, true, Color.clear);
 
         material.SetPass(0);
         GL.PushMatrix();
