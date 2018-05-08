@@ -52,17 +52,27 @@ public class GroundLoader {
     }
 
     private static void ParseLightmaps(GND gnd, BinaryReader data) {
-        uint count = data.ReadULong();
-        int perCellX = data.ReadLong();
-        int perCellY = data.ReadLong();
-        int sizeCell = data.ReadLong();
-        int perCell = perCellX * perCellY * sizeCell;
+        uint lightmapCount = data.ReadULong();
+        int lightmapWidth = data.ReadLong();
+        int lightmapHeight = data.ReadLong();
+        int gridSizeCell = data.ReadLong();
+        int perCell = lightmapWidth * lightmapHeight * gridSizeCell;
+
+        if(perCell != 64) {
+            throw new Exception("Non supported lightmap");
+        }
+
 
         var lightmap = gnd.lightmap = new GND.Lightmap();
-        lightmap.count = count;
-        lightmap.perCell = perCell;
-        lightmap.data = new byte[count * perCell * 4];
-        data.Read(lightmap.data, 0, lightmap.data.Length);
+        lightmap.count = lightmapCount;
+        //lightmap.perCell = perCell;
+        lightmap.data = new byte[lightmapCount][];
+
+        for(int i = 0; i < lightmapCount; i++) {
+            lightmap.data[i] = new byte[256];
+            data.Read(lightmap.data[i], 0, 256);
+        }
+        //data.Read(lightmap.data, 0, lightmap.data.Length);
     }
 
     private static GND.Tile[] ParseTiles(GND gnd, BinaryReader data) {
@@ -84,7 +94,11 @@ public class GroundLoader {
             tile.textureEnd = new Vector4(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
             tile.texture = data.ReadUShort();
             tile.light = data.ReadUShort();
-            tile.color = new byte[] { data.ReadUByte(), data.ReadUByte(), data.ReadUByte(), data.ReadUByte()};
+            var r = data.ReadUByte();
+            var g = data.ReadUByte();
+            var b = data.ReadUByte();
+            var a = data.ReadUByte();
+            tile.color = new byte[] { r, g, b, a };
             tile.texture = (ushort) gnd.textureLookupList[tile.texture];
 
             var start = tile.texture % ATLAS_COLS;
@@ -161,50 +175,36 @@ public class GroundLoader {
         return normals;
     }
 
-    private static byte[] CreateLightmapImage(GND gnd) {
-        var lightmap = gnd.lightmap;
-        var count = lightmap.count;
-        var data = lightmap.data;
-        var perCell = lightmap.perCell;
+    private static Texture2D CreateLightmapImage(GND gnd) {
+        List<byte> image = new List<Byte>();
 
-        var width = Math.Round(Math.Sqrt(count));
-        var height = Math.Ceiling(Math.Sqrt(count));
-        var _width = Math.Pow(2, Math.Ceiling(Math.Log(width * 8) / Math.Log(2)));
-        var _height = Math.Pow(2, Math.Ceiling(Math.Log(height * 8) / Math.Log(2)));
-
-        byte[] image = new byte[(int) (_width * _height * 4)];
-
-        for(int i = 0; i < count; i++) {
-            var pos = i * 4 * perCell;
-            var x = (i % width) * 8;
-            var y = Conversions.SafeDivide(i, width) * 8;
-
-            for(int _x = 0; _x < 8; _x++) {
-                for(int _y = 0; _y < 8; _y++) {
-                    int idx = (int) ((x + _x) + (y + _y) * _width) * 4;
-                    //TODO test removing >> 4 << 4
-                    image[idx + 0] = (byte) (data[pos + perCell + (_x + _y * 8) * 3 + 0] >> 4 << 4); // Posterisation
-                    image[idx + 1] = (byte) (data[pos + perCell + (_x + _y * 8) * 3 + 1] >> 4 << 4); // Posterisation
-                    image[idx + 2] = (byte) (data[pos + perCell + (_x + _y * 8) * 3 + 2] >> 4 << 4); // Posterisation
-                    image[idx + 3] = data[pos + (_x + _y * 8)];
-				}
+        for(int gndY = 0; gndY < gnd.height; gndY++) {
+            for(int lightmapY = 0; lightmapY < 8; lightmapY++) {
+                for(int gndX = 0; gndX < gnd.width; gndX++) {
+                    for(int lightmapX = 0; lightmapX < 8; lightmapX++) {
+                        byte[] color = GetLightmapColor(gnd, gndX, gndY, lightmapX, lightmapY);
+                        byte alpha = GetLightmapBrightness(gnd, gndX, gndY, lightmapX, lightmapY);
+                        image.AddRange(color);
+                        image.Add(alpha);
+                    }
+                }
             }
         }
 
-        Texture2D t = new Texture2D((int) _width, (int) _height, TextureFormat.RGBA32, false);
-        t.LoadRawTextureData(image);
+        Texture2D t = new Texture2D((int) (gnd.width * 8), (int) (gnd.height * 8), TextureFormat.RGBA32, false);
+        t.LoadRawTextureData(image.ToArray());
         t.Apply();
 
-        System.IO.File.WriteAllBytes(Application.dataPath + MapSelector.CurrentMap + "-LightmapImage.png", t.EncodeToPNG());
+        //System.IO.File.WriteAllBytes(Application.dataPath + "/" + MapSelector.CurrentMap + "-LightmapImage.png", t.EncodeToPNG());
 
-        return image;
+        return t;
     }
 
-    private static byte[] CreateTilesColorImage(GND gnd) {
+    private static Texture2D CreateTilesColorImage(GND gnd) {
         byte[] data = new byte[gnd.width * gnd.height * 4];
 
-        for(int y = 0; y < gnd.height; ++y) {
-            for(int x = 0; x < gnd.width; ++x) {
+        for(int y = 0; y < gnd.height; y++) {
+            for(int x = 0; x < gnd.width; x++) {
                 var cell = gnd.surfaces[x + y * gnd.width];
 
                 // Check tile up
@@ -219,53 +219,60 @@ public class GroundLoader {
         t.LoadRawTextureData(data);
         t.Apply();
 
-        System.IO.File.WriteAllBytes(Application.dataPath + MapSelector.CurrentMap + "-TilesColorImage.png", t.EncodeToPNG());
+        //System.IO.File.WriteAllBytes(Application.dataPath + "/" + MapSelector.CurrentMap + "-TilesColorImage.png", t.EncodeToPNG());
 
-        return data;
+        return t;
     }
 
-    private static byte[] CreateShadowmapData(GND gnd) {
-        var _out = new byte[(gnd.width * 8) * (gnd.height * 8)];
-        var data = gnd.lightmap.data;
+    private static byte GetLightmapBrightness(GND gnd, int x, int y, int lightmapX, int lightmapY) {
+        if(x < 0 || y < 0 || x >= gnd.width || y >= gnd.height) {
+            return 0;
+        }
 
-        for(int y = 0; y < gnd.height; y++) {
-            for(int x = 0; x < gnd.width; x++) {
+        var cell = gnd.surfaces[x + y * gnd.width];
+        int tileId = (int) cell.tileUp;
+        if(tileId == -1) {
+            return 0;
+        }
 
-                var cell = gnd.surfaces[x + y * gnd.width];
+        var tile = gnd.tiles[tileId];
+        var lightmap = gnd.lightmap.data[tile.light];
 
-                if(cell.tileUp > -1) {
-                    var index = gnd.tiles[cell.tileUp].light * 4 * gnd.lightmap.perCell;
+        return lightmap[lightmapX + 8 * lightmapY];
+    }
 
-                    for(int i = 0; i < 8; i++) {
-                        for(int j = 0; j < 8; j++) {
-							_out[(x * 8 + i) + (y* 8 + j) * (gnd.width* 8)] = data[index + i + j * 8];
-						}
-					}
-				}
+    private static byte[] GetLightmapColor(GND gnd, int x, int y, int lightmapX, int lightmapY) {
+        if(x < 0 || y < 0 || x >= gnd.width || y >= gnd.height) {
+            return new byte[] { 0, 0, 0 };
+        }
 
-				// If no ground, shadow should be 1.0
-				else {
-					for(int i = 0; i < 8; i++) {
-						for(int j = 0; j < 8; j++) {
-							_out[(x * 8 + i) + (y * 8 + j) * (gnd.width * 8)] = 255;
-						}
-					}
-				}
-			}
-		}
+        var cell = gnd.surfaces[x + y * gnd.width];
+        int tileId = (int) cell.tileUp;
+        if(tileId == -1) {
+            return new byte[] { 0, 0, 0 };
+        }
 
+        var tile = gnd.tiles[tileId];
+        byte[] lightmap = gnd.lightmap.data[tile.light];
 
-        return _out;
+        bool rasterize = true;
+        if(rasterize) {
+            return new byte[] {
+                (byte) (lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 0] >> 4 << 4),
+                (byte) (lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 1] >> 4 << 4),
+                (byte) (lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 2] >> 4 << 4)
+            };
+        } else {
+            return new byte[] {
+                lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 0],
+                lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 1],
+                lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 2]
+            };
+        }
     }
 
     public static GND.Mesh Compile(GND gnd, float WATER_LEVEL, float WATER_HEIGHT) {
         var normals = GetSmoothNormal(gnd);
-
-        var lightmapData = CreateLightmapImage(gnd);
-        var l_count_w = Math.Round(Math.Sqrt(lightmapData.Length));
-        var l_count_h = Math.Ceiling(Math.Sqrt(lightmapData.Length));
-        var l_width = Math.Pow(2, Math.Ceiling(Math.Log(l_count_w * 8) / Math.Log(2)));
-        var l_height = Math.Pow(2, Math.Ceiling(Math.Log(l_count_h * 8) / Math.Log(2)));
 
         var meshData = new List<float>();
         var waterMeshData = new List<float>();
@@ -276,17 +283,17 @@ public class GroundLoader {
                 var cellA = gnd.surfaces[x + y * gnd.width];
                 var h_a = cellA.height;
 
+                float lu1 = x / (float) gnd.width;
+                float lu2 = (x + 1) / (float) gnd.width;
+                float lv1 = y / (float) gnd.height;
+                float lv2 = (y + 1) / (float) gnd.height;
+
                 // Check tile up
                 if(cellA.tileUp > -1) {
                     var tile = gnd.tiles[cellA.tileUp];
 
                     // Check if has texture
                     var n = normals[x + y * gnd.width];
-
-                    float lu1 = (float) ((((tile.light % l_count_w) + 0.125) / l_count_w) * ((l_count_w * 8) / l_width));
-                    float lu2 = (float) ((((tile.light % l_count_w) + 0.875) / l_count_w) * ((l_count_w * 8) / l_width));
-                    float lv1 = (float) ((((Conversions.SafeDivide(tile.light, l_count_w)) + 0.125) / l_count_h) * ((l_count_h * 8) / l_height));
-                    float lv2 = (float) ((((Conversions.SafeDivide(tile.light, l_count_w)) + 0.875) / l_count_h) * ((l_count_h * 8) / l_height));
 
                     meshData.AddRange(new float[] {
                         (x + 0) * 2, h_a[0], (y + 0) * 2, n[0][0], n[0][1], n[0][1], tile.textureStart[0], tile.textureEnd[0], lu1, lv1, (x + 0.5f) / gnd.width, (y + 0.5f) / gnd.height,
@@ -331,20 +338,13 @@ public class GroundLoader {
                     var cellB = gnd.surfaces[x + (y + 1) * gnd.width];
                     var h_b = cellB.height;
 
-                    float lu1 = (float) ((((tile.light % l_count_w) + 0.125) / l_count_w) * ((l_count_w * 8) / l_width));
-                    float lu2 = (float) ((((tile.light % l_count_w) + 0.875) / l_count_w) * ((l_count_w * 8) / l_width));
-                    float lv1 = (float) ((((Conversions.SafeDivide(tile.light, l_count_w)) + 0.125) / l_count_h) * ((l_count_h * 8) / l_height));
-                    float lv2 = (float) ((((Conversions.SafeDivide(tile.light, l_count_w)) + 0.875) / l_count_h) * ((l_count_h * 8) / l_height));
-
                     meshData.AddRange(new float[] {
                         //      vec3 pos           |  vec3 normals     |    vec2 texcoords      |   vec2 lightcoord  |   vec2 tileCoords
                         (x + 0) * 2, h_b[0], (y + 1) * 2, 0.0f, 0.0f, 1.0f, tile.textureStart[2], tile.textureEnd[2], lu1, lv2, 0, 0,
                         (x + 0) * 2, h_a[2], (y + 1) * 2, 0.0f, 0.0f, 1.0f, tile.textureStart[0], tile.textureEnd[0], lu1, lv1, 0, 0,
                         (x + 1) * 2, h_a[3], (y + 1) * 2, 0.0f, 0.0f, 1.0f, tile.textureStart[1], tile.textureEnd[1], lu2, lv1, 0, 0,
                         (x + 1) * 2, h_b[1], (y + 1) * 2, 0.0f, 0.0f, 1.0f, tile.textureStart[3], tile.textureEnd[3], lu2, lv2, 0, 0,
-                        //(x + 0) * 2, h_b[0], (y + 1) * 2, 0.0f, 0.0f, 1.0f, tile.textureStart[2], tile.textureEnd[2], lu1, lv2, 0, 0,
-                        //(x + 1) * 2, h_a[3], (y + 1) * 2, 0.0f, 0.0f, 1.0f, tile.textureStart[1], tile.textureEnd[1], lu2, lv1, 0, 0,
-                        
+
                     });
                 }
 
@@ -354,19 +354,14 @@ public class GroundLoader {
 
                     var cellB = gnd.surfaces[(x + 1) + y * gnd.width];
                     var h_b = cellB.height;
-                    
-                    float lu1 = (float) ((((tile.light % l_count_w) + 0.125) / l_count_w) * ((l_count_w * 8) / l_width));
-                    float lu2 = (float) ((((tile.light % l_count_w) + 0.875) / l_count_w) * ((l_count_w * 8) / l_width));
-                    float lv1 = (float) ((((Conversions.SafeDivide(tile.light, l_count_w)) + 0.125) / l_count_h) * ((l_count_h * 8) / l_height));
-                    float lv2 = (float) ((((Conversions.SafeDivide(tile.light, l_count_w)) + 0.875) / l_count_h) * ((l_count_h * 8) / l_height));
 
                     meshData.AddRange(new float[] {
                         //      vec3 pos           |  vec3 normals    |    vec2 texcoords      |   vec2 lightcoord   |    vec2 tileCoords
-                        (x + 1) * 2, h_a[1], (y + 0) * 2, 1.0f, 0.0f, 0.0f, tile.textureStart[1], tile.textureEnd[1], lu2, lv1, 0, 0,
-                        (x + 1) * 2, h_a[3], (y + 1) * 2, 1.0f, 0.0f, 0.0f, tile.textureStart[0], tile.textureEnd[0], lu1, lv1, 0, 0,
-                        (x + 1) * 2, h_b[0], (y + 0) * 2, 1.0f, 0.0f, 0.0f, tile.textureStart[3], tile.textureEnd[3], lu2, lv2, 0, 0,
+                        (x + 1) * 2, h_a[1], (y + 0) * 2, 1, 0, 0, tile.textureStart[1], tile.textureEnd[1], lu2, lv1, 0, 0,
+                        (x + 1) * 2, h_a[3], (y + 1) * 2, 1, 0, 0, tile.textureStart[0], tile.textureEnd[0], lu1, lv1, 0, 0,
+                        (x + 1) * 2, h_b[0], (y + 0) * 2, 1, 0, 0, tile.textureStart[3], tile.textureEnd[3], lu2, lv2, 0, 0,
                         //(x + 1) * 2, h_b[0], (y + 0) * 2, 1.0f, 0.0f, 0.0f, tile.textureStart[3], tile.textureEnd[3], lu2, lv2, 0, 0,
-                        (x + 1) * 2, h_b[2], (y + 1) * 2, 1.0f, 0.0f, 0.0f, tile.textureStart[2], tile.textureEnd[2], lu1, lv2, 0, 0,
+                        (x + 1) * 2, h_b[2], (y + 1) * 2, 1, 0, 0, tile.textureStart[2], tile.textureEnd[2], lu1, lv2, 0, 0,
                         //(x + 1) * 2, h_a[3], (y + 1) * 2, 1.0f, 0.0f, 0.0f, tile.textureStart[0], tile.textureEnd[0], lu1, lv1, 0, 0
                     });
                 }
@@ -379,9 +374,9 @@ public class GroundLoader {
         mesh.height = gnd.height;
         mesh.textures = gnd.textures;
 
-        mesh.lightmap = lightmapData;
+        mesh.lightmap = CreateLightmapImage(gnd);
         mesh.tileColor = CreateTilesColorImage(gnd);
-        mesh.shadowMap = CreateShadowmapData(gnd);
+        //mesh.shadowMap = CreateShadowmapData(gnd);
 
         mesh.mesh = meshData.ToArray();
         mesh.meshVertCount = meshData.Count / 12;

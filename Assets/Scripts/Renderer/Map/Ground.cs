@@ -1,11 +1,15 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 
 public class Ground {
     private Mesh[] meshes;
     private Texture2D atlas;
+    private Texture2D lightmap;
+    private Texture2D tintmap;
     private Material material = (Material) Resources.Load("GroundMaterial", typeof(Material));
 
     public struct Vertex {
@@ -29,6 +33,8 @@ public class Ground {
             var mr = gameObject.AddComponent<MeshRenderer>();
             mr.material = material;
             mr.material.mainTexture = atlas;
+            mr.material.SetTexture("_Tintmap", tintmap);
+            mr.material.SetTexture("_Lightmap", lightmap);
             
             Vector3 scale = gameObject.transform.localScale;
             scale.Set(1f, -1f, 1f);
@@ -53,7 +59,8 @@ public class Ground {
         
         RenderTexture.active = renderTexture;
 
-        //GL.Clear(false, true, Color.grey);//Color.clear); TODO fix ground texture seams when using clear bg color (is it possible?)
+        //TODO fix ground texture seams when using clear bg color (is it possible?)
+        //^ bleeding textures helped but it's not perfect
         GL.Clear(false, true, Color.clear);
 
         material.SetPass(0);
@@ -74,10 +81,85 @@ public class Ground {
 
         atlas = new Texture2D(width, height, TextureFormat.RGBAFloat, true);
         atlas.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+
+        float start = Time.realtimeSinceStartup;
+        BleedTexture(atlas);
+
+        float end = Time.realtimeSinceStartup;
+        Debug.Log("Gnd texture bleeding time: " + (end - start));
+
         atlas.Apply();
 
         RenderTexture.active = null;
         RenderTexture.ReleaseTemporary(renderTexture);
+
+        lightmap = compiledMesh.lightmap;
+        tintmap = compiledMesh.tileColor;
+    }
+
+    public struct BleedJob : IJob
+    {
+        [ReadOnly]
+        public bool reversed;
+        public NativeArray<Color> pixels;
+
+        public void Execute() {            
+            Color lastNonClear = Color.clear;
+            
+            for(int i = 0; i < pixels.Length; i++) {
+                Color pixel = pixels[i];
+                if(pixel != Color.clear) {
+                    lastNonClear = pixel;
+                } else if(lastNonClear != Color.clear) {
+                    pixels[i] = lastNonClear;
+                }
+            }
+        }
+    }
+
+    private void BleedTexture(Texture2D atlas) {
+        var handles = new List<JobHandle>();
+        var newPixels = new NativeArray<Color>[atlas.height];
+
+        for(int y = 0; y < atlas.height; y++) {
+            Color[] row = atlas.GetPixels(0, y, atlas.width, 1);
+            var array = newPixels[y] = new NativeArray<Color>(row, Allocator.Temp);
+
+            var jobData = new BleedJob();
+            jobData.pixels = array;
+
+            handles.Add(jobData.Schedule());
+        }
+
+        foreach(var handle in handles) {
+            handle.Complete();
+        }
+
+        handles.Clear();
+
+        for(int y = 0; y < atlas.height; y++) {
+            atlas.SetPixels(0, y, atlas.width, 1, newPixels[y].ToArray());
+            newPixels[y].Dispose();
+        }
+
+        for(int x = 0; x < atlas.width; x++) {
+            Color[] row = atlas.GetPixels(x, 0, 1, atlas.height);
+            var array = newPixels[x] = new NativeArray<Color>(row, Allocator.Temp);
+
+            var jobData = new BleedJob();
+            jobData.pixels = array;
+
+            handles.Add(jobData.Schedule());
+        }
+
+        foreach(var handle in handles) {
+            handle.Complete();
+        }
+
+        for(int x = 0; x < atlas.width; x++) {
+            atlas.SetPixels(x, 0, 1, atlas.height, newPixels[x].ToArray());
+            newPixels[x].Dispose();
+        }
     }
 
     public void BuildMesh(GND.Mesh compiledMesh) {
@@ -88,6 +170,8 @@ public class Ground {
             List<int> triangles = new List<int>();
             List<Vector3> normals = new List<Vector3>();
             List<Vector2> uv = new List<Vector2>();
+            List<Vector2> tintUv = new List<Vector2>();
+            List<Vector2> lightmapUv = new List<Vector2>();
 
             float[] vertexData = new float[12];
             int v = 0, h = 0;
@@ -107,6 +191,8 @@ public class Ground {
                     vertices.Add(vertex.position);
                     normals.Add(vertex.normal);
                     uv.Add(vertex.texCoord);
+                    lightmapUv.Add(vertex.lightCoord);
+                    tintUv.Add(vertex.tileCoord);
                 }
 
                 if(ended == 0) {
@@ -137,6 +223,8 @@ public class Ground {
             mesh.triangles = triangles.ToArray();
             mesh.normals = normals.ToArray();
             mesh.uv = uv.ToArray();
+            mesh.uv2 = lightmapUv.ToArray();
+            mesh.uv3 = tintUv.ToArray();
 
             meshes[nMesh] = mesh;
         }

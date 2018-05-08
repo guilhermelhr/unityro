@@ -19,8 +19,8 @@ public class GND  {
         public uint height;
         public string[] textures;
 
-        public byte[] lightmap;
-        public byte[] tileColor;
+        public Texture2D lightmap;
+        public Texture2D tileColor;
         public byte[] shadowMap;
 
         public float[] mesh;
@@ -48,7 +48,7 @@ public class GND  {
     public class Lightmap {
         public int perCell;
         public uint count;
-        public byte[] data;
+        public byte[][] data;
     }
 
     public GND(string version) {

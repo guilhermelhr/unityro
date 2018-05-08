@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class Conversions
 {
-    public static double SafeDivide(double a, double b) {
+    public static float SafeDivide(float a, float b) {
         if(b == 0) {
             return 0;
         } else {
