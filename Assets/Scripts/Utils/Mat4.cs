@@ -475,9 +475,9 @@ public class Mat4 {
     }
 
     public override string ToString() {
-        return "|" + data[0] + " " + data[1] + " " + data[2] + " " + data[3] + "|" + "\n"
-             + "|" + data[4] + " " + data[5] + " " + data[6] + " " + data[7] + "|" + "\n"
-             + "|" + data[8] + " " + data[9] + " " + data[10] + " " + data[11] + "|" + "\n"
-             + "|" + data[12] + " " + data[13] + " " + data[14] + " " + data[15] + "|" + "\n";
+        return "|" + data[0] + " " + data[4] + " " + data[8] + " " + data[12] + "|" + "\n"
+             + "|" + data[1] + " " + data[5] + " " + data[9] + " " + data[13] + "|" + "\n"
+             + "|" + data[2] + " " + data[6] + " " + data[10] + " " + data[14] + "|" + "\n"
+             + "|" + data[3] + " " + data[7] + " " + data[11] + " " + data[15] + "|" + "\n";
     }
 }

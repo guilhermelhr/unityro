@@ -79,6 +79,12 @@ public class Models {
                     } else {
                         mf.mesh.RecalculateNormals();
                     }
+
+                    if(node.rotKeyframes.Count > 0) {
+                        nodeObj.transform.rotation = node.rotKeyframes[0];
+                    } else {
+                        nodeObj.transform.rotation = Quaternion.AngleAxis(node.rotAngle, node.rotAxis);
+                    }
                 }
             }
 
@@ -93,6 +99,13 @@ public class Models {
 
                 RSW.ModelDescriptor descriptor = model.rsm.instances[i];
 
+                instanceObj.transform.Rotate(Vector3.forward, -descriptor.rotation[2]);
+                instanceObj.transform.Rotate(Vector3.right, -descriptor.rotation[0]);
+                instanceObj.transform.Rotate(Vector3.up, descriptor.rotation[1]);
+
+                Vector3 scale = new Vector3(descriptor.scale[0], -descriptor.scale[1], descriptor.scale[2]);
+                instanceObj.transform.localScale = scale;
+
                 //avoid z fighting between models
                 float xRandom = UnityEngine.Random.Range(-0.002f, 0.002f);
                 float yRandom = UnityEngine.Random.Range(-0.002f, 0.002f);
@@ -102,13 +115,7 @@ public class Models {
                 position.x += MapRenderer.width;
                 position.y *= -1;
                 position.z += MapRenderer.height;
-                instanceObj.transform.position = position;
-
-                Vector3 rotation = new Vector3(-descriptor.rotation[0], descriptor.rotation[1], -descriptor.rotation[2]);
-                instanceObj.transform.Rotate(rotation, Space.World);
-
-                Vector3 scale = new Vector3(descriptor.scale[0], -descriptor.scale[1], descriptor.scale[2]);
-                instanceObj.transform.localScale = scale;
+                instanceObj.transform.localPosition = position;
             }
 
             //foreach(var node in model.source.nodes) {
