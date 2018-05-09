@@ -22,9 +22,6 @@ public class Models {
 
         //animsTable = new Hashtable();
 
-        int smooth, others;
-        smooth = others = 0;
-
         foreach(CompiledModel model in models) {
             GameObject modelObj = new GameObject(model.rsm.name);
             modelObj.transform.parent = parent.transform;
@@ -69,15 +66,17 @@ public class Models {
                         }
                     } else {
                         mr.material = material;
+                        if(textureFile.EndsWith("tga")) {
+                            mr.material.shader = Resources.Load("ModelShaderAlpha") as Shader;
+                            mr.material.renderQueue += 1;
+                        }
                     }
                     
                     mr.material.mainTexture = FileManager.Load("data/texture/" + textureFile) as Texture2D;
 
                     if(model.rsm.shadeType == SHADING.SMOOTH) {
-                        smooth++;
                         NormalSolver.RecalculateNormals(mf.mesh, 60);
                     } else {
-                        others++;
                         mf.mesh.RecalculateNormals();
                     }
                 }
