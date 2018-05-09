@@ -120,6 +120,7 @@ public class MapRenderer {
         lightInfo.direction = new Vector3();
 
         Vector3 lightRotation = new Vector3(lightInfo.longitude, lightInfo.latitude, 0);
+        WorldLight.transform.rotation = Quaternion.identity;
         WorldLight.transform.Rotate(lightRotation);
 
         Color ambient = new Color(lightInfo.ambient[0], lightInfo.ambient[1], lightInfo.ambient[2]);
