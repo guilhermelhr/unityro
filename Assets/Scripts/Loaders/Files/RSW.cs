@@ -13,7 +13,7 @@ public class RSW {
     public List<ModelDescriptor> modelDescriptors;
     public GroundInfo ground = new GroundInfo(-500, 500, -500, 500);
     public WaterInfo water = new WaterInfo(0.0f, 0, 0.2f, 2f, 50f, 3, new string[32]);
-    public LightInfo light = new LightInfo(45, 45, new float[]{1f, 1f, 1f}, new float[]{0.3f, 0.3f, 0.3f}, 1f, new Vector3());
+    public LightInfo light = new LightInfo(45, 45, new float[]{ 1f, 1f, 1f }, new float[]{ 0.3f, 0.3f, 0.3f }, 1f, new Vector3());
 
     public RSW(string version) {
         this.version = version;

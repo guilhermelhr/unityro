@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 /// <summary>
 /// Loaders for .rsw file
 /// 

@@ -133,10 +133,6 @@ public class ModelLoader {
         //dynamic or static model
         if(node.rotKeyframes.Count == 0) {
             Mat4.Rotate(node.matrix, node.matrix, node.rotAngle, node.rotAxis);
-        } else {
-            Quaternion q = node.rotKeyframes[0];
-            Vector4 rot = new Vector4(q.x, q.y, q.z, q.w);
-            Mat4.RotateQuat(node.matrix, node.matrix, rot);
         }
 
         Mat4.Scale(node.matrix, node.matrix, node.scale);
@@ -172,6 +168,8 @@ public class ModelLoader {
 
         for(int i = 0, count = nodes.Length; i < count; i++) {
             if(string.Equals(nodes[i].parentName, node.name) && !string.Equals(node.name, node.parentName)) {
+                nodes[i].parent = node;
+                node.children.Add(nodes[i]);
                 CalcNodeBoundingBox(nodes[i], node.matrix);
             }
         }

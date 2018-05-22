@@ -85,6 +85,8 @@ public class RSM {
         }
         public string name;
         public string parentName;
+        public Node parent;
+        public List<Node> children = new List<Node>();
         public RSM model;
         public bool isOnly;
         public Vector3[] mat3;
@@ -102,24 +104,26 @@ public class RSM {
 
         public Mat4 matrix = Mat4.Identity;
 
-        public Dictionary<long, NodeMeshData> Compile() {
-            Dictionary<long, NodeMeshData> mesh = new Dictionary<long, NodeMeshData>();
-
+        public Matrix4x4 GetPositionMatrix() {
             //calculate matrix
             var matrix = Mat4.Identity;
             Mat4.Translate(matrix, matrix, new Vector3(-model.box.center[0], -model.box.max[1], -model.box.center[2]));
             Mat4.Multiply(matrix, matrix, this.matrix);
 
-            if(!isOnly) {
+            return matrix.ToMatrix4x4();
+        }
+
+        public Dictionary<long, NodeMeshData> Compile() {
+            Dictionary<long, NodeMeshData> mesh = new Dictionary<long, NodeMeshData>();
+
+            //calculate offset and rotation matrix
+            var matrix = Mat4.Identity;
+
+            if(parent != null || children.Count > 0) {
                 Mat4.Translate(matrix, matrix, offset);
             }
-            
-            Mat4.Multiply(matrix, matrix, Mat4.FromMat3(mat3, null));
 
-            //multiply with instance matrix (position/rotation/...)
-            //generate normal matrix
-            var modelViewMat = new Mat4();
-            Mat4.Multiply(modelViewMat, Mat4.Identity, matrix);
+            Mat4.Multiply(matrix, matrix, Mat4.FromMat3(mat3, null));
 
             //generate new vertices
             for(int i = 0; i < vertices.Count; i++) {
@@ -128,10 +132,11 @@ public class RSM {
                 float z = vertices[i].z;
 
                 //(vec3)vert = (mat4)modelViewMat * (vec3)vertices[i];
-                Vector3 transformed = new Vector3();
-                transformed.x = modelViewMat[0] * x + modelViewMat[4] * y + modelViewMat[8] * z + modelViewMat[12];
-                transformed.y = modelViewMat[1] * x + modelViewMat[5] * y + modelViewMat[9] * z + modelViewMat[13];
-                transformed.z = modelViewMat[2] * x + modelViewMat[6] * y + modelViewMat[10] * z + modelViewMat[14];
+                Vector3 transformed = new Vector3 {
+                    x = matrix[0] * x + matrix[4] * y + matrix[8] * z + matrix[12],
+                    y = matrix[1] * x + matrix[5] * y + matrix[9] * z + matrix[13],
+                    z = matrix[2] * x + matrix[6] * y + matrix[10] * z + matrix[14]
+                };
 
                 vertices[i] = transformed;
             }
@@ -139,8 +144,9 @@ public class RSM {
             //initialize buffer
             for(int i = 0; i < textures.Length; i++) {
                 //initialize mesh for texture i
-                mesh[textures[i]] = new NodeMeshData();
-                mesh[textures[i]].node = this;
+                mesh[textures[i]] = new NodeMeshData {
+                    node = this
+                };
             }
 
             GenerateMesh(vertices, mesh);

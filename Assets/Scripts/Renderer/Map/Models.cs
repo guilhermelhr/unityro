@@ -7,7 +7,6 @@ using static RSM;
 
 public class Models {
     private List<CompiledModel> models;
-    //private Hashtable animsTable;
 
     private Material material = (Material) Resources.Load("ModelMaterial", typeof(Material));
     private Material material2s = (Material) Resources.Load("ModelMaterial2Sided", typeof(Material));
@@ -16,11 +15,18 @@ public class Models {
         this.models = models;
     }
 
+    public class AnimProperties {
+        public SortedList<int, Quaternion> rotKeyframes;
+        public SortedList<int, Vector3> posKeyframes;
+        public long animLen;
+        public Quaternion baseRotation;
+    }
+
     public void BuildMeshes() {
         GameObject parent = new GameObject("_Models");
         parent.transform.parent = MapRenderer.mapParent.transform;
-
-        //animsTable = new Hashtable();
+        Dictionary<int, AnimProperties> anims = new Dictionary<int, AnimProperties>();
+        int nodeId = 0;
 
         foreach(CompiledModel model in models) {
             GameObject modelObj = new GameObject(model.rsm.name);
@@ -45,13 +51,8 @@ public class Models {
                     //mesh.normals = meshData.normals.ToArray();
                     mesh.uv = meshData.uv.ToArray();
 
-                    GameObject nodeObj;
-                    if(model.nodesData.Length == 1 && nodeData.Count == 1) {
-                        nodeObj = modelObj;
-                    } else {
-                        nodeObj = new GameObject(node.name);
-                        nodeObj.transform.parent = modelObj.transform;
-                    }
+                    GameObject nodeObj = new GameObject(node.name);
+                    nodeObj.transform.parent = modelObj.transform;
 
                     string textureFile = model.rsm.textures[textureId];
 
@@ -80,11 +81,23 @@ public class Models {
                         mf.mesh.RecalculateNormals();
                     }
 
-                    if(node.rotKeyframes.Count > 0) {
-                        nodeObj.transform.rotation = node.rotKeyframes[0];
-                    } else {
-                        nodeObj.transform.rotation = Quaternion.AngleAxis(node.rotAngle, node.rotAxis);
+                    var matrix = node.GetPositionMatrix();
+                    nodeObj.transform.position = matrix.ExtractPosition();
+                    var rotation = matrix.ExtractRotation();
+                    nodeObj.transform.rotation = rotation;
+                    nodeObj.transform.localScale = matrix.ExtractScale();
+
+                    if(node.posKeyframes.Count > 0 || node.rotKeyframes.Count > 0) {
+                        nodeObj.AddComponent<NodeAnimation>().nodeId = nodeId;
+                        anims.Add(nodeId, new AnimProperties() {
+                            posKeyframes = node.posKeyframes,
+                            rotKeyframes = node.rotKeyframes,
+                            animLen = model.rsm.animLen,
+                            baseRotation = rotation
+                        });
                     }
+                    
+                    nodeId++;
                 }
             }
 
@@ -92,9 +105,15 @@ public class Models {
 
             //instantiate model
             for(int i = 0; i < model.rsm.instances.Count; i++) {
-                var instanceObj = UnityEngine.Object.Instantiate(modelObj);
+                GameObject instanceObj;
+                if(i == model.rsm.instances.Count - 1) {
+                    //last instance
+                    instanceObj = modelObj;
+                } else {
+                    instanceObj = UnityEngine.Object.Instantiate(modelObj);
+                }
+                
                 instanceObj.transform.parent = parent.transform;
-                instanceObj.SetActive(true);
                 instanceObj.name += "[" + i + "]";
 
                 RSW.ModelDescriptor descriptor = model.rsm.instances[i];
@@ -115,42 +134,24 @@ public class Models {
                 position.x += MapRenderer.width;
                 position.y *= -1;
                 position.z += MapRenderer.height;
-                instanceObj.transform.localPosition = position;
-            }
+                instanceObj.transform.position = position;
 
-            //foreach(var node in model.source.nodes) {
-            //    if(node.posKeyframes.Count > 0 || node.rotKeyframes.Count > 0) {
-            //        animsTable.Add(gameObject, node);
-            //        break;
-            //    }
-            //}
+                //setup animations
+                var animComponents = instanceObj.GetComponentsInChildren<NodeAnimation>();
+                foreach(var animComponent in animComponents) {
+                    var properties = anims[animComponent.nodeId];
+                    animComponent.Initialize(properties);
+                }
+
+                instanceObj.SetActive(true);
+            }
             
         }
+
+        anims.Clear();
     }
 
     public void Render() {
-        //animate keyframed objects
-
-        //int keyframe = Mathf.FloorToInt(Time.fixedTime * 1000);
-
-        /*foreach(DictionaryEntry entry in animsTable) {
-            GameObject gameObject = entry.Key as GameObject;
-            Node node = entry.Value as Node;
-
-            for(int i = node.rotKeyframes.Count - 1; i >= 0; i--) {
-                var key = node.rotKeyframes.Keys[i];
-                if(keyframe % node.main.animLen >= key) {
-                    Quaternion rot = node.rotKeyframes[key];
-                    Vector3 center = gameObject.GetComponent<MeshFilter>().mesh.bounds.center;
-
-                    float angle;
-                    Vector3 axis;
-                    rot.ToAngleAxis(out angle, out axis);
-
-                    gameObject.transform.RotateAround(center, axis, (angle / (node.main.animLen * Time.deltaTime)));
-                    break;
-                }
-            }
-        }*/
+        
     }
 }
