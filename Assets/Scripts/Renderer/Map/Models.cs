@@ -16,10 +16,12 @@ public class Models {
     }
 
     public class AnimProperties {
-        public SortedList<int, Quaternion> rotKeyframes;
-        public SortedList<int, Vector3> posKeyframes;
-        public long animLen;
-        public Quaternion baseRotation;
+        //animation
+        internal SortedList<int, Quaternion> rotKeyframes;
+        internal SortedList<int, Vector3> posKeyframes;
+        internal long animLen;
+        internal Quaternion baseRotation;
+        internal bool isChild;
     }
 
     public void BuildMeshes() {
@@ -87,16 +89,22 @@ public class Models {
                     nodeObj.transform.rotation = rotation;
                     nodeObj.transform.localScale = matrix.ExtractScale();
 
+                    var properties = nodeObj.AddComponent<NodeProperties>();
+                    properties.nodeId = nodeId;
+                    properties.mainName = model.rsm.mainNode.name;
+                    properties.parentName = node.parentName;
+
                     if(node.posKeyframes.Count > 0 || node.rotKeyframes.Count > 0) {
                         nodeObj.AddComponent<NodeAnimation>().nodeId = nodeId;
                         anims.Add(nodeId, new AnimProperties() {
                             posKeyframes = node.posKeyframes,
                             rotKeyframes = node.rotKeyframes,
                             animLen = model.rsm.animLen,
-                            baseRotation = rotation
+                            baseRotation = rotation,
+                            isChild = properties.isChild
                         });
                     }
-                    
+                                        
                     nodeId++;
                 }
             }
@@ -135,6 +143,15 @@ public class Models {
                 position.y *= -1;
                 position.z += MapRenderer.height;
                 instanceObj.transform.position = position;
+
+                //setup hierarchy
+                var propertiesComponents = instanceObj.GetComponentsInChildren<NodeProperties>();
+                foreach(var properties in propertiesComponents) {
+                    if(properties.isChild) {
+                        var nodeParent = instanceObj.transform.FindRecursive(properties.parentName);
+                        properties.transform.parent = nodeParent;
+                    }
+                }
 
                 //setup animations
                 var animComponents = instanceObj.GetComponentsInChildren<NodeAnimation>();

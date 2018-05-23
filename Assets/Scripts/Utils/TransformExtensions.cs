@@ -31,4 +31,20 @@ public static class MatrixExtensions
         scale.z = new Vector4(matrix.m02, matrix.m12, matrix.m22, matrix.m32).magnitude;
         return scale;
     }
+
+    public static Transform FindRecursive(this Transform parent, string name) {
+        var result = parent.Find(name);
+        if(result != null) {
+            return result;
+        }
+
+        foreach(Transform child in parent) {
+            result = child.FindRecursive(name);
+            if(result != null) {
+                return result;
+            }
+        }
+
+        return null;
+    }
 }
