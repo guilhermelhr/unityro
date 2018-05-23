@@ -14,7 +14,7 @@ Shader "Custom/ModelShaderClipped" {
 		LOD 200
 		
 		CGPROGRAM
-		#pragma surface surf Lambert
+		#pragma surface surf Lambert addshadow
 
 		sampler2D _MainTex;
 
@@ -33,5 +33,5 @@ Shader "Custom/ModelShaderClipped" {
 		ENDCG
 	}
 
-	Fallback "Mobile/VertexLit"
+	Fallback "Transparent/VertexLit"
 }

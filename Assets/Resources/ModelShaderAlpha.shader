@@ -14,7 +14,7 @@ Shader "Custom/ModelShaderAlpha" {
 		LOD 200
 		
 		CGPROGRAM
-		#pragma surface surf Lambert alpha
+		#pragma surface surf Lambert alpha addshadow
 
 		sampler2D _MainTex;
 

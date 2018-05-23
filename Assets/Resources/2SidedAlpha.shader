@@ -12,11 +12,12 @@ Shader "Custom/2SidedAlpha" {
 	SubShader{
 		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" "IgnoreProjector" = "True" "PreviewType" = "Plane" }
 		LOD 200
-		Cull Off
+		Blend SrcAlpha OneMinusSrcAlpha
+		Cull Off		
 
 		CGPROGRAM
 
-		#pragma surface surf Lambert alpha
+		#pragma surface surf Lambert alpha addshadow
 
 		sampler2D _MainTex;
 
@@ -33,5 +34,5 @@ Shader "Custom/2SidedAlpha" {
 		ENDCG
 	}
 
-	Fallback "Mobile/VertexLit"
+	Fallback "Transparent/VertexLit"
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using ProceduralLevel.PowerConsole.View;
+using System.Collections;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -17,10 +18,10 @@ public class Core : MonoBehaviour {
         get { return mapRenderer; }
     }
 
-    public Dropdown mapDropdown;
     public string mapname;
     public AudioMixerGroup soundsMixerGroup;
     public Light worldLight;
+    public ConsoleView ConsoleView;
 
     private Hashtable configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
@@ -33,9 +34,11 @@ public class Core : MonoBehaviour {
         Debug.Log("GRF loaded, filetable contains " + FileManager.Grf.files.Count + " files.");
 
         Debug.Log("Building map list...");
-        MapSelector selector = new MapSelector(FileManager.Grf);
-        selector.buildDropdown(mapDropdown);
-        Debug.Log("Map list has " + selector.GetMapList().Count + " entries.");
+        MapSelector selector = new MapSelector(ConsoleView.Console, "map", "change map");
+        selector.LoadMapList(FileManager.Grf);
+        Debug.Log("Map list has " + selector.GetMapList().Length + " entries.");
+
+        ConsoleView.Console.AddCommand(selector);
 
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
@@ -78,10 +81,7 @@ public class Core : MonoBehaviour {
     }
 
     void Update() {
-        mapDropdown.gameObject.SetActive(Cursor.lockState != CursorLockMode.Locked);
-        if(mapRenderer.Ready) {
-            mapRenderer.Render();
-        }
+
     }
 
     public void OnPostRender() {

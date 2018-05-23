@@ -38,8 +38,8 @@ public class FreeflyCam : MonoBehaviour
     private float speed = 0;
 
     void Start() {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         targetPos = transform.position;
         targetSpeed = normalMoveSpeed;
