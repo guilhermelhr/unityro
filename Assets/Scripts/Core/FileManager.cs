@@ -116,6 +116,26 @@ public class FileManager {
                         return null;
                     }
                 }
+            case "spr":
+                using(var br = ReadSync(file)) {
+                    if(br != null) {
+                        SPR spr = SpriteLoader.Load(br);
+                        spr.SwitchToRGBA();
+                        spr.Compile();
+                        return spr;
+                    } else {
+                        return null;
+                    }
+                }
+            case "str":
+                using(var br = ReadSync(file)) {
+                    if(br != null) {
+                        STR str = EffectLoader.Load(br);
+                        return str;
+                    } else {
+                        return null;
+                    }
+                }
             // Binary
             case "gat":
                 using(var br = ReadSync(file))
@@ -142,8 +162,6 @@ public class FileManager {
                 
             case "act":
                 //return new Action(ReadSync(file)).compile();
-            case "str":
-                //return new Str(ReadSync(file));
                 Debug.LogWarning("Can't read " + file + "\nLoader for " + ext + " is not implemented");
                 break;
             default:

@@ -52,6 +52,12 @@ public class BinaryReader : MemoryStream {
         return Convert.ToByte(ReadByte());
     }
 
+    public byte[] ReadUBytes(int count) {
+        byte[] data = new byte[count];
+        Read(data, 0, count);
+        return data;
+    }
+
     public uint ReadULong() {
         byte[] bulong = new byte[4];
         Read(bulong, 0, 4);
@@ -78,5 +84,12 @@ public class BinaryReader : MemoryStream {
         Read(bushort, 0, 2);
 
         return BitConverter.ToUInt16(bushort, 0);
+    }
+
+    public short ReadShort() {
+        byte[] bshort = new byte[2];
+        Read(bshort, 0, 2);
+
+        return BitConverter.ToInt16(bshort, 0);
     }
 }
