@@ -50,7 +50,7 @@ public class WAVLoader
         //    samples /= 2;        // 4 bytes per sample (16 bit stereo)
 
         int bytesPerSample = System.BitConverter.ToInt16(wav, 34) / 8;
-        int samples = (wav.Length - pos) / (bytesPerSample * channels);
+        int samples = (wav.Length - pos) / Mathf.Max(bytesPerSample * channels, 1);
 
         file.samples = samples;
 

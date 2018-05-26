@@ -252,7 +252,15 @@ public class ModelLoader {
         int rkfCount = data.ReadLong();
 
         for(int i = 0; i < rkfCount; i++) {
-            node.rotKeyframes.Add(data.ReadLong(), new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat()));
+            int time = data.ReadLong();
+            Quaternion quat = new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
+
+            if(!node.rotKeyframes.ContainsKey(time)) {
+                //some models have multiple keyframes with the
+                //same timestamp, here we just keep the first one
+                //and throw out the rest.
+                node.rotKeyframes.Add(time, quat);
+            }
         }
 
         node.box = new RSM.Box();

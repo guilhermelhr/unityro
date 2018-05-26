@@ -1,17 +1,14 @@
 ﻿
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static RSM;
 
 public class Models {
-    private List<CompiledModel> models;
+    private List<RSM.CompiledModel> models;
 
     private Material material = (Material) Resources.Load("ModelMaterial", typeof(Material));
     private Material material2s = (Material) Resources.Load("ModelMaterial2Sided", typeof(Material));
 
-    public Models(List<CompiledModel> models) {
+    public Models(List<RSM.CompiledModel> models) {
         this.models = models;
     }
 
@@ -30,15 +27,15 @@ public class Models {
         Dictionary<int, AnimProperties> anims = new Dictionary<int, AnimProperties>();
         int nodeId = 0;
 
-        foreach(CompiledModel model in models) {
+        foreach(RSM.CompiledModel model in models) {
             GameObject modelObj = new GameObject(model.rsm.name);
             modelObj.transform.parent = parent.transform;
 
             foreach(var nodeData in model.nodesData) {
                 foreach(var meshesByTexture in nodeData) {
                     long textureId = meshesByTexture.Key;
-                    NodeMeshData meshData = meshesByTexture.Value;
-                    Node node = meshData.node;
+                    RSM.NodeMeshData meshData = meshesByTexture.Value;
+                    RSM.Node node = meshData.node;
 
                     for(int i = 0; i < meshData.vertices.Count; i += 3) {
                         meshData.triangles.AddRange(new int[] {
@@ -77,7 +74,7 @@ public class Models {
                     
                     mr.material.mainTexture = FileManager.Load("data/texture/" + textureFile) as Texture2D;
 
-                    if(model.rsm.shadeType == SHADING.SMOOTH) {
+                    if(model.rsm.shadeType == RSM.SHADING.SMOOTH) {
                         NormalSolver.RecalculateNormals(mf.mesh, 60);
                     } else {
                         mf.mesh.RecalculateNormals();

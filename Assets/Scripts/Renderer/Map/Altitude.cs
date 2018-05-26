@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using static AltitudeLoader;
 /// <summary>
 /// Altiture renderer
 /// 
@@ -70,7 +69,7 @@ public class Altitude {
 
         /* DIFF robrowser adds 0.5 to each coordinate here */
 
-        Cell cell = GetCell(x, y);
+        AltitudeLoader.Cell cell = GetCell(x, y);
 
         x = Math.Floor(x);
         y = Math.Floor(y);
