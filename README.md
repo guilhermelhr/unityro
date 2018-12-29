@@ -34,10 +34,6 @@ Sky backdrops
 
 ## What's next
 
-Fixing ground texture seams if possible
-
-![](https://i.imgur.com/YMweRpT.png)
-
 Figure out a way to display lights (Unity doesn't like hundreds of point lights added at runtime).
 The game itself probably uses billboard overlays to fake them.
 
