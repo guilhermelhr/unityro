@@ -12,6 +12,8 @@ Realtime lighting and shadows
 
 Baked lightmaps
 
+![](https://i.imgur.com/i49WTg1.jpg)
+
 Model animations
 
 ![](https://thumbs.gfycat.com/SilkyWaryArkshell-size_restricted.gif)
@@ -25,6 +27,8 @@ Sky backdrops
 ![](https://thumbs.gfycat.com/SpiritedLoneCormorant-size_restricted.gif)
 
 3D SFX
+
+![](https://i.imgur.com/ZEO6FiO.jpg)
 
 ## What's next
 
