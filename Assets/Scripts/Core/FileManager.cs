@@ -122,6 +122,7 @@ public class FileManager {
                         SPR spr = SpriteLoader.Load(br);
                         spr.SwitchToRGBA();
                         spr.Compile();
+                        spr.filename = file;
                         return spr;
                     } else {
                         return null;

@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.U2D;
 using UnityEngine.UI;
 
 public class Core : MonoBehaviour {
@@ -39,6 +40,14 @@ public class Core : MonoBehaviour {
 
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
+
+        SPR spr = FileManager.Load("data/sprite/npc/4_bb_poring.spr") as SPR;
+        GameObject obj = new GameObject(spr.filename);
+        obj.AddComponent<SPRRenderer>().setSPR(spr, 0, 3);
+
+        SPR spr2 = FileManager.Load("data/sprite/homun/lif_h.spr") as SPR;
+        GameObject obj2 = new GameObject(spr2.filename);
+        obj2.AddComponent<SPRRenderer>().setSPR(spr2, 0, 3);
 
         if(!string.IsNullOrEmpty(mapname)) {
             selector.ChangeMap(mapname);

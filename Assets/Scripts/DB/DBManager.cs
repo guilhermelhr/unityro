@@ -19,6 +19,10 @@ public class DBManager {
     private static Hashtable msgStringTable = new Hashtable();
     private static Hashtable mapAlias = new Hashtable();
 
+    internal static int getWeaponAction(object weapon, object job, object sex) {
+        throw new NotImplementedException();
+    }
+
     public static Hashtable MapTable {
         get {
             return mapTable;

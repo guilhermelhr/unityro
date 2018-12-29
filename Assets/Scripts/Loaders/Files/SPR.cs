@@ -8,6 +8,7 @@ public class SPR
     public static int TYPE_PAL = 0;
     public static int TYPE_RGBA = 1;
 
+    public string filename;
     public string version;
     public ushort indexedCount;
     public ushort _indexedCount;
@@ -113,5 +114,22 @@ public class SPR
             oldRgbaIndex = _indexedCount;
             compiled = true;
         }
+    }
+
+    public Sprite[] GetSprites() {
+        if(!compiled) {
+            throw new System.Exception("SPR.GetAtlas: SPR is not compiled");
+        }
+
+        Sprite[] sprites = new Sprite[frames.Length];
+        for(int i = 0; i < frames.Length; i++) {
+            Frame frame = frames[i];
+            Texture2D texture = new Texture2D(frame.width, frame.height, TextureFormat.RGBA32, false);
+            texture.LoadRawTextureData(frame.data);
+            texture.Apply();
+            sprites[i] = Sprite.Create(texture, new Rect(0, 0, frame.width, frame.height), Vector2.zero);
+        }
+
+        return sprites;
     }
 }

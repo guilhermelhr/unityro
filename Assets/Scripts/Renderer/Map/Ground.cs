@@ -59,8 +59,6 @@ public class Ground {
         
         RenderTexture.active = renderTexture;
 
-        //TODO fix ground texture seams when using clear bg color (is it possible?)
-        //^ bleeding textures helped but it's not perfect
         GL.Clear(false, true, Color.clear);
 
         material.SetPass(0);
@@ -69,10 +67,10 @@ public class Ground {
 
         for(int i = 0; i < count; i++) {
             var texture = FileManager.Load(textures[i]) as Texture2D;
-            var x = (int) (i % _width) * 258;
-            var y = (int) Math.Floor(i / _width) * 258;
+            var x = (float) (i % _width) * 258;
+            var y = (float) Math.Floor(i / _width) * 258;
 
-            Graphics.DrawTexture(new Rect(x, y, 258, 258), texture);
+            Graphics.DrawTexture(new Rect(x, y, 264, 264), texture);
             Graphics.DrawTexture(new Rect(x + 1, y + 1, 256, 256), texture);
         }
 
@@ -80,14 +78,10 @@ public class Ground {
         GL.End();
 
         atlas = new Texture2D(width, height, TextureFormat.RGBAFloat, true);
+        atlas.wrapMode = TextureWrapMode.Clamp;
         atlas.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-
-        float start = Time.realtimeSinceStartup;
-        BleedTexture(atlas);
-
-        float end = Time.realtimeSinceStartup;
-        Debug.Log("Gnd texture bleeding time: " + (end - start));
-
+        atlas.mipMapBias = -0.5f;
+        
         atlas.Apply();
 
         RenderTexture.active = null;
@@ -95,71 +89,6 @@ public class Ground {
 
         lightmap = compiledMesh.lightmap;
         tintmap = compiledMesh.tileColor;
-    }
-
-    public struct BleedJob : IJob
-    {
-        [ReadOnly]
-        public bool reversed;
-        public NativeArray<Color> pixels;
-
-        public void Execute() {            
-            Color lastNonClear = Color.clear;
-            
-            for(int i = 0; i < pixels.Length; i++) {
-                Color pixel = pixels[i];
-                if(pixel != Color.clear) {
-                    lastNonClear = pixel;
-                } else if(lastNonClear != Color.clear) {
-                    pixels[i] = lastNonClear;
-                }
-            }
-        }
-    }
-
-    private void BleedTexture(Texture2D atlas) {
-        var handles = new List<JobHandle>();
-        var newPixels = new NativeArray<Color>[atlas.height];
-
-        for(int y = 0; y < atlas.height; y++) {
-            Color[] row = atlas.GetPixels(0, y, atlas.width, 1);
-            var array = newPixels[y] = new NativeArray<Color>(row, Allocator.Temp);
-
-            var jobData = new BleedJob();
-            jobData.pixels = array;
-
-            handles.Add(jobData.Schedule());
-        }
-
-        foreach(var handle in handles) {
-            handle.Complete();
-        }
-
-        handles.Clear();
-
-        for(int y = 0; y < atlas.height; y++) {
-            atlas.SetPixels(0, y, atlas.width, 1, newPixels[y].ToArray());
-            newPixels[y].Dispose();
-        }
-
-        for(int x = 0; x < atlas.width; x++) {
-            Color[] row = atlas.GetPixels(x, 0, 1, atlas.height);
-            var array = newPixels[x] = new NativeArray<Color>(row, Allocator.Temp);
-
-            var jobData = new BleedJob();
-            jobData.pixels = array;
-
-            handles.Add(jobData.Schedule());
-        }
-
-        foreach(var handle in handles) {
-            handle.Complete();
-        }
-
-        for(int x = 0; x < atlas.width; x++) {
-            atlas.SetPixels(x, 0, 1, atlas.height, newPixels[x].ToArray());
-            newPixels[x].Dispose();
-        }
     }
 
     public void BuildMesh(GND.Mesh compiledMesh) {

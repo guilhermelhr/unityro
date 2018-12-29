@@ -41,7 +41,7 @@ public class EffectLoader
             var animCount = data.ReadLong();
             layer.animations = new STR.Animation[animCount];
             for(int j = 0; j < animCount; j++) {
-                STR.Animation animation = layer.animations[j] = new STR.Animation() {
+                layer.animations[j] = new STR.Animation() {
                     frame = data.ReadLong(),
                     type = data.ReadULong(),
                     position = new Vector2(data.ReadFloat(), data.ReadFloat()),

@@ -5,7 +5,7 @@ public class SpriteLoader
 {
     public static SPR Load(BinaryReader data) {
         var header = data.ReadBinaryString(2);
-        if(!header.Equals(STR.Header)) {
+        if(!header.Equals(SPR.Header)) {
             throw new Exception("SpriteLoader.Load: Header (" + header + ") is not \"SP\"");
         }
 
