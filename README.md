@@ -7,6 +7,8 @@ At the moment, UnityRO is fully functional as a map viewer.
 
 Dynamic GRF loading
 
+![](https://thumbs.gfycat.com/PerkyEnlightenedDuck-size_restricted.gif)
+
 Realtime lighting and shadows
 ![](https://thumbs.gfycat.com/LargeWarlikeFinch-size_restricted.gif)
 
