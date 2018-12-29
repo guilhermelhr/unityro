@@ -1,5 +1,5 @@
 # UnityRO
-Ragnarok Online was released in 2002, thus it's engine is severely outdate.
+Ragnarok Online was released in 2002, thus it's engine is severely outdated.
 This project aims to port some of it's functionalities to a modern engine, Unity.
 At the moment, UnityRO is fully functional as a map viewer.
 
