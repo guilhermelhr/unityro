@@ -5,7 +5,7 @@ At the moment, UnityRO is fully functional as a map viewer.
 
 ## Current Features
 
-Dynamic GRF loading
+Runtime threaded GRF loading
 
 ![](https://thumbs.gfycat.com/PerkyEnlightenedDuck-size_restricted.gif)
 
@@ -39,8 +39,8 @@ The game itself probably uses billboard overlays to fake them.
 
 ## How to use
 
-I'll be releasing a standalone executable soon™
+I'll be releasing a standalone executable soon™.
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 - see the [LICENSE](LICENSE) file for details
+This project is licensed under the GNU Affero General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
