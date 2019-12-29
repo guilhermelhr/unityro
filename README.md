@@ -3,6 +3,8 @@ Ragnarok Online was released in 2002, thus its engine is severely outdated.
 This project aims to port some of its functionalities to a modern engine, Unity.
 At the moment, UnityRO is fully functional as a map viewer.
 
+Checkout this flyby video of xmas https://youtu.be/utWuTgOIf_4 .
+
 ## Current Features
 
 Runtime threaded GRF loading
