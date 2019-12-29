@@ -39,7 +39,8 @@ The game itself probably uses billboard overlays to fake them.
 
 ## How to use
 
-I'll be releasing a standalone executable soon™.
+Download executable or Unity package [here](https://github.com/guilhermelhr/unityro/releases/).
+Edit config.txt to point to your GRF file.
 
 ## License
 
