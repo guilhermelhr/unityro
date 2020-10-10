@@ -88,8 +88,8 @@ public class MapRenderer {
             //initialize clouds
             sky.Initialize(mapname);
         } else {
-            //no weather effects, set sky to black
-            Camera.main.backgroundColor = Color.black;
+            //no weather effects, set sky color to blueish
+            //Camera.main.backgroundColor = new Color(0.4f, 0.6f, 0.8f, 1.0f);
         }
 
         //add lights
