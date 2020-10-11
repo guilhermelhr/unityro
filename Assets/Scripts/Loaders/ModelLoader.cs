@@ -32,7 +32,7 @@ public class ModelLoader {
         string version = Convert.ToString(data.ReadUByte());
         string subversion = Convert.ToString(data.ReadUByte());
         version += "." + subversion;
-        double dversion = double.Parse(version) / 10;
+        double dversion = double.Parse(version, CultureInfo.InvariantCulture);
 
         rsm.version = version;
         rsm.animLen = data.ReadLong();
