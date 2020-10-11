@@ -34,7 +34,6 @@ public class ModelLoader {
         string subversion = Convert.ToString(data.ReadByte());
         version += "." + subversion;
         double dversion = double.Parse(version, CultureInfo.InvariantCulture);
-
         rsm.version = version;
         rsm.animLen = data.ReadLong();
         rsm.shadeType = (RSM.SHADING)data.ReadLong();
