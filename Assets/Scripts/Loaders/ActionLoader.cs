@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Globalization;
 using UnityEngine;
 
 public class ActionLoader
@@ -14,7 +15,7 @@ public class ActionLoader
         string version = Convert.ToString(data.ReadUByte());
         version += "." + subversion;
 
-        double dversion = double.Parse(version);
+        double dversion = double.Parse(version, CultureInfo.InvariantCulture);
 
         ACT act = new ACT();
         act.version = version;
@@ -69,7 +70,7 @@ public class ActionLoader
     private static ACT.Animation ReadLayers(ACT act, BinaryReader data) {
         var count = data.ReadULong();
         var layers = new ACT.Layer[count];
-        var version = double.Parse(act.version);
+        var version = double.Parse(act.version, CultureInfo.InvariantCulture);
 
         for(int i = 0; i < count; i++) {
             var layer = layers[i] = new ACT.Layer() {

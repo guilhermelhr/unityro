@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 /// <summary>
 /// Loaders for .rsw file
@@ -24,7 +25,7 @@ public class WorldLoader {
         string version = Convert.ToString(data.ReadByte());
         string subversion = Convert.ToString(data.ReadByte());
         version += "." + subversion;
-        double dversion = double.Parse(version);
+        double dversion = double.Parse(version, CultureInfo.InvariantCulture);
 
         //check for valid .rsw file
         if(!string.Equals(header, RSW.Header)) {

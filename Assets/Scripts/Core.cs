@@ -22,6 +22,7 @@ public class Core : MonoBehaviour {
     public AudioMixerGroup soundsMixerGroup;
     public Light worldLight;
     public Dropdown mapDropdown;
+    public GameObject cameraTarget;
 
     private Hashtable configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
@@ -42,14 +43,9 @@ public class Core : MonoBehaviour {
         MapRenderer.WorldLight = worldLight;
 
         SPR spr = FileManager.Load("data/sprite/npc/4_bb_poring.spr") as SPR;
-        GameObject obj = new GameObject(spr.filename);
-        obj.AddComponent<SPRRenderer>().setSPR(spr, 0, 3);
+        cameraTarget.AddComponent<SPRRenderer>().setSPR(spr, 0, 3);
 
-        SPR spr2 = FileManager.Load("data/sprite/homun/lif_h.spr") as SPR;
-        GameObject obj2 = new GameObject(spr2.filename);
-        obj2.AddComponent<SPRRenderer>().setSPR(spr2, 0, 3);
-
-        if(!string.IsNullOrEmpty(mapname)) {
+        if (!string.IsNullOrEmpty(mapname)) {
             selector.ChangeMap(mapname);
         }
     }

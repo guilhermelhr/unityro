@@ -4,8 +4,8 @@ using UnityEngine;
 public class NodeAnimation : MonoBehaviour {
     public int nodeId;
 
-    private SortedList<int, Quaternion> rotKeyframes;
-    private SortedList<int, Vector3> posKeyframes;
+    private RSM.RotationKeyframe[] rotKeyframes;
+    private RSM.PositionKeyframe[] posKeyframes;
     public long animLen;
     private Quaternion baseRotation;
 
@@ -23,12 +23,12 @@ public class NodeAnimation : MonoBehaviour {
         animLen = properties.animLen;
         baseRotation = properties.baseRotation;
 
-        if(rotKeyframes.Count > 0) {
-            lastRotKeyframe = rotKeyframes.Keys[rotKeyframes.Count - 1];
+        if(rotKeyframes.Length > 0) {
+            lastRotKeyframe = (int)rotKeyframes[rotKeyframes.Length - 1].frame;
         }
 
-        if(posKeyframes.Count > 0) {
-            lastPosKeyframe = posKeyframes.Keys[posKeyframes.Count - 1];
+        if(posKeyframes.Length > 0) {
+            lastPosKeyframe = (int)posKeyframes[posKeyframes.Length - 1].frame;
         }
 
         isChild = properties.isChild;
@@ -36,11 +36,11 @@ public class NodeAnimation : MonoBehaviour {
 
     //this was based on Borf's BroLib https://github.com/Borf/browedit/blob/master/brolib/BroLib/Rsm.cpp#L134
     void Update () {
-        if(rotKeyframes != null && rotKeyframes.Count > 0) {
+        if(rotKeyframes != null && rotKeyframes.Length > 0) {
             UpdateRotation();
         }
 
-        if(posKeyframes != null && posKeyframes.Count > 0) {
+        if(posKeyframes != null && posKeyframes.Length > 0) {
             UpdatePosition();
         }
     }
@@ -49,8 +49,8 @@ public class NodeAnimation : MonoBehaviour {
         int tick = (int) (Time.realtimeSinceStartup * 1000) % lastRotKeyframe;
 
         int current = 0;
-        for(int i = 0; i < rotKeyframes.Count; i++) {
-            var key = rotKeyframes.Keys[i];
+        for(int i = 0; i < rotKeyframes.Length; i++) {
+            var key = rotKeyframes[i].frame;
             if(key > tick) {
                 current = Mathf.Max(i - 1, 0);
                 break;
@@ -58,16 +58,16 @@ public class NodeAnimation : MonoBehaviour {
         }
 
         int next = current + 1;
-        if(next >= rotKeyframes.Count) {
+        if(next >= rotKeyframes.Length) {
             next = 0;
         }
 
-        int currentTime = rotKeyframes.Keys[current];
-        int nextTime = rotKeyframes.Keys[next];
+        int currentTime = (int)rotKeyframes[current].frame;
+        int nextTime = (int)rotKeyframes[next].frame;
 
         float interval = (tick - currentTime) / ((float) (nextTime - currentTime));
 
-        Quaternion quat = Quaternion.Lerp(rotKeyframes[currentTime], rotKeyframes[nextTime], interval);
+        Quaternion quat = Quaternion.Lerp(rotKeyframes[currentTime].q, rotKeyframes[nextTime].q, interval);
 
         if(isChild) {
             transform.localRotation = quat;
@@ -80,8 +80,8 @@ public class NodeAnimation : MonoBehaviour {
         int tick = (int) (Time.realtimeSinceStartup * 1000) % lastPosKeyframe;
 
         int current = 0;
-        for(int i = 0; i < posKeyframes.Count; i++) {
-            var key = posKeyframes.Keys[i];
+        for(int i = 0; i < posKeyframes.Length; i++) {
+            var key = posKeyframes[i].frame;
             if(key > tick) {
                 current = Mathf.Max(i - 1, 0);
                 break;
@@ -89,16 +89,16 @@ public class NodeAnimation : MonoBehaviour {
         }
 
         int next = current + 1;
-        if(next >= posKeyframes.Count) {
+        if(next >= posKeyframes.Length) {
             next = 0;
         }
 
-        int currentTime = posKeyframes.Keys[current];
-        int nextTime = posKeyframes.Keys[next];
+        int currentTime = (int)posKeyframes[current].frame;
+        int nextTime = (int)posKeyframes[next].frame;
 
         float interval = (tick - currentTime) / ((float) (nextTime - currentTime));
 
-        Vector3 position = Vector3.Lerp(posKeyframes[currentTime], posKeyframes[nextTime], interval);
+        Vector3 position = Vector3.Lerp(posKeyframes[currentTime].p, posKeyframes[nextTime].p, interval);
 
         transform.localPosition = position;
     }

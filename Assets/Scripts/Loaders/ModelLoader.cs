@@ -9,7 +9,7 @@ public class ModelLoader {
     public static RSM.CompiledModel Compile(RSM rsm) {
         var nodesData = new Dictionary<long, RSM.NodeMeshData>[rsm.nodes.Length];
 
-        for (int i = 0; i < rsm.nodes.Length; i++) {
+        for (int i = 0; i < rsm.nodes.Length; ++i) {
             //mesh = union of nodes meshes
             nodesData[i] = rsm.nodes[i].Compile();
         }
@@ -45,7 +45,7 @@ public class ModelLoader {
         //read textures
         int textureCount = data.ReadLong();
         rsm.textures = new string[textureCount];
-        for (int i = 0; i < textureCount; i++) {
+        for (int i = 0; i < textureCount; ++i) {
             rsm.textures[i] = data.ReadBinaryString(40);
         }
 
@@ -54,7 +54,7 @@ public class ModelLoader {
         int nodeCount = data.ReadLong();
         rsm.nodes = new RSM.Node[nodeCount];
 
-        for (int i = 0; i < nodeCount; i++) {
+        for (int i = 0; i < nodeCount; ++i) {
             var node = rsm.nodes[i] = LoadNode(rsm, data, dversion);
             if (string.Equals(node.name, rsm.name)) {
                 rsm.mainNode = node;
@@ -70,7 +70,7 @@ public class ModelLoader {
         if (dversion < 1.5) {
             int count = data.ReadLong();
             rsm.posKeyframes = new RSM.PositionKeyframe[count];
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < count; ++i) {
                 rsm.posKeyframes[i] = new RSM.PositionKeyframe() {
                     frame = data.ReadLong(),
                     p = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat())
@@ -84,7 +84,7 @@ public class ModelLoader {
         int vbCount = data.ReadLong();
         rsm.volumeBoxes = new RSM.VolumeBox[vbCount];
 
-        for (int i = 0; i < vbCount; i++) {
+        for (int i = 0; i < vbCount; ++i) {
             rsm.volumeBoxes[i] = new RSM.VolumeBox() {
                 size = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()),
                 pos = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()),
@@ -108,8 +108,8 @@ public class ModelLoader {
 
         CalcNodeBoundingBox(rsm.mainNode, matrix);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < count; j++) {
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < count; ++j) {
                 box.max[i] = Math.Max(box.max[i], rsm.nodes[j].box.max[i]);
                 box.min[i] = Math.Min(box.min[i], rsm.nodes[j].box.min[i]);
             }
@@ -132,7 +132,7 @@ public class ModelLoader {
         Mat4.Translate(node.matrix, node.matrix, node.pos);
 
         //dynamic or static model
-        if (node.rotKeyframes.Count == 0) {
+        if (node.rotKeyframes.Length == 0) {
             Mat4.Rotate(node.matrix, node.matrix, node.rotAngle, node.rotAxis);
         }
 
@@ -146,7 +146,7 @@ public class ModelLoader {
 
         Mat4.Multiply(matrix, matrix, Mat4.FromMat3(node.mat3, null));
 
-        for (int i = 0, count = vertices.Count; i < count; i++) {
+        for (int i = 0, count = vertices.Count; i < count; ++i) {
             x = vertices[i][0];
             y = vertices[i][1];
             z = vertices[i][2];
@@ -161,13 +161,13 @@ public class ModelLoader {
             }
         }
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; ++i) {
             box.offset[i] = (box.max[i] + box.min[i]) / 2.0f;
             box.range[i] = (box.max[i] - box.min[i]) / 2.0f;
             box.center[i] = box.min[i] + box.range[i];
         }
 
-        for (int i = 0, count = nodes.Length; i < count; i++) {
+        for (int i = 0, count = nodes.Length; i < count; ++i) {
             if (string.Equals(nodes[i].parentName, node.name) && !string.Equals(node.name, node.parentName)) {
                 nodes[i].parent = node;
                 node.children.Add(nodes[i]);
@@ -189,7 +189,7 @@ public class ModelLoader {
         int textureCount = data.ReadLong();
         node.textures = new long[textureCount];
 
-        for (int i = 0; i < textureCount; i++) {
+        for (int i = 0; i < textureCount; ++i) {
             node.textures[i] = data.ReadLong();
         }
 
@@ -209,28 +209,28 @@ public class ModelLoader {
         //read vertices
         int verticeCount = data.ReadLong();
         node.vertices = new List<Vector3>();
-        for (int i = 0; i < verticeCount; i++) {
+        for (int i = 0; i < verticeCount; ++i) {
             node.vertices.Add(new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()));
         }
 
         //read textures vertices
         int tverticeCount = data.ReadLong();
         node.tVertices = new float[tverticeCount * 6];
-        for (int i = 0; i < tverticeCount; i++) {
+        for (int i = 0, j = 0; i < tverticeCount; ++i, j += 6) {
             if (version >= 1.2) {
-                node.tVertices[(i * 6) + 0] = data.ReadUByte() / 255f;
-                node.tVertices[(i * 6) + 1] = data.ReadUByte() / 255f;
-                node.tVertices[(i * 6) + 2] = data.ReadUByte() / 255f;
-                node.tVertices[(i * 6) + 3] = data.ReadUByte() / 255f;
+                node.tVertices[j + 0] = data.ReadUByte() / 255f;
+                node.tVertices[j + 1] = data.ReadUByte() / 255f;
+                node.tVertices[j + 2] = data.ReadUByte() / 255f;
+                node.tVertices[j + 3] = data.ReadUByte() / 255f;
             }
-            node.tVertices[(i * 6) + 4] = data.ReadFloat() * 0.98f + 0.01f;
-            node.tVertices[(i * 6) + 5] = data.ReadFloat() * 0.98f + 0.01f;
+            node.tVertices[j + 4] = data.ReadFloat() * 0.98f + 0.01f;
+            node.tVertices[j + 5] = data.ReadFloat() * 0.98f + 0.01f;
         }
 
         //read faces
         int faceCount = data.ReadLong();
         node.faces = new RSM.Face[faceCount];
-        for (int i = 0; i < faceCount; i++) {
+        for (int i = 0; i < faceCount; ++i) {
             node.faces[i] = new RSM.Face() {
                 vertidx = new Vector3Int(data.ReadUShort(), data.ReadUShort(), data.ReadUShort()),
                 tvertidx = new Vector3Int(data.ReadUShort(), data.ReadUShort(), data.ReadUShort()),
@@ -244,28 +244,31 @@ public class ModelLoader {
         //read position keyframes
         if (version >= 1.5) {
             int pkfCount = data.ReadLong();
-            for (int i = 0; i < pkfCount; i++) {
-                var key = data.ReadLong();
-                if (!node.posKeyframes.ContainsKey(key)) {
-                    node.posKeyframes.Add(key, new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()));
-                }
+            node.posKeyframes = new RSM.PositionKeyframe[pkfCount];
+            for (int i = 0; i < pkfCount; ++i) {
+                node.posKeyframes[i] = new RSM.PositionKeyframe() {
+                    frame = data.ReadLong(),
+                    p = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat())
+                };
             }
+        } else {
+            node.posKeyframes = new RSM.PositionKeyframe[0];
         }
 
-        //read rotation keyframes
-        int rkfCount = data.ReadLong();
-
-        for (int i = 0; i < rkfCount; i++) {
-            int time = data.ReadLong();
-            Quaternion quat = new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
-
-            if (!node.rotKeyframes.ContainsKey(time)) {
-                //some models have multiple keyframes with the
-                //same timestamp, here we just keep the first one
-                //and throw out the rest.
-                node.rotKeyframes.Add(time, quat);
+        if (node.posKeyframes?.Length > 0) {
+            //read rotation keyframes
+            var rkfCount = data.ReadLong();
+            node.rotKeyframes = new RSM.RotationKeyframe[rkfCount];
+            for (int i = 0; i < rkfCount; ++i) {
+                node.rotKeyframes[i] = new RSM.RotationKeyframe() {
+                    frame = data.ReadLong(),
+                    q = new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat())
+                };
             }
+        } else {
+            node.rotKeyframes = new RSM.RotationKeyframe[0];
         }
+
 
         node.box = new RSM.Box();
 
