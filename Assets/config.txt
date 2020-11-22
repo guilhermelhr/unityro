@@ -1,1 +1,1 @@
-grf=D:/Ragnarok/KRO CLIENT/client/data.grf
+grf=D:/Ragnarok/PROJETO SKIESRO/Skies RO/data.grf

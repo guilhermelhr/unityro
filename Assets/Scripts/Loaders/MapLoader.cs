@@ -79,7 +79,7 @@ public class MapLoader {
 
         //create model instances
         HashSet<RSM> objectsSet = new HashSet<RSM>();
-        for(int i = 0; i < modelDescriptors.Count; i++) {
+        for(int i = 0; i < modelDescriptors.Count; ++i) {
             RSM model = (RSM) FileManager.Load(modelDescriptors[i].filename);
             if(model != null) {
                 model.CreateInstance(modelDescriptors[i]);

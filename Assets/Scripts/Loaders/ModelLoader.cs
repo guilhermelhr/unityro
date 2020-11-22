@@ -30,8 +30,8 @@ public class ModelLoader {
         RSM rsm = new RSM();
 
         //read infos
-        string version = Convert.ToString(data.ReadUByte());
-        string subversion = Convert.ToString(data.ReadUByte());
+        string version = Convert.ToString(data.ReadByte());
+        string subversion = Convert.ToString(data.ReadByte());
         version += "." + subversion;
         double dversion = double.Parse(version, CultureInfo.InvariantCulture);
 
@@ -70,6 +70,7 @@ public class ModelLoader {
         if (dversion < 1.5) {
             int count = data.ReadLong();
             rsm.posKeyframes = new RSM.PositionKeyframe[count];
+
             for (int i = 0; i < count; ++i) {
                 rsm.posKeyframes[i] = new RSM.PositionKeyframe() {
                     frame = data.ReadLong(),
@@ -245,6 +246,7 @@ public class ModelLoader {
         if (version >= 1.5) {
             int pkfCount = data.ReadLong();
             node.posKeyframes = new RSM.PositionKeyframe[pkfCount];
+
             for (int i = 0; i < pkfCount; ++i) {
                 node.posKeyframes[i] = new RSM.PositionKeyframe() {
                     frame = data.ReadLong(),
@@ -255,18 +257,15 @@ public class ModelLoader {
             node.posKeyframes = new RSM.PositionKeyframe[0];
         }
 
-        if (node.posKeyframes?.Length > 0) {
-            //read rotation keyframes
-            var rkfCount = data.ReadLong();
-            node.rotKeyframes = new RSM.RotationKeyframe[rkfCount];
-            for (int i = 0; i < rkfCount; ++i) {
-                node.rotKeyframes[i] = new RSM.RotationKeyframe() {
-                    frame = data.ReadLong(),
-                    q = new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat())
-                };
-            }
-        } else {
-            node.rotKeyframes = new RSM.RotationKeyframe[0];
+        //read rotation keyframes
+        int rkfCount = data.ReadLong();
+        node.rotKeyframes = new RSM.RotationKeyframe[rkfCount];
+
+        for (int i = 0; i < rkfCount; ++i) {
+            node.rotKeyframes[i] = new RSM.RotationKeyframe() {
+                frame = data.ReadLong(),
+                q = new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat())
+            };
         }
 
 
