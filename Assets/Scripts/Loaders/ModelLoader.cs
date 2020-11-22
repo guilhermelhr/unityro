@@ -29,8 +29,8 @@ public class ModelLoader {
         RSM rsm = new RSM();
 
         //read infos
-        string version = Convert.ToString(data.ReadUByte());
-        string subversion = Convert.ToString(data.ReadUByte());
+        string version = Convert.ToString(data.ReadByte());
+        string subversion = Convert.ToString(data.ReadByte());
         version += "." + subversion;
         double dversion = double.Parse(version);
         
@@ -249,7 +249,8 @@ public class ModelLoader {
         }
 
         //read rotation keyframes
-        int rkfCount = data.ReadLong();
+        // TODO: Investigate why this sometimes overflow when using kRO grf (eg: prontera)
+        short rkfCount = (short) data.ReadLong();
 
         for(int i = 0; i < rkfCount; i++) {
             int time = data.ReadLong();
