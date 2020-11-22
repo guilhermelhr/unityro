@@ -9,7 +9,11 @@ public class ModelLoader {
     public static RSM.CompiledModel Compile(RSM rsm) {
         var nodesData = new Dictionary<long, RSM.NodeMeshData>[rsm.nodes.Length];
 
+<<<<<<< HEAD
         for (int i = 0; i < rsm.nodes.Length; ++i) {
+=======
+        for(int i = 0; i < rsm.nodes.Length; ++i) {
+>>>>>>> eafcfb2... change increment order
             //mesh = union of nodes meshes
             nodesData[i] = rsm.nodes[i].Compile();
         }
