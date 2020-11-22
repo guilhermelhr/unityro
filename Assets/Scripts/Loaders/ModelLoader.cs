@@ -8,7 +8,7 @@ public class ModelLoader {
     public static RSM.CompiledModel Compile(RSM rsm) {
         var nodesData = new Dictionary<long, RSM.NodeMeshData>[rsm.nodes.Length];
 
-        for(int i = 0; i < rsm.nodes.Length; i++) {
+        for(int i = 0; i < rsm.nodes.Length; ++i) {
             //mesh = union of nodes meshes
             nodesData[i] = rsm.nodes[i].Compile();
         }
@@ -44,7 +44,7 @@ public class ModelLoader {
         //read textures
         int textureCount = data.ReadLong();
         rsm.textures = new string[textureCount];
-        for(int i = 0; i < textureCount; i++) {
+        for(int i = 0; i < textureCount; ++i) {
             rsm.textures[i] = data.ReadBinaryString(40);
         }
 
@@ -53,7 +53,7 @@ public class ModelLoader {
         int nodeCount = data.ReadLong();
         rsm.nodes = new RSM.Node[nodeCount];
 
-        for(int i = 0; i < nodeCount; i++) {
+        for(int i = 0; i < nodeCount; ++i) {
             var node = rsm.nodes[i] = LoadNode(rsm, data, dversion);
             if(string.Equals(node.name, rsm.name)) {
                 rsm.mainNode = node;
@@ -69,7 +69,7 @@ public class ModelLoader {
         if(dversion < 1.5) {
             int count = data.ReadLong();
             rsm.posKeyframes = new RSM.PositionKeyframe[count];
-            for(int i = 0; i < count; i++) {
+            for(int i = 0; i < count; ++i) {
                 rsm.posKeyframes[i] = new RSM.PositionKeyframe() {
                     frame = data.ReadLong(),
                     p = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat())
@@ -83,7 +83,7 @@ public class ModelLoader {
         int vbCount = data.ReadLong();
         rsm.volumeBoxes = new RSM.VolumeBox[vbCount];
 
-        for(int i = 0; i < vbCount; i++) {
+        for(int i = 0; i < vbCount; ++i) {
             rsm.volumeBoxes[i] = new RSM.VolumeBox() {
                 size = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()),
                 pos = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()),
@@ -107,7 +107,7 @@ public class ModelLoader {
 
         CalcNodeBoundingBox(rsm.mainNode, matrix);
 
-        for(int i = 0; i < 3; i++) {
+        for(int i = 0; i < 3; ++i) {
             for(int j = 0; j < count; j++) {
                 box.max[i] = Math.Max(box.max[i], rsm.nodes[j].box.max[i]);
                 box.min[i] = Math.Min(box.min[i], rsm.nodes[j].box.min[i]);
@@ -145,7 +145,7 @@ public class ModelLoader {
 
         Mat4.Multiply(matrix, matrix, Mat4.FromMat3(node.mat3, null));
 
-        for(int i = 0, count = vertices.Count; i < count; i++) {
+        for(int i = 0, count = vertices.Count; i < count; ++i) {
             x = vertices[i][0];
             y = vertices[i][1];
             z = vertices[i][2];
@@ -160,13 +160,13 @@ public class ModelLoader {
             }
         }
 
-        for(int i = 0; i < 3; i++) {
+        for(int i = 0; i < 3; ++i) {
             box.offset[i] = (box.max[i] + box.min[i]) / 2.0f;
             box.range[i] = (box.max[i] - box.min[i]) / 2.0f;
             box.center[i] = box.min[i] + box.range[i];
         }
 
-        for(int i = 0, count = nodes.Length; i < count; i++) {
+        for(int i = 0, count = nodes.Length; i < count; ++i) {
             if(string.Equals(nodes[i].parentName, node.name) && !string.Equals(node.name, node.parentName)) {
                 nodes[i].parent = node;
                 node.children.Add(nodes[i]);
@@ -188,7 +188,7 @@ public class ModelLoader {
         int textureCount = data.ReadLong();
         node.textures = new long[textureCount];
 
-        for(int i = 0; i < textureCount; i++) {
+        for(int i = 0; i < textureCount; ++i) {
             node.textures[i] = data.ReadLong();
         }
 
@@ -208,14 +208,14 @@ public class ModelLoader {
         //read vertices
         int verticeCount = data.ReadLong();
         node.vertices = new List<Vector3>();
-        for(int i = 0; i < verticeCount; i++) {
+        for(int i = 0; i < verticeCount; ++i) {
             node.vertices.Add(new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()));
         }
 
         //read textures vertices
         int tverticeCount = data.ReadLong();
         node.tVertices = new float[tverticeCount * 6];
-        for(int i = 0; i < tverticeCount; i++) {
+        for(int i = 0; i < tverticeCount; ++i) {
             if(version >= 1.2) {
                 node.tVertices[(i * 6) + 0] = data.ReadUByte() / 255f;
                 node.tVertices[(i * 6) + 1] = data.ReadUByte() / 255f;
@@ -229,7 +229,7 @@ public class ModelLoader {
         //read faces
         int faceCount = data.ReadLong();
         node.faces = new RSM.Face[faceCount];
-        for(int i = 0; i < faceCount; i++) {
+        for(int i = 0; i < faceCount; ++i) {
             node.faces[i] = new RSM.Face() {
                 vertidx = new Vector3Int(data.ReadUShort(), data.ReadUShort(), data.ReadUShort()),
                 tvertidx = new Vector3Int(data.ReadUShort(), data.ReadUShort(), data.ReadUShort()),
@@ -243,7 +243,7 @@ public class ModelLoader {
         //read position keyframes
         if(version >= 1.5) {
             int pkfCount = data.ReadLong();
-            for(int i = 0; i < pkfCount; i++) {
+            for(int i = 0; i < pkfCount; ++i) {
                 node.posKeyframes.Add(data.ReadLong(), new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()));
             }
         }
@@ -252,7 +252,7 @@ public class ModelLoader {
         // TODO: Investigate why this sometimes overflow when using kRO grf (eg: prontera)
         short rkfCount = (short) data.ReadLong();
 
-        for(int i = 0; i < rkfCount; i++) {
+        for(int i = 0; i < rkfCount; ++i) {
             int time = data.ReadLong();
             Quaternion quat = new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
 
