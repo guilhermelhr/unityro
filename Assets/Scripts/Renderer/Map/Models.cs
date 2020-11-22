@@ -14,8 +14,8 @@ public class Models {
 
     public class AnimProperties {
         //animation
-        internal RSM.RotationKeyframe[] rotKeyframes;
-        internal RSM.PositionKeyframe[] posKeyframes;
+        internal SortedList<int, Quaternion> rotKeyframes;
+        internal SortedList<int, Vector3> posKeyframes;
         internal long animLen;
         internal Quaternion baseRotation;
         internal bool isChild;
@@ -95,7 +95,7 @@ public class Models {
                     properties.mainName = model.rsm.mainNode.name;
                     properties.parentName = node.parentName;
 
-                    if(node.posKeyframes.Length > 0 || node.rotKeyframes.Length > 0) {
+                    if(node.posKeyframes.Count > 0 || node.rotKeyframes.Count > 0) {
                         nodeObj.AddComponent<NodeAnimation>().nodeId = nodeId;
                         anims.Add(nodeId, new AnimProperties() {
                             posKeyframes = node.posKeyframes,

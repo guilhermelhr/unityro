@@ -133,7 +133,7 @@ public class ModelLoader {
         Mat4.Translate(node.matrix, node.matrix, node.pos);
 
         //dynamic or static model
-        if (node.rotKeyframes.Length == 0) {
+        if (node.rotKeyframes.Count == 0) {
             Mat4.Rotate(node.matrix, node.matrix, node.rotAngle, node.rotAxis);
         }
 
@@ -245,29 +245,30 @@ public class ModelLoader {
         //read position keyframes
         if (version >= 1.5) {
             int pkfCount = data.ReadLong();
-            node.posKeyframes = new RSM.PositionKeyframe[pkfCount];
 
             for (int i = 0; i < pkfCount; ++i) {
-                node.posKeyframes[i] = new RSM.PositionKeyframe() {
-                    frame = data.ReadLong(),
-                    p = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat())
-                };
+                var key = data.ReadLong();
+
+                if (!node.posKeyframes.ContainsKey(key)) {
+                    node.posKeyframes.Add(key, new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()));
+                }
             }
-        } else {
-            node.posKeyframes = new RSM.PositionKeyframe[0];
         }
 
         //read rotation keyframes
-        int rkfCount = data.ReadLong();
-        node.rotKeyframes = new RSM.RotationKeyframe[rkfCount];
-
+        // TODO: Investigate why this sometimes overflow when using kRO grf (eg: prontera)
+        short rkfCount = (short) data.ReadLong();
         for (int i = 0; i < rkfCount; ++i) {
-            node.rotKeyframes[i] = new RSM.RotationKeyframe() {
-                frame = data.ReadLong(),
-                q = new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat())
-            };
-        }
+            int time = data.ReadLong();
+            Quaternion quat = new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
 
+            if (!node.rotKeyframes.ContainsKey(time)) {
+                //some models have multiple keyframes with the
+                //same timestamp, here we just keep the first one
+                //and throw out the rest.
+                node.rotKeyframes.Add(time, quat);
+            }
+        }
 
         node.box = new RSM.Box();
 

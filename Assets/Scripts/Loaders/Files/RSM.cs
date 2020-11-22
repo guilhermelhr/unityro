@@ -96,8 +96,8 @@ public class RSM {
         public List<Vector3> vertices;
         public float[] tVertices; //texture vertices
         public Face[] faces;
-        public RotationKeyframe[] rotKeyframes;
-        public PositionKeyframe[] posKeyframes;
+        public SortedList<int, Quaternion> rotKeyframes = new SortedList<int, Quaternion>();
+        public SortedList<int, Vector3> posKeyframes = new SortedList<int, Vector3>();
 
         public int instanceNumber;
         public Box box;
