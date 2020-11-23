@@ -5,6 +5,8 @@ At the moment, UnityRO is fully functional as a map viewer.
 
 Checkout this flyby video of xmas https://youtu.be/utWuTgOIf_4 .
 
+Join discussions at https://discord.gg/YZjGanTNb5 .
+
 ## Current Features
 
 Runtime threaded GRF loading
