@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Globalization;
 
 public class SpriteLoader
 {
@@ -19,7 +20,7 @@ public class SpriteLoader
         spr.indexedCount = data.ReadUShort();
         spr._indexedCount = spr.indexedCount;
 
-        var dversion = Double.Parse(version);
+        var dversion = Double.Parse(version, CultureInfo.InvariantCulture);
         if(dversion > 1.1) {
             spr.rgbaCount = data.ReadUShort();
         }
