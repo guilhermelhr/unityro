@@ -40,7 +40,7 @@ public class Altitude {
     /// <param name="x">x position</param>
     /// <param name="y">y position</param>
     /// <returns>cell data</returns>
-    public AltitudeLoader.Cell GetCell(double x, double y) {
+    public GAT.Cell GetCell(double x, double y) {
         uint index = (uint) (Math.Floor(x) + Math.Floor(y) * gat.width);
 
         return gat.cells[index];
@@ -69,7 +69,7 @@ public class Altitude {
 
         /* DIFF robrowser adds 0.5 to each coordinate here */
 
-        AltitudeLoader.Cell cell = GetCell(x, y);
+        GAT.Cell cell = GetCell(x, y);
 
         x = Math.Floor(x);
         y = Math.Floor(y);
