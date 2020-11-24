@@ -227,8 +227,8 @@ public class ModelLoader {
                 node.tVertices[j + 2] = data.ReadUByte() / 255f;
                 node.tVertices[j + 3] = data.ReadUByte() / 255f;
             }
-            node.tVertices[j + 4] = data.ReadFloat() * 0.98f + 0.01f;
-            node.tVertices[j + 5] = data.ReadFloat() * 0.98f + 0.01f;
+            node.tVertices[(i * 6) + 4] = data.ReadFloat() * 0.98f + 0.01f;
+            node.tVertices[(i * 6) + 5] = data.ReadFloat() * 0.98f + 0.01f;
         }
 
         //read faces

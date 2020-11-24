@@ -22,7 +22,6 @@ public class Core : MonoBehaviour {
     public AudioMixerGroup soundsMixerGroup;
     public Light worldLight;
     public Dropdown mapDropdown;
-    public GameObject cameraTarget;
 
     private Hashtable configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
@@ -41,9 +40,6 @@ public class Core : MonoBehaviour {
 
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
-
-        SPR spr = FileManager.Load("data/sprite/npc/4_bb_poring.spr") as SPR;
-        cameraTarget.AddComponent<SPRRenderer>().setSPR(spr, 0, 3);
 
         if (!string.IsNullOrEmpty(mapname)) {
             selector.ChangeMap(mapname);
