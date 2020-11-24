@@ -85,7 +85,7 @@ public class ModelLoader {
         }
 
         //read volume box
-        int vbCount = data.ReadLong();
+        short vbCount = (short) data.ReadLong();
         rsm.volumeBoxes = new RSM.VolumeBox[vbCount];
 
         for (int i = 0; i < vbCount; ++i) {
