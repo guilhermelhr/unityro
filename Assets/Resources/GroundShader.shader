@@ -21,8 +21,6 @@ Shader "Custom/GroundShader" {
 		sampler2D _Lightmap;
 		sampler2D _Tintmap;
 
-		float4 _MainTex_TexelSize;
-
 		struct Input {
 			float2 uv_MainTex;
 			float2 uv2_Lightmap;
@@ -30,9 +28,6 @@ Shader "Custom/GroundShader" {
 		};
 
 		void surf (Input IN, inout SurfaceOutput o) {
-			//IN.uv_MainTex.x += 0.5 / _MainTex_TexelSize.z;
-			//IN.uv_MainTex.y += 0.5 / _MainTex_TexelSize.w;
-
 			fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
 			fixed4 lightmap = tex2D(_Lightmap, IN.uv2_Lightmap);
 			
