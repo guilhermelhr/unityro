@@ -9,17 +9,24 @@ using UnityEngine;
 public class Altitude {
     private static int MAX_INTERSECT_COUNT = 150;
     private GAT gat;
+    private PathFindingManager pathFindingManager;
 
     public Altitude(BinaryReader stream) {
         gat = AltitudeLoader.Load(stream);
 
-        //TODO init pathfinding
+        init(gat);
     }
 
     public Altitude(GAT gat) {
         this.gat = gat;
 
-        //TODO init pathfinding
+        init(gat);
+    }
+
+    private void init(GAT gat) {
+        // This should be within a MonoBehaviour entity
+        pathFindingManager = new PathFindingManager();
+        pathFindingManager.LoadMap(gat);
     }
 
     public long getHeight() {
