@@ -9,11 +9,7 @@ public class ModelLoader {
     public static RSM.CompiledModel Compile(RSM rsm) {
         var nodesData = new Dictionary<long, RSM.NodeMeshData>[rsm.nodes.Length];
 
-<<<<<<< HEAD
         for (int i = 0; i < rsm.nodes.Length; ++i) {
-=======
-        for(int i = 0; i < rsm.nodes.Length; ++i) {
->>>>>>> eafcfb2... change increment order
             //mesh = union of nodes meshes
             nodesData[i] = rsm.nodes[i].Compile();
         }
@@ -73,7 +69,6 @@ public class ModelLoader {
         if (dversion < 1.5) {
             int count = data.ReadLong();
             rsm.posKeyframes = new RSM.PositionKeyframe[count];
-
             for (int i = 0; i < count; ++i) {
                 rsm.posKeyframes[i] = new RSM.PositionKeyframe() {
                     frame = data.ReadLong(),
@@ -220,12 +215,12 @@ public class ModelLoader {
         //read textures vertices
         int tverticeCount = data.ReadLong();
         node.tVertices = new float[tverticeCount * 6];
-        for (int i = 0, j = 0; i < tverticeCount; ++i, j += 6) {
-            if (version >= 1.2) {
-                node.tVertices[j + 0] = data.ReadUByte() / 255f;
-                node.tVertices[j + 1] = data.ReadUByte() / 255f;
-                node.tVertices[j + 2] = data.ReadUByte() / 255f;
-                node.tVertices[j + 3] = data.ReadUByte() / 255f;
+        for (int i = 0; i < tverticeCount; ++i) {
+            if(version >= 1.2) {
+                node.tVertices[(i * 6) + 0] = data.ReadUByte() / 255f;
+                node.tVertices[(i * 6) + 1] = data.ReadUByte() / 255f;
+                node.tVertices[(i * 6) + 2] = data.ReadUByte() / 255f;
+                node.tVertices[(i * 6) + 3] = data.ReadUByte() / 255f;
             }
             node.tVertices[(i * 6) + 4] = data.ReadFloat() * 0.98f + 0.01f;
             node.tVertices[(i * 6) + 5] = data.ReadFloat() * 0.98f + 0.01f;
@@ -248,7 +243,6 @@ public class ModelLoader {
         //read position keyframes
         if (version >= 1.5) {
             int pkfCount = data.ReadLong();
-
             for (int i = 0; i < pkfCount; ++i) {
                 var key = data.ReadLong();
 
