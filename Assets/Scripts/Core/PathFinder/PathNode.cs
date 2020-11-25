@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 public class PathNode {
-    public PathNode parent;
+    public PathNode parentNode;
     public int x;
     public int y;
     public int gCost;

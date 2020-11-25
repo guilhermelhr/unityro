@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -9,6 +10,8 @@ using UnityEngine.UI;
 public class Core : MonoBehaviour {
     private static MapLoader mapLoader = new MapLoader();
     private static MapRenderer mapRenderer = new MapRenderer();
+
+    private PathFindingManager pathFinding = new PathFindingManager();
 
     public static MapLoader MapLoader {
         get { return mapLoader; }
@@ -21,6 +24,7 @@ public class Core : MonoBehaviour {
     public static Core Instance;
 
     public string mapname;
+    public GameObject entity;
     public AudioMixerGroup soundsMixerGroup;
     public Light worldLight;
     public Dropdown mapDropdown;
@@ -35,9 +39,10 @@ public class Core : MonoBehaviour {
     }
 
     void Start() {
+        new TestPathfinding();
         loadConfigs();
 
-        Debug.Log("Loading GRF at " + configs["grf"] + "...");
+        Debug.Log("Loading GRF at " + configs["grf2"] + "...");
         FileManager.loadGrf(configs["grf"] as string);
         Debug.Log("GRF loaded, filetable contains " + FileManager.Grf.files.Count + " files.");
 
@@ -86,10 +91,34 @@ public class Core : MonoBehaviour {
         }
     }
 
+    List<PathNode> path;
+
     void Update() {
         //mapDropdown.gameObject.SetActive(Cursor.lockState != CursorLockMode.Locked);
         if (mapRenderer.Ready) {
             mapRenderer.Render();
+        }
+
+        if (Input.GetMouseButtonDown(0)) {
+            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            path = PathFindingManager.Instance.GetPath(50, 50, (int) worldPosition.x, (int) worldPosition.z);
+
+            foreach (var node in path) {
+                //var origin = new Vector3(node.x, 5f, node.y);
+                //Debug.DrawLine(origin, new Vector3(1, 5, 1));
+                //    var moveDir = (new Vector3(node.x, 0.5f, node.y) - entity.transform.position).normalized;
+                //    entity.transform.position = entity.transform.position + moveDir * 2f * Time.deltaTime;
+            }
+        }
+    }
+
+    private void OnDrawGizmos() {
+        PathFindingManager.Instance.DebugNodes();
+        if (path != null) {
+            foreach (var node in path) {
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(new Vector3(node.x, 5f, node.y), new Vector3(node.x + 1, 5f, node.y + 1));
+            }
         }
     }
 
@@ -98,5 +127,4 @@ public class Core : MonoBehaviour {
             mapRenderer.PostRender();
         }
     }
-
 }

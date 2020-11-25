@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
 /// Altiture renderer
@@ -9,7 +10,6 @@ using UnityEngine;
 public class Altitude {
     private static int MAX_INTERSECT_COUNT = 150;
     private GAT gat;
-    private PathFindingManager pathFindingManager;
 
     public Altitude(BinaryReader stream) {
         gat = AltitudeLoader.Load(stream);
@@ -24,9 +24,7 @@ public class Altitude {
     }
 
     private void init(GAT gat) {
-        // This should be within a MonoBehaviour entity
-        pathFindingManager = new PathFindingManager();
-        pathFindingManager.LoadMap(gat);
+        PathFindingManager.Instance.LoadMap(this);
     }
 
     public long getHeight() {
@@ -40,6 +38,8 @@ public class Altitude {
     public long GetCellCount() {
         return gat.width * gat.height;
     }
+
+    public List<PathNode> getNodes() => gat.nodes;
 
     /// <summary>
     /// Get cell data

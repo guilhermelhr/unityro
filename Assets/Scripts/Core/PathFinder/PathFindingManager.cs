@@ -6,10 +6,8 @@ using UnityEngine;
 public class PathFindingManager {
 
     public struct PathRequest {
-        public int GID;
         public Vector2Int from;
         public Vector2Int to;
-        public Action<int, List<PathNode>> callback;
     }
 
     enum eDirection {
@@ -19,107 +17,60 @@ public class PathFindingManager {
         DIR_EAST = 8
     }
 
-    const int MOVE_COST = 10;
-    const int MOVE_DIAGONAL = 14;
-    const int QUADS_FOR_PATH = 32 * 32;
+    public static PathFindingManager Instance { get; private set; }
 
-    private GAT map;
+    private const int MOVE_COST = 10;
+    private const int MOVE_DIAGONAL = 14;
+    private const int QUADS_FOR_PATH = 32 * 32;
+
+    private Altitude Altitude;
+    private bool hasDrawn = false;
+
     private List<PathNode> mapNodes;
     private List<PathNode> openSet = new List<PathNode>();
     private HashSet<PathNode> closedSet = new HashSet<PathNode>();
     private List<PathNode> finalPath = new List<PathNode>();
 
-    private Queue<PathRequest> requestQueue = new Queue<PathRequest>();
+    private int gridX => (int)Altitude.getWidth();
+    private int gridY => (int)Altitude.getHeight();
 
-    private bool readyToLoad = false;
-    private bool coroutineRunning = false;
-    private float nextCheck = 0.0f;
-    private int gridX => (int)map.width;
-    private int gridY => (int)map.height;
-
-    public void Tick(float dt) {
-        if ((nextCheck -= dt) < 0) {
-            if (requestQueue.Count > 0 && !coroutineRunning) {
-                PathRequest temp = requestQueue.Dequeue();
-                Core.Instance.StartCoroutine(FindPath(temp));
-            }
-        }
+    public PathFindingManager() {
+        Instance = this;
     }
 
-    public bool LoadMap(GAT map) {
-        if (map != null && map != this.map) {
-            this.map = map;
-            GenerateNodes();
-            readyToLoad = true;
+    public bool LoadMap(Altitude altitude) {
+        if (altitude != null && altitude != this.Altitude) {
+            this.Altitude = altitude;
+            this.mapNodes = this.Altitude.getNodes();
             return true;
-        } else if (map == this.map) {
+        } else if (altitude == this.Altitude) {
             return true;
         } else {
-            readyToLoad = false;
             return false;
         }
     }
 
-    private void GenerateNodes() {
-        mapNodes = new List<PathNode>();
-
-        for (int y = 0; y < gridY; y++) {
-            for (int x = 0; x < gridX; x++) {
-                var newNode = new PathNode() {
-                    x = x,
-                    y = y,
-                    walkable = map.cells[x + (y * gridX)].type == (byte)GAT.TYPE.WALKABLE ? true : false
-                };
-                mapNodes.Add(newNode);
-            }
-        }
-    }
-
-    public List<PathNode> GetPath(int GID, int x0, int y0, int x1, int y1, int range = 0) {
+    public List<PathNode> GetPath(int x0, int y0, int x1, int y1, int range = 0) {
         var newRequest = new PathRequest() {
-            GID = GID,
             from = new Vector2Int(x0, y0),
             to = new Vector2Int(x1, y1)
         };
 
-        List<PathNode> path = NonCRFindPath(newRequest, range);
+        List<PathNode> path = FindPath(newRequest, range);
         return path;
     }
 
-    public void RequestPath(int GID, int x0, int y0, int x1, int y1, Action<int, List<PathNode>> callback, int range = 0) {
-        if (GID < 0) {
-            Debug.LogError("PathfindingManager: Something went wrong with the RequestPath function");
-            return;
+    public void DebugNodes() {
+        if (this.mapNodes == null) return;
+        foreach (var node in this.mapNodes) {
+            var origin = new Vector3(node.x, (float)Altitude.GetCellHeight(node.x, node.y), node.y);
+            Gizmos.color = node.walkable ? Color.green : Color.black;
+            Gizmos.DrawCube(origin, new Vector3(1, 1, 1));
         }
 
-        if (!readyToLoad || mapNodes == null) {
-            Debug.LogError("PathfindingManager: The map is null, cannot request a path");
-            return;
-        }
-
-        var newRequest = new PathRequest() {
-            GID = GID,
-            from = new Vector2Int(x0, y0),
-            to = new Vector2Int(x1, y1),
-            callback = callback,
-        };
-
-        requestQueue.Enqueue(newRequest);
     }
 
-    private List<Vector2Int> RequestPath(int x0, int y0, int x1, int y1) {
-        var newPath = new List<Vector2Int>();
-
-        if (mapNodes == null) {
-            Debug.LogError("PathfindingManager: The map is null, cannot request a path");
-            return null;
-        }
-
-
-        return newPath;
-    }
-
-    private List<PathNode> NonCRFindPath(PathRequest pr, int range = 0) {
+    private List<PathNode> FindPath(PathRequest pr, int range = 0) {
         finalPath.Clear();
         openSet.Clear();
         closedSet.Clear();
@@ -160,13 +111,9 @@ public class PathFindingManager {
                 }
 
                 if (idx != -1) {
-                    //Debug.Log("Break here");
                     newPath.RemoveRange(idx + 1, newPath.Count - (idx + 1));
                 }
 
-                // do the callback i guess
-                //pr.callback(pr.GID, new_path);
-                //cr_running = false;
                 return newPath;
             }
 
@@ -174,7 +121,7 @@ public class PathFindingManager {
             y = currentNode.y;
             int gCost = currentNode.gCost;
 
-            // do the reathena neighbour shit in here :>
+            // rAthena neighbour
             int allowed_directions = 0;
 
             if (y < ys && CheckWalkable(x, y + 1)) allowed_directions |= (int)eDirection.DIR_NORTH;
@@ -183,43 +130,44 @@ public class PathFindingManager {
             if (x > 0 && CheckWalkable(x - 1, y)) allowed_directions |= (int)eDirection.DIR_WEST;
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH | (int)eDirection.DIR_WEST)) && CheckWalkable(x - 1, y - 1))
-                ProcessNode(openSet, x - 1, y - 1, gCost + MOVE_DIAGONAL, currentNode, GetHeuristic(x - 1, y - 1, endNode.x, endNode.y));
+                ProcessNode(x - 1, y - 1, gCost + MOVE_DIAGONAL, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_WEST)))
-                ProcessNode(openSet, x - 1, y, gCost + MOVE_COST, currentNode, GetHeuristic(x - 1, y, endNode.x, endNode.y));
+                ProcessNode(x - 1, y, gCost + MOVE_COST, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH | (int)eDirection.DIR_WEST)) && CheckWalkable(x - 1, y + 1))
-                ProcessNode(openSet, x - 1, y + 1, gCost + MOVE_DIAGONAL, currentNode, GetHeuristic(x - 1, y + 1, endNode.x, endNode.y));
+                ProcessNode(x - 1, y + 1, gCost + MOVE_DIAGONAL, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH)))
-                ProcessNode(openSet, x, y + 1, gCost + MOVE_COST, currentNode, GetHeuristic(x, y + 1, endNode.x, endNode.y));
+                ProcessNode(x, y + 1, gCost + MOVE_COST, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH | (int)eDirection.DIR_EAST)) && CheckWalkable(x + 1, y + 1))
-                ProcessNode(openSet, x + 1, y + 1, gCost + MOVE_DIAGONAL, currentNode, GetHeuristic(x + 1, y + 1, endNode.x, endNode.y));
+                ProcessNode(x + 1, y + 1, gCost + MOVE_DIAGONAL, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_EAST)))
-                ProcessNode(openSet, x + 1, y, gCost + MOVE_COST, currentNode, GetHeuristic(x + 1, y, endNode.x, endNode.y));
+                ProcessNode(x + 1, y, gCost + MOVE_COST, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH | (int)eDirection.DIR_EAST)) && CheckWalkable(x + 1, y - 1))
-                ProcessNode(openSet, x + 1, y - 1, gCost + MOVE_DIAGONAL, currentNode, GetHeuristic(x + 1, y - 1, endNode.x, endNode.y));
+                ProcessNode(x + 1, y - 1, gCost + MOVE_DIAGONAL, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH)))
-                ProcessNode(openSet, x, y - 1, gCost + MOVE_COST, currentNode, GetHeuristic(x, y - 1, endNode.x, endNode.y));
+                ProcessNode(x, y - 1, gCost + MOVE_COST, currentNode, endNode);
         }
 
         return newPath;
     }
 
-    private void ProcessNode(List<PathNode> openSet, int x, int y, int g_cost, PathNode parentNode, int h_cost) {
+    private void ProcessNode(int x, int y, int g_cost, PathNode parentNode, PathNode endNode) {
         int idx = x + (y * gridX);
         PathNode currentNode = mapNodes[idx];
+        int h_cost = GetHeuristic(x, y, endNode);
 
         if (closedSet.Contains(currentNode)) return;
         if (openSet.Contains(currentNode)) {
             if (g_cost < currentNode.gCost) {
                 currentNode.gCost = g_cost;
                 currentNode.hCost = h_cost;
-                currentNode.parent = parentNode;
+                currentNode.parentNode = parentNode;
                 openSet.Add(currentNode);
             }
 
@@ -228,20 +176,8 @@ public class PathFindingManager {
 
         currentNode.gCost = g_cost;
         currentNode.hCost = h_cost;
-        currentNode.parent = parentNode;
+        currentNode.parentNode = parentNode;
         openSet.Add(currentNode);
-    }
-
-    IEnumerator FindPatch(PathRequest pr) {
-        Debug.Log("fock off");
-        yield return new WaitForEndOfFrame();
-    }
-
-    IEnumerator FindPath(PathRequest pr) {
-        coroutineRunning = true;
-        NonCRFindPath(pr);
-        coroutineRunning = false;
-        yield return null;
     }
 
     private bool CheckWalkable(int x, int y) {
@@ -255,7 +191,7 @@ public class PathFindingManager {
 
     private bool CheckDirection(int dir, int bitmask) => (dir & bitmask) == bitmask;
 
-    public int GetHeuristic(int x0, int y0, int x1, int y1) => MOVE_COST * (Mathf.Abs(x0 - x1) + Mathf.Abs(y0 - y1));
+    private int GetHeuristic(int x0, int y0, PathNode endNode) => MOVE_COST * (Mathf.Abs(x0 - endNode.x) + Mathf.Abs(y0 - endNode.y));
 
     private List<PathNode> ReTracePath(PathNode startNode, PathNode endNode) {
         var path = new List<PathNode>();
@@ -263,7 +199,7 @@ public class PathFindingManager {
 
         while (currentNode != startNode) {
             path.Add(currentNode);
-            currentNode = currentNode.parent;
+            currentNode = currentNode.parentNode;
         }
 
         path.Add(startNode);
