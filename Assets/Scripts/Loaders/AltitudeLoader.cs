@@ -32,11 +32,12 @@ public class AltitudeLoader {
 
         //load the cells
         for(int i = 0; i < width * height; i++) {
-            Vector4 heights = cells[i].heights = new Vector4();
+            Vector4 heights = new Vector4();
             heights[0] = data.ReadFloat() * 0.2f;         // height 1
             heights[1] = data.ReadFloat() * 0.2f;         // height 2
             heights[2] = data.ReadFloat() * 0.2f;         // height 3
             heights[3] = data.ReadFloat() * 0.2f;         // height 4
+            cells[i].heights = heights;
             cells[i].type = GAT.TYPE_TABLE[data.ReadULong()];    // type
         }
 

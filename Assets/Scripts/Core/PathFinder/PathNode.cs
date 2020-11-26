@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-public class PathNode {
+﻿public class PathNode {
     public PathNode parentNode;
     public int x;
-    public float y;
+    public double y;
     public int z;
     public int gCost;
     public int hCost;

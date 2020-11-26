@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 public class Altitude {
     private static int MAX_INTERSECT_COUNT = 150;
-    private GAT gat;
+    public GAT gat { get; private set; }
     private List<PathNode> nodes;
 
     public Altitude(BinaryReader stream) {
@@ -26,7 +26,7 @@ public class Altitude {
 
     private void init(GAT gat) {
         GenerateNodes();
-        PathFindingManager.Instance.LoadMap(this);
+        Core.PathFinding.LoadMap(this);
     }
     private void GenerateNodes() {
         nodes = new List<PathNode>();
@@ -35,7 +35,7 @@ public class Altitude {
                 var newNode = new PathNode() {
                     x = x,
                     z = z,
-                    y = (float)GetCellHeight(x, z),
+                    y = GetCellHeight(x, z),
                     walkable = IsCellWalkable(x, z)
                 };
 
@@ -95,11 +95,14 @@ public class Altitude {
 
         GAT.Cell cell = GetCell(x, y);
 
-        x = Math.Floor(x);
-        y = Math.Floor(y);
+        double index, x1, x2;
 
-        double x1 = cell.heights[0] + (cell.heights[1] - cell.heights[0]) * x;
-        double x2 = cell.heights[2] + (cell.heights[3] - cell.heights[2]) * x;
+        // Should be at the middle of the cell
+        x %= 1.0;
+        y %= 1.0;
+
+        x1 = cell.heights[0] + (cell.heights[1] - cell.heights[0]) * x;
+        x2 = cell.heights[2] + (cell.heights[3] - cell.heights[2]) * x;
 
         return -(x1 + (x2 - x1) * y);
     }

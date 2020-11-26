@@ -17,13 +17,12 @@ public class PathFindingManager {
         DIR_EAST = 8
     }
 
-    public static PathFindingManager Instance { get; private set; }
 
     private const int MOVE_COST = 10;
     private const int MOVE_DIAGONAL = 14;
     private const int QUADS_FOR_PATH = 32 * 32;
 
-    private Altitude Altitude;
+    public Altitude Altitude { get; private set; }
     private bool hasDrawn = false;
 
     private List<PathNode> mapNodes;
@@ -33,10 +32,6 @@ public class PathFindingManager {
 
     private int gridX => (int)Altitude.getWidth();
     private int gridY => (int)Altitude.getHeight();
-
-    public PathFindingManager() {
-        Instance = this;
-    }
 
     public bool LoadMap(Altitude altitude) {
         if (altitude != null && altitude != this.Altitude) {

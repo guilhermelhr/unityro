@@ -5,14 +5,13 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.U2D;
 using UnityEngine.UI;
 
 public class Core : MonoBehaviour {
     private static MapLoader mapLoader = new MapLoader();
     private static MapRenderer mapRenderer = new MapRenderer();
 
-    private PathFindingManager pathFinding = new PathFindingManager();
+    private static PathFindingManager pathFinding = new PathFindingManager();
 
     public static MapLoader MapLoader {
         get { return mapLoader; }
@@ -21,6 +20,13 @@ public class Core : MonoBehaviour {
     public static MapRenderer MapRenderer {
         get { return mapRenderer; }
     }
+
+    public static PathFindingManager PathFinding {
+        get { return pathFinding; }
+    }
+
+    public static Action<Vector3> OnRayCastHit;
+    public static Action OnGrfLoaded;
 
     public static Core Instance;
 
@@ -40,10 +46,13 @@ public class Core : MonoBehaviour {
     }
 
     void Start() {
+
+
         loadConfigs();
 
-        Debug.Log("Loading GRF at " + configs["grf2"] + "...");
+        Debug.Log("Loading GRF at " + configs["grf"] + "...");
         FileManager.loadGrf(configs["grf"] as string);
+        OnGrfLoaded?.Invoke();
         Debug.Log("GRF loaded, filetable contains " + FileManager.Grf.files.Count + " files.");
 
         Debug.Log("Building map list...");
@@ -104,9 +113,13 @@ public class Core : MonoBehaviour {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out hit)) {
-            target = hit.point;
+            target = new Vector3(Mathf.Floor(hit.point.x), hit.point.y, Mathf.Floor(hit.point.z));
+            OnRayCastHit?.Invoke(target);
+
+            
+
             if (Input.GetMouseButtonDown(0)) {
-                var path = PathFindingManager.Instance.GetPath((int)entity.transform.position.x, (int)entity.transform.position.z, (int)target.x, (int)target.z);
+                var path = pathFinding.GetPath((int)entity.transform.position.x, (int)entity.transform.position.z, (int)target.x, (int)target.z);
 
                 if (MoveIE != null) {
                     StopCoroutine(MoveIE);
@@ -127,7 +140,7 @@ public class Core : MonoBehaviour {
     }
 
     IEnumerator MoveTo(PathNode node) {
-        var destination = new Vector3(node.x, node.y, node.z);
+        var destination = new Vector3(node.x, (float) node.y, node.z);
         while (entity.transform.position != destination) {
             entity.transform.position = Vector3.MoveTowards(entity.transform.position, destination, 8 * Time.deltaTime);
             yield return null;

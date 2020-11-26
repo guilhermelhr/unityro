@@ -143,8 +143,6 @@ public class MapRenderer {
 
         //TODO
         //var gl = Renderer.getContext();
-        //GridSelector.init(gl);
-
         altitudeCompleted = true;
     }
 
