@@ -45,6 +45,7 @@ public class Ground {
 
             //avoid z fighting between ground and models
             gameObject.transform.Translate(0, -0.002f, 0);
+            gameObject.AddComponent<BoxCollider>();
         }
     }
 

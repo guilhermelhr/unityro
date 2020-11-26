@@ -91,7 +91,8 @@ public class Core : MonoBehaviour {
         }
     }
 
-    List<PathNode> path;
+    Coroutine MoveIE, MoveToIE;
+    Vector3 target;
 
     void Update() {
         //mapDropdown.gameObject.SetActive(Cursor.lockState != CursorLockMode.Locked);
@@ -99,17 +100,28 @@ public class Core : MonoBehaviour {
             mapRenderer.Render();
         }
 
-        if (Input.GetMouseButtonDown(0)) {
-            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            path = PathFindingManager.Instance.GetPath((int) entity.transform.position.x, (int)entity.transform.position.z, (int)worldPosition.x, (int)worldPosition.z);
+        RaycastHit hit;
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            StartCoroutine(Move(path));
+        if (Physics.Raycast(ray, out hit)) {
+            target = hit.point;
+            if (Input.GetMouseButtonDown(0)) {
+                var path = PathFindingManager.Instance.GetPath((int)entity.transform.position.x, (int)entity.transform.position.z, (int)target.x, (int)target.z);
+
+                if (MoveIE != null) {
+                    StopCoroutine(MoveIE);
+                }
+                if (MoveToIE != null) {
+                    StopCoroutine(MoveToIE);
+                }
+                MoveIE = StartCoroutine(Move(path));
+            }
         }
     }
 
     IEnumerator Move(List<PathNode> path) {
         foreach (var node in path) {
-            var MoveToIE = StartCoroutine(MoveTo(node));
+            MoveToIE = StartCoroutine(MoveTo(node));
             yield return MoveToIE;
         }
     }
@@ -123,20 +135,8 @@ public class Core : MonoBehaviour {
     }
 
     private void OnDrawGizmos() {
-        //PathFindingManager.Instance.DebugNodes();
-        if (path != null) {
-            Gizmos.color = Color.red;
-            for (int i = 0; i < path.Count; i++) {
-                var node = path[i];
-                var origin = new Vector3(node.x, node.y, node.z);
-                var dest = origin;
-                if (i + 1 < path.Count) {
-                    var nextNode = path[i + 1];
-                    dest = new Vector3(nextNode.x, nextNode.y, nextNode.z);
-                }
-                Gizmos.DrawLine(origin, dest);
-
-            }
+        if (target != null) {
+            Gizmos.DrawCube(target, new Vector3(1, 1, 1));
         }
     }
 
