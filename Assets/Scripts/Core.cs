@@ -113,7 +113,7 @@ public class Core : MonoBehaviour {
     }
 
     private void OnDrawGizmos() {
-        PathFindingManager.Instance.DebugNodes();
+        //PathFindingManager.Instance.DebugNodes();
         if (path != null) {
             foreach (var node in path) {
                 Gizmos.color = Color.red;
