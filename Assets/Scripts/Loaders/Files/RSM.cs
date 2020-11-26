@@ -76,7 +76,7 @@ public class RSM {
 
     public class RotationKeyframe {
         public long frame;
-        public Vector4 q;
+        public Quaternion q;
     }
 
     public class Node {

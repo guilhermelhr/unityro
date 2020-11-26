@@ -67,7 +67,7 @@ public class MapLoader {
         FileManager.InitBatch();
 
         //queue list of models to load
-        for(int i = 0; i < modelDescriptors.Count; i++) {
+        for (int i = 0; i < modelDescriptors.Count; i++) {
             var model = modelDescriptors[i];
             model.filename = "data/model/" + model.filename;
 
@@ -79,7 +79,7 @@ public class MapLoader {
 
         //create model instances
         HashSet<RSM> objectsSet = new HashSet<RSM>();
-        for(int i = 0; i < modelDescriptors.Count; i++) {
+        for(int i = 0; i < modelDescriptors.Count; ++i) {
             RSM model = (RSM) FileManager.Load(modelDescriptors[i].filename);
             if(model != null) {
                 model.CreateInstance(modelDescriptors[i]);

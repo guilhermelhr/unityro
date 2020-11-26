@@ -37,6 +37,10 @@ public class Models {
                     RSM.NodeMeshData meshData = meshesByTexture.Value;
                     RSM.Node node = meshData.node;
 
+                    if (meshesByTexture.Value.vertices.Count == 0) {
+                        continue;
+                    }
+
                     for(int i = 0; i < meshData.vertices.Count; i += 3) {
                         meshData.triangles.AddRange(new int[] {
                                 i + 0 , i + 1, i + 2
