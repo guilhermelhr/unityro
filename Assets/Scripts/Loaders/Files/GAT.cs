@@ -14,7 +14,6 @@ public class GAT {
     public long height;
     public Cell[] cells;
     public string version;
-    public List<PathNode> nodes;
 
     /// <summary>
     /// Cell known type
@@ -49,29 +48,9 @@ public class GAT {
         this.height = height;
         this.cells = cells;
         this.version = version;
-
-        GenerateNodes();
     }
 
     public override string ToString() {
         return "GAT v" + version + "(" + width + "x" + height + ")";
-    }
-
-    public PathNode GetPathNode(int x, int y) => nodes[x + (y * (int)width)];
-
-    private void GenerateNodes() {
-        nodes = new List<PathNode>();
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                var isWalkable = cells[x + (y * width)].type == ((byte)TYPE.WALKABLE | (byte)TYPE.SNIPABLE);
-                var newNode = new PathNode() {
-                    x = x,
-                    y = y,
-                    walkable = isWalkable
-                };
-
-                nodes.Add(newNode);
-            }
-        }
     }
 }

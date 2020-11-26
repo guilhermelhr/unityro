@@ -41,7 +41,7 @@ public class PathFindingManager {
     public bool LoadMap(Altitude altitude) {
         if (altitude != null && altitude != this.Altitude) {
             this.Altitude = altitude;
-            this.mapNodes = this.Altitude.getNodes();
+            this.mapNodes = this.Altitude.GetNodes();
             return true;
         } else if (altitude == this.Altitude) {
             return true;
@@ -63,7 +63,7 @@ public class PathFindingManager {
     public void DebugNodes() {
         if (this.mapNodes == null) return;
         foreach (var node in this.mapNodes) {
-            var origin = new Vector3(node.x, (float)Altitude.GetCellHeight(node.x, node.y), node.y);
+            var origin = new Vector3(node.x, (float)Altitude.GetCellHeight(node.x, node.z), node.z);
             Gizmos.color = node.walkable ? Color.green : Color.black;
             Gizmos.DrawCube(origin, new Vector3(1, 1, 1));
         }
@@ -103,7 +103,7 @@ public class PathFindingManager {
                 int idx = -1;
                 if (range > 0) {
                     for (int i = 0; i < newPath.Count; i++) {
-                        if (Math.Abs(newPath[i].x - endNode.x) <= range && Math.Abs(newPath[i].y - endNode.y) <= range) {
+                        if (Math.Abs(newPath[i].x - endNode.x) <= range && Math.Abs(newPath[i].z - endNode.z) <= range) {
                             idx = i;
                             break;
                         }
@@ -118,7 +118,7 @@ public class PathFindingManager {
             }
 
             x = currentNode.x;
-            y = currentNode.y;
+            y = currentNode.z;
             int gCost = currentNode.gCost;
 
             // rAthena neighbour
@@ -191,7 +191,7 @@ public class PathFindingManager {
 
     private bool CheckDirection(int dir, int bitmask) => (dir & bitmask) == bitmask;
 
-    private int GetHeuristic(int x0, int y0, PathNode endNode) => MOVE_COST * (Mathf.Abs(x0 - endNode.x) + Mathf.Abs(y0 - endNode.y));
+    private int GetHeuristic(int x0, int y0, PathNode endNode) => MOVE_COST * (Mathf.Abs(x0 - endNode.x) + Mathf.Abs(y0 - endNode.z));
 
     private List<PathNode> ReTracePath(PathNode startNode, PathNode endNode) {
         var path = new List<PathNode>();

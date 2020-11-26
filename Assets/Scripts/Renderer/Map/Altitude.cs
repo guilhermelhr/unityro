@@ -10,6 +10,7 @@ using UnityEngine;
 public class Altitude {
     private static int MAX_INTERSECT_COUNT = 150;
     private GAT gat;
+    private List<PathNode> nodes;
 
     public Altitude(BinaryReader stream) {
         gat = AltitudeLoader.Load(stream);
@@ -24,7 +25,23 @@ public class Altitude {
     }
 
     private void init(GAT gat) {
+        GenerateNodes();
         PathFindingManager.Instance.LoadMap(this);
+    }
+    private void GenerateNodes() {
+        nodes = new List<PathNode>();
+        for (int z = 0; z < getHeight(); z++) {
+            for (int x = 0; x < getWidth(); x++) {
+                var newNode = new PathNode() {
+                    x = x,
+                    z = z,
+                    y = (float)GetCellHeight(x, z),
+                    walkable = IsCellWalkable(x, z)
+                };
+
+                nodes.Add(newNode);
+            }
+        }
     }
 
     public long getHeight() {
@@ -39,7 +56,7 @@ public class Altitude {
         return gat.width * gat.height;
     }
 
-    public List<PathNode> getNodes() => gat.nodes;
+    public List<PathNode> GetNodes() => nodes;
 
     /// <summary>
     /// Get cell data
@@ -48,7 +65,7 @@ public class Altitude {
     /// <param name="y">y position</param>
     /// <returns>cell data</returns>
     public GAT.Cell GetCell(double x, double y) {
-        uint index = (uint) (Math.Floor(x) + Math.Floor(y) * gat.width);
+        uint index = (uint)(Math.Floor(x) + Math.Floor(y) * gat.width);
 
         return gat.cells[index];
     }
@@ -60,7 +77,7 @@ public class Altitude {
     /// <param name="y">y position</param>
     /// <returns>cell type</returns>
     public byte GetCellType(double x, double y) {
-        return (byte) GetCell(x, y).type;
+        return (byte)GetCell(x, y).type;
     }
 
     /// <summary>
@@ -70,7 +87,7 @@ public class Altitude {
     /// <param name="y">y position</param>
     /// <returns>cell height</returns>
     public double GetCellHeight(double x, double y) {
-        if(gat.cells == null) {
+        if (gat.cells == null) {
             return 0;
         }
 
@@ -127,12 +144,12 @@ public class Altitude {
         _unit.Normalize();
 
         // Search
-        for(int i = 0; i < MAX_INTERSECT_COUNT; i++) {
+        for (int i = 0; i < MAX_INTERSECT_COUNT; i++) {
             _from[0] += _unit[0];
             _from[1] += _unit[1];
             _from[2] += _unit[2];
 
-            if(Math.Abs(GetCellHeight(_from[0], _from[2]) + _from[1]) < 0.5) {
+            if (Math.Abs(GetCellHeight(_from[0], _from[2]) + _from[1]) < 0.5) {
                 output[0] = _from[0];
                 output[1] = _from[2];
                 return true;
@@ -151,20 +168,20 @@ public class Altitude {
     /// <param name="size">plane size</param>
     /// <returns>plane (two triangles)</returns>
     public float[] GeneratePlane(double dpos_x, double dpos_y, int size) {
-        if(gat.cells == null) {
+        if (gat.cells == null) {
             return null;
         }
 
         //DIFF robrowser does a switch here to "avoid memory allocation" that seems very redundant to me
         float[] buffer = new float[size * size * 30];
-        int middle = (int) Math.Floor(size / 2f);
-        int pos_x = (int) Math.Floor(dpos_x);
-        int pos_y = (int) Math.Floor(dpos_y);
+        int middle = (int)Math.Floor(size / 2f);
+        int pos_x = (int)Math.Floor(dpos_x);
+        int pos_y = (int)Math.Floor(dpos_y);
 
         int i = 0;
-        for(int x = -middle; x <= middle; x++) {
-            for(int y = -middle; y <= middle; y++, i+=30) {
-                int index = ((pos_x + x) + (pos_y + y) * (int) gat.width);
+        for (int x = -middle; x <= middle; x++) {
+            for (int y = -middle; y <= middle; y++, i += 30) {
+                int index = ((pos_x + x) + (pos_y + y) * (int)gat.width);
 
                 // Triangle 1
                 buffer[i + 0] = pos_x + x + 0;
@@ -208,4 +225,7 @@ public class Altitude {
 
         return buffer;
     }
+
+    public bool IsCellWalkable(int x, int y) =>
+        gat.cells[x + (y * getWidth())].type == ((byte)GAT.TYPE.WALKABLE | (byte)GAT.TYPE.SNIPABLE);
 }

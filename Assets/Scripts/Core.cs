@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -39,7 +40,6 @@ public class Core : MonoBehaviour {
     }
 
     void Start() {
-        new TestPathfinding();
         loadConfigs();
 
         Debug.Log("Loading GRF at " + configs["grf2"] + "...");
@@ -101,23 +101,41 @@ public class Core : MonoBehaviour {
 
         if (Input.GetMouseButtonDown(0)) {
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            path = PathFindingManager.Instance.GetPath(50, 50, (int) worldPosition.x, (int) worldPosition.z);
+            path = PathFindingManager.Instance.GetPath((int) entity.transform.position.x, (int)entity.transform.position.z, (int)worldPosition.x, (int)worldPosition.z);
 
-            foreach (var node in path) {
-                //var origin = new Vector3(node.x, 5f, node.y);
-                //Debug.DrawLine(origin, new Vector3(1, 5, 1));
-                //    var moveDir = (new Vector3(node.x, 0.5f, node.y) - entity.transform.position).normalized;
-                //    entity.transform.position = entity.transform.position + moveDir * 2f * Time.deltaTime;
-            }
+            StartCoroutine(Move(path));
+        }
+    }
+
+    IEnumerator Move(List<PathNode> path) {
+        foreach (var node in path) {
+            var MoveToIE = StartCoroutine(MoveTo(node));
+            yield return MoveToIE;
+        }
+    }
+
+    IEnumerator MoveTo(PathNode node) {
+        var destination = new Vector3(node.x, node.y, node.z);
+        while (entity.transform.position != destination) {
+            entity.transform.position = Vector3.MoveTowards(entity.transform.position, destination, 8 * Time.deltaTime);
+            yield return null;
         }
     }
 
     private void OnDrawGizmos() {
         //PathFindingManager.Instance.DebugNodes();
         if (path != null) {
-            foreach (var node in path) {
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(new Vector3(node.x, 5f, node.y), new Vector3(node.x + 1, 5f, node.y + 1));
+            Gizmos.color = Color.red;
+            for (int i = 0; i < path.Count; i++) {
+                var node = path[i];
+                var origin = new Vector3(node.x, node.y, node.z);
+                var dest = origin;
+                if (i + 1 < path.Count) {
+                    var nextNode = path[i + 1];
+                    dest = new Vector3(nextNode.x, nextNode.y, nextNode.z);
+                }
+                Gizmos.DrawLine(origin, dest);
+
             }
         }
     }
