@@ -26,6 +26,7 @@ public class Core : MonoBehaviour {
     }
 
     public static Action<Vector3> OnRayCastHit;
+    public static Action<Vector3> OnMouseActionClick;
     public static Action OnGrfLoaded;
 
     public static Core Instance;
@@ -46,8 +47,6 @@ public class Core : MonoBehaviour {
     }
 
     void Start() {
-
-
         loadConfigs();
 
         Debug.Log("Loading GRF at " + configs["grf"] + "...");
@@ -100,9 +99,6 @@ public class Core : MonoBehaviour {
         }
     }
 
-    Coroutine MoveIE, MoveToIE;
-    Vector3 target;
-
     void Update() {
         //mapDropdown.gameObject.SetActive(Cursor.lockState != CursorLockMode.Locked);
         if (mapRenderer.Ready) {
@@ -113,43 +109,12 @@ public class Core : MonoBehaviour {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out hit)) {
-            target = new Vector3(Mathf.Floor(hit.point.x), hit.point.y, Mathf.Floor(hit.point.z));
+            var target = new Vector3(Mathf.Floor(hit.point.x), hit.point.y, Mathf.Floor(hit.point.z));
             OnRayCastHit?.Invoke(target);
 
-            
-
             if (Input.GetMouseButtonDown(0)) {
-                var path = pathFinding.GetPath((int)entity.transform.position.x, (int)entity.transform.position.z, (int)target.x, (int)target.z);
-
-                if (MoveIE != null) {
-                    StopCoroutine(MoveIE);
-                }
-                if (MoveToIE != null) {
-                    StopCoroutine(MoveToIE);
-                }
-                MoveIE = StartCoroutine(Move(path));
+                OnMouseActionClick?.Invoke(target);
             }
-        }
-    }
-
-    IEnumerator Move(List<PathNode> path) {
-        foreach (var node in path) {
-            MoveToIE = StartCoroutine(MoveTo(node));
-            yield return MoveToIE;
-        }
-    }
-
-    IEnumerator MoveTo(PathNode node) {
-        var destination = new Vector3(node.x, (float) node.y, node.z);
-        while (entity.transform.position != destination) {
-            entity.transform.position = Vector3.MoveTowards(entity.transform.position, destination, 8 * Time.deltaTime);
-            yield return null;
-        }
-    }
-
-    private void OnDrawGizmos() {
-        if (target != null) {
-            Gizmos.DrawCube(target, new Vector3(1, 1, 1));
         }
     }
 

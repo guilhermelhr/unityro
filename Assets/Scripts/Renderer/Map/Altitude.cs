@@ -95,14 +95,12 @@ public class Altitude {
 
         GAT.Cell cell = GetCell(x, y);
 
-        double index, x1, x2;
-
         // Should be at the middle of the cell
         x %= 1.0;
         y %= 1.0;
 
-        x1 = cell.heights[0] + (cell.heights[1] - cell.heights[0]) * x;
-        x2 = cell.heights[2] + (cell.heights[3] - cell.heights[2]) * x;
+        double x1 = cell.heights[0] + (cell.heights[1] - cell.heights[0]) * x;
+        double x2 = cell.heights[2] + (cell.heights[3] - cell.heights[2]) * x;
 
         return -(x1 + (x2 - x1) * y);
     }
