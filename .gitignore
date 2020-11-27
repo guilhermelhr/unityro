@@ -72,4 +72,4 @@ crashlytics-build.properties
 
 /[Aa]ssets/[Rr]esources/[Mm]ock
 /Packages
-/[Aa]ssets/config.*
+/[Aa]ssets/config.txt
