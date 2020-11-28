@@ -9,33 +9,6 @@ using UnityEngine;
 /// Based on ROBrowser by Vincent Thibault (robrowser.com)
 /// </summary>
 public class AltitudeLoader {
-    /// <summary>
-    /// Cell known type
-    /// </summary>
-    public enum TYPE : byte {
-        NONE = 1 << 0,
-        WALKABLE = 1 << 1,
-        WATER = 1 << 2,
-        SNIPABLE = 1 << 3
-    }
-
-    public struct Cell {
-        public Vector4 heights;
-        public byte type;
-    }
-
-    /// <summary>
-    /// Taken from *athena at src/map/map.c
-    /// </summary>
-    public static byte[] TYPE_TABLE = {
-        (byte) TYPE.WALKABLE | (byte) TYPE.SNIPABLE,                     // walkable ground
-		(byte) TYPE.NONE,                                                // non-walkable ground
-		(byte) TYPE.WALKABLE | (byte) TYPE.SNIPABLE,                     // ???
-		(byte) TYPE.WALKABLE | (byte) TYPE.SNIPABLE | (byte) TYPE.WATER, // walkable water
-		(byte) TYPE.WALKABLE | (byte) TYPE.SNIPABLE,                     // ???
-		(byte) TYPE.SNIPABLE,                                            // gat (snipable)
-		(byte) TYPE.WALKABLE | (byte) TYPE.SNIPABLE                      // ???
-    };
 
     /// <summary>
     /// Load a GAT file
@@ -55,16 +28,17 @@ public class AltitudeLoader {
         version += "." + subversion;
         uint width = data.ReadULong();
         uint height = data.ReadULong();
-        Cell[] cells = new Cell[width * height];
+        GAT.Cell[] cells = new GAT.Cell[width * height];
 
         //load the cells
         for(int i = 0; i < width * height; i++) {
-            Vector4 heights = cells[i].heights = new Vector4();
+            Vector4 heights = new Vector4();
             heights[0] = data.ReadFloat() * 0.2f;         // height 1
             heights[1] = data.ReadFloat() * 0.2f;         // height 2
             heights[2] = data.ReadFloat() * 0.2f;         // height 3
             heights[3] = data.ReadFloat() * 0.2f;         // height 4
-            cells[i].type = TYPE_TABLE[data.ReadULong()];    // type
+            cells[i].heights = heights;
+            cells[i].type = GAT.TYPE_TABLE[data.ReadULong()];    // type
         }
 
         //exports

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿
+using System.Collections.Generic;
+using UnityEngine;
 /// <summary>
 /// .gat file representation
 /// 
@@ -10,10 +12,38 @@ public class GAT {
 
     public long width;
     public long height;
-    public AltitudeLoader.Cell[] cells;
+    public Cell[] cells;
     public string version;
 
-    public GAT(uint width, uint height, AltitudeLoader.Cell[] cells, string version) {
+    /// <summary>
+    /// Cell known type
+    /// </summary>
+    public enum TYPE : byte {
+        NONE = 1 << 0,
+        WALKABLE = 1 << 1,
+        WATER = 1 << 2,
+        SNIPABLE = 1 << 3
+    }
+
+    public struct Cell {
+        public Vector4 heights;
+        public byte type;
+    }
+
+    /// <summary>
+    /// Taken from *athena at src/map/map.c
+    /// </summary>
+    public static byte[] TYPE_TABLE = {
+        (byte) TYPE.WALKABLE | (byte) TYPE.SNIPABLE,                     // walkable ground
+		(byte) TYPE.NONE,                                                // non-walkable ground
+		(byte) TYPE.WALKABLE | (byte) TYPE.SNIPABLE,                     // ???
+		(byte) TYPE.WALKABLE | (byte) TYPE.SNIPABLE | (byte) TYPE.WATER, // walkable water
+		(byte) TYPE.WALKABLE | (byte) TYPE.SNIPABLE,                     // ???
+		(byte) TYPE.SNIPABLE,                                            // gat (snipable)
+		(byte) TYPE.WALKABLE | (byte) TYPE.SNIPABLE                      // ???
+    };
+
+    public GAT(uint width, uint height, Cell[] cells, string version) {
         this.width = width;
         this.height = height;
         this.cells = cells;
