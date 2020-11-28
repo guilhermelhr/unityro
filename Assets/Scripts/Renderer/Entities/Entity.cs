@@ -39,21 +39,19 @@ public class Entity : MonoBehaviour {
     public int attackRange = 0;
     public int attackSpeed = 300;
 
-
     private void Awake() {
-        Core.OnMouseActionClick += this.OnMouseActionClick;
-
         _EntityWalk = gameObject.AddComponent<EntityWalk>();
-
-
-        _EntityWalk.Init(gameObject.transform);
     }
 
-    private void OnDestroy() {
-        Core.OnMouseActionClick -= this.OnMouseActionClick;
-    }
+    private void Update() {
+        RaycastHit hit;
+        var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
 
-    private void OnMouseActionClick(Vector3 targetPosition) {
-        _EntityWalk.WalkTo(targetPosition, gameObject.transform.position);
+        if (Input.GetMouseButtonDown(0)) {
+            if (Physics.Raycast(ray, out hit)) {
+                var target = new Vector3(Mathf.Floor(hit.point.x), hit.point.y, Mathf.Floor(hit.point.z));
+                _EntityWalk.WalkTo(target);
+            }
+        }
     }
 }

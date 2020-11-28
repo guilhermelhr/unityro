@@ -25,11 +25,10 @@ public class Core : MonoBehaviour {
         get { return pathFinding; }
     }
 
-    public static Action<Vector3> OnRayCastHit;
-    public static Action<Vector3> OnMouseActionClick;
     public static Action OnGrfLoaded;
 
     public static Core Instance;
+    public static Camera MainCamera;
 
     public string mapname;
     public GameObject entity;
@@ -43,6 +42,9 @@ public class Core : MonoBehaviour {
     private void Awake() {
         if (Instance == null) {
             Instance = this;
+        }
+        if (MainCamera == null) {
+            MainCamera = Camera.main;
         }
     }
 
@@ -103,18 +105,6 @@ public class Core : MonoBehaviour {
         //mapDropdown.gameObject.SetActive(Cursor.lockState != CursorLockMode.Locked);
         if (mapRenderer.Ready) {
             mapRenderer.Render();
-        }
-
-        RaycastHit hit;
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out hit)) {
-            var target = new Vector3(Mathf.Floor(hit.point.x), hit.point.y, Mathf.Floor(hit.point.z));
-            OnRayCastHit?.Invoke(target);
-
-            if (Input.GetMouseButtonDown(0)) {
-                OnMouseActionClick?.Invoke(target);
-            }
         }
     }
 
