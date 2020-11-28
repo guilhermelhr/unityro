@@ -44,10 +44,9 @@ public class Entity : MonoBehaviour {
     }
 
     private void Update() {
-        RaycastHit hit;
-        var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-
         if (Input.GetMouseButtonDown(0)) {
+            RaycastHit hit;
+            var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit)) {
                 var target = new Vector3(Mathf.Floor(hit.point.x), hit.point.y, Mathf.Floor(hit.point.z));
                 _EntityWalk.WalkTo(target);
