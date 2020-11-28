@@ -281,6 +281,7 @@ GameObject:
   - component: {fileID: 219046962}
   - component: {fileID: 219046966}
   - component: {fileID: 219046967}
+  - component: {fileID: 219046968}
   m_Layer: 8
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -373,8 +374,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7086719cce558a44489091c3f16b6408, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapname: prt_fild08
-  entity: {fileID: 773437378}
+  mapname: 
   soundsMixerGroup: {fileID: 243063458056754506, guid: 80607cd4d5abb9d49824975c92ad1afc, type: 2}
   worldLight: {fileID: 1425244937}
   mapDropdown: {fileID: 1242101162}
@@ -397,6 +397,26 @@ MonoBehaviour:
   altitude: 25
   rotation: 0
   angle: 0
+--- !u!114 &219046968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219046961}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30b1dc80bc8d6d44b9df49892fe41b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraSensitivity: 40
+  climbSpeed: 4
+  normalMoveSpeed: 10
+  speedFactor: 0.25
+  fastMoveFactor: 3
+  posLerp: 1
+  rotLerp: 1
+  speedLerp: 1
 --- !u!1 &366809274
 GameObject:
   m_ObjectHideFlags: 0
@@ -1736,7 +1756,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1795252955
 MonoBehaviour:
   m_ObjectHideFlags: 0
