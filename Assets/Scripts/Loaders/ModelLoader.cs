@@ -241,7 +241,9 @@ public class ModelLoader {
         }
 
         //read position keyframes
-        if (version >= 1.5) {
+        // DIFF: roBrowser and open-ragnarok use (version >= 1.5) here.
+        // BrowEdit does not read position keyframes at all for any version.
+        if (version > 1.5) {
             int pkfCount = data.ReadLong();
             for (int i = 0; i < pkfCount; ++i) {
                 var key = data.ReadLong();
@@ -253,8 +255,7 @@ public class ModelLoader {
         }
 
         //read rotation keyframes
-        // TODO: Investigate why this sometimes overflow when using kRO grf (eg: prontera)
-        short rkfCount = (short) data.ReadLong();
+        int rkfCount = data.ReadLong();
         for (int i = 0; i < rkfCount; ++i) {
             int time = data.ReadLong();
             Quaternion quat = new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
