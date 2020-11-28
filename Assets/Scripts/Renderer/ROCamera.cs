@@ -37,7 +37,7 @@ public class ROCamera : MonoBehaviour {
     void LateUpdate() {
         float scrollDelta = Input.mouseScrollDelta.y;
         if (Input.GetMouseButton(1)) {
-            this.rotation = Mathf.Clamp(this.rotation + Input.GetAxis("Mouse X"), ROTATION_MIN, ROTATION_MAX);
+            this.rotation += Input.GetAxis("Mouse X");
             HandleYawPitch();
         } else if (Input.GetKey(KeyCode.LeftShift)) {
             this.altitude = Mathf.Clamp(this.altitude + scrollDelta, ALTITUDE_MIN, ALTITUDE_MAX);
@@ -47,7 +47,7 @@ public class ROCamera : MonoBehaviour {
             HandleZoom();
         }
 
-        pointDirection = GetDirection();
+        angle = (float)Math.Floor((Math.Abs(rotation) % 360 + 22.5f) / 45) % 8;
     }
 
     private void HandleYawPitch() {
@@ -102,13 +102,13 @@ public class ROCamera : MonoBehaviour {
     
     public DIRECTION GetDirection() {
         var direction = _target.position - transform.position;
-        direction.x = 0;
+        direction.y = 0;
         direction /= direction.magnitude;
 
-        float a_cos = Vector3.Dot(direction, Vector3.back);
+        float a_cos = Vector3.Dot(direction, Vector3.forward);
         angle = (float)(Math.Acos(a_cos) * 180 / Math.PI);
 
-        if (direction.x < 0) {
+        if (direction.y < 0) {
             angle = 360 - angle;
         }
 
