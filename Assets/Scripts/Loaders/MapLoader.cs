@@ -206,13 +206,17 @@ public class MapLoader {
 
         float start = Time.realtimeSinceStartup;
         ModelCompiler[] compilerArray = new ModelCompiler[objects.Length];
-        for(int i = 0; i < objects.Length; i++) {
+        for (int i = 0; i < objects.Length; i++) {
             ModelCompiler compiler = new ModelCompiler(objects[i]);
             compilerArray[i] = compiler;
             ThreadPool.QueueUserWorkItem(compiler.ThreadPoolCallback, i);
         }
 
-        doneCMEvent.WaitOne();
+        // there are objects: wait for them to load
+        if (objects.Length > 0) {
+            doneCMEvent.WaitOne();
+        }
+
         float delta = Time.realtimeSinceStartup - start;
         Debug.Log("Models compiling time: " + delta);
 
