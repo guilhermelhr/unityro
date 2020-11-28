@@ -17,13 +17,11 @@ public class PathFindingManager {
         DIR_EAST = 8
     }
 
-
-    private const int MOVE_COST = 10;
-    private const int MOVE_DIAGONAL = 14;
+    private const int COST_STRAIGHT_MOVE = 10;
+    private const int COST_DIAGONAL_MOVE = 14;
     private const int QUADS_FOR_PATH = 32 * 32;
 
     public Altitude Altitude { get; private set; }
-    private bool hasDrawn = false;
 
     private List<PathNode> mapNodes;
     private List<PathNode> openSet = new List<PathNode>();
@@ -75,6 +73,14 @@ public class PathFindingManager {
 
         List<PathNode> newPath = new List<PathNode>();
 
+        /**
+         * Don't spend resources if either start or end
+         * nodes are not walkable.
+         */
+        if (!endNode.walkable || !startNode.walkable) {
+            return newPath;
+        }
+
         openSet.Add(startNode);
 
         int x, y, xs, ys;
@@ -125,28 +131,28 @@ public class PathFindingManager {
             if (x > 0 && CheckWalkable(x - 1, y)) allowed_directions |= (int)eDirection.DIR_WEST;
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH | (int)eDirection.DIR_WEST)) && CheckWalkable(x - 1, y - 1))
-                ProcessNode(x - 1, y - 1, gCost + MOVE_DIAGONAL, currentNode, endNode);
+                ProcessNode(x - 1, y - 1, gCost + COST_DIAGONAL_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_WEST)))
-                ProcessNode(x - 1, y, gCost + MOVE_COST, currentNode, endNode);
+                ProcessNode(x - 1, y, gCost + COST_STRAIGHT_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH | (int)eDirection.DIR_WEST)) && CheckWalkable(x - 1, y + 1))
-                ProcessNode(x - 1, y + 1, gCost + MOVE_DIAGONAL, currentNode, endNode);
+                ProcessNode(x - 1, y + 1, gCost + COST_DIAGONAL_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH)))
-                ProcessNode(x, y + 1, gCost + MOVE_COST, currentNode, endNode);
+                ProcessNode(x, y + 1, gCost + COST_STRAIGHT_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH | (int)eDirection.DIR_EAST)) && CheckWalkable(x + 1, y + 1))
-                ProcessNode(x + 1, y + 1, gCost + MOVE_DIAGONAL, currentNode, endNode);
+                ProcessNode(x + 1, y + 1, gCost + COST_DIAGONAL_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_EAST)))
-                ProcessNode(x + 1, y, gCost + MOVE_COST, currentNode, endNode);
+                ProcessNode(x + 1, y, gCost + COST_STRAIGHT_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH | (int)eDirection.DIR_EAST)) && CheckWalkable(x + 1, y - 1))
-                ProcessNode(x + 1, y - 1, gCost + MOVE_DIAGONAL, currentNode, endNode);
+                ProcessNode(x + 1, y - 1, gCost + COST_DIAGONAL_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH)))
-                ProcessNode(x, y - 1, gCost + MOVE_COST, currentNode, endNode);
+                ProcessNode(x, y - 1, gCost + COST_STRAIGHT_MOVE, currentNode, endNode);
         }
 
         return newPath;
@@ -186,7 +192,7 @@ public class PathFindingManager {
 
     private bool CheckDirection(int dir, int bitmask) => (dir & bitmask) == bitmask;
 
-    private int GetHeuristic(int x0, int y0, PathNode endNode) => MOVE_COST * (Mathf.Abs(x0 - endNode.x) + Mathf.Abs(y0 - endNode.z));
+    private int GetHeuristic(int x0, int y0, PathNode endNode) => COST_STRAIGHT_MOVE * (Mathf.Abs(x0 - endNode.x) + Mathf.Abs(y0 - endNode.z));
 
     private List<PathNode> ReTracePath(PathNode startNode, PathNode endNode) {
         var path = new List<PathNode>();
