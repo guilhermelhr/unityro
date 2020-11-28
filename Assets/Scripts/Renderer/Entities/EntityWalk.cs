@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class EntityWalk : MonoBehaviour {
@@ -26,13 +27,17 @@ public class EntityWalk : MonoBehaviour {
 
     private Coroutine MoveIE, MoveToIE;
     private Transform Transform;
+    Stopwatch _StopWatch = new Stopwatch();
 
     public void Init(Transform transform) {
         this.Transform = transform;
     }
 
     public void WalkTo(Vector3 targetPosition, Vector3 fromPosition) {
+        _StopWatch.Restart();
         var path = Core.PathFinding.GetPath((int)fromPosition.x, (int)fromPosition.z, (int)targetPosition.x, (int)targetPosition.z);
+        _StopWatch.Stop();
+        UnityEngine.Debug.Log($"<color=yellow>Pathfinding took: {_StopWatch.Elapsed} seconds</color>");
 
         if (MoveIE != null) {
             Core.Instance.StopCoroutine(MoveIE);
