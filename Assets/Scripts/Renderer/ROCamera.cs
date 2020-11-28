@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ROCamera : MonoBehaviour {
 
-    public enum DIRECTION {
-        NORTH,
+    public enum DIRECTION : int {
+        NORTH = 0,
         NORTHEAST,
         EAST,
         SOUTHEAST,
@@ -47,7 +47,12 @@ public class ROCamera : MonoBehaviour {
             HandleZoom();
         }
 
-        angle = (float)Math.Floor((Math.Abs(rotation) % 360 + 22.5f) / 45) % 8;
+        angle = GetAngleDirection();
+        pointDirection = (DIRECTION) angle;
+    }
+
+    private float GetAngleDirection() {
+        return (float)Math.Floor((Math.Abs(rotation) % 360 + 22.5f) / 45) % 8;
     }
 
     private void HandleYawPitch() {
