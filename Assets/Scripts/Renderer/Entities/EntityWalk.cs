@@ -34,10 +34,7 @@ public class EntityWalk : MonoBehaviour {
     }
 
     public void WalkTo(Vector3 targetPosition, Vector3 fromPosition) {
-        _StopWatch.Restart();
         var path = Core.PathFinding.GetPath((int)fromPosition.x, (int)fromPosition.z, (int)targetPosition.x, (int)targetPosition.z);
-        _StopWatch.Stop();
-        UnityEngine.Debug.Log($"<color=yellow>Pathfinding took: {_StopWatch.Elapsed} seconds</color>");
 
         if (MoveIE != null) {
             Core.Instance.StopCoroutine(MoveIE);

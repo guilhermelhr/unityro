@@ -125,30 +125,30 @@ public class PathFindingManager {
             // rAthena neighbour
             int allowed_directions = 0;
 
-            if (y < ys && CheckWalkable(x, y + 1)) allowed_directions |= (int)eDirection.DIR_NORTH;
-            if (y > 0 && CheckWalkable(x, y - 1)) allowed_directions |= (int)eDirection.DIR_SOUTH;
-            if (x < xs && CheckWalkable(x + 1, y)) allowed_directions |= (int)eDirection.DIR_EAST;
-            if (x > 0 && CheckWalkable(x - 1, y)) allowed_directions |= (int)eDirection.DIR_WEST;
+            if (y < ys && Altitude.IsCellWalkable(x, y + 1)) allowed_directions |= (int)eDirection.DIR_NORTH;
+            if (y > 0 && Altitude.IsCellWalkable(x, y - 1)) allowed_directions |= (int)eDirection.DIR_SOUTH;
+            if (x < xs && Altitude.IsCellWalkable(x + 1, y)) allowed_directions |= (int)eDirection.DIR_EAST;
+            if (x > 0 && Altitude.IsCellWalkable(x - 1, y)) allowed_directions |= (int)eDirection.DIR_WEST;
 
-            if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH | (int)eDirection.DIR_WEST)) && CheckWalkable(x - 1, y - 1))
+            if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH | (int)eDirection.DIR_WEST)) && Altitude.IsCellWalkable(x - 1, y - 1))
                 ProcessNode(x - 1, y - 1, gCost + COST_DIAGONAL_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_WEST)))
                 ProcessNode(x - 1, y, gCost + COST_STRAIGHT_MOVE, currentNode, endNode);
 
-            if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH | (int)eDirection.DIR_WEST)) && CheckWalkable(x - 1, y + 1))
+            if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH | (int)eDirection.DIR_WEST)) && Altitude.IsCellWalkable(x - 1, y + 1))
                 ProcessNode(x - 1, y + 1, gCost + COST_DIAGONAL_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH)))
                 ProcessNode(x, y + 1, gCost + COST_STRAIGHT_MOVE, currentNode, endNode);
 
-            if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH | (int)eDirection.DIR_EAST)) && CheckWalkable(x + 1, y + 1))
+            if (CheckDirection(allowed_directions, ((int)eDirection.DIR_NORTH | (int)eDirection.DIR_EAST)) && Altitude.IsCellWalkable(x + 1, y + 1))
                 ProcessNode(x + 1, y + 1, gCost + COST_DIAGONAL_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_EAST)))
                 ProcessNode(x + 1, y, gCost + COST_STRAIGHT_MOVE, currentNode, endNode);
 
-            if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH | (int)eDirection.DIR_EAST)) && CheckWalkable(x + 1, y - 1))
+            if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH | (int)eDirection.DIR_EAST)) && Altitude.IsCellWalkable(x + 1, y - 1))
                 ProcessNode(x + 1, y - 1, gCost + COST_DIAGONAL_MOVE, currentNode, endNode);
 
             if (CheckDirection(allowed_directions, ((int)eDirection.DIR_SOUTH)))
@@ -179,15 +179,6 @@ public class PathFindingManager {
         currentNode.hCost = h_cost;
         currentNode.parentNode = parentNode;
         openSet.Add(currentNode);
-    }
-
-    private bool CheckWalkable(int x, int y) {
-        int idx = x + (y * gridX);
-        if (idx > mapNodes.Count - 1) {
-            Debug.LogWarning("Break here");
-        }
-
-        return mapNodes[idx].walkable;
     }
 
     private bool CheckDirection(int dir, int bitmask) => (dir & bitmask) == bitmask;
