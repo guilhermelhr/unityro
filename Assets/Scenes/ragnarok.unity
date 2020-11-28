@@ -390,10 +390,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7129797e95ed6024b8146ac91ee78200, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distance: 10
-  currentY: 20
-  altitude: 2
   _target: {fileID: 773437382}
+  pointDirection: 0
+  zoom: 0
+  distance: 30
+  offset: {x: 0, y: 0, z: 0}
 --- !u!1 &366809274
 GameObject:
   m_ObjectHideFlags: 0
