@@ -100,7 +100,7 @@ public class PathFindingManager {
             closedSet.Add(currentNode);
 
             if (currentNode == endNode) {
-                newPath = ReTracePath(startNode, endNode);
+                newPath = ReversePath(startNode, endNode);
                 int idx = -1;
                 if (range > 0) {
                     for (int i = 0; i < newPath.Count; i++) {
@@ -194,7 +194,7 @@ public class PathFindingManager {
 
     private int GetHeuristic(int x0, int y0, PathNode endNode) => COST_STRAIGHT_MOVE * (Mathf.Abs(x0 - endNode.x) + Mathf.Abs(y0 - endNode.z));
 
-    private List<PathNode> ReTracePath(PathNode startNode, PathNode endNode) {
+    private List<PathNode> ReversePath(PathNode startNode, PathNode endNode) {
         var path = new List<PathNode>();
         var currentNode = endNode;
 
