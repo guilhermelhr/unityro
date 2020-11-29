@@ -38,8 +38,7 @@ public class Core : MonoBehaviour {
     private Hashtable configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
 
-    private bool isMapSelectorEnabled = false;
-    private bool isRoCamEnabled = true;
+    private bool roCamEnabled;
 
     private void Awake() {
         if (Instance == null) {
@@ -57,6 +56,7 @@ public class Core : MonoBehaviour {
     void Start() {
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
+        roCamEnabled = MainCamera.GetComponent<ROCamera>().enabled;
 
         LoadConfigs();
         LoadGrf();
@@ -69,9 +69,16 @@ public class Core : MonoBehaviour {
         selector.buildDropdown(mapDropdown);
         Debug.Log($"Map list has {selector.GetMapList().Count} entries.");
 
-        if (!string.IsNullOrEmpty(mapname)) {
+        // do we have a map to load on startup
+        var preLoadMap = !string.IsNullOrEmpty(mapname);
+
+        // there is a map to load on startup: load it
+        if (preLoadMap) {
             selector.ChangeMap(mapname);
         }
+
+        // if a map is pre loaded, do not display map selector on startup
+        mapDropdown.gameObject.SetActive(!preLoadMap);
     }
 
     private void LoadGrf() {
@@ -114,38 +121,45 @@ public class Core : MonoBehaviour {
     }
 
     void Update() {
+        if (mapRenderer.Ready) {
+            mapRenderer.Render();
+        }
+
+        // is map selector enabled
+        var mapSelectorEnabled = mapDropdown.gameObject.activeSelf;
+
         // ESC pressed: toggle map selector visiblity
         if (Input.GetKeyDown(KeyCode.Escape)) {
-            isMapSelectorEnabled = !isMapSelectorEnabled;
-            mapDropdown.gameObject.SetActive(isMapSelectorEnabled);
+
+            // toggle map selector
+            mapSelectorEnabled = !mapSelectorEnabled;
+            mapDropdown.gameObject.SetActive(mapSelectorEnabled);
 
             // disable cameras when map selector is visible
-            MainCamera.GetComponent<ROCamera>().enabled = !isMapSelectorEnabled && isRoCamEnabled;
-            MainCamera.GetComponent<FreeflyCam>().enabled = !isMapSelectorEnabled && !isRoCamEnabled;
+            MainCamera.GetComponent<ROCamera>().enabled = !mapSelectorEnabled && roCamEnabled;
+            MainCamera.GetComponent<FreeflyCam>().enabled = !mapSelectorEnabled && !roCamEnabled;
 
             // disable entity when map selector is visible
-            MainCamera.GetComponentInParent<Entity>().enabled = !isMapSelectorEnabled;
+            MainCamera.GetComponentInParent<Entity>().enabled = !mapSelectorEnabled;
         }
 
         // F1 pressed and not on map selector: switch between ROCamera and FreeflyCam
-        if (Input.GetKeyDown(KeyCode.F1) && !isMapSelectorEnabled) {
-            isRoCamEnabled = !isRoCamEnabled;
-            MainCamera.GetComponent<ROCamera>().enabled = isRoCamEnabled;
-            MainCamera.GetComponent<FreeflyCam>().enabled = !isRoCamEnabled;
+        else if (Input.GetKeyDown(KeyCode.F1) && !mapSelectorEnabled) {
 
-            Cursor.lockState = isRoCamEnabled ? CursorLockMode.None : Cursor.lockState;
-            Cursor.visible = isRoCamEnabled;
+            // switch cameras
+            roCamEnabled = !roCamEnabled;
+            MainCamera.GetComponent<ROCamera>().enabled = roCamEnabled;
+            MainCamera.GetComponent<FreeflyCam>().enabled = !roCamEnabled;
+
+            // handle cursor
+            Cursor.lockState = roCamEnabled ? CursorLockMode.None : Cursor.lockState;
+            Cursor.visible = roCamEnabled;
 
             // switched to ROCamera: updated it so we go from wherever
             // freefly is to where ROCam should be
-            if (isRoCamEnabled) {
+            if (roCamEnabled) {
                 MainCamera.GetComponent<ROCamera>().Start();
             }
-        }
-
-
-        if (mapRenderer.Ready) {
-            mapRenderer.Render();
         }
     }
 
