@@ -55,12 +55,12 @@ public class Core : MonoBehaviour {
     }
 
     void Start() {
+        MapRenderer.SoundsMixerGroup = soundsMixerGroup;
+        MapRenderer.WorldLight = worldLight;
+
         LoadConfigs();
         LoadGrf();
         BuildMapSelector();
-
-        MapRenderer.SoundsMixerGroup = soundsMixerGroup;
-        MapRenderer.WorldLight = worldLight;
     }
 
     private void BuildMapSelector() {
