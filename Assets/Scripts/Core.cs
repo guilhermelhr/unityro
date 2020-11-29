@@ -39,14 +39,14 @@ public class Core : MonoBehaviour {
     private static string CFG_NAME = "config.txt";
 
     private bool isMapSelectorEnabled = false;
-    private bool isRoCamEnabled = false;
+    private bool isRoCamEnabled = true;
 
     private void Awake() {
         if (Instance == null) {
             Instance = this;
         }
 
-	/**
+	    /**
          * Caching the camera as it's heavy to search for it
          */
         if (MainCamera == null) {
@@ -114,16 +114,33 @@ public class Core : MonoBehaviour {
     }
 
     void Update() {
+        // ESC pressed: toggle map selector visiblity
         if (Input.GetKeyDown(KeyCode.Escape)) {
             isMapSelectorEnabled = !isMapSelectorEnabled;
             mapDropdown.gameObject.SetActive(isMapSelectorEnabled);
-        } else if (Input.GetKeyDown(KeyCode.F1)) {
+
+            // disable cameras when map selector is visible
+            MainCamera.GetComponent<ROCamera>().enabled = !isMapSelectorEnabled && isRoCamEnabled;
+            MainCamera.GetComponent<FreeflyCam>().enabled = !isMapSelectorEnabled && !isRoCamEnabled;
+
+            // disable entity when map selector is visible
+            MainCamera.GetComponentInParent<Entity>().enabled = !isMapSelectorEnabled;
+        }
+
+        // F1 pressed and not on map selector: switch between ROCamera and FreeflyCam
+        if (Input.GetKeyDown(KeyCode.F1) && !isMapSelectorEnabled) {
             isRoCamEnabled = !isRoCamEnabled;
             MainCamera.GetComponent<ROCamera>().enabled = isRoCamEnabled;
             MainCamera.GetComponent<FreeflyCam>().enabled = !isRoCamEnabled;
 
             Cursor.lockState = isRoCamEnabled ? CursorLockMode.None : Cursor.lockState;
             Cursor.visible = isRoCamEnabled;
+
+            // switched to ROCamera: updated it so we go from wherever
+            // freefly is to where ROCam should be
+            if (isRoCamEnabled) {
+                MainCamera.GetComponent<ROCamera>().Start();
+            }
         }
 
 

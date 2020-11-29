@@ -46,15 +46,6 @@ public class FreeflyCam : MonoBehaviour
     }
 
     void Update() {
-        if(Input.GetKeyDown(KeyCode.End) || Input.GetKeyDown(KeyCode.Escape)) {
-            Cursor.lockState = (CursorLockMode.Locked != Cursor.lockState) ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = Cursor.lockState != CursorLockMode.Locked;
-        }
-
-        if(Cursor.lockState != CursorLockMode.Locked) {
-            return;
-        }
-
         rotationX = rotationX + Input.GetAxis("Mouse X") * cameraSensitivity;
         rotationY = rotationY + Input.GetAxis("Mouse Y") * cameraSensitivity;
         rotationY = Mathf.Clamp(rotationY, -90, 90);
