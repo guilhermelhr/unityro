@@ -280,6 +280,8 @@ GameObject:
   - component: {fileID: 219046963}
   - component: {fileID: 219046962}
   - component: {fileID: 219046966}
+  - component: {fileID: 219046967}
+  - component: {fileID: 219046968}
   m_Layer: 8
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -327,7 +329,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 5000
+  far clip plane: 500
   field of view: 40
   orthographic: 0
   orthographic size: 5
@@ -353,13 +355,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 219046961}
-  m_LocalRotation: {x: 0.2815042, y: -0, z: -0, w: 0.95956004}
-  m_LocalPosition: {x: 0, y: 11.38, z: -17.430008}
+  m_LocalRotation: {x: 0.17364816, y: -0, z: -0, w: 0.9848078}
+  m_LocalPosition: {x: 0, y: 8.4, z: -20.592712}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 773437382}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 28.639002, y: -50.54, z: 0}
+  m_LocalEulerAnglesHint: {x: 20, y: 0, z: 0}
 --- !u!114 &219046966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,11 +374,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7086719cce558a44489091c3f16b6408, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapname: prt_fild08
-  entity: {fileID: 773437378}
+  mapname: 
   soundsMixerGroup: {fileID: 243063458056754506, guid: 80607cd4d5abb9d49824975c92ad1afc, type: 2}
   worldLight: {fileID: 1425244937}
   mapDropdown: {fileID: 1242101162}
+--- !u!114 &219046967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219046961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7129797e95ed6024b8146ac91ee78200, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 773437382}
+  pointDirection: 0
+  zoom: 0
+  distance: 30
+  altitude: 25
+  rotation: 0
+  angle: 0
+--- !u!114 &219046968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219046961}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30b1dc80bc8d6d44b9df49892fe41b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraSensitivity: 40
+  climbSpeed: 4
+  normalMoveSpeed: 10
+  speedFactor: 0.25
+  fastMoveFactor: 3
+  posLerp: 1
+  rotLerp: 1
+  speedLerp: 1
 --- !u!1 &366809274
 GameObject:
   m_ObjectHideFlags: 0
@@ -669,7 +709,7 @@ GameObject:
   - component: {fileID: 773437379}
   - component: {fileID: 773437383}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Entity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1716,7 +1756,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1795252955
 MonoBehaviour:
   m_ObjectHideFlags: 0

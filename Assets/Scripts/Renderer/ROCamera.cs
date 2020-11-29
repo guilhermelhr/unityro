@@ -2,202 +2,139 @@
 using UnityEngine;
 
 public class ROCamera : MonoBehaviour {
-    public Matrix4x4 projection;
-    public Matrix4x4 modelView;
-    public Matrix4x4 normalMat;
 
-    public float zoom;
-    public float zoomFinal;
-
-    public Vector2 angle;
-    public Vector2 angleFinal;
-
-    public Vector3 position;
-    public GameObject target;
-
-    public static float MAX_ZOOM = 10;
-    /// <summary>
-    /// time frame in seconds within which we consider a double right click
-    /// to be a request to reset zoom and rotation
-    /// </summary>
-    public static float RESET_ZOOM_DELTA = 0.5f;
-
-    public float direction = 0;
-    public float altitudeFrom = -50;
-    public float altitudeTo = -65;
-    public float rotationFrom = -360;
-    public float rotationTo = 360;
-    public float range = 240;
-
-    public Action action;
-
-    public struct Action {
-        public bool active;
-        public float tick;
-        public float x, y;
-
-        public Action(bool active, float tick, float x, float y) {
-            this.active = active;
-            this.tick = tick;
-            this.x = x;
-            this.y = y;
-        }
+    public enum DIRECTION : int {
+        NORTH = 0,
+        NORTHEAST,
+        EAST,
+        SOUTHEAST,
+        SOUTH,
+        SOUTHWEST,
+        WEST,
+        NORTHWEST
     }
 
-    public void SetTarget(GameObject target) {
-        this.target = target;
+    private const float ZOOM_MIN = 12f;
+    private const float ZOOM_MAX = 60f;
+    private const float ALTITUDE_MIN = 10f;
+    private const float ALTITUDE_MAX = 35f;
+    private const float ROTATION_MIN = -360f;
+    private const float ROTATION_MAX = 360f;
+
+    [SerializeField] private Transform _target;
+    [SerializeField] private DIRECTION pointDirection;
+    [SerializeField] private float zoom = 0f;
+    [SerializeField] private float distance = 30f;
+    [SerializeField] private float altitude = ALTITUDE_MAX;
+    [SerializeField] private float rotation = 0f;
+    [SerializeField] private float angle;
+
+    private void Start() {
+        HandleYawPitch();
+        HandleZoom();
     }
 
-    public float GetLatitude() {
-        return angle[0] - 180;
-    }
-
-    private void Rotate(bool active) {
-        var tick = Time.time;
-
-        if(!active) {
-            action.active = false;
-            return;
+    void LateUpdate() {
+        float scrollDelta = Input.mouseScrollDelta.y;
+        if (Input.GetMouseButton(1)) {
+            this.rotation += Input.GetAxis("Mouse X");
+            HandleYawPitch();
+        } else if (Input.GetKey(KeyCode.LeftShift)) {
+            this.altitude = Mathf.Clamp(this.altitude + scrollDelta, ALTITUDE_MIN, ALTITUDE_MAX);
+            HandleYawPitch();
+        } else if (scrollDelta != 0) {
+            zoom += scrollDelta;
+            HandleZoom();
         }
 
-        //reset angle and zoom if we detect double right click
-        Vector2 mousePos = Conversions.GetMouseTopLeft();
-        if(action.tick + RESET_ZOOM_DELTA > tick &&
-            Math.Abs(action.x - mousePos.x) < 10 &&
-            Math.Abs(action.y - mousePos.y) < 10) {
+        angle = GetAngleDirection();
+        pointDirection = (DIRECTION) angle;
+    }
 
-            if(Input.GetKeyDown(KeyCode.LeftShift)) {
-                angleFinal[0] = range;
+    private float GetAngleDirection() {
+        return (float)Math.Floor((Math.Abs(rotation) % 360 + 22.5f) / 45) % 8;
+    }
+
+    private void HandleYawPitch() {
+        var direction = new Vector3(0, 0, -distance);
+        var rotation = Quaternion.Euler(this.altitude, this.rotation, 0);
+        transform.position = _target.position + rotation * direction;
+        transform.LookAt(_target.position);
+    }
+
+    private void Update() {
+
+    }
+
+    private void HandleZoom() {
+        var direction = _target.position - transform.position;
+        distance = direction.magnitude;
+
+        if (zoom > 0.0f) {
+            if (distance <= ZOOM_MIN) {
+                zoom = 0;
+                return;
             }
 
-            if(Input.GetKeyDown(KeyCode.LeftControl)) {
-                zoomFinal = 0;
+            zoom -= zoom / 5f;
+
+            if (zoom <= 0f) {
+                zoom = 0f;
             } else {
-                angleFinal[1] = 0;
+                direction /= distance;
+                direction *= zoom;
+
+                transform.position += direction;
             }
-        }
-
-        action.x = mousePos.x;
-        action.y = mousePos.y;
-        action.tick = tick;
-        action.active = true;
-    }
-
-    private void ProcessMouseAction() {
-        Vector2 mouse = Conversions.GetMouseTopLeft();
-        //rotate Z
-        if(Input.GetKey(KeyCode.LeftShift)) {
-            angleFinal[0] += (mouse.y - action.y) / Screen.height * 300;
-            angleFinal[0] = Math.Max(angleFinal[0], 190);
-            angleFinal[0] = Math.Min(angleFinal[0], 270);
-        }
-
-        //zoom
-        else if(Input.GetKey(KeyCode.LeftControl)) {
-            zoomFinal -= (mouse.y - action.y) / Screen.height * 150;
-            zoomFinal = Math.Min(zoomFinal, Math.Abs(altitudeTo - altitudeFrom) * MAX_ZOOM);
-            zoomFinal = Math.Max(zoomFinal, 2);
-        }
-
-        //rotate
-        else {
-            angleFinal[1] -= (mouse.x - action.x) / Screen.width * 720;
-
-            if(angle[1] > 180 && angleFinal[1] > 180) {
-                angle[1] -= 360;
-                angleFinal[1] -= 360;
-            }else if(angle[1] < -180 && angleFinal[1] != 0) {
-                angle[1] += 360;
-                angleFinal[1] += 360;
+        } else if (zoom < 0f) {
+            if (distance >= ZOOM_MAX) {
+                zoom = 0;
+                return;
             }
 
-            angleFinal[1] = Math.Max(angleFinal[1], rotationFrom);
-            angleFinal[1] = Math.Min(angleFinal[1], rotationTo);
-        }
+            zoom -= zoom / 5f;
 
-        action.x = mouse.x;
-        action.y = mouse.y;
+            if (zoom >= 0f) {
+                zoom = 0f;
+            } else {
+                direction /= distance;
+                direction *= zoom;
+
+                transform.position += direction;
+            }
+        }
     }
     
-    private void OnMouseWheel(float delta) {
-        zoomFinal += delta;
-        zoomFinal = Math.Min(zoomFinal, Math.Abs(altitudeTo - altitudeFrom) * MAX_ZOOM);
-        zoomFinal = Math.Min(zoomFinal, 2);
-    }
+    public DIRECTION GetDirection() {
+        var direction = _target.position - transform.position;
+        direction.y = 0;
+        direction /= direction.magnitude;
 
-    // Use this for initialization
-    void Start() {
-        projection = new Matrix4x4();
-        modelView = new Matrix4x4();
-        normalMat = new Matrix4x4();
-        zoomFinal = zoom = PlayerPrefs.GetFloat("Camera.zoom", 50f);
-        angle = new Vector2();
-        angleFinal = new Vector2();
-        position = new Vector3();
+        float a_cos = Vector3.Dot(direction, Vector3.forward);
+        angle = (float)(Math.Acos(a_cos) * 180 / Math.PI);
 
-        action = new Action(false, 0, 0, 0);
-    }
-
-
-    // Update is called once per frame
-    void Update() {
-        if(Input.GetMouseButtonDown(1)) {
-            Rotate(true);
+        if (direction.y < 0) {
+            angle = 360 - angle;
         }
 
-        if(Input.GetMouseButtonUp(1)) {
-            Rotate(false);
-        }
-
-        float scrollDelta = Input.mouseScrollDelta.y;
-        if(scrollDelta > 0) {
-            OnMouseWheel(scrollDelta / 8);
-        }
-
-        //update camera from mouse movement
-        if(action.x != -1 && action.y != -1 && action.active) {
-            ProcessMouseAction();
-        }
-
-        //move camera
-        if(target != null) {
-            Vector3 targetPos = target.transform.position;
-            if(PlayerPrefs.GetInt("Camera.smooth", 1) != 0) {
-                position[0] = Mathf.Lerp(position[0], -targetPos[0], Time.deltaTime);
-                position[1] = Mathf.Lerp(position[1], -targetPos[1], Time.deltaTime);
-                position[2] = Mathf.Lerp(position[2], targetPos[2], Time.deltaTime);
-            } else {
-                position[0] = -targetPos[0];
-                position[1] = -targetPos[1];
-                position[2] = targetPos[2];
-            }
-        }
-
-        //zoom
-        zoom = Mathf.Lerp(zoom, zoomFinal, 2 * Time.deltaTime);
-
-        //angle
-        Vector2.Lerp(angle, angleFinal, 2 * Time.deltaTime);
-        angle[0] %= 360;
-        angle[1] %= 360;
-
-        //find camera direction (for npc direction)
-        direction = (float) Math.Floor((angle[1] + 22.5f) / 45) % 8;
-
-        //calculate new modelView matrix
-        // HACK
-        var matrix = modelView = Matrix4x4.identity;
-        Conversions.TranslateZ(matrix, (altitudeFrom - zoom) / 2, null);
-        Quaternion rot = Quaternion.Euler(angle[0], angle[1], 0);
-        matrix *= Matrix4x4.Rotate(rot);
-
-        //center of the cell and inversed Y-Z axis
-        Vector3 _position = new Vector3(position[0] - 0.5f, position[2], position[1] - 0.5f);
-        Conversions.Translate(matrix, matrix, _position);
-        Conversions.toInverseMat3(matrix, normalMat);
-        normalMat = normalMat.transpose;
-
-        //GL.
+        if (angle <= 22.5)
+            return DIRECTION.NORTH;
+        else if (angle <= 67.5)
+            return DIRECTION.NORTHEAST;
+        else if (angle <= 112.5)
+            return DIRECTION.EAST;
+        else if (angle <= 157.5)
+            return DIRECTION.SOUTHEAST;
+        else if (angle <= 202.5)
+            return DIRECTION.SOUTH;
+        else if (angle <= 247.5)
+            return DIRECTION.SOUTHWEST;
+        else if (angle <= 292.5)
+            return DIRECTION.WEST;
+        else if (angle <= 337.5)
+            return DIRECTION.NORTHWEST;
+        else
+            return DIRECTION.NORTH;
     }
 
 }

@@ -31,7 +31,6 @@ public class Core : MonoBehaviour {
     public static Camera MainCamera;
 
     public string mapname;
-    public GameObject entity;
     public AudioMixerGroup soundsMixerGroup;
     public Light worldLight;
     public Dropdown mapDropdown;
@@ -39,37 +38,50 @@ public class Core : MonoBehaviour {
     private Hashtable configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
 
+    private bool isMapSelectorEnabled = false;
+    private bool isRoCamEnabled = false;
+
     private void Awake() {
         if (Instance == null) {
             Instance = this;
         }
+
+	/**
+         * Caching the camera as it's heavy to search for it
+         */
         if (MainCamera == null) {
             MainCamera = Camera.main;
         }
     }
 
     void Start() {
-        loadConfigs();
-
-        Debug.Log("Loading GRF at " + configs["grf"] + "...");
-        FileManager.loadGrf(configs["grf"] as string);
-        OnGrfLoaded?.Invoke();
-        Debug.Log("GRF loaded, filetable contains " + FileManager.Grf.files.Count + " files.");
-
-        Debug.Log("Building map list...");
-        MapSelector selector = new MapSelector(FileManager.Grf);
-        selector.buildDropdown(mapDropdown);
-        Debug.Log("Map list has " + selector.GetMapList().Count + " entries.");
+        LoadConfigs();
+        LoadGrf();
+        BuildMapSelector();
 
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
+    }
+
+    private void BuildMapSelector() {
+        Debug.Log("Building map list...");
+        MapSelector selector = new MapSelector(FileManager.Grf);
+        selector.buildDropdown(mapDropdown);
+        Debug.Log($"Map list has {selector.GetMapList().Count} entries.");
 
         if (!string.IsNullOrEmpty(mapname)) {
             selector.ChangeMap(mapname);
         }
     }
 
-    private void loadConfigs() {
+    private void LoadGrf() {
+        Debug.Log($"Loading GRF at {configs["grf"]} ...");
+        FileManager.loadGrf(configs["grf"] as string);
+        Debug.Log($"GRF loaded, filetable contains {FileManager.Grf.files.Count} files.");
+        OnGrfLoaded?.Invoke();
+    }
+
+    private void LoadConfigs() {
 
         string cfgTxt = null;
         if (Application.isMobilePlatform) {
@@ -102,7 +114,19 @@ public class Core : MonoBehaviour {
     }
 
     void Update() {
-        //mapDropdown.gameObject.SetActive(Cursor.lockState != CursorLockMode.Locked);
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            isMapSelectorEnabled = !isMapSelectorEnabled;
+            mapDropdown.gameObject.SetActive(isMapSelectorEnabled);
+        } else if (Input.GetKeyDown(KeyCode.F1)) {
+            isRoCamEnabled = !isRoCamEnabled;
+            MainCamera.GetComponent<ROCamera>().enabled = isRoCamEnabled;
+            MainCamera.GetComponent<FreeflyCam>().enabled = !isRoCamEnabled;
+
+            Cursor.lockState = isRoCamEnabled ? CursorLockMode.None : Cursor.lockState;
+            Cursor.visible = isRoCamEnabled;
+        }
+
+
         if (mapRenderer.Ready) {
             mapRenderer.Render();
         }
