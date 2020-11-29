@@ -41,6 +41,9 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
         
     }
 
+    /**
+     * Are we gonna try to reconnect?
+     */
     public void OnDisconnected(NetworkProtocol protocol) {
         throw new NotImplementedException();
     }
