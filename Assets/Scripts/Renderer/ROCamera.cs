@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ROCamera : MonoBehaviour {
 
-    public enum DIRECTION : int {
+    public enum Direction : int {
         NORTH = 0,
         NORTHEAST,
         EAST,
@@ -22,7 +22,7 @@ public class ROCamera : MonoBehaviour {
     private const float ROTATION_MAX = 360f;
 
     [SerializeField] private Transform _target;
-    [SerializeField] private DIRECTION pointDirection;
+    [SerializeField] public static Direction direction;
     [SerializeField] private float zoom = 0f;
     [SerializeField] private float distance = 30f;
     [SerializeField] private float altitude = ALTITUDE_MAX;
@@ -48,7 +48,7 @@ public class ROCamera : MonoBehaviour {
         }
 
         angle = GetAngleDirection();
-        pointDirection = (DIRECTION) angle;
+        direction = (Direction) angle;
     }
 
     private float GetAngleDirection() {
@@ -105,7 +105,7 @@ public class ROCamera : MonoBehaviour {
         }
     }
     
-    public DIRECTION GetDirection() {
+    public Direction GetDirection() {
         var direction = _target.position - transform.position;
         direction.y = 0;
         direction /= direction.magnitude;
@@ -118,23 +118,23 @@ public class ROCamera : MonoBehaviour {
         }
 
         if (angle <= 22.5)
-            return DIRECTION.NORTH;
+            return Direction.NORTH;
         else if (angle <= 67.5)
-            return DIRECTION.NORTHEAST;
+            return Direction.NORTHEAST;
         else if (angle <= 112.5)
-            return DIRECTION.EAST;
+            return Direction.EAST;
         else if (angle <= 157.5)
-            return DIRECTION.SOUTHEAST;
+            return Direction.SOUTHEAST;
         else if (angle <= 202.5)
-            return DIRECTION.SOUTH;
+            return Direction.SOUTH;
         else if (angle <= 247.5)
-            return DIRECTION.SOUTHWEST;
+            return Direction.SOUTHWEST;
         else if (angle <= 292.5)
-            return DIRECTION.WEST;
+            return Direction.WEST;
         else if (angle <= 337.5)
-            return DIRECTION.NORTHWEST;
+            return Direction.NORTHWEST;
         else
-            return DIRECTION.NORTH;
+            return Direction.NORTH;
     }
 
 }

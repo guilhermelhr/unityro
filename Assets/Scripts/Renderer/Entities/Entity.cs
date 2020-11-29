@@ -4,6 +4,7 @@ using UnityEngine;
 public class Entity : MonoBehaviour {
 
     private EntityWalk _EntityWalk;
+    private EntityViewer _EntityViewer;
 
     public const int TYPE_EFFECT = -3;
     public const int TYPE_UNKNOWN = -2;
@@ -23,7 +24,7 @@ public class Entity : MonoBehaviour {
 
     public int type = TYPE_UNKNOWN;
     internal object weapon;
-    internal object _job;
+    internal Job _job = Job.NOVICE;
     internal object _sex;
 
     public long GID;
@@ -40,7 +41,18 @@ public class Entity : MonoBehaviour {
     public int attackSpeed = 300;
 
     private void Awake() {
+        Core.OnGrfLoaded += OnGrfLoaded;
+
         _EntityWalk = gameObject.AddComponent<EntityWalk>();
+        _EntityViewer = gameObject.AddComponent<EntityViewer>();
+    }
+
+    private void OnDestroy() {
+        Core.OnGrfLoaded -= OnGrfLoaded;
+    }
+
+    private void OnGrfLoaded() {
+        _EntityViewer.UpdateBody(_job);
     }
 
     private void Update() {
