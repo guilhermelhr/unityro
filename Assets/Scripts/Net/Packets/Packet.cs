@@ -122,6 +122,12 @@ public class Packet : IDisposable {
         Write(_value.Length); // Add the length of the string to the packet
         buffer.AddRange(Encoding.ASCII.GetBytes(_value)); // Add the string itself
     }
+    /// <summary>Adds a string to the packet.</summary>
+    /// <param name="_value">The string to add.</param>
+    public void Write(string _value, int length) {
+        Write(length); // Add the length of the string to the packet
+        buffer.AddRange(Encoding.ASCII.GetBytes(_value)); // Add the string itself
+    }
     /// <summary>Adds a Vector3 to the packet.</summary>
     /// <param name="_value">The Vector3 to add.</param>
     public void Write(Vector3 _value) {

@@ -1,7 +1,9 @@
 ﻿
+using System.IO;
+
 public interface NetworkListener {
 
-    void OnTcpConnected(int port);
+    void OnTcpConnected(BinaryWriter writer);
     void OnUdpConnected();
     void OnDisconnected(NetworkProtocol protocol);
 

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class NetworkClient : MonoBehaviour, NetworkListener {
 
-    public const int DATA_BUFFER_SIZE = 4096;
+    public const int DATA_BUFFER_SIZE = 16 * 1024;
     public static int CLIENT_ID = new System.Random().Next();
 
     public delegate void PacketHandler(Packet packet);
@@ -13,7 +14,7 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
     private UDP UDPClient;
     private TCP TCPClient;
 
-    private void Start() {
+    public void Start() {
         TCPClient = new TCP(this);
         UDPClient = new UDP();
     }
@@ -33,8 +34,9 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
         UDPClient.Disconnect();
     }
 
-    public void OnTcpConnected(int port) {
-        UDPClient.Connect(port);
+    public void OnTcpConnected(BinaryWriter writer) {
+        new CA.Login("danilo", "123456", 10, 10).Send(writer);
+        //UDPClient.Connect(port);
     }
 
     public void OnUdpConnected() {

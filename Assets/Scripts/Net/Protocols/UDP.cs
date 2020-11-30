@@ -19,18 +19,7 @@ public class UDP : NetworkProtocol {
         Socket.BeginReceive(OnDataReceived, null);
 
         using(Packet packet = new Packet()) {
-            SendData(packet);
-        }
-    }
-
-    override protected void SendData(Packet packet) {
-        try {
-            packet.InsertInt(NetworkClient.CLIENT_ID);
-            if(Socket != null) {
-                Socket.BeginSend(packet.ToArray(), packet.Length(), null, null);
-            }
-        } catch(Exception ex) {
-            Debug.LogError($"Error sending data to server via UDP: {ex}");
+            //SendData(packet);
         }
     }
 

@@ -60,6 +60,7 @@ public class Core : MonoBehaviour {
          * We start the network client only after the configs
          * have been loaded
          */
+        NetworkClient.Start();
         NetworkClient.ConnectToServer();
        
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class TCP : NetworkProtocol {
     private NetworkStream _Stream;
     private Packet _ReceivedData;
     private byte[] _ReceivedBuffer;
+    public BinaryWriter BinaryWriter { get; private set; }
 
     private NetworkListener networkListener;
 
@@ -27,25 +29,16 @@ public class TCP : NetworkProtocol {
         Socket.BeginConnect("127.0.0.1", 6900, OnSocketConnected, Socket);
     }
 
-    override protected void SendData(Packet packet) {
-        try {
-            if(Socket != null) {
-                _Stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
-            }
-        } catch(Exception e) {
-            Debug.LogError($"Error sending data to server via TCP: {e}");
-        }
-    }
-
     override protected void OnSocketConnected(IAsyncResult _result) {
         Socket.EndConnect(_result);
 
         if(!Socket.Connected) return;
 
         _Stream = Socket.GetStream();
+        BinaryWriter = new BinaryWriter(_Stream);
         _ReceivedData = new Packet();
         _Stream.BeginRead(_ReceivedBuffer, 0, NetworkClient.DATA_BUFFER_SIZE, OnDataReceived, null);
-        this.networkListener?.OnTcpConnected(((IPEndPoint)Socket.Client.LocalEndPoint).Port);
+        this.networkListener?.OnTcpConnected(BinaryWriter);
     }
 
     override protected void OnDataReceived(IAsyncResult result) {
