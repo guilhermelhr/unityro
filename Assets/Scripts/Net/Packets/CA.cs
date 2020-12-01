@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-class CA {
+public class CA {
 
     public class Login : OutPacket {
         
@@ -17,7 +17,7 @@ class CA {
         private int Version;
         private int clienttype;
 
-        public Login(string ID, string Passwd, int clienttype, int Version = 0) : base(header, 55) {
+        public Login(string ID, string Passwd, int clienttype, int Version = 0) : base(header, size) {
             this.ID = ID;
             this.Passwd = Passwd;
             this.clienttype = clienttype;

@@ -1,25 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
+using static PacketSerializer;
 
 public class NetworkClient : MonoBehaviour, NetworkListener {
 
     public const int DATA_BUFFER_SIZE = 16 * 1024;
     public static int CLIENT_ID = new System.Random().Next();
 
-    public delegate void PacketHandler(Packet packet);
-    private static Dictionary<int, PacketHandler> packetHandlers;
-
-    private UDP UDPClient;
     private TCP TCPClient;
 
     public void Start() {
         TCPClient = new TCP(this);
-        UDPClient = new UDP();
     }
-
-    public static void HandlePacket(Packet packet) => packetHandlers[packet.ReadInt()](packet);
 
     private void OnApplicationQuit() {
         Disconnect();
@@ -31,16 +23,23 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
 
     private void Disconnect() {
         TCPClient.Disconnect();
-        UDPClient.Disconnect();
     }
 
-    public void OnTcpConnected(BinaryWriter writer) {
-        new CA.Login("danilo", "123456", 10, 10).Send(writer);
-        //UDPClient.Connect(port);
+    public void OnTcpConnected() {
+        Hook(AC.AcceptLogin.HEADER, (ushort cmd, int size, InPacket packet) => {
+            if (packet is AC.AcceptLogin) {
+
+            }
+        });
+        new CA.Login("danilo", "123456", 10, 10).Send(TCPClient.GetBinaryWriter());
     }
 
     public void OnUdpConnected() {
         
+    }
+
+    public void Hook(ushort cmd, OnPacketReceived onPackedReceived) {
+        TCPClient.Hook(cmd, onPackedReceived);
     }
 
     /**
