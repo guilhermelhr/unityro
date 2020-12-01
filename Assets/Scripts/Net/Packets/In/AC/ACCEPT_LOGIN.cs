@@ -24,9 +24,9 @@ public partial class AC {
             LoginID1 = br.ReadLong();
             AccountID = br.ReadLong();
             LoginID2 = br.ReadLong();
-            br.ReadUBytes(30);
+            br.Seek(30, SeekOrigin.Current);
             Sex = br.ReadUByte();
-            br.ReadUBytes(17);
+            br.Seek(17, SeekOrigin.Current);
 
             /**
              * This seems very wrong to me

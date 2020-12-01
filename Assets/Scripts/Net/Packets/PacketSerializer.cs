@@ -59,7 +59,6 @@ public class PacketSerializer {
             var tmp = new byte[2];
             Memory.Read(tmp, 0, 2);
             ushort cmd = BitConverter.ToUInt16(tmp, 0);
-            Debug.Log("Cmd received " + (PacketHeader) cmd);
 
             if(!PacketSize.ContainsKey(cmd)) {
                 Memory.Position -= 2;

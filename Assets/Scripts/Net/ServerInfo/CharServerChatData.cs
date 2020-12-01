@@ -6,9 +6,9 @@
     public int JobLevel;
     public int BodyState;
     public int HealthState;
-    public int EffectState;
-    public int Virtue;
-    public int Honor;
+    public int Option;
+    public int Karma;
+    public int Manner;
     public short StatusPoint;
     public int HP;
     public int MaxHP;
@@ -38,4 +38,8 @@
     public string MapName;
     public int DeleteDate;
     public int Robe;
+    public int Body;
+    public int Moves;
+    public int AddOns;
+    public int Sex;
 }

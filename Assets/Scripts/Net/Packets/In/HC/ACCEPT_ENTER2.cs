@@ -26,9 +26,9 @@ public partial class HC {
             var producible_slot = br.ReadUByte();
             var valid_slot = br.ReadByte();
 
-            br.Seek(20, SeekOrigin.Begin);
+            br.Seek(20, SeekOrigin.Current);
 
-            return false;
+            return true;
         }
     }
 }

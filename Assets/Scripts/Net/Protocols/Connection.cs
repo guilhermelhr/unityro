@@ -21,7 +21,10 @@ public class Connection : NetworkProtocol {
     }
 
     override public void Connect() {
-        _Client = new TcpClient();
+        _Client = new TcpClient() {
+            ReceiveBufferSize = NetworkClient.DATA_BUFFER_SIZE,
+            SendBufferSize = NetworkClient.DATA_BUFFER_SIZE
+        };
 
         _ReceivedBuffer = new byte[NetworkClient.DATA_BUFFER_SIZE];
         _Client.BeginConnect("127.0.0.1", 6900, OnSocketConnected, _Client);
@@ -87,7 +90,10 @@ public class Connection : NetworkProtocol {
             } catch { }
         }
 
-        _Client = new TcpClient();
+        _Client = new TcpClient() {
+            ReceiveBufferSize = NetworkClient.DATA_BUFFER_SIZE,
+            SendBufferSize = NetworkClient.DATA_BUFFER_SIZE
+        };
         _Serializer.Reset();
         //_Stream.Close();
         //_Stream.Dispose();
