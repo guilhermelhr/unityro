@@ -1,4 +1,4 @@
-﻿public struct CharServerChatData {
+﻿public struct CharacterData {
     public int GID;
     public int Exp;
     public int Zeny;

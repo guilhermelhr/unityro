@@ -39,7 +39,6 @@ public class PacketSerializer {
     }
 
     public void EnqueueBytes(byte[] data, int size) {
-        Debug.LogWarning($"Received {size} bytes");
         int pos = (int)Memory.Position;
         Memory.Position = Memory.Length;
         Memory.Write(data, 0, size);

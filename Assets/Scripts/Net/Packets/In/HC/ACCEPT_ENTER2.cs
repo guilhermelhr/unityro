@@ -15,7 +15,7 @@ public partial class HC {
         public int MaxSlots { get; set; }
         public int AvailableSlots { get; set; }
         public int PremiumSlots { get; set; }
-        public CharServerChatData[] Chars { get; set; }
+        public CharacterData[] Chars { get; set; }
 
         public bool Read(byte[] data) {
             BinaryReader br = new BinaryReader(data);

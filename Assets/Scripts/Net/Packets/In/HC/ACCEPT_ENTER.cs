@@ -15,7 +15,7 @@ public partial class HC {
         public int MaxSlots { get; set; }
         public int AvailableSlots { get; set; }
         public int PremiumSlots { get; set; }
-        public CharServerChatData[] Chars { get; set; }
+        public CharacterData[] Chars { get; set; }
 
         public bool Read(byte[] data) {
             BinaryReader br = new BinaryReader(data);
@@ -28,9 +28,9 @@ public partial class HC {
 
             br.Seek(20, SeekOrigin.Current);
 
-            Chars = new CharServerChatData[numChars];
+            Chars = new CharacterData[numChars];
             for(int i = 0; i < numChars; i++) {
-                CharServerChatData cd = new CharServerChatData();
+                CharacterData cd = new CharacterData();
 
                 cd.GID = br.ReadLong();
                 cd.Exp = br.ReadLong();
