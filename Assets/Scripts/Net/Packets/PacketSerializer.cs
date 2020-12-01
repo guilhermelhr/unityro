@@ -61,6 +61,7 @@ public class PacketSerializer {
             ushort cmd = BitConverter.ToUInt16(tmp, 0);
 
             if(!PacketSize.ContainsKey(cmd)) {
+                Debug.LogWarning($"Received Unknown Command: {cmd}");
                 Memory.Position -= 2;
                 break;
             } else {
