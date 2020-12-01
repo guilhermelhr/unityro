@@ -91,7 +91,11 @@ public class PacketSerializer {
                 }
 
                 ThreadManager.ExecuteOnMainThread(() => {
-                    PacketHooks[cmd]?.DynamicInvoke(cmd, size, packet);
+                    if(PacketHooks.ContainsKey(cmd)) {
+                        PacketHooks[cmd].DynamicInvoke(cmd, size, packet);
+                    } else {
+                        Debug.LogWarning($"Received Unhadled Command {(PacketHeader) cmd}");
+                    }
                     PacketReceived?.Invoke(cmd, size, packet);
                 });
             }

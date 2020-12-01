@@ -3,7 +3,7 @@ using System.IO;
 
 public partial class HC {
 
-    [PacketHandler((ushort)HEADER,
+    [PacketHandler(HEADER,
         "HC_ACCEPT_ENTER",
         PacketHandlerAttribute.VariableSize,
         PacketHandlerAttribute.PacketDirection.In
@@ -44,14 +44,16 @@ public partial class HC {
                 cd.Option = br.ReadLong();
                 cd.Karma = br.ReadLong();
                 cd.Manner = br.ReadLong();
+
                 cd.StatusPoint = br.ReadShort();
+
                 cd.HP = br.ReadLong();
                 cd.MaxHP = br.ReadLong();
+
                 cd.SP = br.ReadShort();
                 cd.MaxSP = br.ReadShort();
                 cd.Speed = br.ReadShort();
                 cd.Job = br.ReadShort();
-
                 cd.Hair = br.ReadShort();
                 cd.Body = br.ReadShort();
                 cd.Weapon = br.ReadShort();
@@ -63,20 +65,26 @@ public partial class HC {
                 cd.Accessory3 = br.ReadShort();
                 cd.HairColor = br.ReadShort();
                 cd.ClothesColor = br.ReadShort();
+
                 cd.Name = br.ReadBinaryString(24);
+
                 cd.Str = br.ReadUByte();
                 cd.Agi = br.ReadUByte();
                 cd.Vit = br.ReadUByte();
                 cd.Int = br.ReadUByte();
                 cd.Dex = br.ReadUByte();
                 cd.Luk = br.ReadUByte();
+
                 cd.Slot = br.ReadShort();
                 cd.Rename = br.ReadShort();
+
                 cd.MapName = br.ReadBinaryString(16);
+
                 cd.DeleteDate = br.ReadLong();
                 cd.Robe = br.ReadLong();
                 cd.Moves = br.ReadLong();
                 cd.AddOns = br.ReadLong();
+
                 cd.Sex = br.ReadByte();
 
                 Chars[i] = cd;

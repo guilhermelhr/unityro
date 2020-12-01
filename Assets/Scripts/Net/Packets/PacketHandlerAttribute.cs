@@ -18,8 +18,8 @@ public class PacketHandlerAttribute : Attribute {
     public int Size { get; private set; }
     public PacketDirection Direction { get; private set; }
 
-    public PacketHandlerAttribute(ushort methodId, string name, int size, PacketDirection direction) {
-        this.MethodId = methodId;
+    public PacketHandlerAttribute(PacketHeader methodId, string name, int size, PacketDirection direction) {
+        this.MethodId = (ushort) methodId;
         this.Name = name;
         this.Size = size;
         this.Direction = direction;

@@ -24,7 +24,7 @@ public enum PacketHeader : ushort {
     #region CH
     CH_ENTER = 0x65,
     CH_ENTER2 = 0x275,
-    //HEADER_CH_SELECT_CHAR = 0x66,
+    CH_SELECT_CHAR = 0x66,
     //HEADER_CH_MAKE_CHAR = 0x67,
     //HEADER_CH_DELETE_CHAR = 0x68,
     #endregion
@@ -34,12 +34,13 @@ public enum PacketHeader : ushort {
     HC_ACCEPT_ENTER = 0x6b,
     HC_ACCEPT_ENTER2 = 0x82d,
     HC_REQUEST_PIN_CODE = 0x8b9,
+    HC_NOTIFY_ZONESVR = 0x71,
+    HC_NOTIFY_ZONESVR2 = 0xAC5,
     //HEADER_HC_REFUSE_ENTER = 0x6c,
     //HEADER_HC_ACCEPT_MAKECHAR = 0x6d,
     //HEADER_HC_REFUSE_MAKECHAR = 0x6e,
     //HEADER_HC_ACCEPT_DELETECHAR = 0x6f,
     //HEADER_HC_REFUSE_DELETECHAR = 0x70,
-    //HEADER_HC_NOTIFY_ZONESVR = 0x71,
     #endregion
     //HEADER_CZ_ENTER = 0x72,
     //HEADER_ZC_ACCEPT_ENTER = 0x73,

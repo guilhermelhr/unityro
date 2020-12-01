@@ -3,7 +3,7 @@ using System.IO;
 
 public partial class HC {
 
-    [PacketHandler((ushort) HEADER,
+    [PacketHandler(HEADER,
         "HC_ACCEPT_ENTER2",
         PacketHandlerAttribute.VariableSize,
         PacketHandlerAttribute.PacketDirection.In

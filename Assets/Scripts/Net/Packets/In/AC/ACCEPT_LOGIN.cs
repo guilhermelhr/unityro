@@ -3,7 +3,7 @@ using System.Net;
 
 public partial class AC {
     [PacketHandler(
-        (ushort)HEADER,
+        HEADER,
         "AC_ACCEPT_LOGIN",
         PacketHandlerAttribute.VariableSize,
         PacketHandlerAttribute.PacketDirection.In

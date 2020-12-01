@@ -48,13 +48,22 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
     private void ConnectToCharServer(CharServerInfo charServerInfo) {
         this.charServerInfo = charServerInfo;
         CurrentConnection.Connect(charServerInfo.IP.ToString(), charServerInfo.Port);
-        HookPacket(HC.ACCEPT_ENTER2.HEADER, (ushort cmd, int size, InPacket packet) => {
-            if(packet is HC.ACCEPT_ENTER2) { }
+        HookPacket(HC.ACCEPT_ENTER.HEADER, (ushort cmd, int size, InPacket packet) => {
+            if(packet is HC.ACCEPT_ENTER) {
+                SelectCharacter();
+            }
         });
     }
 
-    public void OnUdpConnected() {
-
+    private void SelectCharacter() {
+        new CH.SELECT_CHAR(0).Send(CurrentConnection.GetBinaryWriter());
+        HookPacket(HC.NOTIFY_ZONESVR.HEADER, (ushort cmd, int size, InPacket packet) => {
+            if (packet is HC.NOTIFY_ZONESVR) {
+                var pkt = packet as HC.NOTIFY_ZONESVR;
+                CurrentConnection.Disconnect();
+                CurrentConnection.Connect(pkt.IP.ToString(), pkt.Port);
+            }
+        });
     }
 
     public void HookPacket(PacketHeader cmd, OnPacketReceived onPackedReceived) {
@@ -62,9 +71,13 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
     }
 
     private void Update() {
+        
+    }
+
+    public void Ping() {
         var ticks = Time.realtimeSinceStartup;
         if(ticks % 12 < 1f) {
-            //new Ping((int)Time.realtimeSinceStartup).Send(CurrentConnection.GetBinaryWriter());
+            new Ping((int)Time.realtimeSinceStartup).Send(CurrentConnection.GetBinaryWriter());
         }
     }
 
