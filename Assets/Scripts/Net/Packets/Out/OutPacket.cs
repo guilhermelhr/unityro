@@ -2,11 +2,11 @@
 
 public abstract class OutPacket {
 
-    private ushort header;
+    private PacketHeader header;
     public int Size;
     private bool isFixed;
 
-    public OutPacket(ushort header, int size) {
+    public OutPacket(PacketHeader header, int size) {
         this.header = header;
         this.Size = size;
 
@@ -14,7 +14,7 @@ public abstract class OutPacket {
     }
 
     public virtual bool Send(BinaryWriter writer) {
-        writer.Write(header);
+        writer.Write((ushort) header);
 
         if (!isFixed) {
             ComputeSize();

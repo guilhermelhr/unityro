@@ -9,7 +9,6 @@ public class Connection : NetworkProtocol {
     private TcpClient _Client;
 
     private NetworkStream _Stream;
-    private Packet _ReceivedData;
     private byte[] _ReceivedBuffer;
     private BinaryWriter _BinaryWriter;
     private PacketSerializer _Serializer;
@@ -21,11 +20,18 @@ public class Connection : NetworkProtocol {
         _Serializer = new PacketSerializer();
     }
 
-    override public void Connect(int localPort) {
+    override public void Connect() {
         _Client = new TcpClient();
 
         _ReceivedBuffer = new byte[NetworkClient.DATA_BUFFER_SIZE];
         _Client.BeginConnect("127.0.0.1", 6900, OnSocketConnected, _Client);
+    }
+
+    override public void Connect(string ip, int port) {
+        _Client = new TcpClient();
+
+        _ReceivedBuffer = new byte[NetworkClient.DATA_BUFFER_SIZE];
+        _Client.BeginConnect(ip, port, OnSocketConnected, _Client);
     }
 
     public override BinaryWriter GetBinaryWriter() {
@@ -43,7 +49,6 @@ public class Connection : NetworkProtocol {
 
         _Stream = _Client.GetStream();
         _BinaryWriter = new BinaryWriter(_Stream);
-        _ReceivedData = new Packet();
         ListenToStream();
         this.networkListener?.OnTcpConnected();
     }

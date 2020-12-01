@@ -3,7 +3,7 @@
 public partial class CA {
     public class LOGIN : OutPacket {
         
-        private const ushort header = 0x64;
+        private const PacketHeader header = PacketHeader.CA_LOGIN;
         private const int size = 2 + 4 + 24 + 24 + 1;
 
         private string ID;

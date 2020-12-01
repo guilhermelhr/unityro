@@ -3,14 +3,14 @@ using System.Net;
 
 public partial class AC {
     [PacketHandler(
-        HEADER,
+        (ushort)HEADER,
         "AC_ACCEPT_LOGIN",
         PacketHandlerAttribute.VariableSize,
         PacketHandlerAttribute.PacketDirection.In
     )]
     public class ACCEPT_LOGIN : InPacket {
 
-        public const ushort HEADER = (ushort)PacketHeader.AC_ACCEPT_LOGIN3;
+        public const PacketHeader HEADER = PacketHeader.AC_ACCEPT_LOGIN3;
         public int LoginID1 { get; set; }
         public int AccountID { get; set; }
         public int LoginID2 { get; set; }

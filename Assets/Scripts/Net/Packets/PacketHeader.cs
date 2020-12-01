@@ -6,27 +6,41 @@ using System.Threading.Tasks;
 
 public enum PacketHeader : ushort {
 
+    #region MISC
+    PING = 0x187,
+    #endregion
+
     #region CA
     CA_LOGIN = 0x64,
     #endregion
 
     #region AC
-    AC_ACCEPT_LOGIN = 0x69,
-    AC_ACCEPT_LOGIN2 = 0x276,
+    //AC_ACCEPT_LOGIN = 0x69,
+    //AC_ACCEPT_LOGIN2 = 0x276,
     AC_ACCEPT_LOGIN3 = 0xac4,
     AC_REFUSE_LOGIN = 0x6a,
     #endregion
-    //HEADER_CH_ENTER = 0x65,
+
+    #region CH
+    CH_ENTER = 0x65,
+    CH_ENTER2 = 0x275,
     //HEADER_CH_SELECT_CHAR = 0x66,
     //HEADER_CH_MAKE_CHAR = 0x67,
     //HEADER_CH_DELETE_CHAR = 0x68,
-    //HEADER_HC_ACCEPT_ENTER = 0x6b,
+    #endregion
+
+    #region HC
+    HC_ACK_ACCOUNT_ID = 0x8480,
+    HC_ACCEPT_ENTER = 0x6b,
+    HC_ACCEPT_ENTER2 = 0x82d,
+    HC_REQUEST_PIN_CODE = 0x8b9,
     //HEADER_HC_REFUSE_ENTER = 0x6c,
     //HEADER_HC_ACCEPT_MAKECHAR = 0x6d,
     //HEADER_HC_REFUSE_MAKECHAR = 0x6e,
     //HEADER_HC_ACCEPT_DELETECHAR = 0x6f,
     //HEADER_HC_REFUSE_DELETECHAR = 0x70,
     //HEADER_HC_NOTIFY_ZONESVR = 0x71,
+    #endregion
     //HEADER_CZ_ENTER = 0x72,
     //HEADER_ZC_ACCEPT_ENTER = 0x73,
     //HEADER_ZC_REFUSE_ENTER = 0x74,
@@ -304,7 +318,7 @@ public enum PacketHeader : ushort {
     //HEADER_ZC_DELETE_RELATED_GUILD = 0x184,
     //HEADER_ZC_ADD_RELATED_GUILD = 0x185,
     //HEADER_COLLECTORDEAD = 0x186,
-    //HEADER_PING = 0x187,
+
     //HEADER_ZC_ACK_ITEMREFINING = 0x188,
     //HEADER_ZC_NOTIFY_MAPINFO = 0x189,
     //HEADER_CZ_REQ_DISCONNECT = 0x18a,
@@ -542,7 +556,6 @@ public enum PacketHeader : ushort {
     //HEADER_AC_ACK_PT_ID_INFO = 0x272,
     //HEADER_CZ_REQ_MAIL_RETURN = 0x273,
     //HEADER_ZC_ACK_MAIL_RETURN = 0x274,
-    //HEADER_CH_ENTER2 = 0x275,
 
     //HEADER_CA_LOGIN_PCBANG = 0x277,
     //HEADER_ZC_NOTIFY_PCBANG = 0x278,
@@ -806,7 +819,6 @@ public enum PacketHeader : ushort {
     //HEADER_HC_DELETE_CHAR3 = 0x82a,
     //HEADER_CH_DELETE_CHAR3_CANCEL = 0x82b,
     //HEADER_HC_DELETE_CHAR3_CANCEL = 0x82c,
-    //HEADER_HC_ACCEPT_ENTER2 = 0x82d,
     //HEADER_CZ_SEARCH_STORE_INFO = 0x835,
     //HEADER_ZC_SEARCH_STORE_INFO_ACK = 0x836,
     //HEADER_ZC_SEARCH_STORE_INFO_FAILED = 0x837,
@@ -939,7 +951,6 @@ public enum PacketHeader : ushort {
     //HEADER_ZC_TRYCOLLECTION = 0x8b6,
     //HEADER_HC_SECOND_PASSWD_REQ = 0x8b7,
     //HEADER_CH_SECOND_PASSWD_ACK = 0x8b8,
-    //HEADER_HC_SECOND_PASSWD_LOGIN = 0x8b9,
     //HEADER_CH_MAKE_SECOND_PASSWD = 0x8ba,
     //HEADER_HC_MAKE_SECOND_PASSWD = 0x8bb,
     //HEADER_CH_DELETE_SECOND_PASSWD = 0x8bc,

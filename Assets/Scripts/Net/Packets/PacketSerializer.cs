@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 public class PacketSerializer {
 
@@ -38,6 +39,7 @@ public class PacketSerializer {
     }
 
     public void EnqueueBytes(byte[] data, int size) {
+        Debug.LogWarning($"Received {size} bytes");
         int pos = (int)Memory.Position;
         Memory.Position = Memory.Length;
         Memory.Write(data, 0, size);
@@ -57,13 +59,13 @@ public class PacketSerializer {
             var tmp = new byte[2];
             Memory.Read(tmp, 0, 2);
             ushort cmd = BitConverter.ToUInt16(tmp, 0);
-            var packetInfo = PacketSize[cmd];
+            Debug.Log("Cmd received " + (PacketHeader) cmd);
 
             if(!PacketSize.ContainsKey(cmd)) {
                 Memory.Position -= 2;
                 break;
             } else {
-                int size = packetInfo.Size;
+                int size = PacketSize[cmd].Size;
                 bool isFixed = true;
 
                 if(size <= 0) {
@@ -81,7 +83,7 @@ public class PacketSerializer {
                 byte[] data = new byte[size];
                 Memory.Read(data, 0, size - (isFixed ? 2 : 4));
 
-                ConstructorInfo ci = packetInfo.Type.GetConstructor(new Type[] { });
+                ConstructorInfo ci = PacketSize[cmd].Type.GetConstructor(new Type[] { });
                 InPacket packet = (InPacket)ci.Invoke(null);
 
                 if(!packet.Read(data)) {
