@@ -7,10 +7,10 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
     public const int DATA_BUFFER_SIZE = 16 * 1024;
     public static int CLIENT_ID = new System.Random().Next();
 
-    private TCP TCPClient;
+    private Connection TCPClient;
 
     public void Start() {
-        TCPClient = new TCP(this);
+        TCPClient = new Connection(this);
     }
 
     private void OnApplicationQuit() {
@@ -26,19 +26,19 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
     }
 
     public void OnTcpConnected() {
-        Hook(AC.AcceptLogin.HEADER, (ushort cmd, int size, InPacket packet) => {
-            if (packet is AC.AcceptLogin) {
+        HookPacket(AC.ACCEPT_LOGIN.HEADER, (ushort cmd, int size, InPacket packet) => {
+            if (packet is AC.ACCEPT_LOGIN) {
 
             }
         });
-        new CA.Login("danilo", "123456", 10, 10).Send(TCPClient.GetBinaryWriter());
+        new CA.LOGIN("danilo", "123456", 10, 10).Send(TCPClient.GetBinaryWriter());
     }
 
     public void OnUdpConnected() {
         
     }
 
-    public void Hook(ushort cmd, OnPacketReceived onPackedReceived) {
+    public void HookPacket(ushort cmd, OnPacketReceived onPackedReceived) {
         TCPClient.Hook(cmd, onPackedReceived);
     }
 

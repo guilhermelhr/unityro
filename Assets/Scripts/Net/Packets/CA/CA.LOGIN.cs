@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
-public class CA {
-
-    public class Login : OutPacket {
+public partial class CA {
+    public class LOGIN : OutPacket {
         
         private const ushort header = 0x64;
         private const int size = 2 + 4 + 24 + 24 + 1;
@@ -17,7 +11,7 @@ public class CA {
         private int Version;
         private int clienttype;
 
-        public Login(string ID, string Passwd, int clienttype, int Version = 0) : base(header, size) {
+        public LOGIN(string ID, string Passwd, int clienttype, int Version = 0) : base(header, size) {
             this.ID = ID;
             this.Passwd = Passwd;
             this.clienttype = clienttype;

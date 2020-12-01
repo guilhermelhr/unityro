@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-public class TCP : NetworkProtocol {
+public class Connection : NetworkProtocol {
 
     private TcpClient _Client;
 
@@ -16,16 +16,13 @@ public class TCP : NetworkProtocol {
 
     private NetworkListener networkListener;
 
-    public TCP(NetworkListener networkListener) {
+    public Connection(NetworkListener networkListener) {
         this.networkListener = networkListener;
         _Serializer = new PacketSerializer();
     }
 
     override public void Connect(int localPort) {
-        _Client = new TcpClient {
-            ReceiveBufferSize = NetworkClient.DATA_BUFFER_SIZE,
-            SendBufferSize = NetworkClient.DATA_BUFFER_SIZE
-        };
+        _Client = new TcpClient();
 
         _ReceivedBuffer = new byte[NetworkClient.DATA_BUFFER_SIZE];
         _Client.BeginConnect("127.0.0.1", 6900, OnSocketConnected, _Client);
@@ -68,8 +65,8 @@ public class TCP : NetworkProtocol {
         }
 
         if(size <= 0 || error != SocketError.Success) {
-            // Disconnect() ??
-            Debug.LogError($"TCP Client Exception {error}");
+            Disconnect();
+            Debug.LogWarning($"TCP Client Response size is {size} ({error})");
         } else {
             _Serializer.EnqueueBytes(_ReceivedBuffer, size);
         }
@@ -78,6 +75,15 @@ public class TCP : NetworkProtocol {
     }
 
     override public void Disconnect() {
+        if(_Client?.Connected == true) {
+            try {
+                _Client.Close();
+                _Client.Client.Dispose();
+            } catch { }
+        }
+
+        _Client = new TcpClient();
+        _Serializer.Reset();
         //_Stream.Close();
         //_Stream.Dispose();
         //_Client.Close();

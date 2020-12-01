@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class PacketHeader {
-    public enum CA : ushort {
-        LOGIN = 0x64,
-    }
+public enum PacketHeader : ushort {
 
-    public enum AC : ushort {
-        ACCEPT_LOGIN = 0x69,
-        ACCEPT_LOGIN2 = 0x276,
-        ACCEPT_LOGIN3 = 0xac4,
-        REFUSE_LOGIN = 0x6a,
-    }
+    #region CA
+    CA_LOGIN = 0x64,
+    #endregion
 
+    #region AC
+    AC_ACCEPT_LOGIN = 0x69,
+    AC_ACCEPT_LOGIN2 = 0x276,
+    AC_ACCEPT_LOGIN3 = 0xac4,
+    AC_REFUSE_LOGIN = 0x6a,
+    #endregion
     //HEADER_CH_ENTER = 0x65,
     //HEADER_CH_SELECT_CHAR = 0x66,
     //HEADER_CH_MAKE_CHAR = 0x67,
