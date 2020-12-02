@@ -1,28 +1,55 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using B83.Image.BMP;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class CustomButton {
+public class CustomButton : Button,
+    IPointerEnterHandler,
+    IPointerExitHandler,
+    IPointerDownHandler,
+    IPointerUpHandler {
 
-    [SerializeField] private string backgroundImage;
-    [SerializeField] private string hoverImage;
-    [SerializeField] private string pressedImage;
+    [SerializeField] public string backgroundImage;
+    [SerializeField] public string hoverImage;
+    [SerializeField] public string pressedImage;
 
-    // Start is called before the first frame update
-    void Start() {
+    private Texture2D backgroundBMP;
+    private Texture2D hoverBMP;
+    private Texture2D pressedBMP;
+    private RawImage rawImage;
 
+    protected override void Awake() {
+        enabled = true;
+        rawImage = GetComponent<RawImage>();
+        if(backgroundImage != null) {
+            backgroundBMP = (Texture2D)FileManager.Load(DBManager.INTERFACE_PATH + backgroundImage);
+            rawImage.texture = backgroundBMP;
+            GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundBMP.width, backgroundBMP.height);
+        }
+        if(hoverImage != null) {
+            hoverBMP = FileManager.Load(DBManager.INTERFACE_PATH + hoverImage) as Texture2D;
+        }
+        if(pressedImage != null) {
+            pressedBMP = FileManager.Load(DBManager.INTERFACE_PATH + pressedImage) as Texture2D;
+        }
     }
 
-    // Update is called once per frame
-    void Update() {
-
+    override public void OnPointerDown(PointerEventData eventData) {
+        rawImage.texture = pressedBMP;
     }
 
-    public void OnHoverEnter() {
-
+    override public void OnPointerUp(PointerEventData eventData) {
+        rawImage.texture = hoverBMP;
     }
 
-    public void OnHoverExit() {
+    override public void OnPointerEnter(PointerEventData pointerEventData) {
+        //Output to console the GameObject's name and the following message
+        rawImage.texture = hoverBMP;
+    }
 
+    //Detect when Cursor leaves the GameObject
+    override public void OnPointerExit(PointerEventData pointerEventData) {
+        //Output the following message with the GameObject's name
+        rawImage.texture = backgroundBMP;
     }
 }

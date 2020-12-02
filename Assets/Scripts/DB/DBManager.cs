@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class DBManager {
+    public const string INTERFACE_PATH = "data/texture/\xc0\xaf\xc0\xfa\xc0\xce\xc5\xcd\xc6\xe4\xc0\xcc\xbd\xba/";
     private static Regex rcomments = new Regex(@"\n(\/\/[^\n]+)", RegexOptions.Multiline);
     private struct MapTableStruct {
         public string name;
