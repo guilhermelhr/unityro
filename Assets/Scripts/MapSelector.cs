@@ -34,6 +34,7 @@ public class MapSelector
     }
 
     internal void buildDropdown(Dropdown dropdown) {
+        if(dropdown == null) return;
         this.dropdown = dropdown;
 
         dropdown.ClearOptions();

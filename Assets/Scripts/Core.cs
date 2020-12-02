@@ -47,12 +47,14 @@ public class Core : MonoBehaviour {
         }
 
         networkClient = GetComponent<NetworkClient>();
+
+        DontDestroyOnLoad(this);
     }
 
     void Start() {
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
-        roCamEnabled = MainCamera.GetComponent<ROCamera>().enabled;
+        roCamEnabled = MainCamera.GetComponent<ROCamera>()?.enabled ?? false;
 
         LoadConfigs();
 
@@ -62,7 +64,6 @@ public class Core : MonoBehaviour {
          */
         NetworkClient.Start();
         NetworkClient.ConnectToServer();
-       
 
         LoadGrf();
         BuildMapSelector();
@@ -83,7 +84,7 @@ public class Core : MonoBehaviour {
         }
 
         // if a map is pre loaded, do not display map selector on startup
-        mapDropdown.gameObject.SetActive(!preLoadMap);
+        mapDropdown?.gameObject?.SetActive(!preLoadMap);
     }
 
     private void LoadGrf() {
@@ -131,7 +132,7 @@ public class Core : MonoBehaviour {
         }
 
         // is map selector enabled
-        var mapSelectorEnabled = mapDropdown.gameObject.activeSelf;
+        var mapSelectorEnabled = mapDropdown?.gameObject?.activeSelf ?? false;
 
         // ESC pressed: toggle map selector visiblity
         if (Input.GetKeyDown(KeyCode.Escape)) {
