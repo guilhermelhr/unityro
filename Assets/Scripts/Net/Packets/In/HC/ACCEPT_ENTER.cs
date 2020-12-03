@@ -17,6 +17,8 @@ public partial class HC {
         public int PremiumSlots { get; set; }
         public CharacterData[] Chars { get; set; }
 
+        public PacketHeader GetHeader() => HEADER;
+
         public bool Read(byte[] data) {
             BinaryReader br = new BinaryReader(data);
 

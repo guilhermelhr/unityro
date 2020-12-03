@@ -27,17 +27,25 @@ public class Connection : NetworkProtocol {
         };
 
         _ReceivedBuffer = new byte[NetworkClient.DATA_BUFFER_SIZE];
-        _Client.BeginConnect("127.0.0.1", 6900, OnSocketConnected, _Client);
+        _Client.Connect("127.0.0.1", 6900);
+        OnClientConnected();
+    }
+
+    public override void ChangeServer(IPAddress host, int port) {
+        Disconnect();
+        _Client.Connect(host, port);
+        OnClientConnected();
     }
 
     override public void Connect(string ip, int port) {
         _Client = new TcpClient();
 
         _ReceivedBuffer = new byte[NetworkClient.DATA_BUFFER_SIZE];
-        _Client.BeginConnect(ip, port, OnSocketConnected, _Client);
+        _Client.Connect(ip, port);
+        OnClientConnected();
     }
 
-    public override BinaryWriter GetBinaryWriter() {
+    override public BinaryWriter GetBinaryWriter() {
         if(_Client.Connected) {
             return _BinaryWriter;
         }
@@ -45,15 +53,12 @@ public class Connection : NetworkProtocol {
         return null;
     }
 
-    override protected void OnSocketConnected(IAsyncResult _result) {
-        _Client.EndConnect(_result);
-
+    override protected void OnClientConnected() {
         if(!_Client.Connected) return;
 
         _Stream = _Client.GetStream();
         _BinaryWriter = new BinaryWriter(_Stream);
         ListenToStream();
-        this.networkListener?.OnTcpConnected();
     }
 
     private void ListenToStream() {

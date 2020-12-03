@@ -63,7 +63,6 @@ public class Core : MonoBehaviour {
          * have been loaded
          */
         NetworkClient.Start();
-        NetworkClient.ConnectToServer();
 
         LoadGrf();
         BuildMapSelector();

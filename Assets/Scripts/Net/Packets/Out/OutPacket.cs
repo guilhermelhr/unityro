@@ -13,6 +13,10 @@ public abstract class OutPacket {
         isFixed = size > 0;
     }
 
+    public virtual bool Send() {
+        return Send(Core.NetworkClient.GetBinaryWriter());
+    }
+
     public virtual bool Send(BinaryWriter writer) {
         writer.Write((ushort) header);
 

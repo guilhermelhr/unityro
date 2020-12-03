@@ -22,6 +22,8 @@ public partial class HC {
         public IPAddress IP;
         public short Port;
 
+        public PacketHeader GetHeader() => HEADER;
+
         public bool Read(byte[] data) {
             BinaryReader br = new BinaryReader(data);
 

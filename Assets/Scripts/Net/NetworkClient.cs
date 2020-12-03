@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using UnityEngine;
 using static PacketSerializer;
 
@@ -7,6 +9,7 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
     public struct NetworkClientState {
         public CharServerInfo CharServer;
         public AC.ACCEPT_LOGIN LoginInfo;
+        public HC.ACCEPT_ENTER CurrentCharactersInfo;
     }
 
     public const int DATA_BUFFER_SIZE = 16 * 1024;
@@ -29,29 +32,33 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
         CurrentConnection.Connect();
     }
 
+    public void ChangeServer(IPAddress ip, int port) {
+        CurrentConnection.ChangeServer(ip, port);
+    }
+
     private void Disconnect() {
         CurrentConnection.Disconnect();
     }
 
     public void OnTcpConnected() {
-        HookPacket(AC.ACCEPT_LOGIN.HEADER, (ushort cmd, int size, InPacket packet) => {
-            if(packet is AC.ACCEPT_LOGIN) {
-                CurrentConnection.Disconnect();
+        //HookPacket(AC.ACCEPT_LOGIN.HEADER, (ushort cmd, int size, InPacket packet) => {
+        //    if(packet is AC.ACCEPT_LOGIN) {
+        //        CurrentConnection.Disconnect();
 
-                this.packet = packet;
-                var charServerInfo = (this.packet as AC.ACCEPT_LOGIN).Servers[0];
-                ConnectToCharServer(charServerInfo);
-            }
-        });
-        if(packet == null) {
-            new CA.LOGIN("danilo", "123456", 10, 10).Send(CurrentConnection.GetBinaryWriter());
-        } else if(packet is AC.ACCEPT_LOGIN) {
-            var acceptLogin = this.packet as AC.ACCEPT_LOGIN;
-            State.LoginInfo = acceptLogin;
-            new CH.ENTER(acceptLogin.AccountID, acceptLogin.LoginID1, acceptLogin.LoginID2, acceptLogin.Sex).Send(CurrentConnection.GetBinaryWriter());
-        } else if (packet is HC.NOTIFY_ZONESVR) {
-            new CZ.ENTER(State.LoginInfo.AccountID, State.LoginInfo.LoginID1, State.LoginInfo.LoginID2, State.LoginInfo.Sex).Send(CurrentConnection.GetBinaryWriter());
-        }
+        //        this.packet = packet;
+        //        var charServerInfo = (this.packet as AC.ACCEPT_LOGIN).Servers[0];
+        //        ConnectToCharServer(charServerInfo);
+        //    }
+        //});
+        //if(packet == null) {
+        //    new CA.LOGIN("danilo", "123456", 10, 10).Send(CurrentConnection.GetBinaryWriter());
+        //} else if(packet is AC.ACCEPT_LOGIN) {
+        //    var acceptLogin = this.packet as AC.ACCEPT_LOGIN;
+        //    State.LoginInfo = acceptLogin;
+        //    new CH.ENTER(acceptLogin.AccountID, acceptLogin.LoginID1, acceptLogin.LoginID2, acceptLogin.Sex).Send(CurrentConnection.GetBinaryWriter());
+        //} else if (packet is HC.NOTIFY_ZONESVR) {
+        //    new CZ.ENTER(State.LoginInfo.AccountID, State.LoginInfo.LoginID1, State.LoginInfo.LoginID2, State.LoginInfo.Sex).Send(CurrentConnection.GetBinaryWriter());
+        //}
     }
 
     private void ConnectToCharServer(CharServerInfo charServerInfo) {
@@ -90,6 +97,8 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
             new Ping((int)Time.realtimeSinceStartup).Send(CurrentConnection.GetBinaryWriter());
         }
     }
+
+    public BinaryWriter GetBinaryWriter() => CurrentConnection.GetBinaryWriter();
 
     /**
      * Are we gonna try to reconnect?
