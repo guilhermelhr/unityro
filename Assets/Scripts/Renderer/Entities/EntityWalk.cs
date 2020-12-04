@@ -6,18 +6,8 @@ using UnityEngine;
 
 public class EntityWalk : MonoBehaviour {
 
-    /**
-	 * Direction look up table
-	 */
-    private int[][] DIRECTION = new int[][] {
-        new int[] { 1,2,3 },
-        new int[] { 0,0,4 },
-        new int[] { 7,6,5 }
-    };
-
-    int speed = 150;
-
     private Coroutine MoveIE, MoveToIE;
+    private int speed = 150;
 
     public void WalkTo(Vector3 targetPosition) {
         var path = Core.PathFinding.GetPath((int)transform.position.x, (int)transform.position.z, (int)targetPosition.x, (int)targetPosition.z);
