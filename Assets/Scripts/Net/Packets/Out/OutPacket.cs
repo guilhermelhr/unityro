@@ -18,7 +18,6 @@ public abstract class OutPacket {
     }
 
     public virtual bool Send(BinaryWriter writer) {
-        if(writer == null) return false;
         writer.Write((ushort) header);
 
         if (!isFixed) {

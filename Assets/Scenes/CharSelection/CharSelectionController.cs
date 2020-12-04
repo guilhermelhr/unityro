@@ -6,23 +6,34 @@ public class CharSelectionController : MonoBehaviour {
 
     public GridLayoutGroup GridLayout;
     public GameObject charSelectionItem;
-    
+
     private HC.ACCEPT_ENTER currentCharactersInfo;
     private CharacterData selectedCharacter;
 
     void Start() {
         currentCharactersInfo = Core.NetworkClient.State.CurrentCharactersInfo;
         Core.NetworkClient.HookPacket(HC.NOTIFY_ZONESVR2.HEADER, OnCharacterSelectionAccepted);
+        Core.NetworkClient.HookPacket(ZC.ACCEPT_ENTER2.HEADER, OnMapServerLoginAccepted);
 
         PopulateUI();
     }
 
+    private void OnMapServerLoginAccepted(ushort cmd, int size, InPacket packet) {
+        if(packet is ZC.ACCEPT_ENTER2) {
+
+        }
+    }
+
     private void OnCharacterSelectionAccepted(ushort cmd, int size, InPacket packet) {
         if(packet is HC.NOTIFY_ZONESVR2) {
-            //this.packet = packet;
+            Core.NetworkClient.Disconnect();
+
             var pkt = packet as HC.NOTIFY_ZONESVR2;
-            //CurrentConnection.Disconnect();
-            //CurrentConnection.Connect(pkt.IP.ToString(), pkt.Port);
+            Core.NetworkClient.ChangeServer(pkt.IP.ToString(), pkt.Port);
+            Core.NetworkClient.CurrentConnection.Start();
+
+            var loginInfo = Core.NetworkClient.State.LoginInfo;
+            new CZ.ENTER(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, System.DateTime.Now.Millisecond, loginInfo.Sex).Send();
         }
     }
 

@@ -8,7 +8,7 @@ public class LoginController : MonoBehaviour {
     public InputField passwordField;
 
     void Start() {
-        Core.NetworkClient.ConnectToServer();
+        Core.NetworkClient.ChangeServer("127.0.0.1", 6900);
         Core.NetworkClient.HookPacket(AC.ACCEPT_LOGIN.HEADER, this.OnLoginResponse);
     }
 

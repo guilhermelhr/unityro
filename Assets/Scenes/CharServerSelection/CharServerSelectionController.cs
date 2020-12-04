@@ -59,7 +59,9 @@ public class CharServerSelectionController : MonoBehaviour {
             throw new Exception("Invalid charserverinfo or login info");
         };
         Core.NetworkClient.State.CharServer = charServerInfo;
-        Core.NetworkClient.ChangeServer(charServerInfo.IP, charServerInfo.Port);
+        Core.NetworkClient.ChangeServer(charServerInfo.IP.ToString(), charServerInfo.Port);
+        Core.NetworkClient.SkipBytes(4);
+
         new CH.ENTER(loginInfo.AccountID, loginInfo.LoginID1, loginInfo.LoginID2, loginInfo.Sex).Send();
     }
 

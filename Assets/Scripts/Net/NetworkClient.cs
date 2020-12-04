@@ -4,7 +4,7 @@ using System.Net;
 using UnityEngine;
 using static PacketSerializer;
 
-public class NetworkClient : MonoBehaviour, NetworkListener {
+public class NetworkClient : MonoBehaviour {
 
     public struct NetworkClientState {
         public CharServerInfo CharServer;
@@ -15,12 +15,11 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
     public const int DATA_BUFFER_SIZE = 16 * 1024;
     public static int CLIENT_ID = new System.Random().Next();
 
-    private Connection CurrentConnection;
-    private InPacket packet;
+    public Connection CurrentConnection;
     public NetworkClientState State;
 
     public void Start() {
-        CurrentConnection = new Connection(this);
+        CurrentConnection = new Connection();
         State = new NetworkClientState();
     }
 
@@ -28,11 +27,7 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
         Disconnect();
     }
 
-    public void ConnectToServer() {
-        CurrentConnection.Connect();
-    }
-
-    public void ChangeServer(IPAddress ip, int port) {
+    public void ChangeServer(string ip, int port) {
         CurrentConnection.Connect(ip, port);
     }
 
@@ -40,53 +35,14 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
         CurrentConnection.Disconnect();
     }
 
-    public bool IsConnected => CurrentConnection.IsConnected;
-
-    public void OnTcpConnected() {
-        //HookPacket(AC.ACCEPT_LOGIN.HEADER, (ushort cmd, int size, InPacket packet) => {
-        //    if(packet is AC.ACCEPT_LOGIN) {
-        //        CurrentConnection.Disconnect();
-
-        //        this.packet = packet;
-        //        var charServerInfo = (this.packet as AC.ACCEPT_LOGIN).Servers[0];
-        //        ConnectToCharServer(charServerInfo);
-        //    }
-        //});
-        //if(packet == null) {
-        //    new CA.LOGIN("danilo", "123456", 10, 10).Send(CurrentConnection.GetBinaryWriter());
-        //} else if(packet is AC.ACCEPT_LOGIN) {
-        //    var acceptLogin = this.packet as AC.ACCEPT_LOGIN;
-        //    State.LoginInfo = acceptLogin;
-        //    new CH.ENTER(acceptLogin.AccountID, acceptLogin.LoginID1, acceptLogin.LoginID2, acceptLogin.Sex).Send(CurrentConnection.GetBinaryWriter());
-        //} else if (packet is HC.NOTIFY_ZONESVR) {
-        //    new CZ.ENTER(State.LoginInfo.AccountID, State.LoginInfo.LoginID1, State.LoginInfo.LoginID2, State.LoginInfo.Sex).Send(CurrentConnection.GetBinaryWriter());
-        //}
-    }
-
-    private void ConnectToCharServer(CharServerInfo charServerInfo) {
-        State.CharServer = charServerInfo;
-        CurrentConnection.Connect(charServerInfo.IP.ToString(), charServerInfo.Port);
-        HookPacket(HC.ACCEPT_ENTER.HEADER, (ushort cmd, int size, InPacket packet) => {
-            if(packet is HC.ACCEPT_ENTER) {
-                SelectCharacter();
-            }
-        });
-    }
-
-    private void SelectCharacter() {
-        new CH.SELECT_CHAR(0).Send(CurrentConnection.GetBinaryWriter());
-        HookPacket(HC.NOTIFY_ZONESVR2.HEADER, (ushort cmd, int size, InPacket packet) => {
-            if(packet is HC.NOTIFY_ZONESVR2) {
-                this.packet = packet;
-                var pkt = packet as HC.NOTIFY_ZONESVR2;
-                CurrentConnection.Disconnect();
-                CurrentConnection.Connect(pkt.IP.ToString(), pkt.Port);
-            }
-        });
-    }
+    public bool IsConnected => CurrentConnection.Client.Connected;
 
     public void HookPacket(PacketHeader cmd, OnPacketReceived onPackedReceived) {
         CurrentConnection.Hook((ushort)cmd, onPackedReceived);
+    }
+
+    public void SkipBytes(int bytesToSkip) {
+        CurrentConnection.SkipBytes(bytesToSkip);
     }
 
     private void Update() {
@@ -97,11 +53,11 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
         if(!IsConnected) return;
         var ticks = Time.realtimeSinceStartup;
         if(ticks % 12 < 1f) {
-            new Ping((int)Time.realtimeSinceStartup).Send(CurrentConnection.GetBinaryWriter());
+            new Ping((int)Time.realtimeSinceStartup).Send(CurrentConnection.BinaryWriter);
         }
     }
 
-    public BinaryWriter GetBinaryWriter() => CurrentConnection.GetBinaryWriter();
+    public BinaryWriter GetBinaryWriter() => CurrentConnection.BinaryWriter;
 
     /**
      * Are we gonna try to reconnect?
