@@ -75,10 +75,10 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
 
     private void SelectCharacter() {
         new CH.SELECT_CHAR(0).Send(CurrentConnection.GetBinaryWriter());
-        HookPacket(HC.NOTIFY_ZONESVR.HEADER, (ushort cmd, int size, InPacket packet) => {
-            if(packet is HC.NOTIFY_ZONESVR) {
+        HookPacket(HC.NOTIFY_ZONESVR2.HEADER, (ushort cmd, int size, InPacket packet) => {
+            if(packet is HC.NOTIFY_ZONESVR2) {
                 this.packet = packet;
-                var pkt = packet as HC.NOTIFY_ZONESVR;
+                var pkt = packet as HC.NOTIFY_ZONESVR2;
                 CurrentConnection.Disconnect();
                 CurrentConnection.Connect(pkt.IP.ToString(), pkt.Port);
             }

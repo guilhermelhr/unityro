@@ -1,4 +1,4 @@
-﻿public struct CharacterData {
+﻿public class CharacterData {
     public int GID;
     public int Exp;
     public int Zeny;

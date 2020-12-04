@@ -21,7 +21,7 @@ public class LoginController : MonoBehaviour {
         var username = usernameField.text;
         var password = passwordField.text;
 
-        if (username.Length == 0 || password.Length == 0) {
+        if(username.Length == 0 || password.Length == 0) {
             return;
         }
 
@@ -33,7 +33,7 @@ public class LoginController : MonoBehaviour {
     }
 
     private void OnLoginResponse(ushort cmd, int size, InPacket packet) {
-        if (packet is AC.ACCEPT_LOGIN) {
+        if(packet is AC.ACCEPT_LOGIN) {
             var pkt = packet as AC.ACCEPT_LOGIN;
 
             Core.NetworkClient.State.LoginInfo = pkt;

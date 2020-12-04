@@ -1,2 +1,2 @@
-grf=D:/Ragnarok/bro_data.grf
+grf=D:/Ragnarok/kro_data.grf
 

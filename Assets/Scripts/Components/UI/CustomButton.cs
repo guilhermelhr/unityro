@@ -24,7 +24,7 @@ public class CustomButton : Button,
         if(backgroundImage != null) {
             backgroundBMP = (Texture2D)FileManager.Load(DBManager.INTERFACE_PATH + backgroundImage);
             rawImage.texture = backgroundBMP;
-            GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundBMP.width, backgroundBMP.height);
+            //GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundBMP.width, backgroundBMP.height);
         }
         if(hoverImage != null) {
             hoverBMP = FileManager.Load(DBManager.INTERFACE_PATH + hoverImage) as Texture2D;
