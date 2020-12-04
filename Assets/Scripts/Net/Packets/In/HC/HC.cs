@@ -1,0 +1,2 @@
+﻿public partial class HC {
+}

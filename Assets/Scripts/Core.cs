@@ -12,18 +12,12 @@ public class Core : MonoBehaviour {
     private static MapRenderer mapRenderer = new MapRenderer();
 
     private static PathFindingManager pathFinding = new PathFindingManager();
+    private static NetworkClient networkClient;
 
-    public static MapLoader MapLoader {
-        get { return mapLoader; }
-    }
-
-    public static MapRenderer MapRenderer {
-        get { return mapRenderer; }
-    }
-
-    public static PathFindingManager PathFinding {
-        get { return pathFinding; }
-    }
+    public static MapLoader MapLoader => mapLoader;
+    public static MapRenderer MapRenderer => mapRenderer;
+    public static PathFindingManager PathFinding => pathFinding;
+    public static NetworkClient NetworkClient => networkClient;
 
     public static Action OnGrfLoaded;
 
@@ -51,6 +45,8 @@ public class Core : MonoBehaviour {
         if (MainCamera == null) {
             MainCamera = Camera.main;
         }
+
+        networkClient = GetComponent<NetworkClient>();
     }
 
     void Start() {
@@ -59,6 +55,15 @@ public class Core : MonoBehaviour {
         roCamEnabled = MainCamera.GetComponent<ROCamera>().enabled;
 
         LoadConfigs();
+
+        /**
+         * We start the network client only after the configs
+         * have been loaded
+         */
+        NetworkClient.Start();
+        NetworkClient.ConnectToServer();
+       
+
         LoadGrf();
         BuildMapSelector();
     }
