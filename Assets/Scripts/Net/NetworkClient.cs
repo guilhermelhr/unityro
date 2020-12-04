@@ -33,12 +33,14 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
     }
 
     public void ChangeServer(IPAddress ip, int port) {
-        CurrentConnection.ChangeServer(ip, port);
+        CurrentConnection.Connect(ip, port);
     }
 
-    private void Disconnect() {
+    public void Disconnect() {
         CurrentConnection.Disconnect();
     }
+
+    public bool IsConnected => CurrentConnection.IsConnected;
 
     public void OnTcpConnected() {
         //HookPacket(AC.ACCEPT_LOGIN.HEADER, (ushort cmd, int size, InPacket packet) => {
@@ -92,6 +94,7 @@ public class NetworkClient : MonoBehaviour, NetworkListener {
     }
 
     public void Ping() {
+        if(!IsConnected) return;
         var ticks = Time.realtimeSinceStartup;
         if(ticks % 12 < 1f) {
             new Ping((int)Time.realtimeSinceStartup).Send(CurrentConnection.GetBinaryWriter());

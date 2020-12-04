@@ -12,7 +12,12 @@ public class CharServerSelectionController : MonoBehaviour {
 
     // Start is called before the first frame update
     private void Start() {
+        // Disconnect from Login Server
+        Core.NetworkClient.Disconnect();
+
+        // Hook packets
         Core.NetworkClient.HookPacket(HC.ACCEPT_ENTER.HEADER, OnEnterResponse);
+
         BuildServerList();
     }
 
@@ -49,13 +54,13 @@ public class CharServerSelectionController : MonoBehaviour {
     }
 
     public void OnOkClicked() {
-        var acceptLogin = Core.NetworkClient.State.LoginInfo;
-        if(charServerInfo == null || acceptLogin == null) {
+        var loginInfo = Core.NetworkClient.State.LoginInfo;
+        if(charServerInfo == null || loginInfo == null) {
             throw new Exception("Invalid charserverinfo or login info");
         };
         Core.NetworkClient.State.CharServer = charServerInfo;
         Core.NetworkClient.ChangeServer(charServerInfo.IP, charServerInfo.Port);
-        new CH.ENTER(acceptLogin.AccountID, acceptLogin.LoginID1, acceptLogin.LoginID2, acceptLogin.Sex).Send();
+        new CH.ENTER(loginInfo.AccountID, loginInfo.LoginID1, loginInfo.LoginID2, loginInfo.Sex).Send();
     }
 
     public void OnCancelClicked() {

@@ -31,15 +31,23 @@ public class Connection : NetworkProtocol {
         OnClientConnected();
     }
 
-    public override void ChangeServer(IPAddress host, int port) {
-        Disconnect();
+    public override void Connect(IPAddress host, int port) {
+        _Client = new TcpClient() {
+            ReceiveBufferSize = NetworkClient.DATA_BUFFER_SIZE,
+            SendBufferSize = NetworkClient.DATA_BUFFER_SIZE
+        };
+        _ReceivedBuffer = new byte[NetworkClient.DATA_BUFFER_SIZE];
         _Client.Connect(host, port);
         OnClientConnected();
     }
 
-    override public void Connect(string ip, int port) {
-        _Client = new TcpClient();
+    public bool IsConnected => _Client.Connected;
 
+    override public void Connect(string ip, int port) {
+        _Client = new TcpClient() {
+            ReceiveBufferSize = NetworkClient.DATA_BUFFER_SIZE,
+            SendBufferSize = NetworkClient.DATA_BUFFER_SIZE
+        };
         _ReceivedBuffer = new byte[NetworkClient.DATA_BUFFER_SIZE];
         _Client.Connect(ip, port);
         OnClientConnected();
@@ -71,9 +79,9 @@ public class Connection : NetworkProtocol {
         int size = 0;
         try {
             size = _Client.Client.EndReceive(result, out error);
-        } catch(Exception e) {
+        } catch {
             // Disconnect() ??
-            Debug.LogError($"TCP Client Exception {e.Message}");
+            Debug.LogError($"TCP Client Exception");
             return;
         }
 
