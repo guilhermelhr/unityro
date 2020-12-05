@@ -19,6 +19,7 @@ public class CharacterCellController : MonoBehaviour {
         SPR spr = FileManager.Load(path + ".spr") as SPR;
         var sprite = spr.GetSprites()[0];
         image.sprite = sprite;
+        image.preserveAspect = true;
     }
 
     private void Update() {

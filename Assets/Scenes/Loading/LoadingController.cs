@@ -9,17 +9,19 @@ public class LoadingController : MonoBehaviour {
 
     private void Awake() {
         Core.MapLoader.OnProgress += OnProgress;
-        Core.MapRenderer.OnMapLoaded += OnMapLoaded;
     }
 
-    private void OnMapLoaded(GameObject world) {
+    private void OnMapLoaded() {
         Core.MapLoader.OnProgress -= OnProgress;
-        Core.MapRenderer.OnMapLoaded -= OnMapLoaded;
         SceneManager.UnloadSceneAsync("LoadingScene");
     }
 
     private void OnProgress(int progress) {
         Slider.value = progress;
         ProgressText.text = $"{progress}%";
+
+        if (progress == 100 && Core.MapRenderer.Ready) {
+            OnMapLoaded();
+        }
     }
 }

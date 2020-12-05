@@ -108,8 +108,6 @@ public class MapRenderer {
             //Vector3 position = new Vector3(light.pos[0] + width, -light.pos[1], light.pos[2] + height);
             //lightObj.transform.position = position;
         }
-
-        OnMapLoaded?.Invoke(mapParent);
     }
 
     /// <summary>
@@ -144,9 +142,6 @@ public class MapRenderer {
     /// </summary>
     /// <param name="altitude"></param>
     private void OnAltitudeComplete(Altitude altitude) {
-
-        //TODO
-        //var gl = Renderer.getContext();
         altitudeCompleted = true;
     }
 
@@ -180,7 +175,7 @@ public class MapRenderer {
 
     private void OnModelsComplete(List<RSM.CompiledModel> compiledModels) {
         models = new Models(compiledModels);
-        models.BuildMeshes();
+        Core.Instance.StartCoroutine(models.BuildMeshes());
 
         modelsCompleted = true;
     }

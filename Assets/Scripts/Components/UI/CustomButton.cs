@@ -21,17 +21,19 @@ public class CustomButton : Button,
     protected override void Awake() {
         enabled = true;
         rawImage = GetComponent<RawImage>();
-        if(backgroundImage != null) {
-            backgroundBMP = (Texture2D)FileManager.Load(DBManager.INTERFACE_PATH + backgroundImage);
-            rawImage.texture = backgroundBMP;
-            //GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundBMP.width, backgroundBMP.height);
-        }
-        if(hoverImage != null) {
-            hoverBMP = FileManager.Load(DBManager.INTERFACE_PATH + hoverImage) as Texture2D;
-        }
-        if(pressedImage != null) {
-            pressedBMP = FileManager.Load(DBManager.INTERFACE_PATH + pressedImage) as Texture2D;
-        }
+        try {
+            if(backgroundImage != null) {
+                backgroundBMP = (Texture2D)FileManager.Load(DBManager.INTERFACE_PATH + backgroundImage);
+                rawImage.texture = backgroundBMP;
+                //GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundBMP.width, backgroundBMP.height);
+            }
+            if(hoverImage != null) {
+                hoverBMP = FileManager.Load(DBManager.INTERFACE_PATH + hoverImage) as Texture2D;
+            }
+            if(pressedImage != null) {
+                pressedBMP = FileManager.Load(DBManager.INTERFACE_PATH + pressedImage) as Texture2D;
+            }
+        } catch { }
     }
 
     override public void OnPointerDown(PointerEventData eventData) {

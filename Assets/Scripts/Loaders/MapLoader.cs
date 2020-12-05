@@ -10,6 +10,7 @@ using UnityEngine;
 /// Based on ROBrowser by Vincent Thibault (robrowser.com)
 /// </summary>
 public class MapLoader {
+    public const int BATCH_SIZE = 20;
     private float progress = 0;
     public Action<int> OnProgress = null;
 
@@ -34,7 +35,7 @@ public class MapLoader {
         Altitude altitude = LoadAltitude(mapname, callback);
         GND ground = LoadGround(mapname, world, callback);
 
-        return LoadModels(mapname, world.modelDescriptors, callback);
+        yield return LoadModels(mapname, world.modelDescriptors, callback);
     }
 
     private RSW LoadWorld(string mapname, Action<string, string, object> callback) {
@@ -81,8 +82,11 @@ public class MapLoader {
     }
 
     private IEnumerator LoadModels(string mapname, List<RSW.ModelDescriptor> modelDescriptors, Action<string, string, object> callback) {
+        /**
+         * Divide by 3 because of each loop in which we increase progress
+         */
         float remainingProgress = 100 - Progress;
-        float modelProgress = remainingProgress / modelDescriptors.Count / 2;
+        float modelProgress = remainingProgress / modelDescriptors.Count / 3;
 
         for(int i = 0; i < modelDescriptors.Count; i++) {
             var model = modelDescriptors[i];
@@ -90,7 +94,9 @@ public class MapLoader {
 
             FileManager.Load(model.filename);
             Progress += modelProgress;
-            yield return new WaitForEndOfFrame();
+
+            if(i % BATCH_SIZE == 0)
+                yield return new WaitForEndOfFrame();
         }
 
         //create model instances
@@ -102,26 +108,36 @@ public class MapLoader {
                 objectsSet.Add(model);
             }
             Progress += modelProgress;
-            yield return new WaitForEndOfFrame();
+
+            if(i % BATCH_SIZE == 0)
+                yield return new WaitForEndOfFrame();
         }
         FileCache.ClearAllWithExt("rsm");
         RSM[] objects = new RSM[objectsSet.Count];
         objectsSet.CopyTo(objects);
 
-        yield return CompileModels(objects, (List<RSM.CompiledModel> compiledModels) => {
-            //LoadModelsTextures(compiledModels);
+        yield return CompileModels(objects, modelProgress, (List<RSM.CompiledModel> compiledModels) => {
             callback.Invoke(mapname, "MAP_MODELS", compiledModels);
         });
     }
 
-    private IEnumerator CompileModels(RSM[] objects, Action<List<RSM.CompiledModel>> OnComplete) {
-        List<RSM.CompiledModel> models = new List<RSM.CompiledModel>();
+    private IEnumerator CompileModels(RSM[] objects, float progressStep, Action<List<RSM.CompiledModel>> OnComplete) {
+        /**
+         * Calculate progress again because rsm objects
+         * are way less than model descriptors and divide by 2
+         * beucase we still have the render loading
+         */
+        float remainingProgress = 100 - Progress;
+        float modelProgress = remainingProgress / objects.Length / 2;
 
-        foreach(var rsm in objects) {
-            var compiledModel = ModelLoader.Compile(rsm);
+        List<RSM.CompiledModel> models = new List<RSM.CompiledModel>();
+        for(int i = 0; i < objects.Length; i++) {
+            var compiledModel = ModelLoader.Compile(objects[i]);
             models.Add(compiledModel);
-            yield return LoadModelTexture(compiledModel);
-            //yield return new WaitForEndOfFrame();
+
+            Progress += modelProgress;
+            if(i % BATCH_SIZE == 0)
+                yield return new WaitForEndOfFrame();
         }
 
         OnComplete(models);
