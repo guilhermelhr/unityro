@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Map/MapScene.unity
     guid: cbb9acfe2d54d5745a080f91e2a6fb5b
+  - enabled: 1
+    path: Assets/Scenes/Loading/LoadingScene.unity
+    guid: 0a0035418020fe4428ac1619b92043c7
   m_configObjects: {}

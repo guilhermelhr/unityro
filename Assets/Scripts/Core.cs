@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Core : MonoBehaviour {
@@ -65,10 +66,6 @@ public class Core : MonoBehaviour {
          * have been loaded
          */
         NetworkClient.Start();
-
-        MapLoader.onProgress = (int progress) => {
-            Debug.Log(progress);
-        };
 
         LoadGrf();
         BuildMapSelector();
@@ -189,7 +186,10 @@ public class Core : MonoBehaviour {
     }
 
     public void BeginMapLoading(string mapName) {
+        SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
-        MapLoader.Load(mapname + ".rsw", MapRenderer.OnComplete);
+        StartCoroutine(
+            MapLoader.Load(mapName + ".rsw", MapRenderer.OnComplete)
+        );
     }
 }

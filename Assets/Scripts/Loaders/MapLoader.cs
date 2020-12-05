@@ -11,7 +11,7 @@ using UnityEngine;
 /// </summary>
 public class MapLoader {
     private float progress = 0;
-    public Action<int> onProgress = null;
+    public Action<int> OnProgress = null;
 
     public float Progress {
         get {
@@ -20,8 +20,8 @@ public class MapLoader {
 
         set {
             var progress = Math.Min(100, value);
-            if((int)progress != (int)this.progress && onProgress != null) {
-                onProgress.Invoke((int)progress);
+            if((int)progress != (int)this.progress && OnProgress != null) {
+                OnProgress.Invoke((int)progress);
             }
             this.progress = progress;
         }

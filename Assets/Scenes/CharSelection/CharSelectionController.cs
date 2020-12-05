@@ -23,13 +23,14 @@ public class CharSelectionController : MonoBehaviour {
     private void OnMapServerLoginAccepted(ushort cmd, int size, InPacket packet) {
         if(packet is ZC.ACCEPT_ENTER2) {
             var pkt = packet as ZC.ACCEPT_ENTER2;
-            Core.NetworkClient.State.MapLoginInfo = new MapLoginInfo() {
+            var mapLoginInfo = new MapLoginInfo() {
                 mapname = currentMapInfo.Mapname.Split('.')[0],
                 PosX = pkt.PosX,
                 PosY = pkt.PosY,
                 Dir = pkt.Dir
             };
-            SceneManager.LoadSceneAsync("MapScene");
+            Core.NetworkClient.State.MapLoginInfo = mapLoginInfo;
+            SceneManager.LoadScene("MapScene");
         }
     }
 

@@ -10,6 +10,8 @@ using UnityEngine.Audio;
 /// Based on ROBrowser by Vincent Thibault (robrowser.com)
 /// </summary>
 public class MapRenderer {
+    public Action<GameObject> OnMapLoaded = null;
+
     public static int MAX_VERTICES = 65532;
 
     public static GameObject mapParent;
@@ -106,6 +108,8 @@ public class MapRenderer {
             //Vector3 position = new Vector3(light.pos[0] + width, -light.pos[1], light.pos[2] + height);
             //lightObj.transform.position = position;
         }
+
+        OnMapLoaded?.Invoke(mapParent);
     }
 
     /// <summary>
