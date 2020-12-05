@@ -52,10 +52,6 @@ public class Core : MonoBehaviour {
         networkClient = GetComponent<NetworkClient>();
 
         DontDestroyOnLoad(this);
-
-        MapLoader.OnProgress += (int progress) => {
-            //Debug.Log("Map Progress:" + progress);
-        };
     }
 
     void Start() {
