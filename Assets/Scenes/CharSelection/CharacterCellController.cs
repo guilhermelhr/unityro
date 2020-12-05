@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +7,7 @@ public class CharacterCellController : MonoBehaviour {
     private CharacterData data;
 
     public Text characterName;
-    public SPRRenderer SPRRenderer;
+    public Image image;
 
     public Action<CharacterData> OnCharacterSelected;
 
@@ -19,7 +17,8 @@ public class CharacterCellController : MonoBehaviour {
         this.characterName.text = data.Name;
         var path = DBManager.GetBodyPath((Job)data.Job, data.Sex);
         SPR spr = FileManager.Load(path + ".spr") as SPR;
-        SPRRenderer.setSPR(spr, 0, 0);
+        var sprite = spr.GetSprites()[0];
+        image.sprite = sprite;
     }
 
     private void Update() {
