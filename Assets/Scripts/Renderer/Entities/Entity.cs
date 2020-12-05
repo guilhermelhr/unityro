@@ -25,7 +25,7 @@ public class Entity : MonoBehaviour {
     public int type = TYPE_UNKNOWN;
     internal object weapon;
     internal Job _job = Job.NOVICE;
-    internal object _sex;
+    internal int _sex;
 
     public long GID;
     public long GUID;
@@ -47,8 +47,9 @@ public class Entity : MonoBehaviour {
         var character = Core.NetworkClient.State.SelectedCharacter;
         this.GID = character.GID;
         this._job = (Job) character.Job;
+        this._sex = character.Sex;
 
-        _EntityViewer.UpdateBody(this._job);
+        _EntityViewer.UpdateBody(this._job, this._sex);
     }
 
     private void Update() {

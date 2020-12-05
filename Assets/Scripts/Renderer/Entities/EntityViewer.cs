@@ -137,8 +137,8 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    public void UpdateBody(Job job) {
-        var path = DBManager.GetBodyPath(job, 0);
+    public void UpdateBody(Job job, int sex) {
+        var path = DBManager.GetBodyPath(job, sex);
         ACT act = FileManager.Load(path + ".act") as ACT;
         SPR spr = FileManager.Load(path + ".spr") as SPR;
         body = new EntityBody(act, spr);
