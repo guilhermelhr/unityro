@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -9,26 +10,34 @@ using UnityEngine;
 /// Based on ROBrowser by Vincent Thibault (robrowser.com)
 /// </summary>
 public class MapLoader {
-    private int progress = 0;
+    private float progress = 0;
     public Action<int> onProgress = null;
 
-    public int Progress {
+    public float Progress {
         get {
             return progress;
         }
 
         set {
             var progress = Math.Min(100, value);
-            if(progress != this.progress && onProgress != null) {
-                onProgress.Invoke(progress);
+            if((int)progress != (int)this.progress && onProgress != null) {
+                onProgress.Invoke((int)progress);
             }
             this.progress = progress;
         }
     }
 
-    public void Load(string mapname, Action<string, string, object> callback) {
+    public IEnumerator Load(string mapname, Action<string, string, object> callback) {
         Progress = 0;
 
+        RSW world = LoadWorld(mapname, callback);
+        Altitude altitude = LoadAltitude(mapname, callback);
+        GND ground = LoadGround(mapname, world, callback);
+
+        return LoadModels(mapname, world.modelDescriptors, callback);
+    }
+
+    private RSW LoadWorld(string mapname, Action<string, string, object> callback) {
         // Load RSW
         string rswPath = "data/" + GetFilePath(mapname);
         RSW world = FileManager.Load(rswPath) as RSW;
@@ -36,63 +45,87 @@ public class MapLoader {
             throw new Exception("Could not load rsw for " + mapname);
         }
 
-        // Load GAT
+        Progress += 1;
+        callback.Invoke(mapname, "MAP_WORLD", world);
+
+        return world;
+    }
+
+    private Altitude LoadAltitude(string mapname, Action<string, string, object> callback) {
         string gatPath = "data/" + GetFilePath(WorldLoader.files.gat);
         Altitude altitude = FileManager.Load(gatPath) as Altitude;
         if(altitude == null) {
             throw new Exception("Could not load gat for " + mapname);
         }
+
+        Progress += 1;
         callback.Invoke(mapname, "MAP_ALTITUDE", altitude);
 
-        // Load GND
+        return altitude;
+    }
+
+    private GND LoadGround(string mapname, RSW world, Action<string, string, object> callback) {
         string gndPath = "data/" + GetFilePath(WorldLoader.files.gnd);
         GND ground = FileManager.Load(gndPath) as GND;
         if(ground == null) {
             throw new Exception("Could not load gnd for " + mapname);
         }
 
-        var compiledGround = GroundLoader.Compile(ground, world.water.level, world.water.waveHeight);
-
+        GND.Mesh compiledGround = GroundLoader.Compile(ground, world.water.level, world.water.waveHeight);
         LoadGroundTexture(world, compiledGround);
 
-        callback.Invoke(mapname, "MAP_WORLD", world);
+        Progress += 1;
         callback.Invoke(mapname, "MAP_GROUND", compiledGround);
 
-        var compiledModels = LoadModels(world.modelDescriptors, ground);
-
-        callback.Invoke(mapname, "MAP_MODELS", compiledModels);
+        return ground;
     }
 
-    private List<RSM.CompiledModel> LoadModels(List<RSW.ModelDescriptor> modelDescriptors, GND ground) {
-        FileManager.InitBatch();
+    private IEnumerator LoadModels(string mapname, List<RSW.ModelDescriptor> modelDescriptors, Action<string, string, object> callback) {
+        float remainingProgress = 100 - Progress;
+        float modelProgress = remainingProgress / modelDescriptors.Count / 2;
 
-        //queue list of models to load
-        for (int i = 0; i < modelDescriptors.Count; i++) {
+        for(int i = 0; i < modelDescriptors.Count; i++) {
             var model = modelDescriptors[i];
             model.filename = "data/model/" + model.filename;
 
             FileManager.Load(model.filename);
+            Progress += modelProgress;
+            yield return new WaitForEndOfFrame();
         }
-
-        //load models
-        FileManager.EndBatch();
 
         //create model instances
         HashSet<RSM> objectsSet = new HashSet<RSM>();
         for(int i = 0; i < modelDescriptors.Count; ++i) {
-            RSM model = (RSM) FileManager.Load(modelDescriptors[i].filename);
+            RSM model = (RSM)FileManager.Load(modelDescriptors[i].filename);
             if(model != null) {
                 model.CreateInstance(modelDescriptors[i]);
                 objectsSet.Add(model);
             }
+            Progress += modelProgress;
+            yield return new WaitForEndOfFrame();
         }
         FileCache.ClearAllWithExt("rsm");
         RSM[] objects = new RSM[objectsSet.Count];
         objectsSet.CopyTo(objects);
 
-        var compiledModels = CompileModels(objects);
-        LoadModelsTextures(compiledModels);
-        return compiledModels;
+        yield return CompileModels(objects, (List<RSM.CompiledModel> compiledModels) => {
+            LoadModelsTextures(compiledModels);
+            callback.Invoke(mapname, "MAP_MODELS", compiledModels);
+        });
+    }
+
+    private IEnumerator CompileModels(RSM[] objects, Action<List<RSM.CompiledModel>> OnComplete) {
+        List<RSM.CompiledModel> models = new List<RSM.CompiledModel>();
+
+        foreach(var rsm in objects) {
+            var compiledModel = ModelLoader.Compile(rsm);
+            models.Add(compiledModel);
+            yield return new WaitForEndOfFrame();
+        }
+
+        OnComplete(models);
+
+        yield return models;
     }
 
     private void LoadModelsTextures(List<RSM.CompiledModel> compiledModels) {
@@ -102,7 +135,7 @@ public class MapLoader {
         FileManager.InitBatch();
 
         //for each model
-        foreach(var model in compiledModels) { 
+        foreach(var model in compiledModels) {
             //and each of its nodes
             foreach(var nodeMesh in model.nodesData) {
                 //load its textures
@@ -166,68 +199,10 @@ public class MapLoader {
     }
 
     private string GetFilePath(string path) {
-        if(DBManager.MapAlias.ContainsKey(path)){
+        if(DBManager.MapAlias.ContainsKey(path)) {
             return Convert.ToString(DBManager.MapAlias[path]);
         }
 
         return path;
-    }
-
-    private class ModelCompiler
-    {
-        private RSM _obj;
-        private RSM.CompiledModel compiledModel;
-
-        public RSM.CompiledModel CompiledModel { get { return compiledModel; } }
-        public RSM Source { get { return _obj; } }
-
-        public ModelCompiler(RSM obj) {
-            _obj = obj;
-        }
-
-        public void ThreadPoolCallback(object threadContext) {
-            try {
-                compiledModel = ModelLoader.Compile(_obj);
-            } finally {
-                if(Interlocked.Decrement(ref pendingCMThreads) == 0) {
-                    doneCMEvent.Set();
-                }
-            }
-        }
-    }
-
-    private static int pendingCMThreads;
-    private static ManualResetEvent doneCMEvent;
-    private List<RSM.CompiledModel> CompileModels(RSM[] objects) {
-        List<RSM.CompiledModel> models = new List<RSM.CompiledModel>();
-
-        pendingCMThreads = objects.Length;
-        doneCMEvent = new ManualResetEvent(false);
-
-        float start = Time.realtimeSinceStartup;
-        ModelCompiler[] compilerArray = new ModelCompiler[objects.Length];
-        for (int i = 0; i < objects.Length; i++) {
-            ModelCompiler compiler = new ModelCompiler(objects[i]);
-            compilerArray[i] = compiler;
-            ThreadPool.QueueUserWorkItem(compiler.ThreadPoolCallback, i);
-        }
-
-        // there are objects: wait for them to load
-        if (objects.Length > 0) {
-            doneCMEvent.WaitOne();
-        }
-
-        float delta = Time.realtimeSinceStartup - start;
-        Debug.Log("Models compiling time: " + delta);
-
-        start = Time.realtimeSinceStartup;
-        for(int i = 0; i < objects.Length; i++) {
-            ModelCompiler compiler = compilerArray[i];
-            models.Add(compiler.CompiledModel);
-        }
-        delta = Time.realtimeSinceStartup - start;
-        Debug.Log("Models gathering time: " + delta);
-
-        return models;
     }
 }

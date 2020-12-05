@@ -18,8 +18,7 @@ public class MapController : MonoBehaviour {
 
         Core.Instance.InitCamera();
         Core.Instance.SetWorldLight(worldLight);
-        Core.MapRenderer.Clear();
-        Core.MapLoader.Load(mapInfo.mapname + ".rsw", Core.MapRenderer.OnComplete);
+        Core.Instance.BeginMapLoading(mapInfo.mapname);
     }
 
 
