@@ -136,7 +136,7 @@ public class MapLoader {
             models.Add(compiledModel);
 
             Progress += modelProgress;
-            if(i % BATCH_SIZE == 0)
+            if(i % 5 == 0)
                 yield return new WaitForEndOfFrame();
         }
 
