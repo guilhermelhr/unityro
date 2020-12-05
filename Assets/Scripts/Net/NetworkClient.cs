@@ -7,8 +7,10 @@ using static PacketSerializer;
 public class NetworkClient : MonoBehaviour {
 
     public struct NetworkClientState {
+        public MapLoginInfo MapLoginInfo;
         public CharServerInfo CharServer;
         public AC.ACCEPT_LOGIN LoginInfo;
+        public CharacterData SelectedCharacter;
         public HC.ACCEPT_ENTER CurrentCharactersInfo;
     }
 

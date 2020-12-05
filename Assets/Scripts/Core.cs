@@ -16,6 +16,7 @@ public class Core : MonoBehaviour {
 
     public static MapLoader MapLoader => mapLoader;
     public static MapRenderer MapRenderer => mapRenderer;
+
     public static PathFindingManager PathFinding => pathFinding;
     public static NetworkClient NetworkClient => networkClient;
 
@@ -172,5 +173,13 @@ public class Core : MonoBehaviour {
         if (mapRenderer.Ready) {
             mapRenderer.PostRender();
         }
+    }
+
+    public void SetWorldLight(Light worldLight) {
+        MapRenderer.WorldLight = worldLight;
+    }
+
+    public void InitCamera() {
+        MainCamera = Camera.main;
     }
 }

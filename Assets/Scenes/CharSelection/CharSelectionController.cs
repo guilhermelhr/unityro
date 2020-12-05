@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class CharSelectionController : MonoBehaviour {
@@ -7,6 +8,7 @@ public class CharSelectionController : MonoBehaviour {
     public GridLayoutGroup GridLayout;
     public GameObject charSelectionItem;
 
+    private HC.NOTIFY_ZONESVR2 currentMapInfo;
     private HC.ACCEPT_ENTER currentCharactersInfo;
     private CharacterData selectedCharacter;
 
@@ -20,7 +22,14 @@ public class CharSelectionController : MonoBehaviour {
 
     private void OnMapServerLoginAccepted(ushort cmd, int size, InPacket packet) {
         if(packet is ZC.ACCEPT_ENTER2) {
-
+            var pkt = packet as ZC.ACCEPT_ENTER2;
+            Core.NetworkClient.State.MapLoginInfo = new MapLoginInfo() {
+                mapname = currentMapInfo.Mapname.Split('.')[0],
+                PosX = pkt.PosX,
+                PosY = pkt.PosY,
+                Dir = pkt.Dir
+            };
+            SceneManager.LoadSceneAsync("MapScene");
         }
     }
 
@@ -28,12 +37,13 @@ public class CharSelectionController : MonoBehaviour {
         if(packet is HC.NOTIFY_ZONESVR2) {
             Core.NetworkClient.Disconnect();
 
-            var pkt = packet as HC.NOTIFY_ZONESVR2;
-            Core.NetworkClient.ChangeServer(pkt.IP.ToString(), pkt.Port);
+            currentMapInfo = packet as HC.NOTIFY_ZONESVR2;
+            Core.NetworkClient.State.SelectedCharacter = selectedCharacter;
+            Core.NetworkClient.ChangeServer(currentMapInfo.IP.ToString(), currentMapInfo.Port);
             Core.NetworkClient.CurrentConnection.Start();
 
             var loginInfo = Core.NetworkClient.State.LoginInfo;
-            new CZ.ENTER(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, System.DateTime.Now.Millisecond, loginInfo.Sex).Send();
+            new CZ.ENTER(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int)new System.DateTimeOffset(System.DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
         }
     }
 

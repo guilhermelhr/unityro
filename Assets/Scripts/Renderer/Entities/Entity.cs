@@ -41,18 +41,14 @@ public class Entity : MonoBehaviour {
     public int attackSpeed = 300;
 
     private void Awake() {
-        Core.OnGrfLoaded += OnGrfLoaded;
-
         _EntityWalk = gameObject.AddComponent<EntityWalk>();
         _EntityViewer = gameObject.AddComponent<EntityViewer>();
-    }
 
-    private void OnDestroy() {
-        Core.OnGrfLoaded -= OnGrfLoaded;
-    }
+        var character = Core.NetworkClient.State.SelectedCharacter;
+        this.GID = character.GID;
+        this._job = (Job) character.Job;
 
-    private void OnGrfLoaded() {
-        _EntityViewer.UpdateBody(_job);
+        _EntityViewer.UpdateBody(this._job);
     }
 
     private void Update() {
