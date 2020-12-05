@@ -109,7 +109,7 @@ public class MapLoader {
         objectsSet.CopyTo(objects);
 
         yield return CompileModels(objects, (List<RSM.CompiledModel> compiledModels) => {
-            LoadModelsTextures(compiledModels);
+            //LoadModelsTextures(compiledModels);
             callback.Invoke(mapname, "MAP_MODELS", compiledModels);
         });
     }
@@ -120,12 +120,36 @@ public class MapLoader {
         foreach(var rsm in objects) {
             var compiledModel = ModelLoader.Compile(rsm);
             models.Add(compiledModel);
-            yield return new WaitForEndOfFrame();
+            yield return LoadModelTexture(compiledModel);
+            //yield return new WaitForEndOfFrame();
         }
 
         OnComplete(models);
 
         yield return models;
+    }
+
+    private IEnumerator LoadModelTexture(RSM.CompiledModel model) {
+        HashSet<string> textures = new HashSet<string>();
+        foreach(var nodeMesh in model.nodesData) {
+            //load its textures
+            foreach(var textureId in nodeMesh.Keys) {
+                var texture = "data/texture/" + model.rsm.textures[textureId];
+                //load texture
+                if(!textures.Contains(texture)) {
+                    textures.Add(texture);
+                    FileManager.Load(texture);
+                    yield return new WaitForEndOfFrame();
+                }
+
+                if(textures.Count == model.rsm.textures.Length) {
+                    //we found every possible texture, no need to keep looking for new ones
+                    yield break;
+                }
+            }
+        }
+
+        yield return null;
     }
 
     private void LoadModelsTextures(List<RSM.CompiledModel> compiledModels) {
