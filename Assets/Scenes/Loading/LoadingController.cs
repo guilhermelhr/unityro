@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -11,17 +10,6 @@ public class LoadingController : MonoBehaviour {
     private void Awake() {
         Core.MapLoader.OnProgress += OnProgress;
         Core.MapRenderer.OnMapLoaded += OnMapLoaded;
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnDestroy() {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode arg1) {
-        if(scene.name == "MapScene") {
-            
-        }
     }
 
     private void OnMapLoaded(GameObject world) {
