@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Net;
+﻿using System.IO;
 using UnityEngine;
 using static PacketSerializer;
 
@@ -9,12 +7,11 @@ public class NetworkClient : MonoBehaviour {
     public struct NetworkClientState {
         public MapLoginInfo MapLoginInfo;
         public CharServerInfo CharServer;
-        public AC.ACCEPT_LOGIN LoginInfo;
         public CharacterData SelectedCharacter;
+        public AC.ACCEPT_LOGIN LoginInfo;
         public HC.ACCEPT_ENTER CurrentCharactersInfo;
     }
 
-    public const int DATA_BUFFER_SIZE = 16 * 1024;
     public static int CLIENT_ID = new System.Random().Next();
 
     public Connection CurrentConnection;
@@ -37,7 +34,7 @@ public class NetworkClient : MonoBehaviour {
         CurrentConnection.Disconnect();
     }
 
-    public bool IsConnected => CurrentConnection.Client.Connected;
+    public bool IsConnected => CurrentConnection.IsConnected();
 
     public void HookPacket(PacketHeader cmd, OnPacketReceived onPackedReceived) {
         CurrentConnection.Hook((ushort)cmd, onPackedReceived);
@@ -47,24 +44,13 @@ public class NetworkClient : MonoBehaviour {
         CurrentConnection.SkipBytes(bytesToSkip);
     }
 
-    private void Update() {
-
-    }
-
     public void Ping() {
         if(!IsConnected) return;
         var ticks = Time.realtimeSinceStartup;
         if(ticks % 12 < 1f) {
-            new Ping((int)Time.realtimeSinceStartup).Send(CurrentConnection.BinaryWriter);
+            new Ping((int)Time.realtimeSinceStartup).Send(CurrentConnection.GetBinaryWriter());
         }
     }
 
-    public BinaryWriter GetBinaryWriter() => CurrentConnection.BinaryWriter;
-
-    /**
-     * Are we gonna try to reconnect?
-     */
-    public void OnDisconnected(NetworkProtocol protocol) {
-        throw new NotImplementedException();
-    }
+    public BinaryWriter GetBinaryWriter() => CurrentConnection.GetBinaryWriter();
 }

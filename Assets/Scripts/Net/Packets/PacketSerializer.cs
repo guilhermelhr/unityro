@@ -5,6 +5,13 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
+
+/**
+ * Note:
+ * When working with packets, sometimes the server will send multiple
+ * packets all at once. In those cases, we'll receive them all together.
+ * That's why we iterate in a while once we receive bytes to read
+ */
 public class PacketSerializer {
 
     public struct PacketInfo {
@@ -16,16 +23,16 @@ public class PacketSerializer {
     public int BytesToSkip { get; set; }
     private Dictionary<ushort, OnPacketReceived> PacketHooks { get; set; }
 
-    public static Dictionary<ushort, PacketInfo> PacketSize;
+    public static Dictionary<ushort, PacketInfo> RegisteredPackets;
 
     static PacketSerializer() {
-        PacketSize = new Dictionary<ushort, PacketInfo>();
+        RegisteredPackets = new Dictionary<ushort, PacketInfo>();
 
         foreach(var type in Assembly.GetExecutingAssembly().GetTypes().Where(type => type.GetInterface("InPacket") != null)) {
             object[] attributes = type.GetCustomAttributes(typeof(PacketHandlerAttribute), true); // get the attributes of the packet.
             if(attributes.Length == 0) return;
             PacketHandlerAttribute ma = (PacketHandlerAttribute)attributes[0];
-            PacketSize.Add(ma.MethodId, new PacketInfo { Size = ma.Size, Type = type });
+            RegisteredPackets.Add(ma.MethodId, new PacketInfo { Size = ma.Size, Type = type });
         }
     }
 
@@ -55,39 +62,42 @@ public class PacketSerializer {
         }
 
         while(Memory.Length - Memory.Position > 2) {
+            // Commands are always the first two bytes
+            // Followed by either the packet data in case the packet
+            // has its size fixed, or the packet length
             var tmp = new byte[2];
             Memory.Read(tmp, 0, 2);
             ushort cmd = BitConverter.ToUInt16(tmp, 0);
 
-            if(!PacketSize.ContainsKey(cmd)) {
+            if(!RegisteredPackets.ContainsKey(cmd)) {
+                // We gotta break because we don't know the size of the packet
                 Debug.LogWarning($"Received Unknown Command: {cmd}");
                 Memory.Position -= 2;
                 break;
             } else {
-                int size = PacketSize[cmd].Size;
+                int size = RegisteredPackets[cmd].Size;
                 bool isFixed = true;
 
                 if(size <= 0) {
                     isFixed = false;
+
+                    // Do we have more than two bytes left?
                     if(Memory.Length - Memory.Position > 2) {
                         Memory.Read(tmp, 0, 2);
                         size = BitConverter.ToUInt16(tmp, 0);
                     } else {
                         Memory.Position -= 4;
-
                         break;
                     }
                 }
 
+                // Read skipping command and length
                 byte[] data = new byte[size];
                 Memory.Read(data, 0, size - (isFixed ? 2 : 4));
 
-                ConstructorInfo ci = PacketSize[cmd].Type.GetConstructor(new Type[] { });
+                ConstructorInfo ci = RegisteredPackets[cmd].Type.GetConstructor(new Type[] { });
                 InPacket packet = (InPacket)ci.Invoke(null);
-
-                if(!packet.Read(data)) {
-                    break;
-                }
+                var shouldContinue = packet.Read(data);
 
                 ThreadManager.ExecuteOnMainThread(() => {
                     if(PacketHooks.ContainsKey(cmd)) {
@@ -97,6 +107,10 @@ public class PacketSerializer {
                     }
                     PacketReceived?.Invoke(cmd, size, packet);
                 });
+
+                if(!shouldContinue) {
+                    break;
+                }
             }
         }
 

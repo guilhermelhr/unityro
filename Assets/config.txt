@@ -1,2 +1,2 @@
-grf=D:/Ragnarok/kro_data.grf
+grf=C:/PATH/TO/YOUR/GRF/data.grf
 
