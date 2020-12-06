@@ -1,7 +1,7 @@
 ﻿
 using System.Net;
 
-public struct CharServerInfo {
+public class CharServerInfo {
     public IPAddress IP { get; set; }
     public int Port { get; set; }
     public string Name { get; set; }

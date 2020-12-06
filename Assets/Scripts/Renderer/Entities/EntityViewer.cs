@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-public class ACTRenderer : MonoBehaviour
-{
+public class EntityViewer : MonoBehaviour {
+
     private Entity entity;
 
     private Action actionIds;
@@ -10,55 +10,19 @@ public class ACTRenderer : MonoBehaviour
     private int xSize;
     private int ySize;
 
+    private EntityBody body;
+
     void Update() {
         // Animation change ! Get it now
-        if(anim.save != null && anim.delay < Time.time) {
+        if (anim.save != null && anim.delay < Time.time) {
             SetAction(anim.save);
         }
 
         // Avoid look up, render as IDLE all not supported frames
         var action = actionId < 0 ? actionIds.IDLE : actionId;
         //TODO RO camera
-        //var direction = (ROCamera.direction + entity.direction + 8) % 8;
-        var direction = 0;
+        var direction = ((int)ROCamera.direction + entity.direction + 8) % 8;
         var behind = direction > 1 && direction < 6;
-
-        
-    }
-
-    public void SetAction(Animation option) {
-        if(option.delay != 0) {
-            anim.delay = option.delay;
-            option.delay = 0;
-            anim.save = option;
-        } else {
-            var objecttype = entity.type;
-
-            // Know attack frame based on weapon type
-            if(option.action == actionIds.ATTACK) {
-                if(objecttype == Entity.TYPE_PC) {
-                    int attack = DBManager.getWeaponAction(entity.weapon, entity._job, entity._sex);
-                    option.action = new int[] { actionIds.ATTACK1, actionIds.ATTACK2, actionIds.ATTACK3 }[attack];
-                }
-
-                // No action loaded yet
-                if(option.action == -2) {
-                    option.action = actionIds.ATTACK1;
-                }
-            }
-
-            actionId = option.action == -1 ? actionIds.IDLE : option.action;
-            anim.tick = Time.time;
-            anim.delay = 0;
-            anim.frame = option.frame;
-            anim.repeat = option.repeat;
-            anim.play = option.play;
-            anim.next = option.next;
-            anim.save = null;
-
-            // Reset sounds
-            // TODO
-        }
     }
 
     void Start() {
@@ -67,7 +31,7 @@ public class ACTRenderer : MonoBehaviour
         actionIds = new Action();
         anim = new Animation();
 
-        switch(entity.type) {
+        switch (entity.type) {
             // Define action, base on type
             case Entity.TYPE_PC:
                 actionIds.IDLE = 0;
@@ -138,31 +102,73 @@ public class ACTRenderer : MonoBehaviour
         }
     }
 
-    public class Action
-    {
-        public int IDLE = 0,
-            ATTACK     = -2,
-		    WALK       = -1,
-		    SIT        = -1,
-		    PICKUP     = -1,
-		    READYFIGHT = -1,
-		    FREEZE     = -1,
-		    HURT       = -1,
-		    DIE        = -1,
-		    FREEZE2    = -1,
-		    ATTACK1    = -1,
-		    ATTACK2    = -1,
-		    ATTACK3    = -1,
-		    SKILL      = -1,
-		    ACTION     = -1,
-		    SPECIAL    = -1,
-		    PERF1      = -1,
-		    PERF2      = -1,
-		    PERF3      = -1;
+    public void SetAction(Animation option) {
+        if (option.delay != 0) {
+            anim.delay = option.delay;
+            option.delay = 0;
+            anim.save = option;
+        } else {
+            var objecttype = entity.type;
+
+            // Know attack frame based on weapon type
+            if (option.action == actionIds.ATTACK) {
+                if (objecttype == Entity.TYPE_PC) {
+                    int attack = DBManager.getWeaponAction(entity.weapon, entity._job, entity._sex);
+                    option.action = new int[] { actionIds.ATTACK1, actionIds.ATTACK2, actionIds.ATTACK3 }[attack];
+                }
+
+                // No action loaded yet
+                if (option.action == -2) {
+                    option.action = actionIds.ATTACK1;
+                }
+            }
+
+            actionId = option.action == -1 ? actionIds.IDLE : option.action;
+            anim.tick = Time.time;
+            anim.delay = 0;
+            anim.frame = option.frame;
+            anim.repeat = option.repeat;
+            anim.play = option.play;
+            anim.next = option.next;
+            anim.save = null;
+
+            // Reset sounds
+            // TODO
+        }
     }
 
-    public class Animation
-    {
+    public void UpdateBody(Job job, int sex) {
+        var path = DBManager.GetBodyPath(job, sex);
+        ACT act = FileManager.Load(path + ".act") as ACT;
+        SPR spr = FileManager.Load(path + ".spr") as SPR;
+        body = new EntityBody(act, spr);
+
+        gameObject.AddComponent<SPRRenderer>().setSPR(spr, 0, 0);
+    }
+
+    public class Action {
+        public int IDLE = 0,
+            ATTACK = -2,
+            WALK = -1,
+            SIT = -1,
+            PICKUP = -1,
+            READYFIGHT = -1,
+            FREEZE = -1,
+            HURT = -1,
+            DIE = -1,
+            FREEZE2 = -1,
+            ATTACK1 = -1,
+            ATTACK2 = -1,
+            ATTACK3 = -1,
+            SKILL = -1,
+            ACTION = -1,
+            SPECIAL = -1,
+            PERF1 = -1,
+            PERF2 = -1,
+            PERF3 = -1;
+    }
+
+    public class Animation {
         public int action = -1;
         public float tick = 0;
         public int frame = 0;
@@ -171,5 +177,15 @@ public class ACTRenderer : MonoBehaviour
         public float delay = 0;
         public Animation save = null;
         public Animation next = null;
+    }
+
+    public class EntityBody {
+        public EntityBody(ACT act, SPR spr) {
+            this.act = act;
+            this.spr = spr;
+        }
+
+        public ACT act { get; }
+        public SPR spr { get; }
     }
 }

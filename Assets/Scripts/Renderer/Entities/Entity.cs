@@ -4,6 +4,7 @@ using UnityEngine;
 public class Entity : MonoBehaviour {
 
     private EntityWalk _EntityWalk;
+    private EntityViewer _EntityViewer;
 
     public const int TYPE_EFFECT = -3;
     public const int TYPE_UNKNOWN = -2;
@@ -23,8 +24,8 @@ public class Entity : MonoBehaviour {
 
     public int type = TYPE_UNKNOWN;
     internal object weapon;
-    internal object _job;
-    internal object _sex;
+    internal Job _job = Job.NOVICE;
+    internal int _sex;
 
     public long GID;
     public long GUID;
@@ -41,6 +42,14 @@ public class Entity : MonoBehaviour {
 
     private void Awake() {
         _EntityWalk = gameObject.AddComponent<EntityWalk>();
+        _EntityViewer = gameObject.AddComponent<EntityViewer>();
+
+        var character = Core.NetworkClient.State.SelectedCharacter;
+        this.GID = character.GID;
+        this._job = (Job) character.Job;
+        this._sex = character.Sex;
+
+        _EntityViewer.UpdateBody(this._job, this._sex);
     }
 
     private void Update() {

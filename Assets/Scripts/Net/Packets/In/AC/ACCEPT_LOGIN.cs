@@ -15,8 +15,9 @@ public partial class AC {
         public int AccountID { get; set; }
         public int LoginID2 { get; set; }
         public byte Sex { get; set; }
-
         public CharServerInfo[] Servers { get; set; }
+
+        public PacketHeader GetHeader() => HEADER;
 
         public bool Read(byte[] data) {
             BinaryReader br = new BinaryReader(data);

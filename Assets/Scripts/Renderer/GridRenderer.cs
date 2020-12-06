@@ -13,6 +13,7 @@ public class GridRenderer : MonoBehaviour {
     private void OnDestroy() {
         Core.OnGrfLoaded -= this.LoadGridTexture;
     }
+
     private void Update() {
         RaycastHit hit;
         var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
