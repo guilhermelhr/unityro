@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MapSelector
-{
+public class MapSelector {
     private LinkedList<string> mapList;
     private Dropdown dropdown;
     private static string currentMap;
@@ -34,6 +34,7 @@ public class MapSelector
     }
 
     internal void buildDropdown(Dropdown dropdown) {
+        if(dropdown == null) return;
         this.dropdown = dropdown;
 
         dropdown.ClearOptions();
@@ -70,9 +71,11 @@ public class MapSelector
     public void ChangeMap(string mapname) {
         Core.MapRenderer.Clear();
         currentMap = mapname;
-        float start = Time.realtimeSinceStartup;
-        Core.MapLoader.Load(mapname + ".rsw", Core.MapRenderer.OnComplete);
-        float delta = Time.realtimeSinceStartup - start;
-        Debug.Log("Total load time: " + delta);
+        //float start = Time.realtimeSinceStartup;
+        Core.Instance.StartCoroutine(
+            Core.MapLoader.Load(mapname + ".rsw", Core.MapRenderer.OnComplete)
+        );
+        //float delta = Time.realtimeSinceStartup - start;
+        //Debug.Log("Total load time: " + delta);
     }
 }

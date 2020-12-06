@@ -1,4 +1,5 @@
 ﻿using B83.Image.BMP;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -37,7 +38,7 @@ public class FileManager {
         batching = true;
     }
 
-    public static void EndBatch() {
+    public static void EndBatch(Action batchItemLoadedCallback = null) {
         batching = false;
         if(batch.Count > 0) {
             pendingThreads = batch.Count;
@@ -45,7 +46,7 @@ public class FileManager {
             for(int i = 0; i < batch.Count; i++) {
                 string ext = rext.Match(batch[i]).Value.Substring(1).ToLower();
                 BatchLoader loader = new BatchLoader(batch[i], ext);
-                ThreadPool.QueueUserWorkItem(loader.ThreadPoolCallback, i);
+                ThreadPool.QueueUserWorkItem(loader.ThreadPoolCallback, new object[] { i, batchItemLoadedCallback });
             }
             batch.Clear();
             doneEvent.WaitOne();
@@ -84,9 +85,9 @@ public class FileManager {
         return null;
     }
 
-    private static object DoLoad(string file, string ext) {    
+    private static object DoLoad(string file, string ext) {
         //string fileWOExt = file.Replace("." + ext, "");
-        
+
         switch(ext) {
             case "grf":
                 return File.OpenRead(file);
@@ -160,7 +161,7 @@ public class FileManager {
                 }
             case "mp3":
             case "ogg":
-                
+
             case "act":
                 //return new Action(ReadSync(file)).compile();
                 Debug.LogWarning("Can't read " + file + "\nLoader for " + ext + " is not implemented");
@@ -236,7 +237,7 @@ public class FileManager {
             FileMode.Open, FileAccess.Read, FileShare.Read,
             bufferSize: 4096, useAsync: true)) {
 
-            
+
             byte[] buffer = new byte[4096];
             int numRead;
             while((numRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) != 0) {
@@ -250,8 +251,7 @@ public class FileManager {
 
     private static int pendingThreads;
     private static ManualResetEvent doneEvent;
-    private class BatchLoader
-    {
+    private class BatchLoader {
         private string file;
         private string ext;
 
@@ -262,10 +262,13 @@ public class FileManager {
             this.ext = ext;
         }
 
-        public void ThreadPoolCallback(object threadContext) {
+        public void ThreadPoolCallback(object state) {
             try {
+                object[] parameters = state as object[];
+                Action callback = (Action)parameters[1];
                 if(!FileCache.Has(file)) {
                     object data = DoLoad(file, ext);
+                    callback?.Invoke();
                     if(data != null) {
                         FileCache.Add(file, ext, data);
                     }

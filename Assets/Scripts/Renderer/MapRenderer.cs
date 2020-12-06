@@ -10,6 +10,8 @@ using UnityEngine.Audio;
 /// Based on ROBrowser by Vincent Thibault (robrowser.com)
 /// </summary>
 public class MapRenderer {
+    public Action<GameObject> OnMapLoaded = null;
+
     public static int MAX_VERTICES = 65532;
 
     public static GameObject mapParent;
@@ -140,9 +142,6 @@ public class MapRenderer {
     /// </summary>
     /// <param name="altitude"></param>
     private void OnAltitudeComplete(Altitude altitude) {
-
-        //TODO
-        //var gl = Renderer.getContext();
         altitudeCompleted = true;
     }
 
@@ -176,7 +175,7 @@ public class MapRenderer {
 
     private void OnModelsComplete(List<RSM.CompiledModel> compiledModels) {
         models = new Models(compiledModels);
-        models.BuildMeshes();
+        Core.Instance.StartCoroutine(models.BuildMeshes());
 
         modelsCompleted = true;
     }

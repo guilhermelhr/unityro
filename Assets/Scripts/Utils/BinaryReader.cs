@@ -24,7 +24,7 @@ public class BinaryReader : MemoryStream {
         char[] strBytes = new char[length];
 
         for(int i = 0; i < length; i++) {
-            strBytes[i] = (char) ReadByte();
+            strBytes[i] = (char)ReadByte();
         }
 
         //string krEncoded = Encoding.GetEncoding(949).GetString(strBytes);
@@ -38,7 +38,7 @@ public class BinaryReader : MemoryStream {
     }
 
     public string ReadBinaryString(uint length) {
-        return ReadBinaryString((int) length);
+        return ReadBinaryString((int)length);
     }
 
     public int ReadLong() {
@@ -91,5 +91,17 @@ public class BinaryReader : MemoryStream {
         Read(bshort, 0, 2);
 
         return BitConverter.ToInt16(bshort, 0);
+    }
+
+    public int[] ReadPos() {
+        var posX = ReadByte();
+        var posY = ReadByte();
+        var dir = ReadByte();
+
+        var x = ((posX & 0xff) << 2) | (posY >> 6);
+        var y = ((posY & 0x3f) << 4) | (dir >> 4);
+        var d = (dir & 0x0f);
+
+        return new int[3] { x, y, d };
     }
 }

@@ -12,7 +12,7 @@ public partial class HC {
         SIZE,
         PacketHandlerAttribute.PacketDirection.In
     )]
-    public class NOTIFY_ZONESVR : InPacket {
+    public class NOTIFY_ZONESVR2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.HC_NOTIFY_ZONESVR2;
         public const int SIZE = 28;
@@ -21,6 +21,8 @@ public partial class HC {
         public string Mapname;
         public IPAddress IP;
         public short Port;
+
+        public PacketHeader GetHeader() => HEADER;
 
         public bool Read(byte[] data) {
             BinaryReader br = new BinaryReader(data);

@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 
-public class SPRRenderer : MonoBehaviour
-{
+public class SPRRenderer : MonoBehaviour {
     public enum Animation {
         IDLE, WALK, ATTACK, DAMAGE, DIE
     }
 
-    public float secondsPerFrame = 1/10f;
+    public float secondsPerFrame = 1 / 10f;
 
     private Sprite[] sprites;
     private SpriteRenderer spriteRenderer;
+    private SPR spr;
 
     private int currentFrame = -1;
     private float nextChange = 0;
@@ -23,6 +23,7 @@ public class SPRRenderer : MonoBehaviour
     }
 
     public void setSPR(SPR spr) {
+        this.spr = spr;
         sprites = spr.GetSprites();
         upperFrame = sprites.Length;
     }
@@ -46,8 +47,13 @@ public class SPRRenderer : MonoBehaviour
             if(currentFrame > upperFrame) {
                 currentFrame = lowerFrame;
             }
+            if(currentFrame < 0) {
+                currentFrame = 0;
+            }
+            if(sprites == null) return;
 
             spriteRenderer.sprite = sprites[currentFrame];
+            spriteRenderer.flipY = true;
             nextChange = now + secondsPerFrame;
         }
     }
