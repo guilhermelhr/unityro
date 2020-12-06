@@ -13,6 +13,9 @@ public class EntityWalk : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERMOVE.HEADER, OnPlayerMovement);
     }
 
+    /**
+     * Server has acknowledged our request and set data back to us
+     */
     private void OnPlayerMovement(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NOTIFY_PLAYERMOVE) {
             var pkt = packet as ZC.NOTIFY_PLAYERMOVE;

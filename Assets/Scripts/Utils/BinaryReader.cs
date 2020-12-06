@@ -93,6 +93,9 @@ public class BinaryReader : MemoryStream {
         return BitConverter.ToInt16(bshort, 0);
     }
 
+    /**
+     * Taken from rAthena RBUFPOS
+     */
     public int[] ReadPos() {
         var posX = ReadByte();
         var posY = ReadByte();
@@ -105,6 +108,10 @@ public class BinaryReader : MemoryStream {
         return new int[3] { x, y, d };
     }
 
+    /**
+     * "Random bullshit, go!!"
+     * Taken from roBrowser BinaryReader
+     */
     public int[] ReadPos2() {
         var a = ReadByte();
         var b = ReadByte();
