@@ -52,6 +52,6 @@ public class EntityWalk : MonoBehaviour {
          * Validate things such as if entity is sit, whatever
          */
 
-        new CZ.REQUEST_MOVE2(x, y, 0).Send();
+        new CZ.REQUEST_MOVE2(x, y, dir).Send();
     }
 }
