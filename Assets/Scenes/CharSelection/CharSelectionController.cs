@@ -51,7 +51,7 @@ public class CharSelectionController : MonoBehaviour {
     private void PopulateUI() {
         for(var i = 0; i < currentCharactersInfo.MaxSlots; i++) {
             var item = Instantiate(charSelectionItem);
-            item.transform.parent = GridLayout.transform;
+            item.transform.SetParent(GridLayout.transform);
 
             var controller = item.GetComponent<CharacterCellController>();
             if(i < currentCharactersInfo.Chars.Length) {

@@ -24,7 +24,7 @@ public class MapController : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-
+        new CZ.NOTIFY_ACTORINIT().Send();
     }
 
     // Update is called once per frame

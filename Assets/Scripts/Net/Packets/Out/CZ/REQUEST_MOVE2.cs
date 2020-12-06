@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 public partial class CZ {
 
@@ -12,18 +7,22 @@ public partial class CZ {
 
     public class REQUEST_MOVE2 : OutPacket {
 
-        private int destX;
-        private int destY;
-        private int dir;
+        private short x;
+        private short y;
+        private byte dir;
 
-        public REQUEST_MOVE2(int destX, int destY, int dir) : base(HEADER, SIZE) {
-            this.destX = destX;
-            this.destY = destY;
-            this.dir = dir;
+        public REQUEST_MOVE2(int x, int y, int dir) : base(HEADER, SIZE) {
+            this.x = (short)x;
+            this.y = (short)y;
+            this.dir = (byte)dir;
         }
 
         public override bool Send(BinaryWriter writer) {
             base.Send(writer);
+
+            writer.WritePos(x, y, dir);
+
+            writer.Flush();
 
             return true;
         }
