@@ -9,4 +9,8 @@ public static class BinaryWriterExtensions {
                 bw.Write((byte)0);
         }
     }
+
+    public static void WritePost(this BinaryWriter bw, int x, int y, int dir) {
+
+    }
 }
