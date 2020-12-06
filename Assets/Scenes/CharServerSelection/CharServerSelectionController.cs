@@ -44,7 +44,7 @@ public class CharServerSelectionController : MonoBehaviour {
             controller.BindData(server);
             controller.OnCharServerSelected = OnCharServerSelected;
 
-            serverItem.transform.parent = LinearLayout.transform;
+            serverItem.transform.SetParent(LinearLayout.transform);
             serverItem.transform.localScale = Vector3.one;
         }
     }

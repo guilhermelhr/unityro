@@ -9,16 +9,27 @@ public class EntityWalk : MonoBehaviour {
     private Coroutine MoveIE, MoveToIE;
     private int speed = 150;
 
-    public void WalkTo(Vector3 targetPosition) {
-        var path = Core.PathFinding.GetPath((int)transform.position.x, (int)transform.position.z, (int)targetPosition.x, (int)targetPosition.z);
+    private void Awake() {
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERMOVE.HEADER, OnPlayerMovement);
+    }
 
-        if (MoveIE != null) {
-            Core.Instance.StopCoroutine(MoveIE);
+    /**
+     * Server has acknowledged our request and set data back to us
+     */
+    private void OnPlayerMovement(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.NOTIFY_PLAYERMOVE) {
+            var pkt = packet as ZC.NOTIFY_PLAYERMOVE;
+
+            var path = Core.PathFinding.GetPath(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
+
+            if(MoveIE != null) {
+                Core.Instance.StopCoroutine(MoveIE);
+            }
+            if(MoveToIE != null) {
+                Core.Instance.StopCoroutine(MoveToIE);
+            }
+            MoveIE = Core.Instance.StartCoroutine(Move(path));
         }
-        if (MoveToIE != null) {
-            Core.Instance.StopCoroutine(MoveToIE);
-        }
-        MoveIE = Core.Instance.StartCoroutine(Move(path));
     }
 
     IEnumerator Move(List<PathNode> path) {
@@ -34,5 +45,13 @@ public class EntityWalk : MonoBehaviour {
             transform.position = Vector3.MoveTowards(transform.position, destination, (speed / 10) * Time.deltaTime);
             yield return null;
         }
+    }
+
+    public void RequestMove(int x, int y, int dir) {
+        /**
+         * Validate things such as if entity is sit, whatever
+         */
+
+        new CZ.REQUEST_MOVE2(x, y, dir).Send();
     }
 }

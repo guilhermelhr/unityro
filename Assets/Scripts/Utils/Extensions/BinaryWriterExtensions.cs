@@ -9,4 +9,13 @@ public static class BinaryWriterExtensions {
                 bw.Write((byte)0);
         }
     }
+
+    /**
+     * Taken from rAthena WBUFPOS
+     */
+    public static void WritePos(this BinaryWriter bw, short x, short y, byte dir) {
+        bw.Write((byte)(x >> 2));
+        bw.Write((byte)((x << 6) | ((y >> 4) & 0x3f)));
+        bw.Write((byte)((y << 4) | (dir & 0xf)));
+    }
 }
