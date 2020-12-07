@@ -81,13 +81,16 @@ public class ActionLoader
                 color = Color.white
             };
 
+            // RoRebuild checks if only if it's greater
             if(version >= 2.0) {
-                layer.color[0] = data.ReadUByte() / 255f;
-                layer.color[1] = data.ReadUByte() / 255f;
-                layer.color[2] = data.ReadUByte() / 255f;
-                layer.color[3] = data.ReadUByte() / 255f;
+                layer.color[0] = data.ReadUByte() / 255f; //r
+                layer.color[1] = data.ReadUByte() / 255f; //g
+                layer.color[2] = data.ReadUByte() / 255f; //b
+                layer.color[3] = data.ReadUByte() / 255f; //a
+
                 layer.scale[0] = data.ReadFloat();
                 layer.scale[1] = version <= 2.3 ? layer.scale[0] : data.ReadFloat();
+                
                 layer.angle = data.ReadLong();
                 layer.sprType = data.ReadLong();
 
