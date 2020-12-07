@@ -16,8 +16,8 @@ public class ROCamera : MonoBehaviour {
 
     private const float ZOOM_MIN = 12f;
     private const float ZOOM_MAX = 60f;
-    private const float ALTITUDE_MIN = 10f;
-    private const float ALTITUDE_MAX = 35f;
+    private const float ALTITUDE_MIN = 35f;
+    private const float ALTITUDE_MAX = 50f;
     private const float ROTATION_MIN = -360f;
     private const float ROTATION_MAX = 360f;
 

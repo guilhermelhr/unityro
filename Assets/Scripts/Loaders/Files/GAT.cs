@@ -26,7 +26,7 @@ public class GAT {
     }
 
     public struct Cell {
-        public Vector4 heights;
+        public Vector4 Heights;
         public byte type;
     }
 

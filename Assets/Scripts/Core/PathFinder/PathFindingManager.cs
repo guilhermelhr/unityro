@@ -63,6 +63,14 @@ public class PathFindingManager {
 
     }
 
+    public bool IsWalkable(float x, float y) {
+        return Altitude.IsCellWalkable((int) Math.Floor(x), (int) Math.Floor(y));
+    }
+
+    public GAT.Cell GetCell(float x, float y) {
+        return Altitude.GetCell(x, y);
+    }
+
     private List<PathNode> FindPath(PathRequest pr, int range = 0) {
         finalPath.Clear();
         openSet.Clear();

@@ -54,9 +54,8 @@ public class Entity : MonoBehaviour {
 
     private void Update() {
         if (Input.GetMouseButtonDown(0)) {
-            RaycastHit hit;
             var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit)) {
+            if (Physics.Raycast(ray, out var hit, 150)) {
                 _EntityWalk.RequestMove(Mathf.RoundToInt(hit.point.x), Mathf.RoundToInt(hit.point.z), 0);
             }
         }
