@@ -1,49 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 
 public class EntityFactory : MonoBehaviour {
 
-    public Entity SpawnPlayer() {
+    public Entity SpawnPlayer(CharacterData data) {
 
-        var go = new GameObject("Player");
-        go.layer = LayerMask.NameToLayer("Characters");
-        go.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-        var control = go.AddComponent<Entity>();
+        var player = new GameObject("Player");
+        player.layer = LayerMask.NameToLayer("Characters");
+        player.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        var entity = player.AddComponent<Entity>();
 
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
-        body.transform.SetParent(go.transform, false);
+        body.transform.SetParent(player.transform, false);
         body.transform.localPosition = Vector3.zero;
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
-        var bodySprite = body.AddComponent<SPRRenderer>();
-
-        var path = DBManager.GetBodyPath(0, 0);
-        SPR bodySpr = FileManager.Load(path + ".spr") as SPR;
-        bodySprite.setSPR(bodySpr, 0, 0);
 
         var head = new GameObject("Head");
         head.layer = LayerMask.NameToLayer("Characters");
         head.transform.SetParent(body.transform, false);
         head.transform.localPosition = Vector3.zero;
-        var headSprite = head.AddComponent<SPRRenderer>();
 
-        path = DBManager.GetHeadPath(0, 0);
-        SPR headSpr = FileManager.Load(path + ".spr") as SPR;
-        headSprite.setSPR(headSpr, 0, 0);
+        var bodyViewer = body.AddComponent<EntityViewer>();
+        var headViewer = head.AddComponent<EntityViewer>();
 
+        entity.EntityViewer = bodyViewer;
+        entity.Type = EntityType.PC;
+        entity.Data = data;
+        // Add more options such as sex etc
+
+        bodyViewer.ViewerType = EntityViewer.Type.BODY;
+        bodyViewer.Entity = entity;
+        bodyViewer.Children.Add(headViewer);
+        bodyViewer.SpriteOffset = 0.5f;
+        bodyViewer.HeadDirection = 0;
+        bodyViewer.State = EntityState.IDLE;
+
+        headViewer.Parent = bodyViewer;
+        headViewer.SpriteOrder = 1;
+        headViewer.ViewerType = EntityViewer.Type.HEAD;
+
+        entity.ShadowSize = 0.5f;
+
+        entity.Configure();
 
         /**
          * Hack
          */
-        Core.MainCamera.GetComponent<ROCamera>().SetTarget(bodySprite.transform);
-        Core.MainCamera.transform.SetParent(control.transform);
+        Core.MainCamera.GetComponent<ROCamera>().SetTarget(bodyViewer.transform);
+        Core.MainCamera.transform.SetParent(entity.transform);
 
-        return control;
+        return entity;
     }
 }

@@ -81,7 +81,7 @@ public class Core : MonoBehaviour {
         if(!Offline) {
             NetworkClient.Start();
         } else {
-            EntityFactory.SpawnPlayer();
+            EntityFactory.SpawnPlayer(new CharacterData() { Sex = 0, Job = 0 });
         }
     }
 
