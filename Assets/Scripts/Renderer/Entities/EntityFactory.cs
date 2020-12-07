@@ -19,6 +19,7 @@ public class EntityFactory : MonoBehaviour {
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(go.transform, false);
         body.transform.localPosition = Vector3.zero;
+        body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
         var bodySprite = body.AddComponent<SPRRenderer>();
 
@@ -36,9 +37,12 @@ public class EntityFactory : MonoBehaviour {
         SPR headSpr = FileManager.Load(path + ".spr") as SPR;
         headSprite.setSPR(headSpr, 0, 0);
 
-        Core.MainCamera.GetComponent<ROCamera>().SetTarget(control.transform);
-        //Core.MainCamera.transform.SetParent(control.transform);
-        go.AddComponent<Billboard>();
+
+        /**
+         * Hack
+         */
+        Core.MainCamera.GetComponent<ROCamera>().SetTarget(bodySprite.transform);
+        Core.MainCamera.transform.SetParent(control.transform);
 
         return control;
     }
