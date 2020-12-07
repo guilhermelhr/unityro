@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Entity : MonoBehaviour {
 
@@ -41,23 +42,41 @@ public class Entity : MonoBehaviour {
     public int attackSpeed = 300;
 
     private void Awake() {
-        _EntityWalk = gameObject.AddComponent<EntityWalk>();
         _EntityViewer = gameObject.AddComponent<EntityViewer>();
 
-        var character = Core.NetworkClient.State.SelectedCharacter;
-        this.GID = character.GID;
-        this._job = (Job) character.Job;
-        this._sex = character.Sex;
+        //var character = Core.NetworkClient.State.SelectedCharacter;
+        //this.GID = character.GID;
+        //this._job = (Job) character.Job;
+        //this._sex = character.Sex;
 
-        _EntityViewer.UpdateBody(this._job, this._sex);
+        //_EntityViewer.UpdateBody(this._job, this._sex);
+        //var go = new GameObject("name");
+        //go.layer = LayerMask.NameToLayer("Characters");
+        //go.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        //var control = go.AddComponent<EntityWalk>();
+        //go.AddComponent<Billboard>();
+
+        //var body = new GameObject("Sprite");
+        //body.layer = LayerMask.NameToLayer("Characters");
+        //body.transform.SetParent(go.transform, false);
+        //body.transform.localPosition = Vector3.zero;
+        //body.AddComponent<SortingGroup>();
+        //body.AddComponent<SPRRenderer>();
+
+        //var head = new GameObject("Head");
+        //head.layer = LayerMask.NameToLayer("Characters");
+        //head.transform.SetParent(body.transform, false);
+        //head.transform.localPosition = Vector3.zero;
+
+
     }
 
     private void Update() {
-        if (Input.GetMouseButtonDown(0)) {
-            var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 150)) {
-                _EntityWalk.RequestMove(Mathf.RoundToInt(hit.point.x), Mathf.RoundToInt(hit.point.z), 0);
-            }
-        }
+        //if (Input.GetMouseButtonDown(0)) {
+        //    var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
+        //    if (Physics.Raycast(ray, out var hit, 150)) {
+        //        _EntityWalk.RequestMove(Mathf.RoundToInt(hit.point.x), Mathf.RoundToInt(hit.point.z), 0);
+        //    }
+        //}
     }
 }

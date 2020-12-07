@@ -30,8 +30,8 @@ public class ROCamera : MonoBehaviour {
     [SerializeField] private float angle;
 
     public void Start() {
-        HandleYawPitch();
-        HandleZoom();
+        //HandleYawPitch();
+        //HandleZoom();
     }
 
     void LateUpdate() {
@@ -135,6 +135,10 @@ public class ROCamera : MonoBehaviour {
             return Direction.NORTHWEST;
         else
             return Direction.NORTH;
+    }
+
+    public void SetTarget(Transform target) {
+        this._target = target;
     }
 
 }

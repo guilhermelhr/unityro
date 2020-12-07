@@ -31,7 +31,7 @@ public class DBManager {
         throw new NotImplementedException();
     }
 
-    internal static string GetBodyPath(Job job, int sex) {
+    public static string GetBodyPath(Job job, int sex) {
         var id = (int)job;
 
         // PC
@@ -73,6 +73,10 @@ public class DBManager {
         return null;
     }
 
+    public static string GetHeadPath(int headId, int sex) {
+        return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/\xb8\xd3\xb8\xae\xc5\xeb/{SexTable[sex]}/{HairIndexPath[sex][headId]}_{SexTable[sex]}";
+    }
+
     public static Hashtable MapTable {
         get {
             return mapTable;
@@ -92,6 +96,8 @@ public class DBManager {
     }
 
     public static Dictionary<Job, String> BodyPath => bodyPathTable;
+
+    public static int[][] HairIndexPath => HairIndexTable.table;
 
     public static void init() {
         foreach (object[] args in LoadTable("data/mp3nametable.txt", 2)) {
