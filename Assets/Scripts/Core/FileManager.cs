@@ -40,10 +40,10 @@ public class FileManager {
 
     public static void EndBatch(Action batchItemLoadedCallback = null) {
         batching = false;
-        if(batch.Count > 0) {
+        if (batch.Count > 0) {
             pendingThreads = batch.Count;
             doneEvent = new ManualResetEvent(false);
-            for(int i = 0; i < batch.Count; i++) {
+            for (int i = 0; i < batch.Count; i++) {
                 string ext = rext.Match(batch[i]).Value.Substring(1).ToLower();
                 BatchLoader loader = new BatchLoader(batch[i], ext);
                 ThreadPool.QueueUserWorkItem(loader.ThreadPoolCallback, new object[] { i, batchItemLoadedCallback });
@@ -57,22 +57,22 @@ public class FileManager {
         file = file.Trim();
         file = file.Replace("\\", "/");
 
-        if(batching) {
-            if(!batch.Contains(file)) {
+        if (batching) {
+            if (!batch.Contains(file)) {
                 batch.Add(file);
             }
             return null;
         }
 
-        if(!string.IsNullOrEmpty(file)) {
+        if (!string.IsNullOrEmpty(file)) {
             string ext = rext.Match(file).Value.Substring(1).ToLower();
-            if(!string.IsNullOrEmpty(ext)) {
-                if(FileCache.Has(file)) {
+            if (!string.IsNullOrEmpty(ext)) {
+                if (FileCache.Has(file)) {
                     return FileCache.Get(file, ext);
                 } else {
                     object data = DoLoad(file, ext);
-                    if(data != null) {
-                        if(FileCache.Add(file, ext, data)) {
+                    if (data != null) {
+                        if (FileCache.Add(file, ext, data)) {
                             return FileCache.Get(file, ext);
                         } else {
                             return data;
@@ -86,88 +86,66 @@ public class FileManager {
     }
 
     private static object DoLoad(string file, string ext) {
-        //string fileWOExt = file.Replace("." + ext, "");
+        if (ext == "grf") {
+            return File.OpenRead(file);
+        } else {
+            using var br = ReadSync(file);
+            if (br == null) {
+                throw new Exception($"Could not load file: {file}");
+            }
 
-        switch(ext) {
-            case "grf":
-                return File.OpenRead(file);
-            // Regular images files
-            case "jpg":
-            case "jpeg":
-            case "png":
-                using(var br = ReadSync(file)) {
+            switch (ext) {
+                // Images
+                case "jpg":
+                case "jpeg":
+                case "png":
                     return new RawImage() {
                         data = br.ToArray()
                     };
-                }
-            case "bmp":
-                using(var br = ReadSync(file))
+                case "bmp":
                     return loader.LoadBMP(br);
-            case "tga":
-                using(var br = ReadSync(file))
+                case "tga":
                     return TGALoader.LoadTGA(br);
-            // Texts
-            case "txt":
-            case "xml":
-            case "lua":
-                using(var br = ReadSync(file)) {
-                    if(br != null) {
-                        return Encoding.UTF8.GetString(br.ToArray());
-                    } else {
-                        return null;
-                    }
-                }
-            case "spr":
-                using(var br = ReadSync(file)) {
-                    if(br != null) {
-                        SPR spr = SpriteLoader.Load(br);
-                        spr.SwitchToRGBA();
-                        spr.Compile();
-                        spr.filename = file;
-                        return spr;
-                    } else {
-                        return null;
-                    }
-                }
-            case "str":
-                using(var br = ReadSync(file)) {
-                    if(br != null) {
-                        STR str = EffectLoader.Load(br);
-                        return str;
-                    } else {
-                        return null;
-                    }
-                }
-            // Binary
-            case "gat":
-                using(var br = ReadSync(file))
+
+                // Text
+                case "txt":
+                case "xml":
+                case "lua":
+                    return Encoding.UTF8.GetString(br.ToArray());
+
+                case "spr":
+                    SPR spr = SpriteLoader.Load(br);
+                    spr.SwitchToRGBA();
+                    spr.Compile();
+                    spr.filename = file;
+                    return spr;
+                case "str":
+                    return EffectLoader.Load(br);
+                case "act":
+                    return ActionLoader.Load(br);
+
+                // Binary
+                case "gat":
                     return new Altitude(br);
-            case "rsw":
-                using(var br = ReadSync(file))
+                case "rsw":
                     return WorldLoader.Load(br);
-            case "gnd":
-                using(var br = ReadSync(file))
+                case "gnd":
                     return GroundLoader.Load(br);
-            case "rsm":
-                using(var br = ReadSync(file))
+                case "rsm":
                     return ModelLoader.Load(br);
-            // Audio
-            case "wav":
-                using(var br = ReadSync(file)) {
+
+                // Audio
+                case "wav":
                     WAVLoader.WAVFile wav = WAVLoader.OpenWAV(br.ToArray());
                     AudioClip clip = AudioClip.Create(file, wav.samples, wav.channels, wav.sampleRate, false);
                     clip.SetData(wav.leftChannel, 0);
                     return clip;
-                }
-            case "mp3":
-            case "ogg":
-
-            case "act":
-                //return new Action(ReadSync(file)).compile();
-                Debug.LogWarning("Can't read " + file + "\nLoader for " + ext + " is not implemented");
-                break;
-            default:
-                throw new System.Exception("Unknown file format: " + file);
+                case "mp3":
+                case "ogg":
+                    break;
+                default:
+                    throw new Exception($"Unsuported file format: {ext} for file {file}");
+            }
         }
         return null;
     }
@@ -200,12 +178,12 @@ public class FileManager {
     /// <returns>file or null</returns>
     public static BinaryReader ReadSync(string path) {
         //try grf first
-        if(grf != null) {
+        if (grf != null) {
             GrfFile file = grf.GetDescriptor(path);
-            if(file != null) {
+            if (file != null) {
                 byte[] data = grf.GetData(file);
 
-                if(data != null) {
+                if (data != null) {
                     return new BinaryReader(data);
                 } else {
                     Debug.Log("Could not read grf data for " + path);
@@ -216,7 +194,7 @@ public class FileManager {
         }
 
         //try filesystem
-        if(File.Exists(Application.dataPath + "/" + path)) {
+        if (File.Exists(Application.dataPath + "/" + path)) {
             byte[] buffer = File.ReadAllBytes(Application.dataPath + "/" + path);
             return new BinaryReader(buffer);
         } else {
@@ -233,14 +211,14 @@ public class FileManager {
     public static async Task<BinaryReader> ReadAsync(string path) {
         BinaryReader result = new BinaryReader();
 
-        using(FileStream sourceStream = new FileStream(path,
+        using (FileStream sourceStream = new FileStream(path,
             FileMode.Open, FileAccess.Read, FileShare.Read,
             bufferSize: 4096, useAsync: true)) {
 
 
             byte[] buffer = new byte[4096];
             int numRead;
-            while((numRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) != 0) {
+            while ((numRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) != 0) {
                 result.Write(buffer, 0, numRead);
             }
         }
@@ -266,15 +244,15 @@ public class FileManager {
             try {
                 object[] parameters = state as object[];
                 Action callback = (Action)parameters[1];
-                if(!FileCache.Has(file)) {
+                if (!FileCache.Has(file)) {
                     object data = DoLoad(file, ext);
                     callback?.Invoke();
-                    if(data != null) {
+                    if (data != null) {
                         FileCache.Add(file, ext, data);
                     }
                 }
             } finally {
-                if(Interlocked.Decrement(ref pendingThreads) == 0) {
+                if (Interlocked.Decrement(ref pendingThreads) == 0) {
                     doneEvent.Set();
                 }
             }
