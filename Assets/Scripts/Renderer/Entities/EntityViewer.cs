@@ -24,7 +24,7 @@ public class EntityViewer : MonoBehaviour {
     void Start() {
         anim = new Animation();
         InitActionIds();
-        InitShadow();
+        //InitShadow();
     }
 
     void Update() {
@@ -40,6 +40,10 @@ public class EntityViewer : MonoBehaviour {
         //var behind = direction > 1 && direction < 6;
     }
 
+    private void CalcAnimation() {
+
+    }
+
     private void InitShadow() {
         if(ViewerType != Type.BODY) return;
 
@@ -49,11 +53,16 @@ public class EntityViewer : MonoBehaviour {
         shadow.transform.localPosition = Vector3.zero;
         shadow.transform.localScale = new Vector3(Entity.ShadowSize, Entity.ShadowSize, Entity.ShadowSize);
 
+        SPR sprite = FileManager.Load("data/sprite/shadow.spr") as SPR;
+        ACT act = FileManager.Load("data/sprite/shadow.act") as ACT;
+
+        sprite.SwitchToRGBA();
+
         //if(Mathf.Approximately(0, ShadowSize))
         //    ShadowSize = 0.5f;
 
-        //var sprite = go.AddComponent<SpriteRenderer>();
-        //sprite.sprite = spriteObj;
+        var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = sprite.GetSprites()[0];
         //shadowSprite = sprite;
 
         //var shader = Shader.Find("Unlit/TestSpriteShader");
@@ -62,7 +71,7 @@ public class EntityViewer : MonoBehaviour {
         //mat.color = new Color(1f, 1f, 1f, 0.5f);
         //sprite.material = mat;
 
-        //sprite.sortingOrder = -1;
+        spriteRenderer.sortingOrder = -1;
 
         //SpriteAnimator.Shadow = go;
         //SpriteAnimator.ShadowSortingGroup = go.AddComponent<SortingGroup>();
@@ -191,7 +200,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void UpdateHead(Job job, int sex) {
-        var path = DBManager.GetHeadPath((int) job, sex);
+        var path = DBManager.GetHeadPath((int)job, sex);
         ACT act = FileManager.Load(path + ".act") as ACT;
         SPR spr = FileManager.Load(path + ".spr") as SPR;
         //body = new EntityBody(act, spr);
