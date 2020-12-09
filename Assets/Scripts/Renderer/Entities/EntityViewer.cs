@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class EntityViewer : MonoBehaviour {
 
@@ -22,9 +23,31 @@ public class EntityViewer : MonoBehaviour {
     private EntityBody body;
 
     void Start() {
-        anim = new Animation();
-        InitActionIds();
+        //anim = new Animation();
+        //InitActionIds();
         //InitShadow();
+
+        var MeshFilter = gameObject.AddComponent<MeshFilter>();
+        var MeshRenderer = gameObject.AddComponent<MeshRenderer>();
+        var MeshCollider = gameObject.AddComponent<MeshCollider>();
+        var SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
+
+        MeshRenderer.sortingOrder = SpriteOrder;
+        MeshRenderer.receiveShadows = false;
+        MeshRenderer.lightProbeUsage = LightProbeUsage.Off;
+        MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
+
+        var shader = Shader.Find("Unlit/CustomSpriteShader");
+        var material = new Material(shader);
+        //TODO
+        //material.mainTexture = 
+
+        //if(Mathf.Approximately(0, SpriteOffset))
+        //    material.SetFloat("_Offset", SpriteData.Size / 125f);
+        //else
+        //    material.SetFloat("_Offset", SpriteOffset);
+
+        //MeshRenderer.material = material;
     }
 
     void Update() {
