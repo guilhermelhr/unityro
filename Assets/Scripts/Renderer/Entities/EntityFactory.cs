@@ -27,6 +27,7 @@ public class EntityFactory : MonoBehaviour {
 
         entity.EntityViewer = bodyViewer;
         entity.Type = EntityType.PC;
+        entity.ActionTable = new SpriteAction.PC() as SpriteAction;
         entity.Data = data;
         // Add more options such as sex etc
 

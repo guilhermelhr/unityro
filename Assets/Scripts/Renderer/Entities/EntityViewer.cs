@@ -1,32 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class EntityViewer : MonoBehaviour {
 
     public Entity Entity;
+    public EntityViewer Parent;
     public EntityState State;
     public EntityViewer.Type ViewerType;
     public List<EntityViewer> Children = new List<EntityViewer>();
     public float SpriteOffset;
     public int HeadDirection;
-    public EntityViewer Parent;
     public int SpriteOrder;
 
-    private Action actionIds;
-    private int actionId;
-    private Animation anim;
+    private int CurrentAction;
     private int xSize;
     private int ySize;
 
-    private EntityBody body;
+    private Animation _Animation;
+    private SpriteAction ActionTable;
+
 
     void Start() {
 
     }
 
     void Update() {
+        if (ActionTable == null) {
+            ActionTable = Entity.ActionTable;
+        }
+
         // Animation change ! Get it now
         //if(anim.save != null && anim.delay < Time.time) {
         //    SetAction(anim.save);
@@ -52,7 +55,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private void InitShadow() {
-        if(ViewerType != Type.BODY) return;
+        if (ViewerType != Type.BODY) return;
 
         var shadow = new GameObject("Shadow");
         shadow.layer = LayerMask.NameToLayer("Characters");
@@ -87,109 +90,35 @@ public class EntityViewer : MonoBehaviour {
         //    go.SetActive(false);
     }
 
-    private void InitActionIds() {
-        if(ViewerType != Type.BODY) return;
-        actionIds = new Action();
-        switch(Entity.Type) {
-            // Define action, base on type
-            case EntityType.PC:
-                actionIds.IDLE = 0;
-                actionIds.WALK = 1;
-                actionIds.SIT = 2;
-                actionIds.PICKUP = 3;
-                actionIds.READYFIGHT = 4;
-                actionIds.ATTACK1 = 5;
-                actionIds.HURT = 6;
-                actionIds.FREEZE = 7;
-                actionIds.DIE = 8;
-                actionIds.FREEZE2 = 9;
-                actionIds.ATTACK2 = 10;
-                actionIds.ATTACK3 = 11;
-                actionIds.SKILL = 12;
-                break;
-
-            // Mob action
-            case EntityType.MOB:
-                actionIds.IDLE = 0;
-                actionIds.WALK = 1;
-                actionIds.ATTACK = 2;
-                actionIds.HURT = 3;
-                actionIds.DIE = 4;
-                break;
-
-            case EntityType.PET:
-                actionIds.IDLE = 0;
-                actionIds.WALK = 1;
-                actionIds.ATTACK = 2;
-                actionIds.HURT = 3;
-                actionIds.DIE = 4;
-                actionIds.SPECIAL = 5;
-                actionIds.PERF1 = 6;
-                actionIds.PERF2 = 7;
-                actionIds.PERF3 = 8;
-                break;
-
-            // NPC action
-            case EntityType.NPC:
-                actionIds.IDLE = 0;
-                // For those NPC that move with unitwalk scriptcommand
-                actionIds.WALK = 1;
-                break;
-
-            // When you see a warp with /effect, it's 3 times bigger.
-            // TODO: put it somewhere else
-            case EntityType.WARP:
-                xSize = 20;
-                ySize = 20;
-                break;
-
-            // Homunculus
-            case EntityType.HOM:
-                actionIds.IDLE = 0;
-                actionIds.WALK = 1;
-                actionIds.ATTACK = 2;
-                actionIds.HURT = 3;
-                actionIds.DIE = 4;
-                actionIds.ATTACK2 = 5;
-                actionIds.ATTACK3 = 6;
-                actionIds.ACTION = 7;
-                break;
-
-            //TODO: define others Entities ACTION
-            case EntityType.ELEM:
-                break;
-        }
-    }
-
     public void SetAction(Animation option) {
-        if(option.delay != 0) {
-            anim.delay = option.delay;
+        if (option.delay != 0) {
+            _Animation.delay = option.delay;
             option.delay = 0;
-            anim.save = option;
+            _Animation.save = option;
         } else {
             var objecttype = Entity.Type;
 
             // Know attack frame based on weapon type
-            if(option.action == actionIds.ATTACK) {
-                if(objecttype == EntityType.PC) {
+            if (option.action == ActionTable.ATTACK) {
+                if (objecttype == EntityType.PC) {
                     //int attack = DBManager.getWeaponAction(entity.weapon, entity._job, entity._sex);
                     //option.action = new int[] { actionIds.ATTACK1, actionIds.ATTACK2, actionIds.ATTACK3 }[attack];
                 }
 
                 // No action loaded yet
-                if(option.action == -2) {
-                    option.action = actionIds.ATTACK1;
+                if (option.action == -2) {
+                    option.action = ActionTable.ATTACK1;
                 }
             }
 
-            actionId = option.action == -1 ? actionIds.IDLE : option.action;
-            anim.tick = Time.time;
-            anim.delay = 0;
-            anim.frame = option.frame;
-            anim.repeat = option.repeat;
-            anim.play = option.play;
-            anim.next = option.next;
-            anim.save = null;
+            CurrentAction = option.action == -1 ? ActionTable.IDLE : option.action;
+            _Animation.tick = Time.time;
+            _Animation.delay = 0;
+            _Animation.frame = option.frame;
+            _Animation.repeat = option.repeat;
+            _Animation.play = option.play;
+            _Animation.next = option.next;
+            _Animation.save = null;
 
             // Reset sounds
             // TODO
@@ -214,28 +143,6 @@ public class EntityViewer : MonoBehaviour {
 
         transform.position = new Vector3(0.23f, -0.08f, 0);
         gameObject.AddComponent<SPRRenderer>().setSPR(spr, 0, 0);
-    }
-
-    public class Action {
-        public int IDLE = 0,
-            ATTACK = -2,
-            WALK = -1,
-            SIT = -1,
-            PICKUP = -1,
-            READYFIGHT = -1,
-            FREEZE = -1,
-            HURT = -1,
-            DIE = -1,
-            FREEZE2 = -1,
-            ATTACK1 = -1,
-            ATTACK2 = -1,
-            ATTACK3 = -1,
-            SKILL = -1,
-            ACTION = -1,
-            SPECIAL = -1,
-            PERF1 = -1,
-            PERF2 = -1,
-            PERF3 = -1;
     }
 
     public class Animation {
