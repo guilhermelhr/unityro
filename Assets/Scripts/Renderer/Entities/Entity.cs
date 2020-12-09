@@ -15,6 +15,7 @@ public class Entity : MonoBehaviour {
     public int Direction = 0;
     public float ShadowSize;
     public CharacterData Data;
+    public int Action = 0;
 
     //internal object weapon;
     //internal Job _job = Job.NOVICE;

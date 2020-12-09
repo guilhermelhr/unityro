@@ -23,31 +23,7 @@ public class EntityViewer : MonoBehaviour {
     private EntityBody body;
 
     void Start() {
-        //anim = new Animation();
-        //InitActionIds();
-        //InitShadow();
 
-        var MeshFilter = gameObject.AddComponent<MeshFilter>();
-        var MeshRenderer = gameObject.AddComponent<MeshRenderer>();
-        var MeshCollider = gameObject.AddComponent<MeshCollider>();
-        var SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
-
-        MeshRenderer.sortingOrder = SpriteOrder;
-        MeshRenderer.receiveShadows = false;
-        MeshRenderer.lightProbeUsage = LightProbeUsage.Off;
-        MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
-
-        var shader = Shader.Find("Unlit/CustomSpriteShader");
-        var material = new Material(shader);
-        //TODO
-        //material.mainTexture = 
-
-        //if(Mathf.Approximately(0, SpriteOffset))
-        //    material.SetFloat("_Offset", SpriteData.Size / 125f);
-        //else
-        //    material.SetFloat("_Offset", SpriteOffset);
-
-        //MeshRenderer.material = material;
     }
 
     void Update() {
@@ -61,10 +37,18 @@ public class EntityViewer : MonoBehaviour {
         //TODO RO camera
         //var direction = ((int)ROCamera.direction + Entity.Direction + 8) % 8;
         //var behind = direction > 1 && direction < 6;
+        var currentACT = FileManager.Load(DBManager.GetBodyPath(0, 0)) as ACT;
+        var action = currentACT.actions[(
+                (Entity.Action * 8) + // Entity Action (IDLE, WALK, ETC)
+                ((int)ROCamera.direction + Entity.Direction + 8) % 8 // Direction
+                ) % currentACT.actions.Length]; // Avoid overflow
+        int animationID = CalcAnimation(Entity, action, "body");
     }
 
-    private void CalcAnimation() {
+    private int CalcAnimation(Entity entity, ACT.Action action, string v) {
 
+
+        return 0;
     }
 
     private void InitShadow() {
