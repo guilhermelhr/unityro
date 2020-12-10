@@ -21,9 +21,10 @@ public class EntityViewer : MonoBehaviour {
     private int ySize;
 
     private EntityBody body;
+    private SPRRenderer renderer;
 
     void Start() {
-
+        renderer = gameObject.AddComponent<SPRRenderer>();
     }
 
     void Update() {
@@ -37,12 +38,16 @@ public class EntityViewer : MonoBehaviour {
         //TODO RO camera
         //var direction = ((int)ROCamera.direction + Entity.Direction + 8) % 8;
         //var behind = direction > 1 && direction < 6;
-        var currentACT = FileManager.Load(DBManager.GetBodyPath(0, 0)) as ACT;
+        var currentSPR = FileManager.Load(DBManager.GetBodyPath(0, 0) + ".spr") as SPR;
+        var currentACT = FileManager.Load(DBManager.GetBodyPath(0, 0) + ".act") as ACT;
         var action = currentACT.actions[(
                 (Entity.Action * 8) + // Entity Action (IDLE, WALK, ETC)
                 ((int)ROCamera.direction + Entity.Direction + 8) % 8 // Direction
                 ) % currentACT.actions.Length]; // Avoid overflow
         int animationID = CalcAnimation(Entity, action, "body");
+        var animation = action.animations[animationID];
+
+        renderer.setSPR(currentSPR, animation.layers[0].index, animation.layers[animation.layers.Length-1].index);
     }
 
     private int CalcAnimation(Entity entity, ACT.Action action, string v) {
@@ -202,8 +207,9 @@ public class EntityViewer : MonoBehaviour {
         SPR spr = FileManager.Load(path + ".spr") as SPR;
         //body = new EntityBody(act, spr);
 
-        gameObject.AddComponent<SPRRenderer>().setSPR(spr, 0, 0);
-        Children.Where(t => t.ViewerType == Type.HEAD).First().UpdateHead(job, sex);
+        //renderer = gameObject.GetOrAddComponent<SPRRenderer>();
+        //renderer.setSPR(spr, 0, 0);
+        //Children.Where(t => t.ViewerType == Type.HEAD).First().UpdateHead(job, sex);
     }
 
     public void UpdateHead(Job job, int sex) {
@@ -212,8 +218,8 @@ public class EntityViewer : MonoBehaviour {
         SPR spr = FileManager.Load(path + ".spr") as SPR;
         //body = new EntityBody(act, spr);
 
-        transform.position = new Vector3(0.23f, -0.08f, 0);
-        gameObject.AddComponent<SPRRenderer>().setSPR(spr, 0, 0);
+        //transform.position = new Vector3(0.23f, -0.08f, 0);
+        //gameObject.AddComponent<SPRRenderer>().setSPR(spr, 0, 0);
     }
 
     public class Action {

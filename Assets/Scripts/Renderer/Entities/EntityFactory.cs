@@ -38,6 +38,7 @@ public class EntityFactory : MonoBehaviour {
         bodyViewer.State = EntityState.IDLE;
 
         headViewer.Parent = bodyViewer;
+        headViewer.Entity = entity;
         headViewer.SpriteOrder = 1;
         headViewer.ViewerType = EntityViewer.Type.HEAD;
 
