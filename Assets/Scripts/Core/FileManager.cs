@@ -38,7 +38,7 @@ public class FileManager {
         batching = true;
     }
 
-    public static void EndBatch(Action batchItemLoadedCallback = null) {
+    public static void EndBatch(System.Action batchItemLoadedCallback = null) {
         batching = false;
         if(batch.Count > 0) {
             pendingThreads = batch.Count;
@@ -244,7 +244,7 @@ public class FileManager {
         public void ThreadPoolCallback(object state) {
             try {
                 object[] parameters = state as object[];
-                Action callback = (Action)parameters[1];
+                System.Action callback = (System.Action)parameters[1];
                 if(!FileCache.Has(file)) {
                     object data = DoLoad(file, ext);
                     callback?.Invoke();

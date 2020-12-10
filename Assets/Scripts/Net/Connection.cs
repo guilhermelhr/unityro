@@ -6,7 +6,7 @@ public class Connection {
 
     public const int DATA_BUFFER_SIZE = 16 * 1024;
 
-    public static Action OnDisconnect;
+    public static System.Action OnDisconnect;
 
     private TcpClient Client;
     private NetworkStream Stream;

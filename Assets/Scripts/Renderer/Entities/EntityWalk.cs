@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 
 public class EntityWalk : MonoBehaviour {
@@ -13,6 +11,15 @@ public class EntityWalk : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERMOVE.HEADER, OnPlayerMovement);
     }
 
+    private void Update() {
+        if (Input.GetMouseButtonDown(0)) {
+            var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 150)) {
+                RequestMove(Mathf.RoundToInt(hit.point.x), Mathf.RoundToInt(hit.point.z), 0);
+            }
+        }
+    }
+
     /**
      * Server has acknowledged our request and set data back to us
      */
@@ -22,10 +29,10 @@ public class EntityWalk : MonoBehaviour {
 
             var path = Core.PathFinding.GetPath(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
 
-            if(MoveIE != null) {
+            if (MoveIE != null) {
                 Core.Instance.StopCoroutine(MoveIE);
             }
-            if(MoveToIE != null) {
+            if (MoveToIE != null) {
                 Core.Instance.StopCoroutine(MoveToIE);
             }
             MoveIE = Core.Instance.StartCoroutine(Move(path));

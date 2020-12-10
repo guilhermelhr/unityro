@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 
 public class Entity : MonoBehaviour {
 
-    //private EntityWalk _EntityWalk;
+    private EntityWalk _EntityWalk;
 
     // Picking Priority
     // TODO
@@ -16,6 +16,9 @@ public class Entity : MonoBehaviour {
     public float ShadowSize;
     public CharacterData Data;
     public int Action = 0;
+    public SpriteAction ActionTable;
+    public Animation Animation;
+    public int HeadDir;
 
     //internal object weapon;
     //internal Job _job = Job.NOVICE;
@@ -35,6 +38,7 @@ public class Entity : MonoBehaviour {
     //public int attackSpeed = 300;
 
     private void Awake() {
+        _EntityWalk = gameObject.AddComponent<EntityWalk>();
         //_EntityViewer = gameObject.AddComponent<EntityViewer>();
 
         //var character = Core.NetworkClient.State.SelectedCharacter;
@@ -46,15 +50,10 @@ public class Entity : MonoBehaviour {
     }
 
     private void Update() {
-        //if (Input.GetMouseButtonDown(0)) {
-        //    var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-        //    if (Physics.Raycast(ray, out var hit, 150)) {
-        //        _EntityWalk.RequestMove(Mathf.RoundToInt(hit.point.x), Mathf.RoundToInt(hit.point.z), 0);
-        //    }
-        //}
+
     }
 
     public void Configure() {
-        EntityViewer.UpdateBody((Job) Data.Job, Data.Sex);
+        EntityViewer.UpdateBody((Job)Data.Job, Data.Sex);
     }
 }

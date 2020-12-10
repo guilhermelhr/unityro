@@ -32,7 +32,7 @@ public class Core : MonoBehaviour {
     public static PathFindingManager PathFinding => pathFinding;
     public static NetworkClient NetworkClient => networkClient;
 
-    public static Action OnGrfLoaded;
+    public static System.Action OnGrfLoaded;
 
     public static Core Instance;
     public static Camera MainCamera;
