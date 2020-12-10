@@ -17,6 +17,8 @@ public class Entity : MonoBehaviour {
     public CharacterData Data;
     public int Action = 0;
     public SpriteAction ActionTable;
+    public Animation Animation;
+    public int HeadDir;
 
     //internal object weapon;
     //internal Job _job = Job.NOVICE;

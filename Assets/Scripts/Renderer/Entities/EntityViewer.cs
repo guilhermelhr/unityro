@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class EntityViewer : MonoBehaviour {
+public partial class EntityViewer : MonoBehaviour {
 
     public Entity Entity;
     public EntityViewer Parent;
+    public ViewerType _ViewerType;
     public EntityState State;
-    public EntityViewer.Type ViewerType;
     public List<EntityViewer> Children = new List<EntityViewer>();
     public float SpriteOffset;
     public int HeadDirection;
@@ -19,7 +20,6 @@ public class EntityViewer : MonoBehaviour {
 
     private Animation _Animation;
     private SpriteAction ActionTable;
-
 
     void Start() {
 
@@ -45,17 +45,82 @@ public class EntityViewer : MonoBehaviour {
                 (Entity.Action * 8) + // Entity Action (IDLE, WALK, ETC)
                 ((int)ROCamera.direction + Entity.Direction + 8) % 8 // Direction
                 ) % currentACT.actions.Length]; // Avoid overflow
-        int animationID = CalcAnimation(Entity, action, "body");
+        int animationID = CalcAnimation(Entity, action, "body", Time.time);
     }
 
-    private int CalcAnimation(Entity entity, ACT.Action action, string v) {
+    private int CalcAnimation(Entity entity, ACT.Action act, string entityType, float tick) {
+        if (entityType == "shadow") {
+            return 0;
+        }
+
+        var ACTION = entity.ActionTable;
+        var action = entity.Action;
+        var animation = entity.Animation;
+        var animCount = act.animations.Length;
+        var animSize = animCount;
+        var isIdle = (action == ACTION.IDLE || action == ACTION.SIT);
+        var delay = getAnimationDelay(entityType, entity, act);
+        var headDir = 0;
+        var anim = 0;
+
+        // GeEntit doridori
+        if (entityType == "head" && Entity.Type == EntityType.PC && isIdle) {
+            return headDir;
+        }
+
+        // Don't play, so stop at current frame
+        if (!animation.play) {
+            return Math.Min(animation.frame, animSize - 1);
+        }
+
+        // If hat/hair, divide to 3 since there is doridori include
+        // TODO: fixed, just on IDLE and SIT ?
+        if (entityType == "head" && isIdle) {
+            animCount = (int)Mathf.Floor(animCount / 3);
+            headDir = entity.HeadDir;
+        }
+
+        if (animation.repeat) {
+            anim = (int)Mathf.Floor(tick / delay);
+
+            // TODO free sound
+            // entity.sound.freeOnAnimationEnd(anim, animCount);
+
+            anim %= animCount;
+            anim += animCount * headDir; // get rid of doridori
+            anim += animation.frame;     // don't forget the previous frame
+            anim %= animSize;            // avoid overflow
+
+            return anim;
+        }
 
 
+        // No repeat
+        // Math.min(tick / delay | 0, animCount || animCount -1)
+        anim = (
+            (int)Mathf.Min(tick / delay, animCount - 1)  // Avoid an error if animation = 0, search for -1 :(
+            + animCount * headDir // get rid of doridori
+            + animation.frame     // previous frame
+        );
+
+        if (entityType == "body" && anim >= animSize - 1) {
+            animation.frame = anim = animSize - 1;
+            animation.play = false;
+            if (animation.next != null) {
+                SetAction(animation.next);
+            }
+        }
+
+        return Math.Min(anim, animCount - 1);
+    }
+
+    //TODO implement
+    private int getAnimationDelay(string entityType, Entity entity, ACT.Action act) {
         return 0;
     }
 
     private void InitShadow() {
-        if (ViewerType != Type.BODY) return;
+        if (_ViewerType != ViewerType.BODY) return;
 
         var shadow = new GameObject("Shadow");
         shadow.layer = LayerMask.NameToLayer("Characters");
@@ -132,7 +197,7 @@ public class EntityViewer : MonoBehaviour {
         //body = new EntityBody(act, spr);
 
         gameObject.AddComponent<SPRRenderer>().setSPR(spr, 0, 0);
-        Children.Where(t => t.ViewerType == Type.HEAD).First().UpdateHead(job, sex);
+        Children.Where(t => t._ViewerType == ViewerType.HEAD).First().UpdateHead(job, sex);
     }
 
     public void UpdateHead(Job job, int sex) {
@@ -145,17 +210,6 @@ public class EntityViewer : MonoBehaviour {
         gameObject.AddComponent<SPRRenderer>().setSPR(spr, 0, 0);
     }
 
-    public class Animation {
-        public int action = -1;
-        public float tick = 0;
-        public int frame = 0;
-        public bool repeat = true;
-        public bool play = true;
-        public float delay = 0;
-        public Animation save = null;
-        public Animation next = null;
-    }
-
     public class EntityBody {
         public EntityBody(ACT act, SPR spr) {
             this.act = act;
@@ -166,7 +220,7 @@ public class EntityViewer : MonoBehaviour {
         public SPR spr { get; }
     }
 
-    public enum Type {
+    public enum ViewerType {
         BODY, HEAD, SHADOW
     }
 }
