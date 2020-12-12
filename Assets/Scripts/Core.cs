@@ -32,10 +32,11 @@ public class Core : MonoBehaviour {
     public static PathFindingManager PathFinding => pathFinding;
     public static NetworkClient NetworkClient => networkClient;
 
-    public static System.Action OnGrfLoaded;
+    public static Action OnGrfLoaded;
 
     public static Core Instance;
     public static Camera MainCamera;
+    public static long CurrentTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
     private Hashtable configs = new Hashtable();
     private static string CFG_NAME = "config.txt";

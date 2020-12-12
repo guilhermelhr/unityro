@@ -29,6 +29,10 @@ public class EntityFactory : MonoBehaviour {
         entity.Type = EntityType.PC;
         entity.ActionTable = new SpriteAction.PC() as SpriteAction;
         entity.Data = data;
+        entity.Animation = new Animation() {
+            action = entity.ActionTable.IDLE,
+            delay = 100
+        };
         // Add more options such as sex etc
 
         bodyViewer._ViewerType = EntityViewer.ViewerType.BODY;
@@ -36,11 +40,13 @@ public class EntityFactory : MonoBehaviour {
         bodyViewer.Children.Add(headViewer);
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
-        bodyViewer.State = EntityState.IDLE;
+        bodyViewer.CurrentMotion = SpriteMotion.Idle;
+        bodyViewer.Type = entity.Type;
 
         headViewer.Parent = bodyViewer;
         headViewer.Entity = entity;
         headViewer.SpriteOrder = 1;
+        headViewer.Type = entity.Type;
         headViewer._ViewerType = EntityViewer.ViewerType.HEAD;
 
         entity.ShadowSize = 0.5f;

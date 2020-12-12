@@ -14,6 +14,8 @@ public class ROCamera : MonoBehaviour {
         NORTHWEST
     }
 
+    public static ROCamera Instance;
+
     private const float ZOOM_MIN = 12f;
     private const float ZOOM_MAX = 60f;
     private const float ALTITUDE_MIN = 35f;
@@ -26,8 +28,17 @@ public class ROCamera : MonoBehaviour {
     [SerializeField] private float zoom = 0f;
     [SerializeField] private float distance = 30f;
     [SerializeField] private float altitude = ALTITUDE_MAX;
-    [SerializeField] private float rotation = 0f;
+    [SerializeField] private float TargetRotation = 0f;
+    [SerializeField] public float Rotation = 0f;
     [SerializeField] private float angle;
+
+
+
+    private void Awake() {
+        if (Instance == null) {
+            Instance = this;
+        }
+    }
 
     public void Start() {
         HandleYawPitch();
@@ -37,7 +48,7 @@ public class ROCamera : MonoBehaviour {
     void LateUpdate() {
         float scrollDelta = Input.mouseScrollDelta.y;
         if (Input.GetMouseButton(1)) {
-            this.rotation += Input.GetAxis("Mouse X");
+            this.TargetRotation += Input.GetAxis("Mouse X");
             HandleYawPitch();
         } else if (Input.GetKey(KeyCode.LeftShift)) {
             this.altitude = Mathf.Clamp(this.altitude + scrollDelta, ALTITUDE_MIN, ALTITUDE_MAX);
@@ -47,17 +58,29 @@ public class ROCamera : MonoBehaviour {
             HandleZoom();
         }
 
+        if(TargetRotation > 360)
+            TargetRotation -= 360;
+        if(TargetRotation < 0)
+            TargetRotation += 360;
+
+        if(Rotation > 360)
+            Rotation -= 360;
+        if(Rotation < 0)
+            Rotation += 360;
+
+        Rotation = Mathf.LerpAngle(Rotation, TargetRotation, 7.5f * Time.deltaTime);
+
         angle = GetAngleDirection();
         direction = (Direction) angle;
     }
 
     private float GetAngleDirection() {
-        return (float)Math.Floor((Math.Abs(rotation) % 360 + 22.5f) / 45) % 8;
+        return (float)Math.Floor((Math.Abs(TargetRotation) % 360 + 22.5f) / 45) % 8;
     }
 
     private void HandleYawPitch() {
         var direction = new Vector3(0, 0, -distance);
-        var rotation = Quaternion.Euler(this.altitude, this.rotation, 0);
+        var rotation = Quaternion.Euler(this.altitude, this.TargetRotation, 0);
         transform.position = _target.position + rotation * direction;
         transform.LookAt(_target.position);
     }

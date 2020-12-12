@@ -6,25 +6,40 @@ using UnityEngine;
 public partial class EntityViewer : MonoBehaviour {
 
     public Entity Entity;
+    public EntityType Type;
     public EntityViewer Parent;
     public ViewerType _ViewerType;
-    public EntityState State;
+    public SpriteMotion  CurrentMotion;
     public List<EntityViewer> Children = new List<EntityViewer>();
     public float SpriteOffset;
     public int HeadDirection;
     public int SpriteOrder;
 
-    private int CurrentAction;
+    //private int CurrentMotion;
     private int xSize;
     private int ySize;
 
-    private EntityBody body;
     private SPRRenderer renderer;
     private Animation _Animation;
     private SpriteAction ActionTable;
 
+    private ACT currentACT;
+    private SPR currentSPR;
+    private ACT.Action currentAction;
+    private int currentActionIndex;
+    private int currentAngleIndex;
+    private Direction Direction;
+    private int maxFrame;
+    private float currentFrameTime;
+    private float AnimSpeed = 1;
+
     void Start() {
         renderer = gameObject.AddComponent<SPRRenderer>();
+        currentSPR = FileManager.Load(DBManager.GetBodyPath(0, 0) + ".spr") as SPR;
+        currentACT = FileManager.Load(DBManager.GetBodyPath(0, 0) + ".act") as ACT;
+
+        ChangeAngle(0);
+        renderer.setSPR(currentSPR, 0, 0);
     }
 
     void Update() {
@@ -32,97 +47,39 @@ public partial class EntityViewer : MonoBehaviour {
             ActionTable = Entity.ActionTable;
         }
 
-        // Animation change ! Get it now
-        //if(anim.save != null && anim.delay < Time.time) {
-        //    SetAction(anim.save);
-        //}
+        if(currentAction == null)
+            ChangeAction(0);
 
-        // Avoid look up, render as IDLE all not supported frames
-        //var action = actionId < 0 ? actionIds.IDLE : actionId;
-        //TODO RO camera
-        //var direction = ((int)ROCamera.direction + Entity.Direction + 8) % 8;
-        //var behind = direction > 1 && direction < 6;
-        var currentSPR = FileManager.Load(DBManager.GetBodyPath(0, 0) + ".spr") as SPR;
-        var currentACT = FileManager.Load(DBManager.GetBodyPath(0, 0) + ".act") as ACT;
-        var action = currentACT.actions[(
-                (Entity.Action * 8) + // Entity Action (IDLE, WALK, ETC)
-                ((int)ROCamera.direction + Entity.Direction + 8) % 8 // Direction
-                ) % currentACT.actions.Length]; // Avoid overflow
-        int animationID = CalcAnimation(Entity, action, "body", Time.time);
-        var animation = action.animations[animationID];
+        bool is4dir = AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion);
+        int angleIndex;
+        if (is4dir) {
+            angleIndex = AnimationHelper.GetFourDirectionSpriteIndexForAngle(Direction, 360 - ROCamera.Instance.Rotation);
+        } else {
+            angleIndex = AnimationHelper.GetSpriteIndexForAngle(Direction, 360 - ROCamera.Instance.Rotation);
+        }
 
-        renderer.setSPR(currentSPR, animation.layers[0].index, animation.layers[animation.layers.Length-1].index);
+        if (currentAngleIndex != angleIndex) {
+            ChangeAngle(angleIndex);
+        }
     }
 
-    private int CalcAnimation(Entity entity, ACT.Action act, string entityType, float tick) {
-        if (entityType == "shadow") {
-            return 0;
-        }
+    private void ChangeAngle(int newAngleIndex) {
+        currentAngleIndex = newAngleIndex;
+        //if (!isInitialized) return;
+        currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
+        maxFrame = currentAction.animations.Length - 1;
 
-        var ACTION = entity.ActionTable;
-        var action = entity.Action;
-        var animation = entity.Animation;
-        var animCount = act.animations.Length;
-        var animSize = animCount;
-        var isIdle = (action == ACTION.IDLE || action == ACTION.SIT);
-        var delay = getAnimationDelay(entityType, entity, act);
-        var headDir = 0;
-        var anim = 0;
-
-        // GeEntit doridori
-        if (entityType == "head" && Entity.Type == EntityType.PC && isIdle) {
-            return headDir;
-        }
-
-        // Don't play, so stop at current frame
-        if (!animation.play) {
-            return Math.Min(animation.frame, animSize - 1);
-        }
-
-        // If hat/hair, divide to 3 since there is doridori include
-        // TODO: fixed, just on IDLE and SIT ?
-        if (entityType == "head" && isIdle) {
-            animCount = (int)Mathf.Floor(animCount / 3);
-            headDir = entity.HeadDir;
-        }
-
-        if (animation.repeat) {
-            anim = (int)Mathf.Floor(tick / delay);
-
-            // TODO free sound
-            // entity.sound.freeOnAnimationEnd(anim, animCount);
-
-            anim %= animCount;
-            anim += animCount * headDir; // get rid of doridori
-            anim += animation.frame;     // don't forget the previous frame
-            anim %= animSize;            // avoid overflow
-
-            return anim;
-        }
-
-
-        // No repeat
-        // Math.min(tick / delay | 0, animCount || animCount -1)
-        anim = (
-            (int)Mathf.Min(tick / delay, animCount - 1)  // Avoid an error if animation = 0, search for -1 :(
-            + animCount * headDir // get rid of doridori
-            + animation.frame     // previous frame
-        );
-
-        if (entityType == "body" && anim >= animSize - 1) {
-            animation.frame = anim = animSize - 1;
-            animation.play = false;
-            if (animation.next != null) {
-                SetAction(animation.next);
-            }
-        }
-
-        return Math.Min(anim, animCount - 1);
+        renderer.setFrameLimits(currentAction.animations[0].layers[0].index, currentAction.animations[maxFrame].layers[0].index);
     }
 
-    //TODO implement
-    private int getAnimationDelay(string entityType, Entity entity, ACT.Action act) {
-        return 0;
+    private void ChangeAction(int newActionIndex) {
+        currentActionIndex = newActionIndex;
+        //if (!isInitialized) return;
+        currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
+        maxFrame = currentAction.animations.Length - 1;
+        currentFrameTime = currentAction.delay / 1000f * AnimSpeed; //reset current frame time
+
+        renderer.setFrameLimits(currentAction.animations[0].layers[0].index, currentAction.animations[maxFrame].layers[0].index);
     }
 
     private void InitShadow() {
@@ -161,41 +118,6 @@ public partial class EntityViewer : MonoBehaviour {
         //    go.SetActive(false);
     }
 
-    public void SetAction(Animation option) {
-        if (option.delay != 0) {
-            _Animation.delay = option.delay;
-            option.delay = 0;
-            _Animation.save = option;
-        } else {
-            var objecttype = Entity.Type;
-
-            // Know attack frame based on weapon type
-            if (option.action == ActionTable.ATTACK) {
-                if (objecttype == EntityType.PC) {
-                    //int attack = DBManager.getWeaponAction(entity.weapon, entity._job, entity._sex);
-                    //option.action = new int[] { actionIds.ATTACK1, actionIds.ATTACK2, actionIds.ATTACK3 }[attack];
-                }
-
-                // No action loaded yet
-                if (option.action == -2) {
-                    option.action = ActionTable.ATTACK1;
-                }
-            }
-
-            CurrentAction = option.action == -1 ? ActionTable.IDLE : option.action;
-            _Animation.tick = Time.time;
-            _Animation.delay = 0;
-            _Animation.frame = option.frame;
-            _Animation.repeat = option.repeat;
-            _Animation.play = option.play;
-            _Animation.next = option.next;
-            _Animation.save = null;
-
-            // Reset sounds
-            // TODO
-        }
-    }
-
     public void UpdateBody(Job job, int sex) {
         var path = DBManager.GetBodyPath(job, sex);
         ACT act = FileManager.Load(path + ".act") as ACT;
@@ -215,16 +137,6 @@ public partial class EntityViewer : MonoBehaviour {
 
         //transform.position = new Vector3(0.23f, -0.08f, 0);
         //gameObject.AddComponent<SPRRenderer>().setSPR(spr, 0, 0);
-    }
-
-    public class EntityBody {
-        public EntityBody(ACT act, SPR spr) {
-            this.act = act;
-            this.spr = spr;
-        }
-
-        public ACT act { get; }
-        public SPR spr { get; }
     }
 
     public enum ViewerType {
