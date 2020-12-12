@@ -10,14 +10,25 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Core : MonoBehaviour {
+
+    #region Inspector
+    public bool Offline = false;
+    public string mapname;
+    public AudioMixerGroup soundsMixerGroup;
+    public Light worldLight;
+    public Dropdown mapDropdown;
+    #endregion
+
     private static MapLoader mapLoader = new MapLoader();
     private static MapRenderer mapRenderer = new MapRenderer();
 
     private static PathFindingManager pathFinding = new PathFindingManager();
     private static NetworkClient networkClient;
 
+    public static EntityFactory EntityFactory;
     public static MapLoader MapLoader => mapLoader;
     public static MapRenderer MapRenderer => mapRenderer;
+    public static Session Session;
 
     public static PathFindingManager PathFinding => pathFinding;
     public static NetworkClient NetworkClient => networkClient;
@@ -26,11 +37,7 @@ public class Core : MonoBehaviour {
 
     public static Core Instance;
     public static Camera MainCamera;
-
-    public string mapname;
-    public AudioMixerGroup soundsMixerGroup;
-    public Light worldLight;
-    public Dropdown mapDropdown;
+    public static long CurrentTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
     private Hashtable configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
@@ -49,6 +56,10 @@ public class Core : MonoBehaviour {
             MainCamera = Camera.main;
         }
 
+        if (EntityFactory == null) {
+            EntityFactory = gameObject.AddComponent<EntityFactory>();
+        }
+
         networkClient = GetComponent<NetworkClient>();
 
         DontDestroyOnLoad(this);
@@ -61,14 +72,19 @@ public class Core : MonoBehaviour {
 
         LoadConfigs();
 
+
+        LoadGrf();
+        BuildMapSelector();
+
         /**
          * We start the network client only after the configs
          * have been loaded
          */
-        NetworkClient.Start();
-
-        LoadGrf();
-        BuildMapSelector();
+        if(!Offline) {
+            NetworkClient.Start();
+        } else {
+            EntityFactory.SpawnPlayer(new CharacterData() { Sex = 0, Job = 0 });
+        }
     }
 
     private void BuildMapSelector() {

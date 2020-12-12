@@ -38,7 +38,7 @@ public class FileManager {
         batching = true;
     }
 
-    public static void EndBatch(Action batchItemLoadedCallback = null) {
+    public static void EndBatch(System.Action batchItemLoadedCallback = null) {
         batching = false;
         if(batch.Count > 0) {
             pendingThreads = batch.Count;
@@ -86,88 +86,67 @@ public class FileManager {
     }
 
     private static object DoLoad(string file, string ext) {
-        //string fileWOExt = file.Replace("." + ext, "");
+        if(ext == "grf") {
+            return File.OpenRead(file);
+        } else {
+            using(var br = ReadSync(file)) {
+                if(br == null) {
+                    throw new Exception($"Could not load file: {file}");
+                }
 
-        switch(ext) {
-            case "grf":
-                return File.OpenRead(file);
-            // Regular images files
-            case "jpg":
-            case "jpeg":
-            case "png":
-                using(var br = ReadSync(file)) {
-                    return new RawImage() {
-                        data = br.ToArray()
-                    };
-                }
-            case "bmp":
-                using(var br = ReadSync(file))
-                    return loader.LoadBMP(br);
-            case "tga":
-                using(var br = ReadSync(file))
-                    return TGALoader.LoadTGA(br);
-            // Texts
-            case "txt":
-            case "xml":
-            case "lua":
-                using(var br = ReadSync(file)) {
-                    if(br != null) {
+                switch(ext) {
+                    // Images
+                    case "jpg":
+                    case "jpeg":
+                    case "png":
+                        return new RawImage() {
+                            data = br.ToArray()
+                        };
+                    case "bmp":
+                        return loader.LoadBMP(br);
+                    case "tga":
+                        return TGALoader.LoadTGA(br);
+
+                    // Text
+                    case "txt":
+                    case "xml":
+                    case "lua":
                         return Encoding.UTF8.GetString(br.ToArray());
-                    } else {
-                        return null;
-                    }
-                }
-            case "spr":
-                using(var br = ReadSync(file)) {
-                    if(br != null) {
+
+                    case "spr":
                         SPR spr = SpriteLoader.Load(br);
                         spr.SwitchToRGBA();
                         spr.Compile();
                         spr.filename = file;
                         return spr;
-                    } else {
-                        return null;
-                    }
-                }
-            case "str":
-                using(var br = ReadSync(file)) {
-                    if(br != null) {
-                        STR str = EffectLoader.Load(br);
-                        return str;
-                    } else {
-                        return null;
-                    }
-                }
-            // Binary
-            case "gat":
-                using(var br = ReadSync(file))
-                    return new Altitude(br);
-            case "rsw":
-                using(var br = ReadSync(file))
-                    return WorldLoader.Load(br);
-            case "gnd":
-                using(var br = ReadSync(file))
-                    return GroundLoader.Load(br);
-            case "rsm":
-                using(var br = ReadSync(file))
-                    return ModelLoader.Load(br);
-            // Audio
-            case "wav":
-                using(var br = ReadSync(file)) {
-                    WAVLoader.WAVFile wav = WAVLoader.OpenWAV(br.ToArray());
-                    AudioClip clip = AudioClip.Create(file, wav.samples, wav.channels, wav.sampleRate, false);
-                    clip.SetData(wav.leftChannel, 0);
-                    return clip;
-                }
-            case "mp3":
-            case "ogg":
+                    case "str":
+                        return EffectLoader.Load(br);
+                    case "act":
+                        return ActionLoader.Load(br);
 
-            case "act":
-                //return new Action(ReadSync(file)).compile();
-                Debug.LogWarning("Can't read " + file + "\nLoader for " + ext + " is not implemented");
-                break;
-            default:
-                throw new System.Exception("Unknown file format: " + file);
+                    // Binary
+                    case "gat":
+                        return new Altitude(br);
+                    case "rsw":
+                        return WorldLoader.Load(br);
+                    case "gnd":
+                        return GroundLoader.Load(br);
+                    case "rsm":
+                        return ModelLoader.Load(br);
+
+                    // Audio
+                    case "wav":
+                        WAVLoader.WAVFile wav = WAVLoader.OpenWAV(br.ToArray());
+                        AudioClip clip = AudioClip.Create(file, wav.samples, wav.channels, wav.sampleRate, false);
+                        clip.SetData(wav.leftChannel, 0);
+                        return clip;
+                    case "mp3":
+                    case "ogg":
+                        break;
+                    default:
+                        throw new Exception($"Unsuported file format: {ext} for file {file}");
+                }
+            }
         }
         return null;
     }
@@ -265,7 +244,7 @@ public class FileManager {
         public void ThreadPoolCallback(object state) {
             try {
                 object[] parameters = state as object[];
-                Action callback = (Action)parameters[1];
+                System.Action callback = (System.Action)parameters[1];
                 if(!FileCache.Has(file)) {
                     object data = DoLoad(file, ext);
                     callback?.Invoke();

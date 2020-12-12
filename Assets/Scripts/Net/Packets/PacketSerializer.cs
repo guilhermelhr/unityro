@@ -71,7 +71,7 @@ public class PacketSerializer {
 
             if(!RegisteredPackets.ContainsKey(cmd)) {
                 // We gotta break because we don't know the size of the packet
-                Debug.LogWarning($"Received Unknown Command: {string.Format("0x{0:x4}", cmd)}");
+                Debug.LogWarning($"Received Unknown Command: {string.Format("0x{0:x4}", cmd)}\nProbably: {(PacketHeader)cmd}");
                 Memory.Position -= 2;
                 break;
             } else {

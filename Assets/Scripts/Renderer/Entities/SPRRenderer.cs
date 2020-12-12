@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 
-public class SPRRenderer : MonoBehaviour {
-    public enum Animation {
-        IDLE, WALK, ATTACK, DAMAGE, DIE
-    }
+public partial class SPRRenderer : MonoBehaviour {
 
     public float secondsPerFrame = 1 / 10f;
 
@@ -42,15 +39,15 @@ public class SPRRenderer : MonoBehaviour {
     void Update() {
         var now = Time.realtimeSinceStartup;
 
-        if(now >= nextChange) {
+        if (now >= nextChange) {
             currentFrame++;
-            if(currentFrame > upperFrame) {
+            if (currentFrame > upperFrame) {
                 currentFrame = lowerFrame;
             }
-            if(currentFrame < 0) {
+            if (currentFrame < 0) {
                 currentFrame = 0;
             }
-            if(sprites == null) return;
+            if (sprites == null) return;
 
             spriteRenderer.sprite = sprites[currentFrame];
             spriteRenderer.flipY = true;

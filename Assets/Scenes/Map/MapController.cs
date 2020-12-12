@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class MapController : MonoBehaviour {
 
-    [SerializeField] private Entity Entity;
     [SerializeField] private Light worldLight;
 
     private void Awake() {
@@ -14,11 +13,21 @@ public class MapController : MonoBehaviour {
             throw new Exception("Map Login info cannot be null");
         }
 
-        Entity.transform.position = new Vector3(mapInfo.PosX, 1, mapInfo.PosY);
-
         Core.Instance.InitCamera();
         Core.Instance.SetWorldLight(worldLight);
         Core.Instance.BeginMapLoading(mapInfo.mapname);
+
+        var entity = Core.EntityFactory.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
+        Core.Session = new Session(entity);
+        Core.Session.Entity.transform.position = new Vector3(mapInfo.PosX, 2f, mapInfo.PosY);
+
+        /**
+        * Hack
+        */
+        Core.MainCamera.GetComponent<ROCamera>().SetTarget(Core.Session.Entity.EntityViewer.transform);
+        Core.MainCamera.transform.SetParent(Core.Session.Entity.transform);
+
+        Core.Session.Entity.SetReady(true);
     }
 
 
