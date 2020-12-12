@@ -20,6 +20,12 @@ public class Entity : MonoBehaviour {
     public Animation Animation;
     public int HeadDir;
 
+    public bool IsReady = false;
+
+    public void SetReady(bool ready) {
+        IsReady = ready;
+    }
+
     //internal object weapon;
     //internal Job _job = Job.NOVICE;
     //internal int _sex;

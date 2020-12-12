@@ -9,7 +9,7 @@ public partial class EntityViewer : MonoBehaviour {
     public EntityType Type;
     public EntityViewer Parent;
     public ViewerType _ViewerType;
-    public SpriteMotion  CurrentMotion;
+    public SpriteMotion CurrentMotion;
     public List<EntityViewer> Children = new List<EntityViewer>();
     public float SpriteOffset;
     public int HeadDirection;
@@ -35,30 +35,31 @@ public partial class EntityViewer : MonoBehaviour {
 
     void Start() {
         renderer = gameObject.AddComponent<SPRRenderer>();
-        currentSPR = FileManager.Load(DBManager.GetBodyPath(0, 0) + ".spr") as SPR;
-        currentACT = FileManager.Load(DBManager.GetBodyPath(0, 0) + ".act") as ACT;
+        var path = _ViewerType == ViewerType.BODY ? DBManager.GetBodyPath(0, 0) : DBManager.GetHeadPath(0, 0);
+        currentSPR = FileManager.Load(path + ".spr") as SPR;
+        currentACT = FileManager.Load(path + ".act") as ACT;
 
         ChangeAngle(0);
         renderer.setSPR(currentSPR, 0, 0);
     }
 
     void Update() {
-        if (ActionTable == null) {
+        if(!Entity.IsReady)
+            return;
+        if(ActionTable == null)
             ActionTable = Entity.ActionTable;
-        }
-
         if(currentAction == null)
             ChangeAction(0);
 
         bool is4dir = AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion);
         int angleIndex;
-        if (is4dir) {
+        if(is4dir) {
             angleIndex = AnimationHelper.GetFourDirectionSpriteIndexForAngle(Direction, 360 - ROCamera.Instance.Rotation);
         } else {
             angleIndex = AnimationHelper.GetSpriteIndexForAngle(Direction, 360 - ROCamera.Instance.Rotation);
         }
 
-        if (currentAngleIndex != angleIndex) {
+        if(currentAngleIndex != angleIndex) {
             ChangeAngle(angleIndex);
         }
     }
@@ -83,7 +84,7 @@ public partial class EntityViewer : MonoBehaviour {
     }
 
     private void InitShadow() {
-        if (_ViewerType != ViewerType.BODY) return;
+        if(_ViewerType != ViewerType.BODY) return;
 
         var shadow = new GameObject("Shadow");
         shadow.layer = LayerMask.NameToLayer("Characters");

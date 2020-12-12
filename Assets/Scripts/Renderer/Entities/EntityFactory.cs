@@ -51,14 +51,6 @@ public class EntityFactory : MonoBehaviour {
 
         entity.ShadowSize = 0.5f;
 
-        entity.Configure();
-
-        /**
-         * Hack
-         */
-        Core.MainCamera.GetComponent<ROCamera>().SetTarget(bodyViewer.transform);
-        Core.MainCamera.transform.SetParent(entity.transform);
-
         return entity;
     }
 }

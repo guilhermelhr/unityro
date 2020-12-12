@@ -28,6 +28,7 @@ public class Core : MonoBehaviour {
     public static EntityFactory EntityFactory;
     public static MapLoader MapLoader => mapLoader;
     public static MapRenderer MapRenderer => mapRenderer;
+    public static Session Session;
 
     public static PathFindingManager PathFinding => pathFinding;
     public static NetworkClient NetworkClient => networkClient;
