@@ -3,11 +3,7 @@ using System.IO;
 
 public partial class HC {
 
-    [PacketHandler(HEADER,
-        "HC_ACCEPT_ENTER",
-        PacketHandlerAttribute.VariableSize,
-        PacketHandlerAttribute.PacketDirection.In
-        )]
+    [PacketHandler(HEADER, "HC_ACCEPT_ENTER")]
     public class ACCEPT_ENTER : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.HC_ACCEPT_ENTER;
@@ -19,10 +15,9 @@ public partial class HC {
 
         public PacketHeader GetHeader() => HEADER;
 
-        public bool Read(byte[] data) {
-            BinaryReader br = new BinaryReader(data);
+        public bool Read(BinaryReader br) {
 
-            int numChars = (data.Length - 23) / 144;
+            int numChars = (int)((br.Length - 23) / 144);
 
             MaxSlots = br.ReadUByte();
             PremiumSlots = br.ReadUByte();

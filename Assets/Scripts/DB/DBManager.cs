@@ -22,6 +22,7 @@ public class DBManager {
     private static Hashtable msgStringTable = new Hashtable();
     private static Hashtable mapAlias = new Hashtable();
     private static Dictionary<Job, string> bodyPathTable = BodyPathTable.init();
+    private static Dictionary<int, string> monsterPathTable = MonsterTable.Table;
     private static Dictionary<int, string> SexTable = new Dictionary<int, string>() {
         { 0, "\xbf\xa9" },
         { 1, "\xb3\xb2" },
@@ -51,14 +52,14 @@ public class DBManager {
         }
 
         // NPC
-        //if (id < 1000) {
-        //    return 'data/sprite/npc/' + (MonsterTable[id] || MonsterTable[46]).toLowerCase();
-        //}
+        if(id < 1000) {
+            return "data/sprite/npc/" + (MonsterPath[id] ?? MonsterPath[46]).ToLower();
+        }
 
         // Monsters
-        //if (id < 4000) {
-        //    return 'data/sprite/\xb8\xf3\xbd\xba\xc5\xcd/' + (MonsterTable[id] || MonsterTable[1001]).toLowerCase();
-        //}
+        if(id < 4000) {
+            return "data/sprite/\xb8\xf3\xbd\xba\xc5\xcd/" + (MonsterPath[id] ?? MonsterPath[1001]).ToLower();
+        }
 
         // PC
         if (id < 6000) {
@@ -67,10 +68,9 @@ public class DBManager {
         }
 
         // Homunculus
-        //return 'data/sprite/homun/' + (MonsterTable[id] || MonsterTable[1002]).toLowerCase();
+        return "data/sprite/homun/" + (MonsterPath[id] ?? MonsterPath[1002]).ToLower();
 
         // TODO: add support for mercenary
-        return null;
     }
 
     public static string GetHeadPath(int headId, int sex) {
@@ -96,6 +96,8 @@ public class DBManager {
     }
 
     public static Dictionary<Job, String> BodyPath => bodyPathTable;
+
+    public static Dictionary<int, string> MonsterPath => monsterPathTable;
 
     public static int[][] HairIndexPath => HairIndexTable.table;
 

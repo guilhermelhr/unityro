@@ -16,7 +16,7 @@ public partial class ZC {
             return HEADER;
         }
 
-        public bool Read(byte[] data) {
+        public bool Read(BinaryReader br) {
 
             return true;
         }
