@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿public partial class ZC {
 
-public partial class ZC {
-
-    [PacketHandler(HEADER, "ZC_NOTIFY_PLAYERMOVE", SIZE, PacketHandlerAttribute.PacketDirection.In)]
+    [PacketHandler(HEADER, "ZC_NOTIFY_PLAYERMOVE", SIZE)]
     public class NOTIFY_PLAYERMOVE : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_PLAYERMOVE;
@@ -20,10 +14,9 @@ public partial class ZC {
             return HEADER;
         }
 
-        public bool Read(byte[] data) {
-            var reader = new BinaryReader(data);
-            movementTick = reader.ReadULong();
-            var moveData = reader.ReadPos2();
+        public bool Read(BinaryReader br) {
+            movementTick = br.ReadULong();
+            var moveData = br.ReadPos2();
             startPosition = new int[2] { moveData[0], moveData[1] };
             endPosition = new int[2] { moveData[2], moveData[3] };
 

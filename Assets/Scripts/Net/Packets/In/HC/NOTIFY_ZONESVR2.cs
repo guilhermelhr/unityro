@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 public partial class HC {
 
-    [PacketHandler(HEADER,
-        "HC_NOTIFY_ZONESVR2",
-        SIZE,
-        PacketHandlerAttribute.PacketDirection.In
-    )]
+    [PacketHandler(HEADER, "HC_NOTIFY_ZONESVR2", SIZE)]
     public class NOTIFY_ZONESVR2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.HC_NOTIFY_ZONESVR2;
@@ -24,8 +15,7 @@ public partial class HC {
 
         public PacketHeader GetHeader() => HEADER;
 
-        public bool Read(byte[] data) {
-            BinaryReader br = new BinaryReader(data);
+        public bool Read(BinaryReader br) {
 
             GID = br.ReadLong();
             Mapname = br.ReadBinaryString(16);

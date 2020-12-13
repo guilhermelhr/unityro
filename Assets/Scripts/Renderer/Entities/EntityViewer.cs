@@ -20,7 +20,6 @@ public partial class EntityViewer : MonoBehaviour {
     private int ySize;
 
     private SPRRenderer renderer;
-    private Animation _Animation;
     private SpriteAction ActionTable;
 
     private ACT currentACT;
@@ -35,7 +34,7 @@ public partial class EntityViewer : MonoBehaviour {
 
     void Start() {
         renderer = gameObject.AddComponent<SPRRenderer>();
-        var path = _ViewerType == ViewerType.BODY ? DBManager.GetBodyPath(0, 0) : DBManager.GetHeadPath(0, 0);
+        var path = _ViewerType == ViewerType.BODY ? DBManager.GetBodyPath((Job)Entity.Job, Entity.Sex) : DBManager.GetHeadPath(Entity.Hair, Entity.Sex);
         currentSPR = FileManager.Load(path + ".spr") as SPR;
         currentACT = FileManager.Load(path + ".act") as ACT;
 

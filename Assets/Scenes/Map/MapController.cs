@@ -13,6 +13,9 @@ public class MapController : MonoBehaviour {
             throw new Exception("Map Login info cannot be null");
         }
 
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_STANDENTRY9.HEADER, OnSpawnEntity);
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_NEWENTRY9.HEADER, OnSpawnEntity);
+
         Core.Instance.InitCamera();
         Core.Instance.SetWorldLight(worldLight);
         Core.Instance.BeginMapLoading(mapInfo.mapname);
@@ -28,6 +31,16 @@ public class MapController : MonoBehaviour {
         Core.MainCamera.transform.SetParent(Core.Session.Entity.transform);
 
         Core.Session.Entity.SetReady(true);
+    }
+
+    private void OnSpawnEntity(ushort cmd, int size, InPacket packet) {
+        if(packet is ZC.NOTIFY_NEWENTRY9) {
+            var pkt = packet as ZC.NOTIFY_NEWENTRY9;
+            Core.EntityFactory.Spawn(pkt.entityData);
+        } else if (packet is ZC.NOTIFY_STANDENTRY9) {
+            var pkt = packet as ZC.NOTIFY_STANDENTRY9;
+            Core.EntityFactory.Spawn(pkt.entityData);
+        }
     }
 
 

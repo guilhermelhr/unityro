@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-
 /**
  * Note:
  * When working with packets, sometimes the server will send multiple
@@ -97,19 +96,21 @@ public class PacketSerializer {
 
                 ConstructorInfo ci = RegisteredPackets[cmd].Type.GetConstructor(new Type[] { });
                 InPacket packet = (InPacket)ci.Invoke(null);
-                var shouldContinue = packet.Read(data);
+                using (var br = new BinaryReader(data)) {
+                    var shouldContinue = packet.Read(br);
 
-                ThreadManager.ExecuteOnMainThread(() => {
-                    if(PacketHooks.ContainsKey(cmd)) {
-                        PacketHooks[cmd].DynamicInvoke(cmd, size, packet);
-                    } else {
-                        Debug.LogWarning($"Received Unhadled Command {(PacketHeader) cmd}");
+                    ThreadManager.ExecuteOnMainThread(() => {
+                        if(PacketHooks.ContainsKey(cmd)) {
+                            PacketHooks[cmd].DynamicInvoke(cmd, size, packet);
+                        } else {
+                            Debug.LogWarning($"Received Unhadled Command {(PacketHeader)cmd}");
+                        }
+                        PacketReceived?.Invoke(cmd, size, packet);
+                    });
+
+                    if(!shouldContinue) {
+                        break;
                     }
-                    PacketReceived?.Invoke(cmd, size, packet);
-                });
-
-                if(!shouldContinue) {
-                    break;
                 }
             }
         }

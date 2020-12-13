@@ -3,7 +3,7 @@ using System.IO;
 
 public partial class ZC {
 
-    [PacketHandler(HEADER, "ZC_ACCEPT_ENTER2", SIZE, PacketHandlerAttribute.PacketDirection.In)]
+    [PacketHandler(HEADER, "ZC_ACCEPT_ENTER2", SIZE)]
     public class ACCEPT_ENTER2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ACCEPT_ENTER2;
@@ -20,8 +20,7 @@ public partial class ZC {
             return HEADER;
         }
 
-        public bool Read(byte[] data) {
-            var br = new BinaryReader(data);
+        public bool Read(BinaryReader br) {
             Tick = br.ReadLong();
             var posDir = br.ReadPos();
             PosX = posDir[0];

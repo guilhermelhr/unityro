@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class EntityWalk : MonoBehaviour {
 
+    private Entity Entity;
     private Coroutine MoveIE, MoveToIE;
     private int speed = 150;
 
     private void Awake() {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERMOVE.HEADER, OnPlayerMovement);
+
+        Entity = GetComponent<Entity>();
     }
 
     private void Update() {
-        if (Input.GetMouseButtonDown(0)) {
+        if (Input.GetMouseButtonDown(0) && Entity.HasAuthority()) {
             var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 150)) {
                 RequestMove(Mathf.RoundToInt(hit.point.x), Mathf.RoundToInt(hit.point.z), 0);
@@ -24,6 +27,7 @@ public class EntityWalk : MonoBehaviour {
      * Server has acknowledged our request and set data back to us
      */
     private void OnPlayerMovement(ushort cmd, int size, InPacket packet) {
+        if(!Entity.HasAuthority()) return;
         if (packet is ZC.NOTIFY_PLAYERMOVE) {
             var pkt = packet as ZC.NOTIFY_PLAYERMOVE;
 
