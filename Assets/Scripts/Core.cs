@@ -25,7 +25,7 @@ public class Core : MonoBehaviour {
     private static PathFindingManager pathFinding = new PathFindingManager();
     private static NetworkClient networkClient;
 
-    public static EntityFactory EntityFactory;
+    public static EntityManager EntityManager;
     public static MapLoader MapLoader => mapLoader;
     public static MapRenderer MapRenderer => mapRenderer;
     public static Session Session;
@@ -56,8 +56,8 @@ public class Core : MonoBehaviour {
             MainCamera = Camera.main;
         }
 
-        if (EntityFactory == null) {
-            EntityFactory = gameObject.AddComponent<EntityFactory>();
+        if (EntityManager == null) {
+            EntityManager = gameObject.AddComponent<EntityManager>();
         }
 
         networkClient = GetComponent<NetworkClient>();
@@ -83,7 +83,7 @@ public class Core : MonoBehaviour {
         if(!Offline) {
             NetworkClient.Start();
         } else {
-            EntityFactory.SpawnPlayer(new CharacterData() { Sex = 0, Job = 0 });
+            EntityManager.SpawnPlayer(new CharacterData() { Sex = 0, Job = 0 });
         }
     }
 

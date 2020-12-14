@@ -49,25 +49,25 @@ public class ActionLoader
         act.actions = new ACT.Action[count];
         for(int i = 0; i < count; i++) {
             act.actions[i] = new ACT.Action() {
-                animations = ReadAnimations(act, data),
+                animations = ReadMotions(act, data),
                 delay = 150f
             };
         }
     }
 
-    private static ACT.Animation[] ReadAnimations(ACT act, BinaryReader data) {
+    private static ACT.Motion[] ReadMotions(ACT act, BinaryReader data) {
         var count = data.ReadULong();
-        var animations = new ACT.Animation[count];
+        var motions = new ACT.Motion[count];
 
         for(int i = 0; i < count; i++) {
             data.Seek(32, System.IO.SeekOrigin.Current);
-            animations[i] = ReadLayers(act, data);
+            motions[i] = ReadLayers(act, data);
         }
 
-        return animations;
+        return motions;
     }
 
-    private static ACT.Animation ReadLayers(ACT act, BinaryReader data) {
+    private static ACT.Motion ReadLayers(ACT act, BinaryReader data) {
         var count = data.ReadULong();
         var layers = new ACT.Layer[count];
         var version = double.Parse(act.version, CultureInfo.InvariantCulture);
@@ -113,7 +113,7 @@ public class ActionLoader
             }
         }
 
-        return new ACT.Animation() {
+        return new ACT.Motion() {
             layers = layers,
             soundId = soundId,
             pos = pos

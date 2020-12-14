@@ -1,18 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class ROCamera : MonoBehaviour {
-
-    public enum Direction : int {
-        NORTH = 0,
-        NORTHEAST,
-        EAST,
-        SOUTHEAST,
-        SOUTH,
-        SOUTHWEST,
-        WEST,
-        NORTHWEST
-    }
+public class ROCamera : MonoBehaviour { 
 
     public static ROCamera Instance;
 
@@ -128,38 +117,6 @@ public class ROCamera : MonoBehaviour {
         }
     }
     
-    public Direction GetDirection() {
-        var direction = _target.position - transform.position;
-        direction.y = 0;
-        direction /= direction.magnitude;
-
-        float a_cos = Vector3.Dot(direction, Vector3.forward);
-        angle = (float)(Math.Acos(a_cos) * 180 / Math.PI);
-
-        if (direction.y < 0) {
-            angle = 360 - angle;
-        }
-
-        if (angle <= 22.5)
-            return Direction.NORTH;
-        else if (angle <= 67.5)
-            return Direction.NORTHEAST;
-        else if (angle <= 112.5)
-            return Direction.EAST;
-        else if (angle <= 157.5)
-            return Direction.SOUTHEAST;
-        else if (angle <= 202.5)
-            return Direction.SOUTH;
-        else if (angle <= 247.5)
-            return Direction.SOUTHWEST;
-        else if (angle <= 292.5)
-            return Direction.WEST;
-        else if (angle <= 337.5)
-            return Direction.NORTHWEST;
-        else
-            return Direction.NORTH;
-    }
-
     public void SetTarget(Transform target) {
         this._target = target;
     }

@@ -1,18 +1,30 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class EntityFactory : MonoBehaviour {
+public class EntityManager : MonoBehaviour {
+
+    private Dictionary<uint, Entity> entityCache = new Dictionary<uint, Entity>();
 
     public Entity Spawn(EntityData data) {
         switch (data.type) {
             case EntityType.PC:
-                return SpawnPC(data);
+                entityCache.TryGetValue(data.GID, out var pc);
+                pc?.gameObject.SetActive(true);
+                return pc ?? SpawnPC(data);
             case EntityType.NPC:
-                return SpawnNPC(data);
+                entityCache.TryGetValue(data.id, out var npc);
+                npc?.gameObject.SetActive(true);
+                return npc ?? SpawnNPC(data);
             default:
                 return null;
         }
+    }
+
+    public void HideEntity(uint GID, EntityType type) {
+        entityCache.TryGetValue(GID, out var entity);
+        entity?.gameObject.SetActive(false);
     }
 
     private Entity SpawnPC(EntityData data) {
@@ -25,7 +37,7 @@ public class EntityFactory : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = Vector3.zero;
+        body.transform.localPosition = Vector3.up * 2;
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -45,7 +57,6 @@ public class EntityFactory : MonoBehaviour {
 
         bodyViewer._ViewerType = EntityViewer.ViewerType.BODY;
         bodyViewer.Entity = entity;
-        bodyViewer.Children.Add(headViewer);
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
         bodyViewer.CurrentMotion = SpriteMotion.Idle;
@@ -56,6 +67,8 @@ public class EntityFactory : MonoBehaviour {
         headViewer.SpriteOrder = 1;
         headViewer.Type = entity.Type;
         headViewer._ViewerType = EntityViewer.ViewerType.HEAD;
+
+        entityCache.Add(data.GID, entity);
 
         return entity;
     }
@@ -78,6 +91,10 @@ public class EntityFactory : MonoBehaviour {
 
         entity.EntityViewer = bodyViewer;
         entity.ActionTable = new SpriteAction.NPC() as SpriteAction;
+        entity.Animation = new Animation() {
+            action = AnimationHelper.GetMotionIdForSprite(EntityType.NPC, SpriteMotion.Idle)
+        };
+        entity.SetReady(true);
 
         bodyViewer._ViewerType = EntityViewer.ViewerType.BODY;
         bodyViewer.Entity = entity;
@@ -85,6 +102,8 @@ public class EntityFactory : MonoBehaviour {
         bodyViewer.HeadDirection = 0;
         bodyViewer.CurrentMotion = SpriteMotion.Idle;
         bodyViewer.Type = entity.Type;
+
+        entityCache.Add(data.id, entity);
 
         return entity;
     }
@@ -99,7 +118,7 @@ public class EntityFactory : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = Vector3.zero;
+        body.transform.localPosition = Vector3.up * 2;
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -114,11 +133,13 @@ public class EntityFactory : MonoBehaviour {
         entity.EntityViewer = bodyViewer;
         entity.ActionTable = new SpriteAction.PC() as SpriteAction;
         entity.ShadowSize = 0.5f;
+        entity.Animation = new Animation() {
+            action = AnimationHelper.GetMotionIdForSprite(EntityType.PC, SpriteMotion.Idle)
+        };
         // Add more options such as sex etc
 
         bodyViewer._ViewerType = EntityViewer.ViewerType.BODY;
         bodyViewer.Entity = entity;
-        bodyViewer.Children.Add(headViewer);
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
         bodyViewer.CurrentMotion = SpriteMotion.Idle;

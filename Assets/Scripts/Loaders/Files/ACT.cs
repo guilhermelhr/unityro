@@ -13,11 +13,11 @@ public class ACT
 
     public class Action
     {
-        public Animation[] animations;
+        public Motion[] animations;
         public float delay;
     }
 
-    public class Animation
+    public class Motion
     {
         public Layer[] layers;
         public int soundId;
@@ -32,7 +32,7 @@ public class ACT
         public Vector2 scale;
         public Color color;
         public float angle;
-        public int sprType;
+        public int sprType; // 0 = sprite, 1 = tga
         public int width;
         public int height;
     }
