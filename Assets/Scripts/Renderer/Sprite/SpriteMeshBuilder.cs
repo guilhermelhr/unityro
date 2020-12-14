@@ -49,7 +49,7 @@ public static class SpriteMeshBuilder {
 
             for(var j = 0; j < verts.Length; j++) {
                 var v = rotation * (verts[j] * scale);
-                var vert = v + v + new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / 50f;
+                var vert = v + new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / 50f;
 
                 if(min.x > vert.x)
                     min.x = vert.x;
@@ -262,7 +262,7 @@ public static class SpriteMeshBuilder {
 
         for(var j = 0; j < verts.Length; j++) {
             var v = rotation * (verts[j] * scale);
-            var vert = v + v + new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / 50f;
+            var vert = v + new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / 50f;
 
             if(min.x > vert.x)
                 min.x = vert.x;

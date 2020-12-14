@@ -5,7 +5,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class EntityViewer : MonoBehaviour {
+public class EntityViewer : MonoBehaviour
+{
 
     public Entity Entity;
     public EntityType Type;
@@ -29,6 +30,7 @@ public class EntityViewer : MonoBehaviour {
 
     //private SpriteRenderer renderer;
 
+    private Dictionary<int, SpriteRenderer> Children = new Dictionary<int, SpriteRenderer>();
     private Coroutine AnimationCoroutine;
     private Sprite[] sprites;
     private ACT currentACT;
@@ -41,71 +43,61 @@ public class EntityViewer : MonoBehaviour {
     private float AnimSpeed = 1;
     private bool isPaused;
 
-    void Start() {
+    void Start()
+    {
         var path = _ViewerType == ViewerType.BODY ? DBManager.GetBodyPath((Job)Entity.Job, Entity.Sex) : DBManager.GetHeadPath(Entity.Hair, Entity.Sex);
         currentSPR = FileManager.Load(path + ".spr") as SPR;
         currentACT = FileManager.Load(path + ".act") as ACT;
         sprites = currentSPR.GetSprites();
-
-        MeshFilter = gameObject.AddComponent<MeshFilter>();
-        MeshRenderer = gameObject.AddComponent<MeshRenderer>();
-
-        MeshRenderer.sortingOrder = SpriteOrder;
-        MeshCollider = gameObject.AddComponent<MeshCollider>();
-
-        SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
-
-        MeshRenderer.receiveShadows = false;
-        MeshRenderer.lightProbeUsage = LightProbeUsage.Off;
-        MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
-
-        material = new Material(Shader.Find("Unlit/CustomSpriteShader"));
-
-        meshCache = SpriteMeshCache.GetMeshCacheForSprite(currentSPR.filename);
-        colliderCache = SpriteMeshCache.GetColliderCacheForSprite(currentSPR.filename);
     }
 
-    void Update() {
-        if(!Entity.IsReady ||
+    void Update()
+    {
+        if (!Entity.IsReady ||
             currentACT == null)
             return;
 
-        if(currentAction == null)
+        if (currentAction == null)
             ChangeAction(0);
 
         bool is4dir = AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion);
         int angleIndex;
-        if(is4dir) {
+        if (is4dir)
+        {
             angleIndex = AnimationHelper.GetFourDirectionSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
-        } else {
+        }
+        else
+        {
             angleIndex = AnimationHelper.GetSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
         }
 
-        if(currentAngleIndex != angleIndex) {
+        if (currentAngleIndex != angleIndex)
+        {
             ChangeAngle(angleIndex);
         }
 
-        if(currentActionIndex != Entity.Action) {
+        if (currentActionIndex != Entity.Action)
+        {
             ChangeAction(Entity.Action);
         }
-
-        UpdateSpriteFrame();
     }
 
-    private void ChangeAngle(int newAngleIndex) {
-        if(currentACT == null) return;
+    private void ChangeAngle(int newAngleIndex)
+    {
+        if (currentACT == null) return;
         currentAngleIndex = newAngleIndex;
         //if (!isInitialized) return;
         currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
         maxFrame = currentAction.motions.Length - 1;
 
-        //if(AnimationCoroutine != null)
-        //    StopCoroutine(AnimationCoroutine);
-        //AnimationCoroutine = StartCoroutine(AnimateMotion());
+        if (AnimationCoroutine != null)
+            StopCoroutine(AnimationCoroutine);
+        AnimationCoroutine = StartCoroutine(AnimateMotion());
     }
 
-    private void ChangeAction(int newActionIndex) {
-        if(currentACT == null) return;
+    private void ChangeAction(int newActionIndex)
+    {
+        if (currentACT == null) return;
         Entity.Action = newActionIndex;
         currentActionIndex = newActionIndex;
         //if (!isInitialized) return;
@@ -119,74 +111,107 @@ public class EntityViewer : MonoBehaviour {
          * since we cannot have more than one SpriteRenderer attached
          * to a single game object
          */
-        foreach(var motion in currentAction.motions) {
-            for(int i = 0; i < motion.layers.Length; i++) {
-                var mesh = SpriteMeshBuilder.BuildSpriteMesh(motion.layers[i], sprites);
-                var collider = SpriteMeshBuilder.BuildColliderMesh(motion.layers[i], sprites);
+        foreach (var motion in currentAction.motions)
+        {
+            for (int i = 0; i < motion.layers.Length; i++)
+            {
+                Children.TryGetValue(i, out var spriteRenderer);
 
-                //Children.TryGetValue(i, out var spriteRenderer);
+                var layer = motion.layers[i];
 
-                //var layer = motion.layers[i];
+                if (layer.index < 0) continue;
 
-                //if(layer.index < 0) continue;
+                if (spriteRenderer == null)
+                {
+                    var go = new GameObject($"Layer{i}");
+                    spriteRenderer = go.AddComponent<SpriteRenderer>();
+                    spriteRenderer.flipY = true;
+                    spriteRenderer.sortingOrder = i;
+                    var sprite = sprites[layer.index];
+                    var rotation = Quaternion.Euler(0, 0, -layer.angle);
+                    var scale = new Vector3(layer.scale.x * (layer.isMirror ? -1 : 1), layer.scale.y, 1);
+                    var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
+                    var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
 
-                //if(spriteRenderer == null) {
-                //    var go = new GameObject($"Layer{i}");
-                //    spriteRenderer = go.AddComponent<SpriteRenderer>();
-                //    spriteRenderer.flipY = true;
-                //    //spriteRenderer.material = new Material(Shader.Find("Unlit/CustomSpriteShader"));
+                    var newPos = new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / 50f;
+                    go.transform.position = newPos;
+                    go.transform.localScale = scale;
 
-                //    go.transform.SetParent(gameObject.transform, false);
+                    go.transform.SetParent(gameObject.transform, false);
 
-                //    Children.Add(i, spriteRenderer);
-                //}
-
-                //spriteRenderer.flipX = layer.isMirror != 0;
+                    Children.Add(i, spriteRenderer);
+                }
             }
         }
 
-        //if(AnimationCoroutine != null)
-        //    StopCoroutine(AnimationCoroutine);
-        //AnimationCoroutine = StartCoroutine(AnimateMotion());
+        if (AnimationCoroutine != null)
+            StopCoroutine(AnimationCoroutine);
+        AnimationCoroutine = StartCoroutine(AnimateMotion());
     }
 
-    //private IEnumerator AnimateMotion() {
-    //    foreach(var motion in currentAction.motions) {
-    //        //var sprite = sprites[layer.index];
-    //        //spriteRenderer.material.mainTexture = sprite.texture;
-    //        ////spriteRenderer.material.SetFloat("_Offset", sprite.rect.width / 125f);
-    //        //spriteRenderer.sprite = sprite;
-    //        //spriteRenderer.flipX = layer.isMirror != 0;
-    //        yield return new WaitForSeconds(currentAction.delay / 1000);
-    //    }
+    private IEnumerator AnimateMotion()
+    {
+        foreach (var motion in currentAction.motions)
+        {
+            for (int i = 0; i < motion.layers.Length; i++)
+            {
+                Children.TryGetValue(i, out var spriteRenderer);
 
-    //    if(AnimationHelper.IsLoopingMotion(CurrentMotion)) {
-    //        yield return AnimateMotion();
-    //    } else {
-    //        yield return null;
-    //    }
-    //}
+                if (spriteRenderer)
+                {
+                    var layer = motion.layers[i];
+                    var sprite = sprites[layer.index];
 
-    public void ChangeMotion(SpriteMotion nextMotion, bool forceUpdate = false) {
-        if(CurrentMotion == nextMotion && !forceUpdate)
+                    var rotation = Quaternion.Euler(0, 0, -layer.angle);
+                    var scale = new Vector3(layer.scale.x * (layer.isMirror ? -1 : 1), layer.scale.y, 1);
+                    var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
+                    var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
+
+                    var newPos = new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / 50f;
+                    spriteRenderer.transform.position = newPos;
+                    spriteRenderer.transform.localScale = scale;
+
+                    spriteRenderer.sprite = sprite;
+                    spriteRenderer.flipX = layer.isMirror;
+                }
+
+                yield return new WaitForSeconds(currentAction.delay / 1000);
+            }
+        }
+
+        if (AnimationHelper.IsLoopingMotion(CurrentMotion))
+        {
+            yield return AnimateMotion();
+        }
+        else
+        {
+            yield return null;
+        }
+    }
+
+    public void ChangeMotion(SpriteMotion nextMotion, bool forceUpdate = false)
+    {
+        if (CurrentMotion == nextMotion && !forceUpdate)
             return;
 
         CurrentMotion = nextMotion;
         currentFrame = 0;
 
-        if(!Entity.IsReady)
+        if (!Entity.IsReady)
             return;
 
         var action = AnimationHelper.GetMotionIdForSprite(Type, nextMotion);
-        if(action < 0 || action > currentACT.actions.Length) {
+        if (action < 0 || action > currentACT.actions.Length)
+        {
             action = 0;
         }
 
         ChangeAction(action);
     }
 
-    private void InitShadow() {
-        if(_ViewerType != ViewerType.BODY) return;
+    private void InitShadow()
+    {
+        if (_ViewerType != ViewerType.BODY) return;
 
         var shadow = new GameObject("Shadow");
         shadow.layer = LayerMask.NameToLayer("Characters");
@@ -221,10 +246,11 @@ public class EntityViewer : MonoBehaviour {
         //    go.SetActive(false);
     }
 
-    private Mesh GetColliderForFrame() {
+    private Mesh GetColliderForFrame()
+    {
         var id = ((currentActionIndex + currentAngleIndex) << 8) + currentFrame;
 
-        if(colliderCache.TryGetValue(id, out var mesh))
+        if (colliderCache.TryGetValue(id, out var mesh))
             return mesh;
 
 
@@ -235,10 +261,11 @@ public class EntityViewer : MonoBehaviour {
         return newMesh;
     }
 
-    private Mesh GetMeshForFrame() {
+    private Mesh GetMeshForFrame()
+    {
         var id = ((currentActionIndex + currentAngleIndex) << 8) + currentFrame;
 
-        if(meshCache.TryGetValue(id, out var mesh))
+        if (meshCache.TryGetValue(id, out var mesh))
             return mesh;
 
         //Debug.Log("Building new mesh for " + name);
@@ -250,39 +277,45 @@ public class EntityViewer : MonoBehaviour {
         return newMesh;
     }
 
-    public void AdvanceFrame() {
-        if(!isPaused)
+    public void AdvanceFrame()
+    {
+        if (!isPaused)
             currentFrame++;
-        if(currentFrame > maxFrame) {
+        if (currentFrame > maxFrame)
+        {
             var nextMotion = AnimationHelper.GetMotionForState(State);
-            if(nextMotion != CurrentMotion)
+            if (nextMotion != CurrentMotion)
                 ChangeMotion(nextMotion);
-            else {
-                if(State != SpriteState.Dead)
+            else
+            {
+                if (State != SpriteState.Dead)
                     currentFrame = 0;
-                else {
+                else
+                {
                     currentFrame = maxFrame;
                     isPaused = true;
                 }
             }
         }
 
-        if(currentFrameTime < 0)
+        if (currentFrameTime < 0)
             currentFrameTime += (float)currentAction.delay / 1000f * AnimSpeed;
 
         //if(!isPaused)
         //    isDirty = true;
     }
 
-    private void UpdateSpriteFrame() {
-        if(currentFrame >= currentAction.motions.Length) {
+    private void UpdateSpriteFrame()
+    {
+        if (currentFrame >= currentAction.motions.Length)
+        {
             Debug.LogWarning($"Current frame is {currentFrame}, max frame is {maxFrame}, but actual frame max is {currentAction.motions.Length}");
             return;
         }
         var frame = currentAction.motions[currentFrame];
         var layer = frame.layers.Where(t => t.index >= 0).FirstOrDefault();
 
-        if(layer.index < 0)
+        if (layer.index < 0)
             return;
         //if(frame.Sound > -1 && frame.Sound < SpriteData.Sounds.Length && !isPaused) {
         //    var sound = SpriteData.Sounds[frame.Sound];

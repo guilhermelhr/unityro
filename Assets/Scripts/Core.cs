@@ -9,7 +9,8 @@ using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Core : MonoBehaviour {
+public class Core : MonoBehaviour
+{
 
     #region Inspector
     public bool Offline = false;
@@ -44,19 +45,23 @@ public class Core : MonoBehaviour {
 
     private bool roCamEnabled;
 
-    private void Awake() {
-        if(Instance == null) {
+    private void Awake()
+    {
+        if (Instance == null)
+        {
             Instance = this;
         }
 
         /**
          * Caching the camera as it's heavy to search for it
          */
-        if(MainCamera == null) {
+        if (MainCamera == null)
+        {
             MainCamera = Camera.main;
         }
 
-        if (EntityManager == null) {
+        if (EntityManager == null)
+        {
             EntityManager = gameObject.AddComponent<EntityManager>();
         }
 
@@ -65,7 +70,8 @@ public class Core : MonoBehaviour {
         DontDestroyOnLoad(this);
     }
 
-    void Start() {
+    void Start()
+    {
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
         roCamEnabled = MainCamera.GetComponent<ROCamera>()?.enabled ?? false;
@@ -80,9 +86,12 @@ public class Core : MonoBehaviour {
          * We start the network client only after the configs
          * have been loaded
          */
-        if(!Offline) {
+        if (!Offline)
+        {
             NetworkClient.Start();
-        } else {
+        }
+        else
+        {
             var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 0, Job = 0 });
             Core.Session = new Session(entity);
 
@@ -90,10 +99,13 @@ public class Core : MonoBehaviour {
             Core.MainCamera.transform.SetParent(Core.Session.Entity.transform);
 
             Core.Session.Entity.SetReady(true);
+
+            EntityManager.Spawn(new EntityData() { job = 811, type = EntityType.NPC, PosDir = new int[] { 0, 0, 0 } });
         }
     }
 
-    private void BuildMapSelector() {
+    private void BuildMapSelector()
+    {
         Debug.Log("Building map list...");
         MapSelector selector = new MapSelector(FileManager.Grf);
         selector.buildDropdown(mapDropdown);
@@ -103,7 +115,8 @@ public class Core : MonoBehaviour {
         var preLoadMap = !string.IsNullOrEmpty(mapname);
 
         // there is a map to load on startup: load it
-        if(preLoadMap) {
+        if (preLoadMap)
+        {
             selector.ChangeMap(mapname);
         }
 
@@ -111,22 +124,28 @@ public class Core : MonoBehaviour {
         mapDropdown?.gameObject?.SetActive(!preLoadMap);
     }
 
-    private void LoadGrf() {
+    private void LoadGrf()
+    {
         Debug.Log($"Loading GRF at {configs["grf"]} ...");
         FileManager.loadGrf(configs["grf"] as string);
         Debug.Log($"GRF loaded, filetable contains {FileManager.Grf.files.Count} files.");
         OnGrfLoaded?.Invoke();
     }
 
-    private void LoadConfigs() {
+    private void LoadConfigs()
+    {
 
         string cfgTxt = null;
-        if(Application.isMobilePlatform) {
+        if (Application.isMobilePlatform)
+        {
             cfgTxt = "grf=" + Application.streamingAssetsPath + "/data.grf";
-        } else {
+        }
+        else
+        {
             cfgTxt = FileManager.Load("config.txt") as string;
 
-            if(cfgTxt == null) {
+            if (cfgTxt == null)
+            {
                 FileStream stream = File.Open(Application.dataPath + "/" + CFG_NAME, FileMode.Create);
 
                 string defaultCfg = "grf=" + Application.dataPath + "/data.grf";
@@ -136,22 +155,28 @@ public class Core : MonoBehaviour {
             }
         }
 
-        foreach(string s in cfgTxt.Split('\n')) {
+        foreach (string s in cfgTxt.Split('\n'))
+        {
             string[] properties = s.Split('=');
-            if(properties.Length == 2) {
+            if (properties.Length == 2)
+            {
                 configs.Add(properties[0], properties[1]);
             }
         }
     }
 
-    void FixedUpdate() {
-        if(mapRenderer.Ready) {
+    void FixedUpdate()
+    {
+        if (mapRenderer.Ready)
+        {
             mapRenderer.FixedUpdate();
         }
     }
 
-    void Update() {
-        if(mapRenderer.Ready) {
+    void Update()
+    {
+        if (mapRenderer.Ready)
+        {
             mapRenderer.Render();
         }
 
@@ -159,7 +184,8 @@ public class Core : MonoBehaviour {
         var mapSelectorEnabled = mapDropdown?.gameObject?.activeSelf ?? false;
 
         // ESC pressed: toggle map selector visiblity
-        if(Input.GetKeyDown(KeyCode.Escape)) {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
 
             // toggle map selector
             mapSelectorEnabled = !mapSelectorEnabled;
@@ -174,7 +200,8 @@ public class Core : MonoBehaviour {
         }
 
         // F1 pressed and not on map selector: switch between ROCamera and FreeflyCam
-        else if(Input.GetKeyDown(KeyCode.F1) && !mapSelectorEnabled) {
+        else if (Input.GetKeyDown(KeyCode.F1) && !mapSelectorEnabled)
+        {
 
             // switch cameras
             roCamEnabled = !roCamEnabled;
@@ -187,27 +214,33 @@ public class Core : MonoBehaviour {
 
             // switched to ROCamera: updated it so we go from wherever
             // freefly is to where ROCam should be
-            if(roCamEnabled) {
+            if (roCamEnabled)
+            {
                 MainCamera.GetComponent<ROCamera>().Start();
             }
         }
     }
 
-    public void OnPostRender() {
-        if(mapRenderer.Ready) {
+    public void OnPostRender()
+    {
+        if (mapRenderer.Ready)
+        {
             mapRenderer.PostRender();
         }
     }
 
-    public void SetWorldLight(Light worldLight) {
+    public void SetWorldLight(Light worldLight)
+    {
         MapRenderer.WorldLight = worldLight;
     }
 
-    public void InitCamera() {
+    public void InitCamera()
+    {
         MainCamera = Camera.main;
     }
 
-    public void BeginMapLoading(string mapName) {
+    public void BeginMapLoading(string mapName)
+    {
         SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         StartCoroutine(

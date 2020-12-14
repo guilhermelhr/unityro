@@ -54,7 +54,7 @@ public class EntityManager : MonoBehaviour {
         entity.ShadowSize = 0.5f;
         // Add more options such as sex etc
 
-        bodyViewer._ViewerType = EntityViewer.ViewerType.BODY;
+        bodyViewer._ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
@@ -65,7 +65,7 @@ public class EntityManager : MonoBehaviour {
         headViewer.Entity = entity;
         headViewer.SpriteOrder = 1;
         headViewer.Type = entity.Type;
-        headViewer._ViewerType = EntityViewer.ViewerType.HEAD;
+        headViewer._ViewerType = ViewerType.HEAD;
 
         entityCache.Add(data.GID, entity);
 
@@ -91,7 +91,7 @@ public class EntityManager : MonoBehaviour {
         entity.EntityViewer = bodyViewer;
         entity.SetReady(true);
 
-        bodyViewer._ViewerType = EntityViewer.ViewerType.BODY;
+        bodyViewer._ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
@@ -129,7 +129,7 @@ public class EntityManager : MonoBehaviour {
         entity.ShadowSize = 0.5f;
         // Add more options such as sex etc
 
-        bodyViewer._ViewerType = EntityViewer.ViewerType.BODY;
+        bodyViewer._ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
@@ -140,7 +140,7 @@ public class EntityManager : MonoBehaviour {
         headViewer.Entity = entity;
         headViewer.SpriteOrder = 1;
         headViewer.Type = entity.Type;
-        headViewer._ViewerType = EntityViewer.ViewerType.HEAD;
+        headViewer._ViewerType = ViewerType.HEAD;
 
         return entity;
     }
