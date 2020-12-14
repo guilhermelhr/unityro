@@ -14,7 +14,6 @@ public class Entity : MonoBehaviour {
     public Direction Direction = 0;
     public float ShadowSize;
     public int Action = 0;
-    public SpriteAction ActionTable;
     public int HeadDir;
 
     public bool IsReady = false;

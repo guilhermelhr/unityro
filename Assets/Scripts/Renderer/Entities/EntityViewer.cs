@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public partial class EntityViewer : MonoBehaviour {
+public class EntityViewer : MonoBehaviour {
 
     public Entity Entity;
     public EntityType Type;
@@ -28,7 +28,6 @@ public partial class EntityViewer : MonoBehaviour {
     private Dictionary<int, Mesh> colliderCache;
 
     //private SpriteRenderer renderer;
-    private SpriteAction ActionTable;
 
     private Coroutine AnimationCoroutine;
     private Sprite[] sprites;
@@ -70,8 +69,7 @@ public partial class EntityViewer : MonoBehaviour {
         if(!Entity.IsReady ||
             currentACT == null)
             return;
-        if(ActionTable == null)
-            ActionTable = Entity.ActionTable;
+
         if(currentAction == null)
             ChangeAction(0);
 
@@ -121,28 +119,31 @@ public partial class EntityViewer : MonoBehaviour {
          * since we cannot have more than one SpriteRenderer attached
          * to a single game object
          */
-        //foreach(var motion in currentAction.motions) {
-        //    for(int i = 0; i < motion.layers.Length; i++) {
-        //        Children.TryGetValue(i, out var spriteRenderer);
+        foreach(var motion in currentAction.motions) {
+            for(int i = 0; i < motion.layers.Length; i++) {
+                var mesh = SpriteMeshBuilder.BuildSpriteMesh(motion.layers[i], sprites);
+                var collider = SpriteMeshBuilder.BuildColliderMesh(motion.layers[i], sprites);
 
-        //        var layer = motion.layers[i];
+                //Children.TryGetValue(i, out var spriteRenderer);
 
-        //        if(layer.index < 0) continue;
+                //var layer = motion.layers[i];
 
-        //        if(spriteRenderer == null) {
-        //            var go = new GameObject($"Layer{i}");
-        //            spriteRenderer = go.AddComponent<SpriteRenderer>();
-        //            spriteRenderer.flipY = true;
-        //            //spriteRenderer.material = new Material(Shader.Find("Unlit/CustomSpriteShader"));
+                //if(layer.index < 0) continue;
 
-        //            go.transform.SetParent(gameObject.transform, false);
+                //if(spriteRenderer == null) {
+                //    var go = new GameObject($"Layer{i}");
+                //    spriteRenderer = go.AddComponent<SpriteRenderer>();
+                //    spriteRenderer.flipY = true;
+                //    //spriteRenderer.material = new Material(Shader.Find("Unlit/CustomSpriteShader"));
 
-        //            Children.Add(i, spriteRenderer);
-        //        }
+                //    go.transform.SetParent(gameObject.transform, false);
 
-        //        spriteRenderer.flipX = layer.isMirror != 0;
-        //    }
-        //}
+                //    Children.Add(i, spriteRenderer);
+                //}
+
+                //spriteRenderer.flipX = layer.isMirror != 0;
+            }
+        }
 
         //if(AnimationCoroutine != null)
         //    StopCoroutine(AnimationCoroutine);
@@ -302,9 +303,5 @@ public partial class EntityViewer : MonoBehaviour {
         material.mainTexture = sprites[layer.index].texture;
         MeshRenderer.material = null;
         MeshRenderer.material = material;
-    }
-
-    public enum ViewerType {
-        BODY, HEAD, SHADOW, LAYER
     }
 }
