@@ -24,7 +24,6 @@ public class Entity : MonoBehaviour {
     public byte Sex { get; private set; }
     public uint GID { get; private set; }
     public short Hair { get; private set; }
-    public Animation Animation { get; internal set; }
 
     public void SetReady(bool ready) {
         IsReady = ready;

@@ -15,7 +15,7 @@ public class GridRenderer : MonoBehaviour {
     private int[] triangles;
 
     private void Awake() {
-        
+
     }
 
     public void Start() {
@@ -24,8 +24,8 @@ public class GridRenderer : MonoBehaviour {
 
     private void Update() {
         var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-        if(Physics.Raycast(ray, out var hit, 150)) {
-            var target = new Vector2(Mathf.Floor(hit.point.x), Mathf.Floor(hit.point.z));
+        if(Physics.Raycast(ray, out var hit, 150, LayerMask.GetMask("Ground"))) {
+            var target = new Vector2(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z));
             RenderGridSelector(target);
         }
     }

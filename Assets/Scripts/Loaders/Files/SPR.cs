@@ -127,7 +127,7 @@ public class SPR
             Texture2D texture = new Texture2D(frame.width, frame.height, TextureFormat.RGBA32, false);
             texture.LoadRawTextureData(frame.data);
             texture.Apply();
-            sprites[i] = Sprite.Create(texture, new Rect(0, 0, frame.width, frame.height), Vector2.zero);
+            sprites[i] = Sprite.Create(texture, new Rect(0, 0, frame.width, frame.height), new Vector2(0.5f, 0.5f), 50, 0, SpriteMeshType.FullRect);
         }
 
         return sprites;

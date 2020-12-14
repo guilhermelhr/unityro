@@ -83,7 +83,13 @@ public class Core : MonoBehaviour {
         if(!Offline) {
             NetworkClient.Start();
         } else {
-            EntityManager.SpawnPlayer(new CharacterData() { Sex = 0, Job = 0 });
+            var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 0, Job = 0 });
+            Core.Session = new Session(entity);
+
+            Core.MainCamera.GetComponent<ROCamera>().SetTarget(Core.Session.Entity.EntityViewer.transform);
+            Core.MainCamera.transform.SetParent(Core.Session.Entity.transform);
+
+            Core.Session.Entity.SetReady(true);
         }
     }
 

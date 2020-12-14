@@ -19,7 +19,7 @@ public class EntityWalk : MonoBehaviour {
         if(Input.GetMouseButtonDown(0) && Entity.HasAuthority) {
             var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
             if(Physics.Raycast(ray, out var hit, 150)) {
-                RequestMove(Mathf.RoundToInt(hit.point.x), Mathf.RoundToInt(hit.point.z), 0);
+                RequestMove(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z), 0);
             }
         }
     }
@@ -74,7 +74,6 @@ public class EntityWalk : MonoBehaviour {
         /**
          * Validate things such as if entity is sit, whatever
          */
-
         new CZ.REQUEST_MOVE2(x, y, dir).Send();
     }
 

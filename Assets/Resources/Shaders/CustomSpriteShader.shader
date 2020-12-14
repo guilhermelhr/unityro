@@ -4,14 +4,14 @@
 
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
-Shader "Unlit/TestSpriteShader"
+Shader "Unlit/CustomSpriteShader"
 {
 	Properties
 	{
 		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
 		_Color("Tint", Color) = (1,1,1,1)
 		_Offset("Offset", Float) = 0
-		_Rotation("Rotation", Range(0,360)) = 0
+		_Rotation("Rotation", Range(0,360)) = 180
 	}
 
 		SubShader

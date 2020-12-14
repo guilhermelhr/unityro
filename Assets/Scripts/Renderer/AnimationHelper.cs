@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 /**
  * Taken from RoSpriteData.cs at RoRebuild
@@ -113,5 +108,45 @@ public static class AnimationHelper {
 
 
         return -1;
+    }
+
+    public static bool IsLoopingMotion(SpriteMotion motion) {
+        switch(motion) {
+            case SpriteMotion.Idle:
+            case SpriteMotion.Sit:
+            case SpriteMotion.Walk:
+            case SpriteMotion.Casting:
+            case SpriteMotion.Freeze1:
+            case SpriteMotion.Freeze2:
+            case SpriteMotion.Dead:
+                return true;
+            case SpriteMotion.Attack1:
+            case SpriteMotion.Attack2:
+            case SpriteMotion.Attack3:
+            case SpriteMotion.Hit:
+            case SpriteMotion.PickUp:
+            case SpriteMotion.Special:
+            case SpriteMotion.Performance1:
+            case SpriteMotion.Performance2:
+            case SpriteMotion.Performance3:
+                return false;
+        }
+
+        return false;
+    }
+
+    public static SpriteMotion GetMotionForState(SpriteState state) {
+        switch(state) {
+            case SpriteState.Idle:
+                return SpriteMotion.Idle;
+            case SpriteState.Standby:
+                return SpriteMotion.Standby;
+            case SpriteState.Walking:
+                return SpriteMotion.Walk;
+            case SpriteState.Dead:
+                return SpriteMotion.Dead;
+        }
+
+        return SpriteMotion.Idle;
     }
 }

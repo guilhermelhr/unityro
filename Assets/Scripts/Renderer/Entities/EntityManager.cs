@@ -76,7 +76,7 @@ public class EntityManager : MonoBehaviour {
     private Entity SpawnNPC(EntityData data) {
         var npc = new GameObject(data.name);
         npc.layer = LayerMask.NameToLayer("Characters");
-        npc.transform.localScale = new Vector3(2f, 2f, 2f);
+        npc.transform.localScale = new Vector3(1f, 1f, 1f);
         var entity = npc.AddComponent<Entity>();
         entity.Init(data);
 
@@ -91,9 +91,6 @@ public class EntityManager : MonoBehaviour {
 
         entity.EntityViewer = bodyViewer;
         entity.ActionTable = new SpriteAction.NPC() as SpriteAction;
-        entity.Animation = new Animation() {
-            action = AnimationHelper.GetMotionIdForSprite(EntityType.NPC, SpriteMotion.Idle)
-        };
         entity.SetReady(true);
 
         bodyViewer._ViewerType = EntityViewer.ViewerType.BODY;
@@ -111,14 +108,14 @@ public class EntityManager : MonoBehaviour {
     public Entity SpawnPlayer(CharacterData data) {
         var player = new GameObject(data.Name);
         player.layer = LayerMask.NameToLayer("Characters");
-        player.transform.localScale = new Vector3(2f, 2f, 2f);
+        player.transform.localScale = Vector3.one;
         var entity = player.AddComponent<Entity>();
         entity.Init(data);
 
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = Vector3.up * 2;
+        body.transform.localPosition = Vector3.zero;
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -133,9 +130,6 @@ public class EntityManager : MonoBehaviour {
         entity.EntityViewer = bodyViewer;
         entity.ActionTable = new SpriteAction.PC() as SpriteAction;
         entity.ShadowSize = 0.5f;
-        entity.Animation = new Animation() {
-            action = AnimationHelper.GetMotionIdForSprite(EntityType.PC, SpriteMotion.Idle)
-        };
         // Add more options such as sex etc
 
         bodyViewer._ViewerType = EntityViewer.ViewerType.BODY;

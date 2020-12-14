@@ -49,7 +49,7 @@ public class ActionLoader
         act.actions = new ACT.Action[count];
         for(int i = 0; i < count; i++) {
             act.actions[i] = new ACT.Action() {
-                animations = ReadMotions(act, data),
+                motions = ReadMotions(act, data),
                 delay = 150f
             };
         }
@@ -76,13 +76,13 @@ public class ActionLoader
             var layer = layers[i] = new ACT.Layer() {
                 pos = new Vector2Int(data.ReadLong(), data.ReadLong()),
                 index = data.ReadLong(),
-                isMirror = data.ReadLong(),
+                isMirror = data.ReadLong() != 0,
                 scale = Vector2.one,
                 color = Color.white
             };
 
             // RoRebuild checks if only if it's greater
-            if(version >= 2.0) {
+            if(version > 2.0) {
                 layer.color[0] = data.ReadUByte() / 255f; //r
                 layer.color[1] = data.ReadUByte() / 255f; //g
                 layer.color[2] = data.ReadUByte() / 255f; //b
