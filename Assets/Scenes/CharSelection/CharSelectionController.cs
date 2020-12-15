@@ -21,7 +21,7 @@ public class CharSelectionController : MonoBehaviour {
     }
 
     private void OnMapServerLoginAccepted(ushort cmd, int size, InPacket packet) {
-        if(packet is ZC.ACCEPT_ENTER2) {
+        if (packet is ZC.ACCEPT_ENTER2) {
             var pkt = packet as ZC.ACCEPT_ENTER2;
             var mapLoginInfo = new MapLoginInfo() {
                 mapname = currentMapInfo.Mapname.Split('.')[0],
@@ -36,7 +36,7 @@ public class CharSelectionController : MonoBehaviour {
     }
 
     private void OnCharacterSelectionAccepted(ushort cmd, int size, InPacket packet) {
-        if(packet is HC.NOTIFY_ZONESVR2) {
+        if (packet is HC.NOTIFY_ZONESVR2) {
             Core.NetworkClient.Disconnect();
 
             currentMapInfo = packet as HC.NOTIFY_ZONESVR2;
@@ -50,12 +50,12 @@ public class CharSelectionController : MonoBehaviour {
     }
 
     private void PopulateUI() {
-        for(var i = 0; i < currentCharactersInfo.MaxSlots; i++) {
+        for (var i = 0; i < currentCharactersInfo.MaxSlots; i++) {
             var item = Instantiate(charSelectionItem);
             item.transform.SetParent(GridLayout.transform);
 
             var controller = item.GetComponent<CharacterCellController>();
-            if(i < currentCharactersInfo.Chars.Length) {
+            if (i < currentCharactersInfo.Chars.Length) {
                 controller.BindData(currentCharactersInfo.Chars[i]);
                 controller.OnCharacterSelected = OnCharacterSelected;
             }
@@ -67,10 +67,16 @@ public class CharSelectionController : MonoBehaviour {
     }
 
     public void OnEnterGameClicked() {
-        if(selectedCharacter == null) return;
+        if (selectedCharacter == null) return;
         var charIndex = new List<CharacterData>(currentCharactersInfo.Chars).IndexOf(selectedCharacter);
-        if(charIndex < 0) return;
+        if (charIndex < 0) return;
 
         new CH.SELECT_CHAR(charIndex).Send();
+    }
+
+    public void CreateChar() {
+        new CH.MAKE_CHAR() {
+            Name = "teste"
+        }.Send();
     }
 }

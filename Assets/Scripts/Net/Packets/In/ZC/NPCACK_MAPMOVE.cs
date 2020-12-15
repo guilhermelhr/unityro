@@ -6,10 +6,14 @@
         public const PacketHeader HEADER = PacketHeader.ZC_NPCACK_MAPMOVE;
         public const int SIZE = 22;
 
+        public string MapName;
+        public short PosX;
+        public short PosY;
+
         public bool Read(BinaryReader br) {
-            var mapName = br.ReadBinaryString(16);
-            var xPos = br.ReadShort();
-            var yPos = br.ReadShort();
+            MapName = br.ReadBinaryString(16);
+            PosX = br.ReadShort();
+            PosY = br.ReadShort();
 
             return true;
         }

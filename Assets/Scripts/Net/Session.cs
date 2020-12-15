@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 public class Session {
 
     public Entity Entity { get; private set; }
+    public string CurrentMap { get; private set; }
 
     public Session(Entity entity) {
         if (entity.Type != EntityType.PC) {
@@ -16,4 +17,7 @@ public class Session {
         this.Entity = entity;
     }
 
+    public void SetCurrentMap(string mapname) {
+        CurrentMap = mapname;
+    }
 }

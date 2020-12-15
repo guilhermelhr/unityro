@@ -9,7 +9,7 @@ public class MapController : MonoBehaviour {
 
     private void Awake() {
         var mapInfo = Core.NetworkClient.State.MapLoginInfo;
-        if(mapInfo == null) {
+        if (mapInfo == null) {
             throw new Exception("Map Login info cannot be null");
         }
 
@@ -17,6 +17,7 @@ public class MapController : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_NEWENTRY9.HEADER, OnEntitySpawn);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_VANISH.HEADER, OnEntityVanish);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_MOVE.HEADER, OnEntityMovement); //Others movement
+        Core.NetworkClient.HookPacket(ZC.NPCACK_MAPMOVE.HEADER, OnEntityMoved);
 
         Core.Instance.InitCamera();
         Core.Instance.SetWorldLight(worldLight);
@@ -24,6 +25,7 @@ public class MapController : MonoBehaviour {
 
         var entity = Core.EntityManager.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
         Core.Session = new Session(entity);
+        Core.Session.SetCurrentMap(mapInfo.mapname);
         Core.Session.Entity.transform.position = new Vector3(mapInfo.PosX, Core.PathFinding.GetCellHeight(mapInfo.PosX, mapInfo.PosY), mapInfo.PosY);
 
         /**
@@ -35,6 +37,18 @@ public class MapController : MonoBehaviour {
         Core.Session.Entity.SetReady(true);
     }
 
+    private void OnEntityMoved(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.NPCACK_MAPMOVE) {
+            var pkt = packet as ZC.NPCACK_MAPMOVE;
+
+            if (pkt.MapName != Core.Session.CurrentMap) {
+                Core.Instance.BeginMapLoading(pkt.MapName);
+                Core.Session.SetCurrentMap(pkt.MapName);
+                Core.Session.Entity.transform.position = new Vector3(pkt.PosX, Core.PathFinding.GetCellHeight(pkt.PosX, pkt.PosY), pkt.PosY);
+            }
+        }
+    }
+
     private void OnEntityVanish(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NOTIFY_VANISH) {
             var pkt = packet as ZC.NOTIFY_VANISH;
@@ -43,7 +57,7 @@ public class MapController : MonoBehaviour {
     }
 
     private void OnEntitySpawn(ushort cmd, int size, InPacket packet) {
-        if(packet is ZC.NOTIFY_NEWENTRY9) {
+        if (packet is ZC.NOTIFY_NEWENTRY9) {
             var pkt = packet as ZC.NOTIFY_NEWENTRY9;
             Core.EntityManager.Spawn(pkt.entityData);
         } else if (packet is ZC.NOTIFY_STANDENTRY9) {
@@ -53,11 +67,11 @@ public class MapController : MonoBehaviour {
     }
 
     private void OnEntityMovement(ushort cmd, int size, InPacket packet) {
-        if(packet is ZC.NOTIFY_MOVE) {
+        if (packet is ZC.NOTIFY_MOVE) {
             var pkt = packet as ZC.NOTIFY_MOVE;
 
             var entity = Core.EntityManager.GetEntity(pkt.GID);
-            if(entity == null) return;
+            if (entity == null) return;
 
             entity.SetAction(SpriteMotion.Walk);
             entity.StartMoving(pkt.StartPosition[0], pkt.StartPosition[1], pkt.EndPosition[0], pkt.EndPosition[1]);
