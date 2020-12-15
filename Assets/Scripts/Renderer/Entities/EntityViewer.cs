@@ -75,7 +75,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private void ChangeAction(int newActionIndex) {
-        if(currentACT == null && Entity.isActiveAndEnabled) return;
+        if(currentACT == null || !Entity.gameObject.activeSelf) return;
         Entity.Action = newActionIndex;
         currentActionIndex = newActionIndex;
         //if (!isInitialized) return;
