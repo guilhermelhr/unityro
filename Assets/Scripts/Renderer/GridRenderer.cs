@@ -55,6 +55,7 @@ public class GridRenderer : MonoBehaviour {
             return;
         } else {
             material.mainTexture = gridIcon;
+            material.color = new Color(50/255f, 240/255f, 160/255f, 0.6f);
         }
 
         if(vertices == null) {
