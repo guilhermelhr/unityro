@@ -53,7 +53,7 @@ public class Connection {
             return;
         }
 
-        if(size <= 0 || err != SocketError.Success) {
+        if(err != SocketError.Success) {
             Disconnect();
             OnDisconnect?.Invoke();
         } else {
