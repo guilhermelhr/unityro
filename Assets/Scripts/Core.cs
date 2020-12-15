@@ -88,7 +88,6 @@ public class Core : MonoBehaviour
         if (!Offline)
         {
             NetworkClient.Start();
-            //EntityManager.StartCoroutine();
         }
         else
         {

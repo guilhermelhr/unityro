@@ -7,35 +7,28 @@ public class EntityManager : MonoBehaviour {
 
     private Dictionary<uint, Entity> entityCache = new Dictionary<uint, Entity>();
 
-    void Start() {
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_MOVE.HEADER, OnNotifyMovement); //Others movement
-    }
-
-    private void OnNotifyMovement(ushort cmd, int size, InPacket packet) {
-        if(packet is ZC.NOTIFY_MOVE) {
-            var pkt = packet as ZC.NOTIFY_MOVE;
-
-            entityCache.TryGetValue(pkt.GID, out var entity);
-            if(entity == null) return;
-
-            entity.SetAction(SpriteMotion.Walk);
-            entity.StartMoving(pkt.StartPosition[0], pkt.StartPosition[1], pkt.EndPosition[0], pkt.EndPosition[1]);
-        }
-    }
-
     public Entity Spawn(EntityData data) {
         switch (data.type) {
             case EntityType.PC:
-                entityCache.TryGetValue(data.GID, out var pc);
+                entityCache.TryGetValue(data.id, out var pc);
                 pc?.gameObject.SetActive(true);
                 return pc ?? SpawnPC(data);
             case EntityType.NPC:
                 entityCache.TryGetValue(data.id, out var npc);
                 npc?.gameObject.SetActive(true);
                 return npc ?? SpawnNPC(data);
+            case EntityType.MOB:
+                entityCache.TryGetValue(data.id, out var mob);
+                mob?.gameObject.SetActive(true);
+                return mob ?? SpawnMOB(data);
             default:
                 return null;
         }
+    }
+
+    public Entity GetEntity(uint GID) {
+        entityCache.TryGetValue(GID, out var entity);
+        return entity;
     }
 
     public void HideEntity(uint GID, EntityType type) {
@@ -53,7 +46,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.5f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -99,7 +92,39 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(npc.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.5f, 0.5f);
+        body.AddComponent<Billboard>();
+        body.AddComponent<SortingGroup>();
+
+        var bodyViewer = body.AddComponent<EntityViewer>();
+
+        entity.EntityViewer = bodyViewer;
+        entity.SetReady(true);
+        entity.ShadowSize = 0.5f;
+
+        bodyViewer._ViewerType = ViewerType.BODY;
+        bodyViewer.Entity = entity;
+        bodyViewer.SpriteOffset = 0.5f;
+        bodyViewer.HeadDirection = 0;
+        bodyViewer.CurrentMotion = SpriteMotion.Idle;
+        bodyViewer.Type = entity.Type;
+
+        entityCache.Add(data.id, entity);
+
+        return entity;
+    }
+
+    private Entity SpawnMOB(EntityData data) {
+        var mob = new GameObject(data.name);
+        mob.layer = LayerMask.NameToLayer("Monsters");
+        mob.transform.localScale = new Vector3(1f, 1f, 1f);
+        var entity = mob.AddComponent<Entity>();
+        entity.Init(data);
+
+        var body = new GameObject("Body");
+        body.layer = LayerMask.NameToLayer("Monsters");
+        body.transform.SetParent(mob.transform, false);
+        body.transform.localPosition = new Vector3(0.5f, 0.5f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -131,7 +156,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.5f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 

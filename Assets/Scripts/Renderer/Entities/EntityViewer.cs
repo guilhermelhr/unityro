@@ -62,7 +62,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private void ChangeAngle(int newAngleIndex) {
-        if(currentACT == null) return;
+        if(currentACT == null && Entity.isActiveAndEnabled) return;
         currentAngleIndex = newAngleIndex;
         //if (!isInitialized) return;
         currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
@@ -75,7 +75,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private void ChangeAction(int newActionIndex) {
-        if(currentACT == null) return;
+        if(currentACT == null && Entity.isActiveAndEnabled) return;
         Entity.Action = newActionIndex;
         currentActionIndex = newActionIndex;
         //if (!isInitialized) return;
