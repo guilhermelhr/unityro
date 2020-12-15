@@ -149,13 +149,13 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    private static void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos) {
+    private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos) {
         var rotation = Quaternion.Euler(0, 0, -layer.angle);
         scale = new Vector3(layer.scale.x * (layer.isMirror ? -1 : 1), -(layer.scale.y), 1);
         var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
         var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
 
-        newPos = new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / 50f;
+        newPos = new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / sprite.pixelsPerUnit;
     }
 
     public void ChangeMotion(SpriteMotion nextMotion, bool forceUpdate = false) {

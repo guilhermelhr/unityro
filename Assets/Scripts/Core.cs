@@ -100,8 +100,8 @@ public class Core : MonoBehaviour
 
             Core.Session.Entity.SetReady(true);
 
-            //var npc = EntityManager.Spawn(new EntityData() { job = 811, type = EntityType.NPC, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
-            //npc.transform.position = new Vector3(160, 0, 150);
+            var npc = EntityManager.Spawn(new EntityData() { job = 811, type = EntityType.NPC, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
+            npc.transform.position = new Vector3(160, 0, 150);
         }
     }
 
