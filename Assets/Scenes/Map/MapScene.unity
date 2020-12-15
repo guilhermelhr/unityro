@@ -190,6 +190,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7129797e95ed6024b8146ac91ee78200, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ZOOM_MIN: 25
+  ZOOM_MAX: 80
+  ALTITUDE_MIN: 35
+  ALTITUDE_MAX: 50
+  ROTATION_MIN: -360
+  ROTATION_MAX: 360
   _target: {fileID: 0}
   zoom: 0
   distance: 60
@@ -238,7 +244,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 500
-  field of view: 15
+  field of view: 24
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
