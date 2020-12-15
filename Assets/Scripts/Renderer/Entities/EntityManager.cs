@@ -60,7 +60,7 @@ public class EntityManager : MonoBehaviour {
 
         entity.EntityViewer = bodyViewer;
         entity.Type = EntityType.PC;
-        entity.ShadowSize = 0.5f;
+        entity.ShadowSize = 1f;
         // Add more options such as sex etc
 
         bodyViewer._ViewerType = ViewerType.BODY;
@@ -100,7 +100,7 @@ public class EntityManager : MonoBehaviour {
 
         entity.EntityViewer = bodyViewer;
         entity.SetReady(true);
-        entity.ShadowSize = 0.5f;
+        entity.ShadowSize = 1f;
 
         bodyViewer._ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
@@ -132,7 +132,7 @@ public class EntityManager : MonoBehaviour {
 
         entity.EntityViewer = bodyViewer;
         entity.SetReady(true);
-        entity.ShadowSize = 0.5f;
+        entity.ShadowSize = 1f;
 
         bodyViewer._ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
@@ -169,7 +169,7 @@ public class EntityManager : MonoBehaviour {
         var headViewer = head.AddComponent<EntityViewer>();
 
         entity.EntityViewer = bodyViewer;
-        entity.ShadowSize = 0.5f;
+        entity.ShadowSize = 1f;
         // Add more options such as sex etc
 
         bodyViewer._ViewerType = ViewerType.BODY;
