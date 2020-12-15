@@ -90,6 +90,7 @@ public class EntityManager : MonoBehaviour {
 
         entity.EntityViewer = bodyViewer;
         entity.SetReady(true);
+        entity.ShadowSize = 0.5f;
 
         bodyViewer._ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;

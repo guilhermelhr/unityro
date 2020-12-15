@@ -33,6 +33,8 @@ public class EntityViewer : MonoBehaviour {
         currentSPR = FileManager.Load(path + ".spr") as SPR;
         currentACT = FileManager.Load(path + ".act") as ACT;
         sprites = currentSPR.GetSprites();
+
+        InitShadow();
     }
 
     void Update() {
@@ -182,6 +184,8 @@ public class EntityViewer : MonoBehaviour {
         shadow.transform.SetParent(transform, false);
         shadow.transform.localPosition = Vector3.zero;
         shadow.transform.localScale = new Vector3(Entity.ShadowSize, Entity.ShadowSize, Entity.ShadowSize);
+        var sortingGroup = shadow.AddComponent<SortingGroup>();
+        sortingGroup.sortingOrder = -20001;
 
         SPR sprite = FileManager.Load("data/sprite/shadow.spr") as SPR;
         ACT act = FileManager.Load("data/sprite/shadow.act") as ACT;
@@ -195,12 +199,13 @@ public class EntityViewer : MonoBehaviour {
         spriteRenderer.sprite = sprite.GetSprites()[0];
         //shadowSprite = sprite;
 
-        //var shader = Shader.Find("Unlit/TestSpriteShader");
-        //var mat = new Material(shader);
+        var shader = Shader.Find("Unlit/CustomSpriteShader");
+        var mat = new Material(shader);
         //mat.SetFloat("_Offset", 0.4f);
-        //mat.color = new Color(1f, 1f, 1f, 0.5f);
-        //sprite.material = mat;
+        mat.color = new Color(1f, 1f, 1f, 0.5f);
+        mat.mainTexture = spriteRenderer.sprite.texture;
 
+        spriteRenderer.material = mat;
         spriteRenderer.sortingOrder = -1;
 
         //SpriteAnimator.Shadow = go;
