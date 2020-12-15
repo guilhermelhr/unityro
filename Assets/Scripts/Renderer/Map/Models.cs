@@ -175,6 +175,7 @@ public class Models {
         }
 
         anims.Clear();
+        Core.MapLoader.Progress += 1;
         yield return null;
     }
 
