@@ -78,7 +78,6 @@ public class Core : MonoBehaviour
 
         LoadConfigs();
 
-
         LoadGrf();
         BuildMapSelector();
 
@@ -89,6 +88,7 @@ public class Core : MonoBehaviour
         if (!Offline)
         {
             NetworkClient.Start();
+            //EntityManager.StartCoroutine();
         }
         else
         {

@@ -29,6 +29,10 @@ public class Entity : MonoBehaviour {
         _EntityWalk = gameObject.AddComponent<EntityWalk>();
     }
 
+    public void StartMoving(int startX, int startY, int endX, int endY) {
+        _EntityWalk.StartMoving(startX, startY, endX, endY);
+    }
+
     public void Init(EntityData data) {
         Job = data.job;
         Sex = data.sex;

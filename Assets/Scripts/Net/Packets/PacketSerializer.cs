@@ -20,7 +20,7 @@ public class PacketSerializer {
 
     public MemoryStream Memory { get; set; }
     public int BytesToSkip { get; set; }
-    private Dictionary<ushort, OnPacketReceived> PacketHooks { get; set; }
+    private static Dictionary<ushort, OnPacketReceived> PacketHooks { get; set; } = new Dictionary<ushort, OnPacketReceived>();
 
     public static Dictionary<ushort, PacketInfo> RegisteredPackets;
 
@@ -37,7 +37,6 @@ public class PacketSerializer {
 
     public PacketSerializer() {
         Memory = new MemoryStream();
-        PacketHooks = new Dictionary<ushort, OnPacketReceived>();
     }
 
     public void Reset() {

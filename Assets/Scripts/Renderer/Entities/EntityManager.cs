@@ -7,6 +7,22 @@ public class EntityManager : MonoBehaviour {
 
     private Dictionary<uint, Entity> entityCache = new Dictionary<uint, Entity>();
 
+    void Start() {
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_MOVE.HEADER, OnNotifyMovement); //Others movement
+    }
+
+    private void OnNotifyMovement(ushort cmd, int size, InPacket packet) {
+        if(packet is ZC.NOTIFY_MOVE) {
+            var pkt = packet as ZC.NOTIFY_MOVE;
+
+            entityCache.TryGetValue(pkt.GID, out var entity);
+            if(entity == null) return;
+
+            entity.SetAction(SpriteMotion.Walk);
+            entity.StartMoving(pkt.StartPosition[0], pkt.StartPosition[1], pkt.EndPosition[0], pkt.EndPosition[1]);
+        }
+    }
+
     public Entity Spawn(EntityData data) {
         switch (data.type) {
             case EntityType.PC:
@@ -67,7 +83,8 @@ public class EntityManager : MonoBehaviour {
         headViewer.Type = entity.Type;
         headViewer._ViewerType = ViewerType.HEAD;
 
-        entityCache.Add(data.GID, entity);
+        entityCache.Add(data.id, entity);
+        entity.SetReady(true);
 
         return entity;
     }

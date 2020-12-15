@@ -12,7 +12,7 @@ public class EntityWalk : MonoBehaviour {
         Entity = GetComponent<Entity>();
 
         if(Entity.HasAuthority)
-            Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERMOVE.HEADER, OnPlayerMovement);
+            Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERMOVE.HEADER, OnPlayerMovement); //Our movement
     }
 
     private void Update() {
@@ -33,16 +33,20 @@ public class EntityWalk : MonoBehaviour {
             Entity.SetAction(SpriteMotion.Walk);
             var pkt = packet as ZC.NOTIFY_PLAYERMOVE;
 
-            var path = Core.PathFinding.GetPath(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
-
-            if(MoveIE != null) {
-                Core.Instance.StopCoroutine(MoveIE);
-            }
-            if(MoveToIE != null) {
-                Core.Instance.StopCoroutine(MoveToIE);
-            }
-            MoveIE = Core.Instance.StartCoroutine(Move(path));
+            StartMoving(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
         }
+    }
+
+    public void StartMoving(int startX, int startY, int endX, int endY) {
+        var path = Core.PathFinding.GetPath(startX, startY, endX, endY);
+
+        if(MoveIE != null) {
+            Core.Instance.StopCoroutine(MoveIE);
+        }
+        if(MoveToIE != null) {
+            Core.Instance.StopCoroutine(MoveToIE);
+        }
+        MoveIE = Core.Instance.StartCoroutine(Move(path));
     }
 
     IEnumerator Move(List<PathNode> path) {
