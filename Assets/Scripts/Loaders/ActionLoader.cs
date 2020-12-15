@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Globalization;
+using System.Linq;
 using UnityEngine;
 
 public class ActionLoader
@@ -114,7 +115,7 @@ public class ActionLoader
         }
 
         return new ACT.Motion() {
-            layers = layers,
+            layers = layers.Where(t => t.index >= 0).ToArray(),
             soundId = soundId,
             pos = pos
         };

@@ -92,7 +92,8 @@ public class Core : MonoBehaviour
         }
         else
         {
-            var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 0, Job = 0 });
+            var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 0, Job = 0, Name = "Player" });
+            entity.transform.position = new Vector3(150, 0, 150);
             Core.Session = new Session(entity);
 
             Core.MainCamera.GetComponent<ROCamera>().SetTarget(Core.Session.Entity.EntityViewer.transform);
@@ -100,7 +101,8 @@ public class Core : MonoBehaviour
 
             Core.Session.Entity.SetReady(true);
 
-            EntityManager.Spawn(new EntityData() { job = 811, type = EntityType.NPC, PosDir = new int[] { 0, 0, 0 } });
+            var npc = EntityManager.Spawn(new EntityData() { job = 811, type = EntityType.NPC, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
+            npc.transform.position = new Vector3(160, 0, 150);
         }
     }
 

@@ -43,6 +43,10 @@ public class PathFindingManager {
         }
     }
 
+    public float GetCellHeight(int x, int y) {
+        return (float)Altitude.GetCellHeight(x, y);
+    }
+
     public List<PathNode> GetPath(int x0, int y0, int x1, int y1, int range = 0) {
         var newRequest = new PathRequest() {
             from = new Vector2Int(x0, y0),

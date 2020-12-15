@@ -36,7 +36,7 @@ public class Entity : MonoBehaviour {
         Hair = data.hairStyle;
         Type = data.type;
 
-        gameObject.transform.position = new Vector3(data.PosDir[0], 2f, data.PosDir[1]);
+        gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0],data.PosDir[1]), data.PosDir[1]);
     }
 
     public void SetAction(SpriteMotion motion) {

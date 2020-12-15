@@ -37,7 +37,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = Vector3.zero;
+        body.transform.localPosition = new Vector3(0.5f, 0, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -82,7 +82,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(npc.transform, false);
-        body.transform.localPosition = Vector3.zero;
+        body.transform.localPosition = new Vector3(0.5f, 0, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -113,7 +113,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = Vector3.zero;
+        body.transform.localPosition = new Vector3(0.5f, 0, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
