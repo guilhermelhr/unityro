@@ -10,6 +10,8 @@ public class LoginController : MonoBehaviour {
     void Start() {
         Core.NetworkClient.ChangeServer("127.0.0.1", 6900);
         Core.NetworkClient.HookPacket(AC.ACCEPT_LOGIN.HEADER, this.OnLoginResponse);
+
+        usernameField.text = "danilo3";
     }
 
     // Update is called once per frame
@@ -21,7 +23,7 @@ public class LoginController : MonoBehaviour {
         var username = usernameField.text;
         var password = passwordField.text;
 
-        if(username.Length == 0 || password.Length == 0) {
+        if (username.Length == 0 || password.Length == 0) {
             return;
         }
 
@@ -33,7 +35,7 @@ public class LoginController : MonoBehaviour {
     }
 
     private void OnLoginResponse(ushort cmd, int size, InPacket packet) {
-        if(packet is AC.ACCEPT_LOGIN) {
+        if (packet is AC.ACCEPT_LOGIN) {
             var pkt = packet as AC.ACCEPT_LOGIN;
 
             Core.NetworkClient.State.LoginInfo = pkt;

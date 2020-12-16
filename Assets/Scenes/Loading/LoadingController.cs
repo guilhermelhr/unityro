@@ -21,6 +21,7 @@ public class LoadingController : MonoBehaviour {
         ProgressText.text = $"{progress}%";
 
         if (progress == 100 && Core.MapRenderer.Ready) {
+            Core.MapLoader.Progress = 0;
             OnMapLoaded();
         }
     }

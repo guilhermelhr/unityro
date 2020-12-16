@@ -42,9 +42,11 @@ public class MapController : MonoBehaviour {
             var pkt = packet as ZC.NPCACK_MAPMOVE;
 
             if (pkt.MapName != Core.Session.CurrentMap) {
-                Core.Instance.BeginMapLoading(pkt.MapName);
+                Core.Session.Entity.StopMoving();
+                Core.Instance.BeginMapLoading(pkt.MapName.Split('.')[0]);
                 Core.Session.SetCurrentMap(pkt.MapName);
                 Core.Session.Entity.transform.position = new Vector3(pkt.PosX, Core.PathFinding.GetCellHeight(pkt.PosX, pkt.PosY), pkt.PosY);
+                new CZ.NOTIFY_ACTORINIT().Send();
             }
         }
     }

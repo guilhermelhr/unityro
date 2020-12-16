@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -76,7 +77,7 @@ public class CharSelectionController : MonoBehaviour {
 
     public void CreateChar() {
         new CH.MAKE_CHAR() {
-            Name = "teste"
+            Name = Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8)
         }.Send();
     }
 }

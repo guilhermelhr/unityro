@@ -23,15 +23,18 @@ public class GridRenderer : MonoBehaviour {
     }
 
     private void Update() {
+        if (gridIcon == null) {
+            gridIcon = (Texture2D)FileManager.Load("data/texture/grid.tga");
+        }
+
         var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-        if(Physics.Raycast(ray, out var hit, 150, LayerMask.GetMask("Ground"))) {
+        if (Physics.Raycast(ray, out var hit, 150, LayerMask.GetMask("Ground"))) {
             var target = new Vector2(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z));
             RenderGridSelector(target);
         }
     }
 
     private void LoadGridTexture() {
-        gridIcon = (Texture2D)FileManager.Load("data/texture/grid.tga");
         material = new Material(Shader.Find("Unlit/WalkableShader"));
         material.SetFloat("_Glossiness", 0f);
         material.mainTexture = gridIcon;
@@ -50,15 +53,15 @@ public class GridRenderer : MonoBehaviour {
         var cell = Core.PathFinding.GetCell(targetPosition.x, targetPosition.y);
         GetClosestTileTopToPoint(targetPosition, out var target);
 
-        if(!Core.PathFinding.IsWalkable(target.x, target.y)) {
+        if (!Core.PathFinding.IsWalkable(target.x, target.y)) {
             //Disable renderer
             return;
         } else {
             material.mainTexture = gridIcon;
-            material.color = new Color(50/255f, 240/255f, 160/255f, 0.6f);
+            material.color = new Color(50 / 255f, 240 / 255f, 160 / 255f, 0.6f);
         }
 
-        if(vertices == null) {
+        if (vertices == null) {
             mesh = new Mesh();
             vertices = new Vector3[4];
             uvs = new Vector2[4];
@@ -96,7 +99,7 @@ public class GridRenderer : MonoBehaviour {
 
         //Debug.Log(WalkData.Width + " " + WalkData.Height + " " + x + " " + y);
 
-        if(x < 0 || x >= (Core.PathFinding.Altitude.getWidth()) || y < 0 || y >= (Core.PathFinding.Altitude.getHeight()))
+        if (x < 0 || x >= (Core.PathFinding.Altitude.getWidth()) || y < 0 || y >= (Core.PathFinding.Altitude.getHeight()))
             return false;
 
         tile = new Vector2Int(x, y);

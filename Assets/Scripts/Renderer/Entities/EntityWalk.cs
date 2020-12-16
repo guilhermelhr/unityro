@@ -11,14 +11,14 @@ public class EntityWalk : MonoBehaviour {
     private void Awake() {
         Entity = GetComponent<Entity>();
 
-        if(Entity.HasAuthority)
+        if (Entity.HasAuthority)
             Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERMOVE.HEADER, OnPlayerMovement); //Our movement
     }
 
     private void Update() {
-        if(Input.GetMouseButtonDown(0) && Entity.HasAuthority) {
+        if (Input.GetMouseButtonDown(0) && Entity.HasAuthority) {
             var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray, out var hit, 150)) {
+            if (Physics.Raycast(ray, out var hit, 150)) {
                 RequestMove(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z), 0);
             }
         }
@@ -28,8 +28,8 @@ public class EntityWalk : MonoBehaviour {
      * Server has acknowledged our request and set data back to us
      */
     private void OnPlayerMovement(ushort cmd, int size, InPacket packet) {
-        if(!Entity) return;
-        if(packet is ZC.NOTIFY_PLAYERMOVE) {
+        if (!Entity) return;
+        if (packet is ZC.NOTIFY_PLAYERMOVE) {
             Entity.ChangeMotion(SpriteMotion.Walk);
             var pkt = packet as ZC.NOTIFY_PLAYERMOVE;
 
@@ -40,26 +40,36 @@ public class EntityWalk : MonoBehaviour {
     public void StartMoving(int startX, int startY, int endX, int endY) {
         var path = Core.PathFinding.GetPath(startX, startY, endX, endY);
 
-        if(MoveIE != null) {
-            Core.Instance.StopCoroutine(MoveIE);
+        if (MoveIE != null) {
+            StopCoroutine(MoveIE);
         }
-        if(MoveToIE != null) {
-            Core.Instance.StopCoroutine(MoveToIE);
+        if (MoveToIE != null) {
+            StopCoroutine(MoveToIE);
         }
-        MoveIE = Core.Instance.StartCoroutine(Move(path));
+        MoveIE = StartCoroutine(Move(path));
+    }
+
+    public void StopMoving() {
+        if (MoveIE != null) {
+            StopCoroutine(MoveIE);
+        }
+        if (MoveToIE != null) {
+            StopCoroutine(MoveToIE);
+        }
+        Entity.ChangeMotion(SpriteMotion.Idle);
     }
 
     IEnumerator Move(List<PathNode> path) {
         var linkedList = new LinkedList<PathNode>(path);
 
-        foreach(var node in linkedList) {
+        foreach (var node in linkedList) {
             var next = linkedList.Find(node).Next?.Value;
-            if(next != null) {
+            if (next != null) {
                 var offset = new Vector2Int(next.x, next.z) - new Vector2Int(node.x, node.z);
                 Entity.Direction = GetDirectionForOffset(offset);
             }
 
-            MoveToIE = Core.Instance.StartCoroutine(MoveTo(node));
+            MoveToIE = StartCoroutine(MoveTo(node));
             yield return MoveToIE;
         }
 
@@ -68,7 +78,7 @@ public class EntityWalk : MonoBehaviour {
 
     IEnumerator MoveTo(PathNode node) {
         var destination = new Vector3(node.x, (float)node.y, node.z);
-        while(transform.position != destination) {
+        while (transform.position != destination) {
             transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime / 20);
             yield return null;
         }
@@ -78,7 +88,7 @@ public class EntityWalk : MonoBehaviour {
         /**
          * Validate things such as if entity is sit, whatever
          */
-        if(Core.Instance.Offline) {
+        if (Core.Instance.Offline) {
             Entity.ChangeMotion(SpriteMotion.Walk);
             StartMoving((int)transform.position.x, (int)transform.position.z, x, y);
         } else {
@@ -90,27 +100,27 @@ public class EntityWalk : MonoBehaviour {
         var x = Mathf.Abs(pos1.x - pos2.x);
         var y = Mathf.Abs(pos1.y - pos2.y);
 
-        if(x <= 1 && y <= 1)
+        if (x <= 1 && y <= 1)
             return true;
         return false;
     }
 
     private Direction GetDirectionForOffset(Vector2Int offset) {
 
-        if(offset.x == -1 && offset.y == -1) return Direction.SouthWest;
-        if(offset.x == -1 && offset.y == 0) return Direction.West;
-        if(offset.x == -1 && offset.y == 1) return Direction.NorthWest;
-        if(offset.x == 0 && offset.y == 1) return Direction.North;
-        if(offset.x == 1 && offset.y == 1) return Direction.NorthEast;
-        if(offset.x == 1 && offset.y == 0) return Direction.East;
-        if(offset.x == 1 && offset.y == -1) return Direction.SouthEast;
-        if(offset.x == 0 && offset.y == -1) return Direction.South;
+        if (offset.x == -1 && offset.y == -1) return Direction.SouthWest;
+        if (offset.x == -1 && offset.y == 0) return Direction.West;
+        if (offset.x == -1 && offset.y == 1) return Direction.NorthWest;
+        if (offset.x == 0 && offset.y == 1) return Direction.North;
+        if (offset.x == 1 && offset.y == 1) return Direction.NorthEast;
+        if (offset.x == 1 && offset.y == 0) return Direction.East;
+        if (offset.x == 1 && offset.y == -1) return Direction.SouthEast;
+        if (offset.x == 0 && offset.y == -1) return Direction.South;
 
         return Direction.South;
     }
 
     private bool IsDiagonal(Direction dir) {
-        if(dir == Direction.NorthEast || dir == Direction.NorthWest ||
+        if (dir == Direction.NorthEast || dir == Direction.NorthWest ||
             dir == Direction.SouthEast || dir == Direction.SouthWest)
             return true;
         return false;

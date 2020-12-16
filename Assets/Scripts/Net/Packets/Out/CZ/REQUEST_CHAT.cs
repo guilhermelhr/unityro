@@ -10,7 +10,7 @@ public partial class CZ {
 
         public string message;
 
-        public REQUEST_CHAT(string message) : base(HEADER, 16) {
+        public REQUEST_CHAT(string message) : base(HEADER, -1) {
             this.message = $"{Core.Session.Entity.name} : {message}";
         }
 
@@ -24,7 +24,7 @@ public partial class CZ {
         }
 
         protected override void ComputeSize() {
-            Size = 2 + 2 + message.Length + 1;
+            Size = 2 + 2 + message.Length;
         }
     }
 }

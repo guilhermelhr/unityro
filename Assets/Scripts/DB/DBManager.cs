@@ -42,9 +42,9 @@ public class DBManager {
         }
 
         // TODO: Warp STR file
-        if (id == 45) {
-            return null;
-        }
+        //if (id == 45) {
+        //    return null;
+        //}
 
         // Not visible sprite
         if (id == 111 || id == 139) {
@@ -52,12 +52,12 @@ public class DBManager {
         }
 
         // NPC
-        if(id < 1000) {
+        if (id < 1000) {
             return "data/sprite/npc/" + (MonsterPath[id] ?? MonsterPath[46]).ToLower();
         }
 
         // Monsters
-        if(id < 4000) {
+        if (id < 4000) {
             return "data/sprite/\xb8\xf3\xbd\xba\xc5\xcd/" + (MonsterPath[id] ?? MonsterPath[1001]).ToLower();
         }
 
