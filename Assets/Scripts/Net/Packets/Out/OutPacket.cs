@@ -18,7 +18,7 @@ public abstract class OutPacket {
     }
 
     public virtual bool Send(BinaryWriter writer) {
-        writer.Write((ushort)header);
+        writer.Write(EncryptionHelper.Encrypt((ushort)header));
 
         if(!isFixed) {
             ComputeSize();
