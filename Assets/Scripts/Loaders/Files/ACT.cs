@@ -3,8 +3,8 @@ using System.Collections;
 using System.Linq;
 
 /**
- * Each Action represent a set of motions (think of idle, walk, pick)
- * Each Motion represent a frame of a given action
+ * Each Action represent a set of frames (think of idle, walk, pick)
+ * Each Frame represent a frame of a given action
  * Each Layer has the information needed to render a frame
  * 
  * A single Motion can have multiple layers
@@ -22,11 +22,11 @@ public class ACT
 
     public class Action
     {
-        public Motion[] motions;
+        public Frame[] frames;
         public float delay;
     }
 
-    public class Motion
+    public class Frame
     {
         public Layer[] layers;
         public int soundId;

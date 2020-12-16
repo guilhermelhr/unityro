@@ -34,6 +34,8 @@ public partial class CH {
             writer.Write(HeadPal);
             writer.Write(Head);
 
+            writer.Flush();
+
             return true;
         }
     }

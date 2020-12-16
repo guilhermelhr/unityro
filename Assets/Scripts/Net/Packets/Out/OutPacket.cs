@@ -22,7 +22,7 @@ public abstract class OutPacket {
 
         if (!isFixed) {
             ComputeSize();
-            writer.Write((ushort)Size);
+            writer.Write(Size);
         }
 
         return true;

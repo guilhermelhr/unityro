@@ -9,7 +9,9 @@ public partial class CZ {
         public NOTIFY_ACTORINIT() : base(HEADER, SIZE) { }
 
         public override bool Send(BinaryWriter writer) {
-            return base.Send(writer);
+            base.Send(writer);
+            writer.Flush();
+            return true;
         }
     }
 }

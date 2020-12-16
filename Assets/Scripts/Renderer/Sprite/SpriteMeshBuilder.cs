@@ -15,7 +15,7 @@ public static class SpriteMeshBuilder {
 
     private static int meshBuildCount = 0;
 
-    public static Mesh BuildColliderMesh(ACT.Motion motion, Sprite[] sprites) {
+    public static Mesh BuildColliderMesh(ACT.Frame motion, Sprite[] sprites) {
         meshBuildCount++;
 
         outNormals.Clear();
@@ -103,7 +103,7 @@ public static class SpriteMeshBuilder {
         return mesh;
     }
 
-    public static Mesh BuildSpriteMesh(ACT.Motion motion, Sprite[] sprites) {
+    public static Mesh BuildSpriteMesh(ACT.Frame motion, Sprite[] sprites) {
         meshBuildCount++;
 
         outNormals.Clear();

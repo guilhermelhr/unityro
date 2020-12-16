@@ -110,16 +110,32 @@ public static class AnimationHelper {
         return -1;
     }
 
+    public static SpriteState GetStateForMotion(SpriteMotion motion) {
+        switch (motion) {
+            case SpriteMotion.Idle:
+                return SpriteState.Idle;
+            case SpriteMotion.Standby:
+                return SpriteState.Standby;
+            case SpriteMotion.Walk:
+                return SpriteState.Walking;
+            case SpriteMotion.Dead:
+                return SpriteState.Dead;
+
+            default:
+                return SpriteState.Idle;
+        }
+    }
+
     public static bool IsLoopingMotion(SpriteMotion motion) {
         switch(motion) {
-            case SpriteMotion.Idle:
-            case SpriteMotion.Sit:
             case SpriteMotion.Walk:
             case SpriteMotion.Casting:
             case SpriteMotion.Freeze1:
             case SpriteMotion.Freeze2:
             case SpriteMotion.Dead:
                 return true;
+            case SpriteMotion.Idle:
+            case SpriteMotion.Sit:
             case SpriteMotion.Attack1:
             case SpriteMotion.Attack2:
             case SpriteMotion.Attack3:

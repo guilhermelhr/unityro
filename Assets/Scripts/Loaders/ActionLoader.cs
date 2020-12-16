@@ -50,15 +50,15 @@ public class ActionLoader
         act.actions = new ACT.Action[count];
         for(int i = 0; i < count; i++) {
             act.actions[i] = new ACT.Action() {
-                motions = ReadMotions(act, data),
+                frames = ReadMotions(act, data),
                 delay = 150f
             };
         }
     }
 
-    private static ACT.Motion[] ReadMotions(ACT act, BinaryReader data) {
+    private static ACT.Frame[] ReadMotions(ACT act, BinaryReader data) {
         var count = data.ReadULong();
-        var motions = new ACT.Motion[count];
+        var motions = new ACT.Frame[count];
 
         for(int i = 0; i < count; i++) {
             data.Seek(32, System.IO.SeekOrigin.Current);
@@ -68,7 +68,7 @@ public class ActionLoader
         return motions;
     }
 
-    private static ACT.Motion ReadLayers(ACT act, BinaryReader data) {
+    private static ACT.Frame ReadLayers(ACT act, BinaryReader data) {
         var count = data.ReadULong();
         var layers = new ACT.Layer[count];
         var version = double.Parse(act.version, CultureInfo.InvariantCulture);
@@ -114,7 +114,7 @@ public class ActionLoader
             }
         }
 
-        return new ACT.Motion() {
+        return new ACT.Frame() {
             layers = layers.Where(t => t.index >= 0).ToArray(),
             soundId = soundId,
             pos = pos

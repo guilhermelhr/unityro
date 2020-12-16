@@ -69,7 +69,7 @@ public class EntityWalk : MonoBehaviour {
     IEnumerator MoveTo(PathNode node) {
         var destination = new Vector3(node.x, (float)node.y, node.z);
         while(transform.position != destination) {
-            transform.position = Vector3.MoveTowards(transform.position, destination, (speed / 10) * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime / 20);
             yield return null;
         }
     }

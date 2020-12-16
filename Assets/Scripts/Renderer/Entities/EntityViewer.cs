@@ -15,26 +15,42 @@ public class EntityViewer : MonoBehaviour {
     public float SpriteOffset;
     public int HeadDirection;
     public int SpriteOrder;
-    private SpriteState State = SpriteState.Idle;
+    public float AnimSpeed = 1f;
 
-    private Dictionary<int, SpriteRenderer> Children = new Dictionary<int, SpriteRenderer>();
+    public SpriteState State = SpriteState.Idle;
 
-    private Coroutine AnimationCoroutine;
-    private Sprite[] sprites;
-    private ACT currentACT;
-    private SPR currentSPR;
-    private ACT.Action currentAction;
-    private int currentActionIndex;
-    private int currentAngleIndex;
-    private int currentFrame;
+    private Dictionary<int, SpriteRenderer> Layers = new Dictionary<int, SpriteRenderer>();
+    public List<EntityViewer> Children = new List<EntityViewer>();
 
-    void Start() {
+    [SerializeField] private Coroutine AnimationCoroutine;
+    [SerializeField] private Sprite[] sprites;
+    [SerializeField] private ACT currentACT;
+    [SerializeField] private SPR currentSPR;
+    [SerializeField] private ACT.Action currentAction;
+    [SerializeField] private int currentActionIndex;
+    [SerializeField] private int currentAngleIndex;
+
+    [SerializeField] private int currentFrame = 0;
+    [SerializeField] private float currentFrameTime = 0;
+    [SerializeField] private int maxFrame = 0;
+
+    [SerializeField] private bool isLooping;
+    [SerializeField] private bool isPaused;
+    [SerializeField] private bool isDirty;
+
+    public void Start() {
         var path = _ViewerType == ViewerType.BODY ? DBManager.GetBodyPath((Job)Entity.Job, Entity.Sex) : DBManager.GetHeadPath(Entity.Hair, Entity.Sex);
         currentSPR = FileManager.Load(path + ".spr") as SPR;
         currentACT = FileManager.Load(path + ".act") as ACT;
         sprites = currentSPR.GetSprites();
 
+        if(currentAction == null)
+            ChangeAction(0);
+
         InitShadow();
+        foreach(var child in Children) {
+            child.Start();
+        }
     }
 
     void Update() {
@@ -59,6 +75,47 @@ public class EntityViewer : MonoBehaviour {
         if(currentActionIndex != Entity.Action) {
             ChangeAction(Entity.Action);
         }
+
+        if(Parent == null)
+            currentFrameTime -= Time.deltaTime;
+
+        if(currentFrameTime < 0 || currentFrame > maxFrame) {
+            AdvanceFrame();
+        }
+
+        if(isDirty) {
+            UpdateSpriteFrame();
+
+            foreach(var child in Children) {
+                child.ChildSetFrameData(currentActionIndex, currentAngleIndex, currentFrame);
+            }
+
+            isDirty = false;
+        }
+    }
+
+    private void AdvanceFrame() {
+        if(!isPaused)
+            currentFrame++;
+        if(currentFrame > maxFrame) {
+            var nextMotion = AnimationHelper.GetMotionForState(State);
+            if(nextMotion != CurrentMotion)
+                ChangeMotion(nextMotion);
+            else {
+                if(State != SpriteState.Dead)
+                    currentFrame = 0;
+                else {
+                    currentFrame = maxFrame;
+                    isPaused = true;
+                }
+            }
+        }
+
+        if(currentFrameTime < 0)
+            currentFrameTime += currentAction.delay / 1000f * AnimSpeed;
+
+        if(!isPaused)
+            isDirty = true;
     }
 
     private void ChangeAngle(int newAngleIndex) {
@@ -66,12 +123,14 @@ public class EntityViewer : MonoBehaviour {
         currentAngleIndex = newAngleIndex;
         //if (!isInitialized) return;
         currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
+        maxFrame = currentAction.frames.Length - 1;
+        isDirty = true;
 
-        RenderLayers();
+        //RenderLayers();
 
-        if(AnimationCoroutine != null)
-            StopCoroutine(AnimationCoroutine);
-        AnimationCoroutine = StartCoroutine(AnimateMotion());
+        //if(AnimationCoroutine != null)
+        //    StopCoroutine(AnimationCoroutine);
+        //AnimationCoroutine = StartCoroutine(AnimateMotion());
     }
 
     private void ChangeAction(int newActionIndex) {
@@ -80,12 +139,15 @@ public class EntityViewer : MonoBehaviour {
         currentActionIndex = newActionIndex;
         //if (!isInitialized) return;
         currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
+        maxFrame = currentAction.frames.Length - 1;
+        currentFrameTime = currentAction.delay / 1000f * AnimSpeed; //reset current frame time
+        isDirty = true;
 
         RenderLayers();
 
-        if(AnimationCoroutine != null)
-            StopCoroutine(AnimationCoroutine);
-        AnimationCoroutine = StartCoroutine(AnimateMotion());
+        //if(AnimationCoroutine != null)
+        //    StopCoroutine(AnimationCoroutine);
+        //AnimationCoroutine = StartCoroutine(AnimateMotion());
     }
 
     private void RenderLayers() {
@@ -95,12 +157,12 @@ public class EntityViewer : MonoBehaviour {
          * since we cannot have more than one SpriteRenderer attached
          * to a single game object
          */
-        foreach(var motion in currentAction.motions) {
-            for(int i = 0; i < motion.layers.Length; i++) {
-                var layer = motion.layers[i];
+        foreach(var frame in currentAction.frames) {
+            for(int i = 0; i < frame.layers.Length; i++) {
+                var layer = frame.layers[i];
                 var sprite = sprites[layer.index];
 
-                Children.TryGetValue(i, out var spriteRenderer);
+                Layers.TryGetValue(i, out var spriteRenderer);
 
                 if(spriteRenderer == null) {
                     var go = new GameObject($"Layer{i}");
@@ -111,27 +173,63 @@ public class EntityViewer : MonoBehaviour {
                     spriteRenderer.transform.SetParent(gameObject.transform, false);
                 }
 
-                CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos);
+                CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
+
+                spriteRenderer.transform.localRotation = rotation;
                 spriteRenderer.transform.localPosition = newPos;
                 spriteRenderer.transform.localScale = scale;
 
-                if(!Children.ContainsKey(i)) {
-                    Children.Add(i, spriteRenderer);
+                if(!Layers.ContainsKey(i)) {
+                    Layers.Add(i, spriteRenderer);
                 }
             }
         }
     }
 
+    public void UpdateSpriteFrame() {
+        if(currentFrame >= currentAction.frames.Length) {
+            if(AnimationHelper.IsLoopingMotion(CurrentMotion)) {
+                currentFrame = 0;
+                currentFrameTime = currentAction.delay / 1000f * AnimSpeed;
+            } else {
+                return;
+            }
+        }
+        var frame = currentAction.frames[currentFrame];
+
+        if(frame.soundId > -1 && frame.soundId < currentACT.sounds.Length && !isPaused) {
+
+        }
+
+        for(int i = 0; i < frame.layers.Length; i++) {
+            Layers.TryGetValue(i, out var spriteRenderer);
+
+            if(spriteRenderer) {
+                var layer = frame.layers[i];
+                var sprite = sprites[layer.index];
+
+                spriteRenderer.sprite = sprite;
+
+                CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
+                spriteRenderer.transform.localRotation = rotation;
+                spriteRenderer.transform.localPosition = newPos;
+                spriteRenderer.transform.localScale = scale;
+            }
+        }
+    }
+
     private IEnumerator AnimateMotion() {
-        foreach(var motion in currentAction.motions) {
-            for(int i = 0; i < motion.layers.Length; i++) {
-                Children.TryGetValue(i, out var spriteRenderer);
+        foreach(var frame in currentAction.frames) {
+            for(int i = 0; i < frame.layers.Length; i++) {
+                Layers.TryGetValue(i, out var spriteRenderer);
 
                 if(spriteRenderer) {
-                    var layer = motion.layers[i];
+                    var layer = frame.layers[i];
                     var sprite = sprites[layer.index];
 
-                    CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos);
+                    CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
+
+                    spriteRenderer.transform.localRotation = rotation;
                     spriteRenderer.transform.localPosition = newPos;
                     spriteRenderer.transform.localScale = scale;
 
@@ -149,8 +247,8 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos) {
-        var rotation = Quaternion.Euler(0, 0, -layer.angle);
+    private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
+        rotation = Quaternion.Euler(0, 0, -layer.angle);
         scale = new Vector3(layer.scale.x * (layer.isMirror ? -1 : 1), -(layer.scale.y), 1);
         var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
         var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
@@ -174,6 +272,40 @@ public class EntityViewer : MonoBehaviour {
         }
 
         ChangeAction(action);
+        isPaused = false;
+        isDirty = true;
+
+        if(Type == EntityType.PC) {
+            if(CurrentMotion == SpriteMotion.Idle || CurrentMotion == SpriteMotion.Sit) {
+                //currentFrame = (int) HeadF
+                UpdateSpriteFrame();
+                isPaused = true;
+            } else {
+                //HeadFacing 
+            }
+        }
+    }
+
+    public void ChildSetFrameData(int actionIndex, int angleIndex, int newCurrentFrame) {
+        currentActionIndex = actionIndex;
+        currentAngleIndex = angleIndex;
+
+        //if(!isInitialized)
+        //    return;
+
+        currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
+        currentFrame = newCurrentFrame;
+        UpdateSpriteFrame();
+        ChildUpdate();
+    }
+
+    public void ChildUpdate() {
+        var parentAnchor = Parent.GetAnimationAnchor();
+        var ourAnchor = GetAnimationAnchor();
+
+        var diff = parentAnchor - ourAnchor;
+
+        transform.localPosition = new Vector3(diff.x, -diff.y, 0f) / SPR.PIXELS_PER_UNIT;
     }
 
     private void InitShadow() {
@@ -188,30 +320,27 @@ public class EntityViewer : MonoBehaviour {
         sortingGroup.sortingOrder = -20001;
 
         SPR sprite = FileManager.Load("data/sprite/shadow.spr") as SPR;
-        ACT act = FileManager.Load("data/sprite/shadow.act") as ACT;
 
         sprite.SwitchToRGBA();
 
-        //if(Mathf.Approximately(0, ShadowSize))
-        //    ShadowSize = 0.5f;
-
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite.GetSprites()[0];
-        //shadowSprite = sprite;
 
         var shader = Shader.Find("Unlit/CustomSpriteShader");
         var mat = new Material(shader);
-        //mat.SetFloat("_Offset", 0.4f);
         mat.color = new Color(1f, 1f, 1f, 0.5f);
         mat.mainTexture = spriteRenderer.sprite.texture;
 
         spriteRenderer.material = mat;
         spriteRenderer.sortingOrder = -1;
+    }
 
-        //SpriteAnimator.Shadow = go;
-        //SpriteAnimator.ShadowSortingGroup = go.AddComponent<SortingGroup>();
-        //SpriteAnimator.ShadowSortingGroup.sortingOrder = -20001;
-        //if(SpriteAnimator.State == SpriteState.Sit)
-        //    go.SetActive(false);
+    public Vector2 GetAnimationAnchor() {
+        var frame = currentAction.frames[currentFrame];
+        if(frame.pos.Length > 0)
+            return frame.pos[0];
+        if(_ViewerType == ViewerType.HEAD && (State == SpriteState.Idle || State == SpriteState.Sit))
+            return frame.pos[currentFrame];
+        return Vector2.zero;
     }
 }

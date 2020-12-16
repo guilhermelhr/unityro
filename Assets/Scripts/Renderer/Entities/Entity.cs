@@ -45,6 +45,7 @@ public class Entity : MonoBehaviour {
 
     public void SetAction(SpriteMotion motion) {
         EntityViewer.ChangeMotion(motion);
+        EntityViewer.State = AnimationHelper.GetStateForMotion(motion);
     }
 
     public void Init(CharacterData data) {

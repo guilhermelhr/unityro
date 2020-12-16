@@ -37,7 +37,7 @@ public class NetworkClient : MonoBehaviour {
     public bool IsConnected => CurrentConnection.IsConnected();
 
     public void HookPacket(PacketHeader cmd, OnPacketReceived onPackedReceived) {
-        CurrentConnection.Hook((ushort)cmd, onPackedReceived);
+        CurrentConnection?.Hook((ushort)cmd, onPackedReceived);
     }
 
     public void SkipBytes(int bytesToSkip) {

@@ -130,7 +130,7 @@ public class SPR {
             /**
              * This anchor offset is a hack
              */
-            sprites[i] = Sprite.Create(texture, new Rect(0, 0, frame.width, frame.height), new Vector2(0.5f, 0.45f), PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect);
+            sprites[i] = Sprite.Create(texture, new Rect(0, 0, frame.width, frame.height), new Vector2(0.5f, 0.5f), PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect);
         }
 
         return sprites;

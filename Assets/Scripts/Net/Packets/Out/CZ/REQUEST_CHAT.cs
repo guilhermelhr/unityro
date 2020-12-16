@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 public partial class CZ {
 
@@ -9,13 +10,16 @@ public partial class CZ {
 
         public string message;
 
-        public REQUEST_CHAT(string message) : base(HEADER, -1) {
+        public REQUEST_CHAT(string message) : base(HEADER, 16) {
             this.message = $"{Core.Session.Entity.name} : {message}";
         }
 
         public override bool Send(BinaryWriter writer) {
             base.Send(writer);
-            writer.WriteCString(message, Size);
+
+            writer.WriteCString(message, message.Length);
+            writer.Flush();
+
             return true;
         }
 

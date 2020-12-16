@@ -178,6 +178,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.HeadDirection = 0;
         bodyViewer.CurrentMotion = SpriteMotion.Idle;
         bodyViewer.Type = entity.Type;
+        bodyViewer.Children.Add(headViewer);
 
         headViewer.Parent = bodyViewer;
         headViewer.Entity = entity;
