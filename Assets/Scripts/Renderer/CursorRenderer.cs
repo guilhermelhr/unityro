@@ -1,42 +1,161 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
+public enum CursorAction {
+    DEFAULT = 0,
+    TALK = 1,
+    CLICK = 2,
+    LOCK = 3,
+    ROTATE = 4,
+    ATTACK = 5,
+    WARP = 7,
+    PICK = 9,
+    TARGET = 10
+}
 
 public class CursorRenderer : MonoBehaviour {
 
-    private Texture2D cursorTexture;
-    private CursorMode cursorMode = CursorMode.Auto;
-    private Vector2 hotSpot = Vector2.zero;
-
     private ACT act;
     private SPR spr;
-    private Sprite[] sprites;
+    private List<Texture2D> textures = new List<Texture2D>();
+    private Dictionary<CursorAction, CursorActionInfo> ActionInformations =
+        new Dictionary<CursorAction, CursorActionInfo>() {
+            { CursorAction.DEFAULT, new CursorActionInfo() { drawX = 1,  drawY= 19, startX = 0, startY = 0, delayMult = 2.0f } },
+            { CursorAction.TALK,    new CursorActionInfo() { drawX = 20, drawY= 40, startX = 20, startY = 20, delayMult = 1.0f } },
+            { CursorAction.WARP,    new CursorActionInfo() { drawX = 10, drawY= 32, startX = 0, startY = 0, delayMult = 1.0f } },
+            { CursorAction.ROTATE,  new CursorActionInfo() { drawX = 18, drawY= 26, startX = 10, startY = 0, delayMult = 1.0f } },
+            { CursorAction.PICK,    new CursorActionInfo() { drawX = 20, drawY= 40, startX = 15, startY = 15, delayMult = 1.0f } },
+            { CursorAction.TARGET,  new CursorActionInfo() { drawX = 20, drawY= 50, startX = 20, startY = 28, delayMult = 0.5f } },
+        };
+
+    private CursorAction type;
+    private float tick;
+    private bool noRepeat;
+    private int animation;
+    private bool play = true;
 
     public int currentAction = 0;
+    public bool freeze = false;
 
     // Use this for initialization
     void Start() {
         spr = FileManager.Load("data/sprite/cursors.spr") as SPR;
         act = FileManager.Load("data/sprite/cursors.act") as ACT;
-        sprites = spr.GetSprites();
 
-        StartCoroutine(Animate());
+        tick = Time.deltaTime;
+
+        FlipTextures();
+        //StartCoroutine(Animate());
+    }
+
+    void Update() {
+        if (Input.GetKey(KeyCode.Mouse1)) {
+            SetAction(CursorAction.ROTATE, false);
+        } else {
+            var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 150, LayerMask.GetMask("NPC", "Ground"))) {
+                hit.collider.gameObject.TryGetComponent<EntityViewer>(out var target);
+                if (target != null) {
+                    switch (target.Entity.Type) {
+                        case EntityType.NPC:
+                            SetAction(CursorAction.TALK, true);
+                            break;
+                        case EntityType.ITEM:
+                            SetAction(CursorAction.PICK, true);
+                            break;
+                        case EntityType.MOB:
+                            SetAction(CursorAction.ATTACK, true);
+                            break;
+                        case EntityType.WARP:
+                            SetAction(CursorAction.WARP, true);
+                            break;
+                    }
+                } else {
+                    SetAction(CursorAction.DEFAULT, false);
+                }
+            }
+        }
     }
 
     // Update is called once per frame
-    void Update() {
+    void LateUpdate() {
+        var info = ActionInformations[type] ?? ActionInformations[CursorAction.DEFAULT];
+        var action = act.actions[(int)type];
+        var anim = animation;
+        var delay = action.delay * info.delayMult;
+
+
+        if (play) {
+            var frame = (int)((Time.deltaTime - tick) / delay) | 0;
+            if (noRepeat) {
+                anim = Math.Min(frame, action.frames.Length - 1);
+            } else {
+                anim = frame % action.frames.Length;
+            }
+        }
+
+        var index = action.frames[anim].layers[0].index;
+        Cursor.SetCursor(textures[index], Vector2.zero, CursorMode.Auto);
+    }
+
+    public void SetAction(CursorAction type, bool notrepeat, int? animation = null) {
+        if (freeze)
+            return;
+
+        this.type = type;
+        this.tick = Time.deltaTime;
+        this.noRepeat = !!notrepeat;
+
+        if (animation != null) {
+            this.animation = animation.Value;
+            play = false;
+        } else {
+            this.animation = 0;
+            play = true;
+        }
 
     }
 
-    IEnumerator Animate() {
+    private void FlipTextures() {
+        foreach (var sprite in spr.GetSprites()) {
+            var t = sprite.texture;
+            var flipped = new Texture2D(t.width, t.height, TextureFormat.RGBA32, false, false);
+
+#if UNITY_EDITOR
+            flipped.alphaIsTransparency = true;
+#endif
+
+            int width = t.width;
+            int height = t.height;
+
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    flipped.SetPixel(x, height - y - 1, t.GetPixel(x, y));
+                }
+            }
+            flipped.Apply();
+
+            textures.Add(flipped);
+        }
+    }
+
+    private IEnumerator Animate() {
         var action = act.actions[currentAction];
         for (int i = 0; i < action.frames.Length; i++) {
             var spriteIndex = action.frames[i].layers[0].index;
 
-            Cursor.SetCursor(sprites[spriteIndex].texture, hotSpot, cursorMode);
+            Cursor.SetCursor(textures[spriteIndex], Vector2.zero, CursorMode.Auto);
             yield return new WaitForSeconds(action.delay / 1000f);
         }
 
         yield return Animate();
+    }
+
+
+    class CursorActionInfo {
+        public int drawX, drawY, startX, startY;
+        public float delayMult;
     }
 }

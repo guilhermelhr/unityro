@@ -85,13 +85,13 @@ public class EntityManager : MonoBehaviour {
 
     private Entity SpawnNPC(EntityData data) {
         var npc = new GameObject(data.name);
-        npc.layer = LayerMask.NameToLayer("Characters");
+        npc.layer = LayerMask.NameToLayer("NPC");
         npc.transform.localScale = new Vector3(1f, 1f, 1f);
         var entity = npc.AddComponent<Entity>();
         entity.Init(data);
 
         var body = new GameObject("Body");
-        body.layer = LayerMask.NameToLayer("Characters");
+        body.layer = LayerMask.NameToLayer("NPC");
         body.transform.SetParent(npc.transform, false);
         body.transform.localPosition = new Vector3(0.5f, 0.5f, 0.5f);
         body.AddComponent<Billboard>();

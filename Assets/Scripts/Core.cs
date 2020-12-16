@@ -29,6 +29,7 @@ public class Core : MonoBehaviour {
     public static MapLoader MapLoader => mapLoader;
     public static MapRenderer MapRenderer => mapRenderer;
     public static Session Session;
+    public static CursorRenderer CursorRenderer;
 
     public static PathFindingManager PathFinding => pathFinding;
     public static NetworkClient NetworkClient => networkClient;
@@ -75,7 +76,9 @@ public class Core : MonoBehaviour {
         LoadGrf();
         BuildMapSelector();
 
-        //gameObject.AddComponent<CursorRenderer>();
+        if (CursorRenderer == null) {
+            gameObject.AddComponent<CursorRenderer>();
+        }
 
         /**
          * We start the network client only after the configs

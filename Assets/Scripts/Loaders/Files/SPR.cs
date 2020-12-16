@@ -32,7 +32,7 @@ public class SPR {
         public int originalHeight { get; set; }
 
         public void Compile(byte[] palette) {
-            if(compiled) {
+            if (compiled) {
                 return;
             }
 
@@ -42,13 +42,13 @@ public class SPR {
             var start_x = (int)Mathf.Floor((gl_width - width) * 0.5f);
             var start_y = (int)Mathf.Floor((gl_height - height) * 0.5f);
             byte[] _out;
-            if(type == TYPE_PAL) {
+            if (type == TYPE_PAL) {
                 _out = new byte[gl_width * gl_height];
 
-                for(int y = 0; y < height; y++) {
-                    for(int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
                         _out[((y + start_y) * gl_width + (x + start_x))] = data[y * width + x];
-                        if(palette[data[y * width + x] * 4] == 255
+                        if (palette[data[y * width + x] * 4] == 255
                             && palette[data[y * width + x] * 4 + 2] == 255
                             && palette[data[y * width + x] * 4 + 1] == 0) {
                             _out[((y + start_y) * gl_width + (x + start_x))] = 0;
@@ -58,8 +58,8 @@ public class SPR {
             } else {
                 _out = new byte[gl_width * gl_height * 4];
 
-                for(int y = 0; y < height; ++y) {
-                    for(int x = 0; x < width; ++x) {
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
                         _out[((y + start_y) * gl_width + (x + start_x)) * 4 + 0] = data[((height - y - 1) * width + x) * 4 + 3];
                         _out[((y + start_y) * gl_width + (x + start_x)) * 4 + 1] = data[((height - y - 1) * width + x) * 4 + 2];
                         _out[((y + start_y) * gl_width + (x + start_x)) * 4 + 2] = data[((height - y - 1) * width + x) * 4 + 1];
@@ -78,14 +78,14 @@ public class SPR {
     }
 
     public void SwitchToRGBA() {
-        for(int i = 0; i < indexedCount; i++) {
+        for (int i = 0; i < indexedCount; i++) {
             var frame = frames[i];
 
-            if(frame.type == TYPE_PAL) {
+            if (frame.type == TYPE_PAL) {
                 var _out = new byte[frame.width * frame.height * 4];
 
-                for(int y = 0; y < frame.height; y++) {
-                    for(int x = 0; x < frame.width; x++) {
+                for (int y = 0; y < frame.height; y++) {
+                    for (int x = 0; x < frame.width; x++) {
                         var idx1 = frame.data[x + y * frame.width] * 4;
                         var idx2 = (x + (frame.height - y - 1) * frame.width) * 4;
                         _out[idx2 + 3] = palette[idx1 + 0];
@@ -106,8 +106,8 @@ public class SPR {
     }
 
     public void Compile() {
-        if(!compiled) {
-            for(int i = 0; i < frames.Length; i++) {
+        if (!compiled) {
+            for (int i = 0; i < frames.Length; i++) {
                 frames[i].Compile(palette);
             }
 
@@ -117,12 +117,12 @@ public class SPR {
     }
 
     public Sprite[] GetSprites() {
-        if(!compiled) {
+        if (!compiled) {
             throw new System.Exception("SPR.GetAtlas: SPR is not compiled");
         }
 
         Sprite[] sprites = new Sprite[frames.Length];
-        for(int i = 0; i < frames.Length; i++) {
+        for (int i = 0; i < frames.Length; i++) {
             Frame frame = frames[i];
             Texture2D texture = new Texture2D(frame.width, frame.height, TextureFormat.RGBA32, false);
             texture.LoadRawTextureData(frame.data);
