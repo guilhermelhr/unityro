@@ -218,35 +218,6 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    private IEnumerator AnimateMotion() {
-        foreach(var frame in currentAction.frames) {
-            for(int i = 0; i < frame.layers.Length; i++) {
-                Layers.TryGetValue(i, out var spriteRenderer);
-
-                if(spriteRenderer) {
-                    var layer = frame.layers[i];
-                    var sprite = sprites[layer.index];
-
-                    CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
-
-                    spriteRenderer.transform.localRotation = rotation;
-                    spriteRenderer.transform.localPosition = newPos;
-                    spriteRenderer.transform.localScale = scale;
-
-                    spriteRenderer.sprite = sprite;
-                }
-
-                yield return new WaitForSeconds(currentAction.delay / 1000f);
-            }
-        }
-
-        if(AnimationHelper.IsLoopingMotion(CurrentMotion) && _ViewerType != ViewerType.HEAD) {
-            yield return AnimateMotion();
-        } else {
-            yield return null;
-        }
-    }
-
     private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
         rotation = Quaternion.Euler(0, 0, -layer.angle);
         scale = new Vector3(layer.scale.x * (layer.isMirror ? -1 : 1), -(layer.scale.y), 1);
@@ -261,10 +232,15 @@ public class EntityViewer : MonoBehaviour {
             return;
 
         CurrentMotion = nextMotion;
+        State = AnimationHelper.GetStateForMotion(CurrentMotion);
         currentFrame = 0;
 
         if(!Entity.IsReady)
             return;
+
+        foreach(var child in Children) {
+            child.ChangeMotion(nextMotion);
+        }
 
         var action = AnimationHelper.GetMotionIdForSprite(Type, nextMotion);
         if(action < 0 || action > currentACT.actions.Length) {

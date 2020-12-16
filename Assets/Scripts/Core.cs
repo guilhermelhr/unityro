@@ -91,7 +91,7 @@ public class Core : MonoBehaviour
         }
         else
         {
-            var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 4064, Name = "Player" });
+            var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 4064, Name = "Player", GID = 20001 });
             entity.transform.position = new Vector3(150, 0, 150);
             Core.Session = new Session(entity);
 

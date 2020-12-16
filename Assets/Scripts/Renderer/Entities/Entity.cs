@@ -43,7 +43,7 @@ public class Entity : MonoBehaviour {
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0],data.PosDir[1]), data.PosDir[1]);
     }
 
-    public void SetAction(SpriteMotion motion) {
+    public void ChangeMotion(SpriteMotion motion) {
         EntityViewer.ChangeMotion(motion);
         EntityViewer.State = AnimationHelper.GetStateForMotion(motion);
     }

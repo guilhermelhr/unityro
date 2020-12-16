@@ -73,7 +73,7 @@ public class MapController : MonoBehaviour {
             var entity = Core.EntityManager.GetEntity(pkt.GID);
             if (entity == null) return;
 
-            entity.SetAction(SpriteMotion.Walk);
+            entity.ChangeMotion(SpriteMotion.Walk);
             entity.StartMoving(pkt.StartPosition[0], pkt.StartPosition[1], pkt.EndPosition[0], pkt.EndPosition[1]);
         }
     }

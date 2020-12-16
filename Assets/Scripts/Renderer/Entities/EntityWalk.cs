@@ -30,7 +30,7 @@ public class EntityWalk : MonoBehaviour {
     private void OnPlayerMovement(ushort cmd, int size, InPacket packet) {
         if(!Entity) return;
         if(packet is ZC.NOTIFY_PLAYERMOVE) {
-            Entity.SetAction(SpriteMotion.Walk);
+            Entity.ChangeMotion(SpriteMotion.Walk);
             var pkt = packet as ZC.NOTIFY_PLAYERMOVE;
 
             StartMoving(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
@@ -52,9 +52,9 @@ public class EntityWalk : MonoBehaviour {
     IEnumerator Move(List<PathNode> path) {
         var linkedList = new LinkedList<PathNode>(path);
 
-       foreach(var node in linkedList) {
+        foreach(var node in linkedList) {
             var next = linkedList.Find(node).Next?.Value;
-            if (next != null) {
+            if(next != null) {
                 var offset = new Vector2Int(next.x, next.z) - new Vector2Int(node.x, node.z);
                 Entity.Direction = GetDirectionForOffset(offset);
             }
@@ -63,7 +63,7 @@ public class EntityWalk : MonoBehaviour {
             yield return MoveToIE;
         }
 
-        Entity.SetAction(SpriteMotion.Idle);
+        Entity.ChangeMotion(SpriteMotion.Idle);
     }
 
     IEnumerator MoveTo(PathNode node) {
@@ -78,7 +78,12 @@ public class EntityWalk : MonoBehaviour {
         /**
          * Validate things such as if entity is sit, whatever
          */
-        new CZ.REQUEST_MOVE2(x, y, dir).Send();
+        if(Core.Instance.Offline) {
+            Entity.ChangeMotion(SpriteMotion.Walk);
+            StartMoving((int)transform.position.x, (int)transform.position.z, x, y);
+        } else {
+            new CZ.REQUEST_MOVE2(x, y, dir).Send();
+        }
     }
 
     private bool IsNeighbor(Vector2Int pos1, Vector2Int pos2) {
