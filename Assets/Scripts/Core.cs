@@ -75,7 +75,7 @@ public class Core : MonoBehaviour {
         LoadGrf();
         BuildMapSelector();
 
-        gameObject.AddComponent<CursorRenderer>();
+        //gameObject.AddComponent<CursorRenderer>();
 
         /**
          * We start the network client only after the configs

@@ -18,11 +18,11 @@ public abstract class OutPacket {
     }
 
     public virtual bool Send(BinaryWriter writer) {
-        writer.Write((ushort) header);
+        writer.Write((ushort)header);
 
-        if (!isFixed) {
+        if(!isFixed) {
             ComputeSize();
-            writer.Write(Size);
+            writer.Write((ushort)Size);
         }
 
         return true;
