@@ -1,9 +1,9 @@
 ﻿public partial class ZC {
 
-    [PacketHandler(HEADER, "ZC_CLOSE_DIALOG", SIZE)]
-    public class CLOSE_DIALOG : InPacket {
+    [PacketHandler(HEADER, "ZC_WAIT_DIALOG", SIZE)]
+    public class WAIT_DIALOG : InPacket {
 
-        public const PacketHeader HEADER = PacketHeader.ZC_CLOSE_DIALOG;
+        public const PacketHeader HEADER = PacketHeader.ZC_WAIT_DIALOG;
         public const int SIZE = 6;
 
         public uint NAID;

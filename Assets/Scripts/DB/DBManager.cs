@@ -102,37 +102,42 @@ public class DBManager {
     public static int[][] HairIndexPath => HairIndexTable.table;
 
     public static void init() {
-        foreach (object[] args in LoadTable("data/mp3nametable.txt", 2)) {
-            if (!mapTable.ContainsKey(args[1])) {
-                mapTable.Add(args[1], new MapTableStruct());
+        try {
+            foreach (object[] args in LoadTable("data/msgstringtable.txt", 1)) {
+                msgStringTable[args[0]] = args[1];
             }
 
-            MapTableStruct mts = (MapTableStruct)mapTable[args[1]];
-            mts.mp3 = Convert.ToString(args[2]);
-        }
+            foreach (object[] args in LoadTable("data/mp3nametable.txt", 2)) {
+                if (!mapTable.ContainsKey(args[1])) {
+                    mapTable.Add(args[1], new MapTableStruct());
+                }
 
-        foreach (object[] args in LoadTable("data/mapnametable.txt", 2)) {
-            if (!mapTable.ContainsKey(args[1])) {
-                mapTable.Add(args[1], new MapTableStruct());
+                MapTableStruct mts = (MapTableStruct)mapTable[args[1]];
+                mts.mp3 = Convert.ToString(args[2]);
             }
 
-            MapTableStruct mts = (MapTableStruct)mapTable[args[1]];
-            mts.name = Convert.ToString(args[2]);
+            foreach (object[] args in LoadTable("data/mapnametable.txt", 2)) {
+                if (!mapTable.ContainsKey(args[1])) {
+                    mapTable.Add(args[1], new MapTableStruct());
+                }
+
+                MapTableStruct mts = (MapTableStruct)mapTable[args[1]];
+                mts.name = Convert.ToString(args[2]);
+            }
+
+            foreach (object[] args in LoadTable("data/resnametable.txt", 2)) {
+                mapAlias[args[1]] = args[2];
+            }
+
+
+            //TODO load these tables
+            //LoadTable("data/num2cardillustnametable.txt", 2);
+            //LoadTable("data/cardprefixnametable.txt", 2);
+            //LoadTable("data/fogparametertable.txt", 5);
+        } catch {
+
         }
 
-        foreach (object[] args in LoadTable("data/msgstringtable.txt", 1)) {
-            msgStringTable[args[0]] = args[1];
-        }
-
-        foreach (object[] args in LoadTable("data/resnametable.txt", 2)) {
-            mapAlias[args[1]] = args[2];
-        }
-
-
-        //TODO load these tables
-        //LoadTable("data/num2cardillustnametable.txt", 2);
-        //LoadTable("data/cardprefixnametable.txt", 2);
-        //LoadTable("data/fogparametertable.txt", 5);
     }
 
     /// <summary>

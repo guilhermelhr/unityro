@@ -78,6 +78,7 @@ public class EntityManager : MonoBehaviour {
         headViewer._ViewerType = ViewerType.HEAD;
 
         entityCache.Add(data.id, entity);
+        entity.GID = data.id;
         entity.SetReady(true);
 
         return entity;
@@ -111,6 +112,8 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Type = entity.Type;
 
         entityCache.Add(data.id, entity);
+        entity.GID = data.id;
+        entity.SetReady(true);
 
         return entity;
     }
@@ -143,6 +146,8 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Type = entity.Type;
 
         entityCache.Add(data.id, entity);
+        entity.GID = data.id;
+        entity.SetReady(true);
 
         return entity;
     }
@@ -171,6 +176,7 @@ public class EntityManager : MonoBehaviour {
 
         entity.EntityViewer = bodyViewer;
         entity.ShadowSize = 1f;
+        entity.GID = (uint)data.GID;
         // Add more options such as sex etc
 
         bodyViewer._ViewerType = ViewerType.BODY;
@@ -186,6 +192,10 @@ public class EntityManager : MonoBehaviour {
         headViewer.SpriteOrder = 1;
         headViewer.Type = entity.Type;
         headViewer._ViewerType = ViewerType.HEAD;
+
+
+        var controller = player.AddComponent<EntityControl>();
+        controller.Entity = entity;
 
         return entity;
     }

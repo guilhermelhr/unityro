@@ -21,7 +21,7 @@ public class Entity : MonoBehaviour {
 
     public short Job { get; private set; }
     public byte Sex { get; private set; }
-    public uint GID { get; private set; }
+    public uint GID;
     public short Hair { get; private set; }
 
     public void SetReady(bool ready) {
@@ -36,7 +36,6 @@ public class Entity : MonoBehaviour {
     public void Init(EntityData data) {
         Job = data.job;
         Sex = data.sex;
-        GID = data.GID;
         Hair = data.hairStyle;
         Type = data.type;
 
@@ -51,7 +50,6 @@ public class Entity : MonoBehaviour {
     public void Init(CharacterData data) {
         Job = data.Job;
         Sex = (byte)data.Sex;
-        GID = (uint)data.GID;
         Hair = data.Hair;
         Type = EntityType.PC;
     }

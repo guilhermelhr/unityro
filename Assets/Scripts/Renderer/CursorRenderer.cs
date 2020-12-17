@@ -55,8 +55,9 @@ public class CursorRenderer : MonoBehaviour {
             SetAction(CursorAction.ROTATE, false);
         } else {
             var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 150, LayerMask.GetMask("NPC", "Ground"))) {
+            if (Physics.Raycast(ray, out var hit, 150, LayerMask.GetMask("NPC", "Ground", "Monsters"))) {
                 hit.collider.gameObject.TryGetComponent<EntityViewer>(out var target);
+
                 if (target != null) {
                     switch (target.Entity.Type) {
                         case EntityType.NPC:
@@ -81,7 +82,8 @@ public class CursorRenderer : MonoBehaviour {
 
     // Update is called once per frame
     void LateUpdate() {
-        var info = ActionInformations[type] ?? ActionInformations[CursorAction.DEFAULT];
+        ActionInformations.TryGetValue(type, out var info);
+        info = info ?? ActionInformations[CursorAction.DEFAULT];
         var action = act.actions[(int)type];
         var anim = animation;
         var delay = action.delay * info.delayMult;
@@ -100,13 +102,13 @@ public class CursorRenderer : MonoBehaviour {
         Cursor.SetCursor(textures[index], Vector2.zero, CursorMode.Auto);
     }
 
-    public void SetAction(CursorAction type, bool notrepeat, int? animation = null) {
+    public void SetAction(CursorAction type, bool noRepeat, int? animation = null) {
         if (freeze)
             return;
 
         this.type = type;
         this.tick = Time.deltaTime;
-        this.noRepeat = !!notrepeat;
+        this.noRepeat = !!noRepeat;
 
         if (animation != null) {
             this.animation = animation.Value;
@@ -115,7 +117,6 @@ public class CursorRenderer : MonoBehaviour {
             this.animation = 0;
             play = true;
         }
-
     }
 
     private void FlipTextures() {

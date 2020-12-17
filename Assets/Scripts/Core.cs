@@ -75,6 +75,7 @@ public class Core : MonoBehaviour {
 
         LoadGrf();
         BuildMapSelector();
+        DBManager.init();
 
         if (CursorRenderer == null) {
             gameObject.AddComponent<CursorRenderer>();
@@ -161,6 +162,10 @@ public class Core : MonoBehaviour {
     void Update() {
         if (mapRenderer.Ready) {
             mapRenderer.Render();
+        }
+
+        if (MainCamera == null) {
+            MainCamera = Camera.main;
         }
 
         // is map selector enabled

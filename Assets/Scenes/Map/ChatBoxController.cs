@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ChatBoxController : MonoBehaviour {
@@ -13,10 +10,11 @@ public class ChatBoxController : MonoBehaviour {
     private void Awake() {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERCHAT.HEADER, OnMessageRecieved);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_CHAT.HEADER, OnMessageRecieved);
+        Core.NetworkClient.HookPacket(ZC.MSG.HEADER, OnMessageRecieved);
     }
 
     private void OnMessageRecieved(ushort cmd, int size, InPacket packet) {
-        if(packet is ZC.NOTIFY_PLAYERCHAT) {
+        if (packet is ZC.NOTIFY_PLAYERCHAT) {
             var pkt = packet as ZC.NOTIFY_PLAYERCHAT;
 
             var prefab = Instantiate(TextLinePrefab);
@@ -34,12 +32,21 @@ public class ChatBoxController : MonoBehaviour {
             uiText.color = Color.white;
 
             prefab.transform.SetParent(LinearLayout.transform, false);
+        } else if (packet is ZC.MSG) {
+            var pkt = packet as ZC.MSG;
+
+            var prefab = Instantiate(TextLinePrefab);
+            var uiText = prefab.GetComponent<Text>();
+            uiText.text = (string)DBManager.MsgStringTable[pkt.MessageID] ?? $"{pkt.MessageID}";
+            uiText.color = Color.white;
+
+            prefab.transform.SetParent(LinearLayout.transform, false);
         }
     }
 
     public void SendChatMessage() {
         var message = MessageInput.text;
-        if(message.Length == 0) return;
+        if (message.Length == 0) return;
 
         new CZ.REQUEST_CHAT(message).Send();
         MessageInput.text = "";
@@ -52,7 +59,7 @@ public class ChatBoxController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if(Input.GetKeyDown(KeyCode.Return)) {
+        if (Input.GetKeyDown(KeyCode.Return)) {
             SendChatMessage();
         }
     }
