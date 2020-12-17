@@ -90,7 +90,7 @@ public class Core : MonoBehaviour {
         } else {
             var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 4064, Name = "Player", GID = 20001 });
             entity.transform.position = new Vector3(150, 0, 150);
-            Core.Session = new Session(entity);
+            Core.Session = new Session(entity, 0);
 
             Core.MainCamera.GetComponent<ROCamera>().SetTarget(Core.Session.Entity.EntityViewer.transform);
             Core.MainCamera.transform.SetParent(Core.Session.Entity.transform);

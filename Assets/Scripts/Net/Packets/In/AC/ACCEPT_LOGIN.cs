@@ -1,19 +1,6 @@
 ﻿using System.IO;
 using System.Net;
 
-struct PACKET_AC_ACCEPT_LOGIN {     //ÕÊ»§µÇÂ¼·þÎñÆ÷ÉÏµÄÈ¨ÏÞ 
-    short PacketType;
-    short PacketLength;      //	variable length packet
-    int AuthCode;           //ÑéÖ¤Âë 
-    long AID;
-    long userLevel;            //¸ù¾ÝÓÃ»§µÄ·þÎñË®Æ½£¬ÒÔÈ·¶¨ÊÇ·ñÁ¬½Ó¡£ 
-                                //	DWORD	lastLoginIP;		
-    char[] lastLoginIP; ////  ×îºó£¬Á¬½ÓµÄIP 
-    char[] lastLoginTime; //  ×îºó£¬Ê±¼äÈÕÖ¾¡£ 
-    byte Sex;
-    //SERVER_ADDRÐÅÏ¢£¨ PacketLength £¬´óÐ¡£¨ PACKET_AC_ACCEPT_LOGIN £© /´óÐ¡£¨ SERVER_ADDR £© gaemankeumÀ´ 
-};
-
 public partial class AC {
     [PacketHandler(HEADER, "AC_ACCEPT_LOGIN")]
     public class ACCEPT_LOGIN : InPacket {
@@ -46,7 +33,7 @@ public partial class AC {
 
             long serverCount = (br.Length - br.Position) / 32;
             Servers = new CharServerInfo[serverCount];
-            for(int i = 0; i < serverCount; i++) {
+            for (int i = 0; i < serverCount; i++) {
                 CharServerInfo csi = new CharServerInfo();
                 csi.IP = new IPAddress(br.ReadULong());
                 csi.Port = br.ReadUShort();

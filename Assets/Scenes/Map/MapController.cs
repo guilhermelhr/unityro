@@ -25,7 +25,7 @@ public class MapController : MonoBehaviour {
         Core.Instance.BeginMapLoading(mapInfo.mapname);
 
         var entity = Core.EntityManager.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
-        Core.Session = new Session(entity);
+        Core.Session = new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID);
         Core.Session.SetCurrentMap(mapInfo.mapname);
         Core.Session.Entity.transform.position = new Vector3(mapInfo.PosX, Core.PathFinding.GetCellHeight(mapInfo.PosX, mapInfo.PosY), mapInfo.PosY);
 

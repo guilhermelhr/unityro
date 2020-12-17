@@ -157,6 +157,7 @@
     ZC_PC_SELL_RESULT = 0xcb,
     ZC_INVENTORY_ITEMLIST_EQUIP_V6 = 0xa0d,
     ZC_INVENTORY_SWITCH = 0xa9b,
+    ZC_HP_INFO = 0x977,
     #endregion
 
     SERVER_ENTRY_ACK = 0x8f,

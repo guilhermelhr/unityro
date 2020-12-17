@@ -34,6 +34,36 @@ public class EntityControl : MonoBehaviour {
                     case EntityType.ITEM:
                         break;
                     case EntityType.MOB:
+                        // TODO render lock arrow
+                        var path = Core.PathFinding.GetPath(Entity.transform.position, target.transform.position, Entity.AttackRange + 1);
+
+                        if (path.Count == 0) {
+                            return;
+                        }
+
+                        OutPacket packet = new CZ.REQUEST_ACT2() {
+                            TargetGID = target.Entity.GID,
+                            Size = 7
+                        };
+
+                        PathNode endNode;
+                        if (path.Count < 2) {
+                            packet.Send();
+                            endNode = path[path.Count - 1];
+                        } else {
+                            endNode = path[path.Count - 2];
+                        }
+
+                        //TODO figure out what this is
+                        //Session.MoveAction = packet;
+
+                        new CZ.REQUEST_MOVE2() {
+                            x = (short)endNode.x,
+                            y = (short)endNode.y,
+                            dir = (byte)Entity.Direction
+                        }.Send();
+
+
                         break;
                     case EntityType.WARP:
                         break;

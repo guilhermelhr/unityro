@@ -10,6 +10,8 @@ public class LoginController : MonoBehaviour {
     void Start() {
         Core.NetworkClient.ChangeServer("127.0.0.1", 6900);
         Core.NetworkClient.HookPacket(AC.ACCEPT_LOGIN.HEADER, this.OnLoginResponse);
+
+        usernameField.text = "danilo3";
     }
 
     // Update is called once per frame

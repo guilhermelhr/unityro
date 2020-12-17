@@ -43,6 +43,16 @@ public class PathFindingManager {
         }
     }
 
+    public List<PathNode> GetPath(Vector3 startPosition, Vector3 endPosition, int attackRange = 0) {
+        var newRequest = new PathRequest() {
+            from = new Vector2Int((int)startPosition.x, (int)startPosition.z),
+            to = new Vector2Int((int)endPosition.x, (int)endPosition.z)
+        };
+
+        List<PathNode> path = FindPath(newRequest, attackRange);
+        return path;
+    }
+
     public float GetCellHeight(int x, int y) {
         return (float)Altitude.GetCellHeight(x, y);
     }
@@ -68,7 +78,7 @@ public class PathFindingManager {
     }
 
     public bool IsWalkable(float x, float y) {
-        return Altitude.IsCellWalkable((int) Math.Floor(x), (int) Math.Floor(y));
+        return Altitude.IsCellWalkable((int)Math.Floor(x), (int)Math.Floor(y));
     }
 
     public GAT.Cell GetCell(float x, float y) {

@@ -7,9 +7,11 @@ public partial class CZ {
 
     public class REQUEST_MOVE2 : OutPacket {
 
-        private short x;
-        private short y;
-        private byte dir;
+        public short x;
+        public short y;
+        public byte dir;
+
+        public REQUEST_MOVE2() : base(HEADER, SIZE) { }
 
         public REQUEST_MOVE2(int x, int y, int dir) : base(HEADER, SIZE) {
             this.x = (short)x;
