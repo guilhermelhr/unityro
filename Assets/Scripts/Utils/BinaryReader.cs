@@ -14,6 +14,10 @@ public class BinaryReader : MemoryStream {
     public BinaryReader() : base() {
     }
 
+    public string ReadBinaryString(long length) {
+        return ReadBinaryString((int)length);
+    }
+
     /// <summary>
     /// Reads a string from a buffer
     /// </summary>
@@ -23,7 +27,7 @@ public class BinaryReader : MemoryStream {
     public string ReadBinaryString(int length) {
         char[] strBytes = new char[length];
 
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             strBytes[i] = (char)ReadByte();
         }
 
@@ -31,7 +35,7 @@ public class BinaryReader : MemoryStream {
         string str = new string(strBytes);
         //.net strings are not zero-terminated
         int terminator = str.IndexOf('\0');
-        if(terminator != -1) {
+        if (terminator != -1) {
             str = str.Substring(0, terminator);
         }
         return str;

@@ -142,6 +142,7 @@
     ZC_SAY_DIALOG = 0xb4,
     ZC_WAIT_DIALOG = 0xb5,
     ZC_CLOSE_DIALOG = 0xb6,
+    ZC_CLOSE_SCRIPT = 0x8d6,
     ZC_MENU_LIST = 0xb7,
     ZC_STATUS_CHANGE_ACK = 0xbc,
     ZC_STATUS = 0xbd,

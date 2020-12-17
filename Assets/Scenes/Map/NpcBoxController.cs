@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,6 +27,10 @@ public class NpcBoxController : MonoBehaviour {
     public void SetText(string message, uint nAID) {
         this.NAID = nAID;
         NpcText.text += $"{message}\n";
+    }
+
+    public void CloseAndReset(ushort cmd, int size, InPacket packet) {
+        throw new NotImplementedException();
     }
 
     public void AddNextButton(ushort cmd, int size, InPacket packet) {
@@ -69,8 +71,20 @@ public class NpcBoxController : MonoBehaviour {
                 new CZ.REQ_NEXT_SCRIPT() {
                     NAID = this.NAID
                 }.Send();
+
+                nextCloseButton.gameObject.SetActive(false);
+                NpcText.text = "";
+
                 break;
             case ButtonAction.CLOSE:
+                new CZ.CLOSE_DIALOG() {
+                    NAID = this.NAID
+                }.Send();
+
+                nextCloseButton.gameObject.SetActive(false);
+                NpcText.text = "";
+
+                gameObject.SetActive(false);
                 break;
         }
     }

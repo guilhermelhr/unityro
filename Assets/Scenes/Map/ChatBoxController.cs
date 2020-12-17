@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class ChatBoxController : MonoBehaviour {
@@ -18,7 +19,7 @@ public class ChatBoxController : MonoBehaviour {
             var pkt = packet as ZC.NOTIFY_PLAYERCHAT;
 
             var prefab = Instantiate(TextLinePrefab);
-            var uiText = prefab.GetComponent<Text>();
+            var uiText = prefab.GetComponentInChildren<TextMeshProUGUI>();
             uiText.text = pkt.Message;
             uiText.color = Color.green;
 
@@ -27,7 +28,7 @@ public class ChatBoxController : MonoBehaviour {
             var pkt = packet as ZC.NOTIFY_CHAT;
 
             var prefab = Instantiate(TextLinePrefab);
-            var uiText = prefab.GetComponent<Text>();
+            var uiText = prefab.GetComponentInChildren<TextMeshProUGUI>();
             uiText.text = pkt.Message;
             uiText.color = Color.white;
 
@@ -36,7 +37,7 @@ public class ChatBoxController : MonoBehaviour {
             var pkt = packet as ZC.MSG;
 
             var prefab = Instantiate(TextLinePrefab);
-            var uiText = prefab.GetComponent<Text>();
+            var uiText = prefab.GetComponentInChildren<TextMeshProUGUI>();
             uiText.text = (string)DBManager.MsgStringTable[pkt.MessageID] ?? $"{pkt.MessageID}";
             uiText.color = Color.white;
 
