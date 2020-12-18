@@ -31,10 +31,10 @@ public static class SpriteMeshBuilder {
         var min = new Vector2(-0.2f, -0.2f);
         var max = new Vector2(0.2f, 0.2f);
 
-        for(int i = 0; i < motion.layers.Length; i++) {
+        for (int i = 0; i < motion.layers.Length; i++) {
             var layer = motion.layers[i];
 
-            if(layer.index < 0)
+            if (layer.index < 0)
                 continue;
 
             var sprite = sprites[layer.index];
@@ -47,18 +47,18 @@ public static class SpriteMeshBuilder {
             var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
             var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
 
-            for(var j = 0; j < verts.Length; j++) {
+            for (var j = 0; j < verts.Length; j++) {
                 var v = rotation * (verts[j] * scale);
-                var vert = v + new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / 50f;
+                var vert = v + new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / SPR.PIXELS_PER_UNIT;
 
-                if(min.x > vert.x)
+                if (min.x > vert.x)
                     min.x = vert.x;
-                if(min.y > vert.y)
+                if (min.y > vert.y)
                     min.y = vert.y;
 
-                if(max.x < vert.x)
+                if (max.x < vert.x)
                     max.x = vert.x;
-                if(max.y < vert.y)
+                if (max.y < vert.y)
                     max.y = vert.y;
             }
         }
@@ -68,25 +68,31 @@ public static class SpriteMeshBuilder {
         var xBoost = 0.1f;
         var yBoost = 0.1f;
 
-        if(xSize < 0.5f)
-            xBoost += 0.2f;
-        if(xSize < 1f)
-            xBoost += 0.1f;
+        /**
+         * This area is commented and the numbers below may look like
+         * magic numbers, and indeed they are. The intention here is to
+         * make the collider small, like 80% of the original size
+         * and to not be below the ground
+         */
+        //if (xSize < 0.5f)
+        //    xBoost += 0.2f;
+        //if (xSize < 1f)
+        //    xBoost += 0.1f;
 
 
-        if(ySize < 0.5f)
-            yBoost += 0.2f;
-        if(ySize < 1f)
-            yBoost += 0.1f;
+        //if (ySize < 0.5f)
+        //    yBoost += 0.2f;
+        //if (ySize < 1f)
+        //    yBoost += 0.1f;
 
 
         min -= new Vector2(xBoost, yBoost);
         max += new Vector2(xBoost, yBoost);
 
-        outVertices.Add(new Vector3(min.x, max.y));
-        outVertices.Add(new Vector3(max.x, max.y));
-        outVertices.Add(new Vector3(min.x, min.y));
-        outVertices.Add(new Vector3(max.x, min.y));
+        outVertices.Add(new Vector3(min.x, max.y) * 0.8f);
+        outVertices.Add(new Vector3(max.x, max.y) * 0.8f);
+        outVertices.Add(new Vector3(min.x, min.y * 0.1f) * 0.8f);
+        outVertices.Add(new Vector3(max.x, min.y * 0.1f) * 0.8f);
 
         outTris.Add(tIndex);
         outTris.Add(tIndex + 1);
@@ -116,10 +122,10 @@ public static class SpriteMeshBuilder {
 
         var tIndex = 0;
 
-        for(int i = 0; i < motion.layers.Length; i++) {
+        for (int i = 0; i < motion.layers.Length; i++) {
             var layer = motion.layers[i];
 
-            if(layer.index < 0)
+            if (layer.index < 0)
                 continue;
 
             var sprite = sprites[layer.index];
@@ -132,15 +138,15 @@ public static class SpriteMeshBuilder {
             var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
             var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
 
-            for(var j = 0; j < verts.Length; j++) {
+            for (var j = 0; j < verts.Length; j++) {
                 var v = rotation * (verts[j] * scale);
-                outVertices.Add(v + new Vector3(layer.pos.x - offsetX, (layer.pos.y) + offsetY) / 50f);
+                outVertices.Add(v + new Vector3(layer.pos.x - offsetX, (layer.pos.y) + offsetY) / SPR.PIXELS_PER_UNIT);
                 outUvs.Add(uvs[j]);
                 outColors.Add(layer.color);
                 outNormals.Add(new Vector3(0, 0, -1));
             }
 
-            if(layer.isMirror) {
+            if (layer.isMirror) {
                 outTris.Add(tIndex + 2);
                 outTris.Add(tIndex + 1);
                 outTris.Add(tIndex);
@@ -183,7 +189,7 @@ public static class SpriteMeshBuilder {
 
         var tIndex = 0;
 
-        if(layer.index < 0)
+        if (layer.index < 0)
             return null;
 
         var sprite = sprites[layer.index];
@@ -196,15 +202,15 @@ public static class SpriteMeshBuilder {
         var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
         var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
 
-        for(var j = 0; j < verts.Length; j++) {
+        for (var j = 0; j < verts.Length; j++) {
             var v = rotation * (verts[j] * scale);
-            outVertices.Add(v + new Vector3(layer.pos.x - offsetX, (layer.pos.y) + offsetY) / 50f);
+            outVertices.Add(v + new Vector3(layer.pos.x - offsetX, (layer.pos.y) + offsetY) / SPR.PIXELS_PER_UNIT);
             outUvs.Add(uvs[j]);
             outColors.Add(layer.color);
             outNormals.Add(new Vector3(0, 0, -1));
         }
 
-        if(layer.isMirror) {
+        if (layer.isMirror) {
             outTris.Add(tIndex + 2);
             outTris.Add(tIndex + 1);
             outTris.Add(tIndex);
@@ -247,7 +253,7 @@ public static class SpriteMeshBuilder {
         var min = new Vector2(-0.2f, -0.2f);
         var max = new Vector2(0.2f, 0.2f);
 
-        if(layer.index < 0)
+        if (layer.index < 0)
             return null;
 
         var sprite = sprites[layer.index];
@@ -260,18 +266,18 @@ public static class SpriteMeshBuilder {
         var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
         var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
 
-        for(var j = 0; j < verts.Length; j++) {
+        for (var j = 0; j < verts.Length; j++) {
             var v = rotation * (verts[j] * scale);
-            var vert = v + new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / 50f;
+            var vert = v + new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / SPR.PIXELS_PER_UNIT;
 
-            if(min.x > vert.x)
+            if (min.x > vert.x)
                 min.x = vert.x;
-            if(min.y > vert.y)
+            if (min.y > vert.y)
                 min.y = vert.y;
 
-            if(max.x < vert.x)
+            if (max.x < vert.x)
                 max.x = vert.x;
-            if(max.y < vert.y)
+            if (max.y < vert.y)
                 max.y = vert.y;
         }
 
@@ -280,15 +286,15 @@ public static class SpriteMeshBuilder {
         var xBoost = 0.1f;
         var yBoost = 0.1f;
 
-        if(xSize < 0.5f)
+        if (xSize < 0.5f)
             xBoost += 0.2f;
-        if(xSize < 1f)
+        if (xSize < 1f)
             xBoost += 0.1f;
 
 
-        if(ySize < 0.5f)
+        if (ySize < 0.5f)
             yBoost += 0.2f;
-        if(ySize < 1f)
+        if (ySize < 1f)
             yBoost += 0.1f;
 
 

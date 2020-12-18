@@ -17,7 +17,7 @@ public class Entity : MonoBehaviour {
     public int HeadDir;
 
     public bool IsReady = false;
-    public bool HasAuthority => GID == Core.Session.Entity.GID;
+    public bool HasAuthority => GID == Core.Session?.Entity?.GID;
 
     public uint GID;
     public short Job { get; private set; }

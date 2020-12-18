@@ -45,7 +45,7 @@ public class EntityViewer : MonoBehaviour {
         currentSPR = FileManager.Load(path + ".spr") as SPR;
         currentACT = FileManager.Load(path + ".act") as ACT;
         sprites = currentSPR.GetSprites();
-        meshCollider = gameObject.AddComponent<MeshCollider>();
+        meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
 
         if (currentAction == null)
             ChangeAction(0);
@@ -144,6 +144,11 @@ public class EntityViewer : MonoBehaviour {
         RenderLayers();
     }
 
+    /** 
+     * TODO 
+     * Figure out a way of cleaning the layers not used by the
+     * current animation.
+     */
     private void RenderLayers() {
         /**
          * Some animations have more than one layer (think of npcs)
@@ -198,7 +203,7 @@ public class EntityViewer : MonoBehaviour {
         // We need this mesh collider in order to have the raycast to hit the sprite
         MeshCache.TryGetValue(frame, out Mesh mesh);
         if (mesh == null) {
-            mesh = SpriteMeshBuilder.BuildSpriteMesh(frame, sprites);
+            mesh = SpriteMeshBuilder.BuildColliderMesh(frame, sprites);
             MeshCache.Add(frame, mesh);
         }
         meshCollider.sharedMesh = mesh;

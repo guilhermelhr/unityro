@@ -97,7 +97,7 @@ public class Core : MonoBehaviour {
 
             Core.Session.Entity.SetReady(true);
 
-            var npc = EntityManager.Spawn(new EntityData() { job = 46, type = EntityType.NPC, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
+            var npc = EntityManager.Spawn(new EntityData() { job = 909, type = EntityType.NPC, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
             npc.transform.position = new Vector3(160, 0, 150);
         }
     }
