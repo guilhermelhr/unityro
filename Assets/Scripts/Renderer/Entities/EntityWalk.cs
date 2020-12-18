@@ -6,7 +6,6 @@ public class EntityWalk : MonoBehaviour {
 
     private Entity Entity;
     private Coroutine MoveIE, MoveToIE;
-    private int speed = 150;
 
     private void Awake() {
         Entity = GetComponent<Entity>();
@@ -84,7 +83,7 @@ public class EntityWalk : MonoBehaviour {
     IEnumerator MoveTo(PathNode node) {
         var destination = new Vector3(node.x, (float)node.y, node.z);
         while (transform.position != destination) {
-            transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime / 20);
+            transform.position = Vector3.MoveTowards(transform.position, destination, Entity.WalkSpeed * Time.deltaTime / 20);
             yield return null;
         }
     }

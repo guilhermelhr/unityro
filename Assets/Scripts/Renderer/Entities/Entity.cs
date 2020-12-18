@@ -41,6 +41,7 @@ public class Entity : MonoBehaviour {
         Sex = data.sex;
         Hair = data.hairStyle;
         Type = data.type;
+        WalkSpeed = data.speed;
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
     }
@@ -54,6 +55,7 @@ public class Entity : MonoBehaviour {
         Job = data.Job;
         Sex = (byte)data.Sex;
         Hair = data.Hair;
+        WalkSpeed = data.Speed;
         Type = EntityType.PC;
     }
 
