@@ -221,4 +221,34 @@ public class PathFindingManager {
 
         return path;
     }
+
+    public static bool IsNeighbor(Vector2Int pos1, Vector2Int pos2) {
+        var x = Mathf.Abs(pos1.x - pos2.x);
+        var y = Mathf.Abs(pos1.y - pos2.y);
+
+        if (x <= 1 && y <= 1)
+            return true;
+        return false;
+    }
+
+    public static Direction GetDirectionForOffset(Vector2Int offset) {
+
+        if (offset.x == -1 && offset.y == -1) return Direction.SouthWest;
+        if (offset.x == -1 && offset.y == 0) return Direction.West;
+        if (offset.x == -1 && offset.y == 1) return Direction.NorthWest;
+        if (offset.x == 0 && offset.y == 1) return Direction.North;
+        if (offset.x == 1 && offset.y == 1) return Direction.NorthEast;
+        if (offset.x == 1 && offset.y == 0) return Direction.East;
+        if (offset.x == 1 && offset.y == -1) return Direction.SouthEast;
+        if (offset.x == 0 && offset.y == -1) return Direction.South;
+
+        return Direction.South;
+    }
+
+    public static bool IsDiagonal(Direction dir) {
+        if (dir == Direction.NorthEast || dir == Direction.NorthWest ||
+            dir == Direction.SouthEast || dir == Direction.SouthWest)
+            return true;
+        return false;
+    }
 }

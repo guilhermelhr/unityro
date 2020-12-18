@@ -136,6 +136,8 @@ public class Entity : MonoBehaviour {
                                     break;
                             }
                         }
+
+                        srcEntity.LookTo(dstEntity.transform.position);
                     }
 
                     srcEntity.AttackSpeed = (short)pkt.attackMT;
@@ -156,5 +158,10 @@ public class Entity : MonoBehaviour {
                     break;
             }
         }
+    }
+
+    private void LookTo(Vector3 position) {
+        var offset = new Vector2Int((int)position.x, (int)position.z) - new Vector2Int((int)transform.position.x, (int)transform.position.z);
+        Direction = PathFindingManager.GetDirectionForOffset(offset);
     }
 }

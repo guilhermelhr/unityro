@@ -71,7 +71,7 @@ public class EntityWalk : MonoBehaviour {
             var next = linkedList.Find(node).Next?.Value;
             if (next != null) {
                 var offset = new Vector2Int(next.x, next.z) - new Vector2Int(node.x, node.z);
-                Entity.Direction = GetDirectionForOffset(offset);
+                Entity.Direction = PathFindingManager.GetDirectionForOffset(offset);
             }
 
             MoveToIE = StartCoroutine(MoveTo(node));
@@ -99,35 +99,5 @@ public class EntityWalk : MonoBehaviour {
         } else {
             new CZ.REQUEST_MOVE2(x, y, dir).Send();
         }
-    }
-
-    private bool IsNeighbor(Vector2Int pos1, Vector2Int pos2) {
-        var x = Mathf.Abs(pos1.x - pos2.x);
-        var y = Mathf.Abs(pos1.y - pos2.y);
-
-        if (x <= 1 && y <= 1)
-            return true;
-        return false;
-    }
-
-    private Direction GetDirectionForOffset(Vector2Int offset) {
-
-        if (offset.x == -1 && offset.y == -1) return Direction.SouthWest;
-        if (offset.x == -1 && offset.y == 0) return Direction.West;
-        if (offset.x == -1 && offset.y == 1) return Direction.NorthWest;
-        if (offset.x == 0 && offset.y == 1) return Direction.North;
-        if (offset.x == 1 && offset.y == 1) return Direction.NorthEast;
-        if (offset.x == 1 && offset.y == 0) return Direction.East;
-        if (offset.x == 1 && offset.y == -1) return Direction.SouthEast;
-        if (offset.x == 0 && offset.y == -1) return Direction.South;
-
-        return Direction.South;
-    }
-
-    private bool IsDiagonal(Direction dir) {
-        if (dir == Direction.NorthEast || dir == Direction.NorthWest ||
-            dir == Direction.SouthEast || dir == Direction.SouthWest)
-            return true;
-        return false;
     }
 }
