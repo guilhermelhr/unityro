@@ -99,8 +99,8 @@ public class Altitude {
         x %= 1.0;
         y %= 1.0;
 
-        double x1 = cell.heights[0] + (cell.heights[1] - cell.heights[0]) * x;
-        double x2 = cell.heights[2] + (cell.heights[3] - cell.heights[2]) * x;
+        double x1 = cell.Heights[0] + (cell.Heights[1] - cell.Heights[0]) * x;
+        double x2 = cell.Heights[2] + (cell.Heights[3] - cell.Heights[2]) * x;
 
         return -(x1 + (x2 - x1) * y);
     }
@@ -186,38 +186,38 @@ public class Altitude {
 
                 // Triangle 1
                 buffer[i + 0] = pos_x + x + 0;
-                buffer[i + 1] = gat.cells[index].heights[0];
+                buffer[i + 1] = gat.cells[index].Heights[0];
                 buffer[i + 2] = pos_y + y + 0;
                 buffer[i + 3] = (x + 0 + middle) / size;
                 buffer[i + 4] = (y + 0 + middle) / size;
 
                 buffer[i + 5] = pos_x + x + 1;
-                buffer[i + 6] = gat.cells[index].heights[1];
+                buffer[i + 6] = gat.cells[index].Heights[1];
                 buffer[i + 7] = pos_y + y + 0;
                 buffer[i + 8] = (x + 1 + middle) / size;
                 buffer[i + 9] = (y + 0 + middle) / size;
 
                 buffer[i + 10] = pos_x + x + 1;
-                buffer[i + 11] = gat.cells[index].heights[3];
+                buffer[i + 11] = gat.cells[index].Heights[3];
                 buffer[i + 12] = pos_y + y + 1;
                 buffer[i + 13] = (x + 1 + middle) / size;
                 buffer[i + 14] = (y + 1 + middle) / size;
 
                 // Triangle 2
                 buffer[i + 15] = pos_x + x + 1;
-                buffer[i + 16] = gat.cells[index].heights[3];
+                buffer[i + 16] = gat.cells[index].Heights[3];
                 buffer[i + 17] = pos_y + y + 1;
                 buffer[i + 18] = (x + 1 + middle) / size;
                 buffer[i + 19] = (y + 1 + middle) / size;
 
                 buffer[i + 20] = pos_x + x + 0;
-                buffer[i + 21] = gat.cells[index].heights[2];
+                buffer[i + 21] = gat.cells[index].Heights[2];
                 buffer[i + 22] = pos_y + y + 1;
                 buffer[i + 23] = (x + 0 + middle) / size;
                 buffer[i + 24] = (y + 1 + middle) / size;
 
                 buffer[i + 25] = pos_x + x + 0;
-                buffer[i + 26] = gat.cells[index].heights[0];
+                buffer[i + 26] = gat.cells[index].Heights[0];
                 buffer[i + 27] = pos_y + y + 0;
                 buffer[i + 28] = (x + 0 + middle) / size;
                 buffer[i + 29] = (y + 0 + middle) / size;

@@ -43,6 +43,20 @@ public class PathFindingManager {
         }
     }
 
+    public List<PathNode> GetPath(Vector3 startPosition, Vector3 endPosition, int attackRange = 0) {
+        var newRequest = new PathRequest() {
+            from = new Vector2Int((int)startPosition.x, (int)startPosition.z),
+            to = new Vector2Int((int)endPosition.x, (int)endPosition.z)
+        };
+
+        List<PathNode> path = FindPath(newRequest, attackRange);
+        return path;
+    }
+
+    public float GetCellHeight(int x, int y) {
+        return (float)Altitude.GetCellHeight(x, y);
+    }
+
     public List<PathNode> GetPath(int x0, int y0, int x1, int y1, int range = 0) {
         var newRequest = new PathRequest() {
             from = new Vector2Int(x0, y0),
@@ -61,6 +75,14 @@ public class PathFindingManager {
             Gizmos.DrawCube(origin, new Vector3(1, 1, 1));
         }
 
+    }
+
+    public bool IsWalkable(float x, float y) {
+        return Altitude.IsCellWalkable((int)Math.Floor(x), (int)Math.Floor(y));
+    }
+
+    public GAT.Cell GetCell(float x, float y) {
+        return Altitude.GetCell(x, y);
     }
 
     private List<PathNode> FindPath(PathRequest pr, int range = 0) {
@@ -198,5 +220,35 @@ public class PathFindingManager {
         path.Reverse();
 
         return path;
+    }
+
+    public static bool IsNeighbor(Vector2Int pos1, Vector2Int pos2) {
+        var x = Mathf.Abs(pos1.x - pos2.x);
+        var y = Mathf.Abs(pos1.y - pos2.y);
+
+        if (x <= 1 && y <= 1)
+            return true;
+        return false;
+    }
+
+    public static Direction GetDirectionForOffset(Vector2Int offset) {
+
+        if (offset.x == -1 && offset.y == -1) return Direction.SouthWest;
+        if (offset.x == -1 && offset.y == 0) return Direction.West;
+        if (offset.x == -1 && offset.y == 1) return Direction.NorthWest;
+        if (offset.x == 0 && offset.y == 1) return Direction.North;
+        if (offset.x == 1 && offset.y == 1) return Direction.NorthEast;
+        if (offset.x == 1 && offset.y == 0) return Direction.East;
+        if (offset.x == 1 && offset.y == -1) return Direction.SouthEast;
+        if (offset.x == 0 && offset.y == -1) return Direction.South;
+
+        return Direction.South;
+    }
+
+    public static bool IsDiagonal(Direction dir) {
+        if (dir == Direction.NorthEast || dir == Direction.NorthWest ||
+            dir == Direction.SouthEast || dir == Direction.SouthWest)
+            return true;
+        return false;
     }
 }

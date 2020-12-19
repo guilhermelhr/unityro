@@ -1,11 +1,11 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-public class Grf
-{
+public class Grf {
     /* Headers */
     public static string GRF_HEADER = "Master of Magic";
     public static int GRF_HEADER_LEN = GRF_HEADER.Length;
@@ -24,14 +24,14 @@ public class Grf
     protected byte allowCrypt;
     protected bool allowWrite;
 
-    public static Grf grf_callback_open(string fname, string mode, GrfOpenCallback callback){
+    public static Grf grf_callback_open(string fname, string mode, GrfOpenCallback callback) {
         byte[] buf = new byte[GRF_HEADER_FULL_LEN];
         uint i;//, zero_fcount = GrfSupport.ToLittleEndian32(7), create_ver = GrfSupport.ToLittleEndian32(0x0200);
         Grf grf;
 
-	    if (fname == null || mode == null) {
+        if(fname == null || mode == null) {
             throw new Exception("GE_BADARGS");
-	    }
+        }
 
         /* Allocate memory for grf */
         grf = new Grf();
@@ -42,9 +42,9 @@ public class Grf
         /* Open the file */
         var fStream = FileManager.Load(grf.filename) as Stream;
 
-	    if (fStream == null) {
+        if(fStream == null) {
             throw new Exception("GE_ERRNO");
-	    }
+        }
 
         using(var br = new System.IO.BinaryReader(fStream)) {
             grf.allowWrite = !mode.Contains("+") && mode.Contains("w");
@@ -78,7 +78,7 @@ public class Grf
                 grf.allowCrypt = 1;
                 /* 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E */
                 for(i = 0; i < 0xF; i++) {
-                    if(buf[GRF_HEADER_LEN + i] != (int) i) {
+                    if(buf[GRF_HEADER_LEN + i] != (int)i) {
                         throw new Exception("GE_CORRUPTED");
                     }
                 }
@@ -113,7 +113,7 @@ public class Grf
             grf.files = new Hashtable(StringComparer.OrdinalIgnoreCase);
 
             /* Grab the filesize */
-            grf.len = (uint) fStream.Length;
+            grf.len = (uint)fStream.Length;
 
             /* Seek to the offset of the file tables */
             br.BaseStream.Seek(GrfSupport.LittleEndian32(buf, GRF_HEADER_MID_LEN) + GRF_HEADER_FULL_LEN, SeekOrigin.Begin);
@@ -134,7 +134,7 @@ public class Grf
             }
         }
 
-	    return grf;
+        return grf;
     }
 
     /*! \brief Private function to read GRF0x2xx headers
@@ -160,26 +160,26 @@ public class Grf
             throw new Exception("GE_NSUP");
         }
 
-        /* Read the original and compressed sizes */        
+        /* Read the original and compressed sizes */
         buf = br.ReadBytes(8);
 
         /* Allocate memory and read the compressed file table */
         len = GrfSupport.LittleEndian32(buf, 0);
-        zbuf = br.ReadBytes((int) len);
+        zbuf = br.ReadBytes((int)len);
 
         if(0 == (len2 = GrfSupport.LittleEndian32(buf, 4))) {
             return 0;
         }
 
         /* Allocate memory and uncompress the compressed file table */
-        Array.Resize(ref buf, (int) len2);
+        Array.Resize(ref buf, (int)len2);
 
         var stream = new InflaterInputStream(new MemoryStream(zbuf));
 
         stream.Read(buf, 0, buf.Length);
 
         stream.Close();
-        
+
         /* Read information about each file */
         for(i = offset = 0; i < grf.nfiles; i++) {
             /* Grab the filename length */
@@ -193,15 +193,15 @@ public class Grf
             /* Grab filename */
             GrfFile file = new GrfFile();
             file.name = GrfSupport.getCString(buf, offset);
-            
+
             offset += len;
 
             /* Grab the rest of the information */
-            file.compressed_len = GrfSupport.LittleEndian32(buf, (int) offset);
-            file.compressed_len_aligned = GrfSupport.LittleEndian32(buf, (int) offset + 4);
-            file.real_len = GrfSupport.LittleEndian32(buf, (int) offset + 8);
+            file.compressed_len = GrfSupport.LittleEndian32(buf, (int)offset);
+            file.compressed_len_aligned = GrfSupport.LittleEndian32(buf, (int)offset + 4);
+            file.real_len = GrfSupport.LittleEndian32(buf, (int)offset + 8);
             file.flags = buf[offset + 0xC];
-            file.pos = GrfSupport.LittleEndian32(buf, (int) (offset + 0xD)) + (uint) GRF_HEADER_FULL_LEN;
+            file.pos = GrfSupport.LittleEndian32(buf, (int)(offset + 0xD)) + (uint)GRF_HEADER_FULL_LEN;
             file.hash = GrfSupport.GRF_NameHash(file.name);
 
             file.name = NormalizePath(file.name);
@@ -255,7 +255,7 @@ public class Grf
         byte[] data;
         using(var br = new System.IO.BinaryReader(stream)) {
             br.BaseStream.Seek(file.pos, SeekOrigin.Begin);
-            data = br.ReadBytes((int) file.compressed_len_aligned);
+            data = br.ReadBytes((int)file.compressed_len_aligned);
         }
 
         byte[] keyschedule = new byte[0x80];

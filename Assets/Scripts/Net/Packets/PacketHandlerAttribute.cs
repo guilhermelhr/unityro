@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class PacketHandlerAttribute : Attribute {
@@ -18,7 +14,7 @@ public class PacketHandlerAttribute : Attribute {
     public int Size { get; private set; }
     public PacketDirection Direction { get; private set; }
 
-    public PacketHandlerAttribute(PacketHeader methodId, string name, int size, PacketDirection direction) {
+    public PacketHandlerAttribute(PacketHeader methodId, string name, int size = VariableSize, PacketDirection direction = PacketDirection.In) {
         this.MethodId = (ushort) methodId;
         this.Name = name;
         this.Size = size;

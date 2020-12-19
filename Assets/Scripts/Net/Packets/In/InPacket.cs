@@ -1,4 +1,4 @@
 ﻿
 public interface InPacket {
-    bool Read(byte[] data);
+    bool Read(BinaryReader br);
 }

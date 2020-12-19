@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Globalization;
+using System.Linq;
 using UnityEngine;
 
 public class ActionLoader
@@ -49,25 +50,25 @@ public class ActionLoader
         act.actions = new ACT.Action[count];
         for(int i = 0; i < count; i++) {
             act.actions[i] = new ACT.Action() {
-                animations = ReadAnimations(act, data),
+                frames = ReadMotions(act, data),
                 delay = 150f
             };
         }
     }
 
-    private static ACT.Animation[] ReadAnimations(ACT act, BinaryReader data) {
+    private static ACT.Frame[] ReadMotions(ACT act, BinaryReader data) {
         var count = data.ReadULong();
-        var animations = new ACT.Animation[count];
+        var motions = new ACT.Frame[count];
 
         for(int i = 0; i < count; i++) {
             data.Seek(32, System.IO.SeekOrigin.Current);
-            animations[i] = ReadLayers(act, data);
+            motions[i] = ReadLayers(act, data);
         }
 
-        return animations;
+        return motions;
     }
 
-    private static ACT.Animation ReadLayers(ACT act, BinaryReader data) {
+    private static ACT.Frame ReadLayers(ACT act, BinaryReader data) {
         var count = data.ReadULong();
         var layers = new ACT.Layer[count];
         var version = double.Parse(act.version, CultureInfo.InvariantCulture);
@@ -76,18 +77,21 @@ public class ActionLoader
             var layer = layers[i] = new ACT.Layer() {
                 pos = new Vector2Int(data.ReadLong(), data.ReadLong()),
                 index = data.ReadLong(),
-                isMirror = data.ReadLong(),
+                isMirror = data.ReadLong() != 0,
                 scale = Vector2.one,
                 color = Color.white
             };
 
-            if(version >= 2.0) {
-                layer.color[0] = data.ReadUByte() / 255f;
-                layer.color[1] = data.ReadUByte() / 255f;
-                layer.color[2] = data.ReadUByte() / 255f;
-                layer.color[3] = data.ReadUByte() / 255f;
+            // RoRebuild checks if only if it's greater
+            if(version > 2.0) {
+                layer.color[0] = data.ReadUByte() / 255f; //r
+                layer.color[1] = data.ReadUByte() / 255f; //g
+                layer.color[2] = data.ReadUByte() / 255f; //b
+                layer.color[3] = data.ReadUByte() / 255f; //a
+
                 layer.scale[0] = data.ReadFloat();
                 layer.scale[1] = version <= 2.3 ? layer.scale[0] : data.ReadFloat();
+                
                 layer.angle = data.ReadLong();
                 layer.sprType = data.ReadLong();
 
@@ -110,8 +114,8 @@ public class ActionLoader
             }
         }
 
-        return new ACT.Animation() {
-            layers = layers,
+        return new ACT.Frame() {
+            layers = layers.Where(t => t.index >= 0).ToArray(),
             soundId = soundId,
             pos = pos
         };

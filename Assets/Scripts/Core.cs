@@ -3,19 +3,34 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Core : MonoBehaviour {
+
+    #region Inspector
+    public bool Offline = false;
+    public string mapname;
+    public AudioMixerGroup soundsMixerGroup;
+    public Light worldLight;
+    public Dropdown mapDropdown;
+    #endregion
+
     private static MapLoader mapLoader = new MapLoader();
     private static MapRenderer mapRenderer = new MapRenderer();
 
     private static PathFindingManager pathFinding = new PathFindingManager();
     private static NetworkClient networkClient;
 
+    public static EntityManager EntityManager;
     public static MapLoader MapLoader => mapLoader;
     public static MapRenderer MapRenderer => mapRenderer;
+    public static Session Session;
+    public static CursorRenderer CursorRenderer;
+
     public static PathFindingManager PathFinding => pathFinding;
     public static NetworkClient NetworkClient => networkClient;
 
@@ -23,13 +38,9 @@ public class Core : MonoBehaviour {
 
     public static Core Instance;
     public static Camera MainCamera;
+    public static long CurrentTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
-    public string mapname;
-    public AudioMixerGroup soundsMixerGroup;
-    public Light worldLight;
-    public Dropdown mapDropdown;
-
-    private Hashtable configs = new Hashtable();
+    public static Hashtable Configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
 
     private bool roCamEnabled;
@@ -39,33 +50,56 @@ public class Core : MonoBehaviour {
             Instance = this;
         }
 
-	    /**
+        /**
          * Caching the camera as it's heavy to search for it
          */
         if (MainCamera == null) {
             MainCamera = Camera.main;
         }
 
+        if (EntityManager == null) {
+            EntityManager = gameObject.AddComponent<EntityManager>();
+        }
+
         networkClient = GetComponent<NetworkClient>();
+
+        DontDestroyOnLoad(this);
     }
 
     void Start() {
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
-        roCamEnabled = MainCamera.GetComponent<ROCamera>().enabled;
+        roCamEnabled = MainCamera.GetComponent<ROCamera>()?.enabled ?? false;
 
         LoadConfigs();
+
+        LoadGrf();
+        BuildMapSelector();
+        DBManager.init();
+
+        if (CursorRenderer == null) {
+            gameObject.AddComponent<CursorRenderer>();
+        }
 
         /**
          * We start the network client only after the configs
          * have been loaded
          */
-        NetworkClient.Start();
-        NetworkClient.ConnectToServer();
-       
+        if (!Offline) {
+            NetworkClient.Start();
+        } else {
+            var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 0, Name = "Player", GID = 20001, Weapon = 1 });
+            entity.transform.position = new Vector3(150, 0, 150);
+            Core.Session = new Session(entity, 0);
 
-        LoadGrf();
-        BuildMapSelector();
+            Core.MainCamera.GetComponent<ROCamera>().SetTarget(Core.Session.Entity.EntityViewer.transform);
+            Core.MainCamera.transform.SetParent(Core.Session.Entity.transform);
+
+            Core.Session.Entity.SetReady(true);
+
+            //var npc = EntityManager.Spawn(new EntityData() { job = 909, type = EntityType.NPC, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
+            //npc.transform.position = new Vector3(160, 0, 150);
+        }
     }
 
     private void BuildMapSelector() {
@@ -83,12 +117,12 @@ public class Core : MonoBehaviour {
         }
 
         // if a map is pre loaded, do not display map selector on startup
-        mapDropdown.gameObject.SetActive(!preLoadMap);
+        mapDropdown?.gameObject?.SetActive(!preLoadMap);
     }
 
     private void LoadGrf() {
-        Debug.Log($"Loading GRF at {configs["grf"]} ...");
-        FileManager.loadGrf(configs["grf"] as string);
+        Debug.Log($"Loading GRF at {Configs["grf"]} ...");
+        FileManager.loadGrf(Configs["grf"] as string);
         Debug.Log($"GRF loaded, filetable contains {FileManager.Grf.files.Count} files.");
         OnGrfLoaded?.Invoke();
     }
@@ -114,7 +148,7 @@ public class Core : MonoBehaviour {
         foreach (string s in cfgTxt.Split('\n')) {
             string[] properties = s.Split('=');
             if (properties.Length == 2) {
-                configs.Add(properties[0], properties[1]);
+                Configs.Add(properties[0], properties[1]);
             }
         }
     }
@@ -130,8 +164,12 @@ public class Core : MonoBehaviour {
             mapRenderer.Render();
         }
 
+        if (MainCamera == null) {
+            MainCamera = Camera.main;
+        }
+
         // is map selector enabled
-        var mapSelectorEnabled = mapDropdown.gameObject.activeSelf;
+        var mapSelectorEnabled = mapDropdown?.gameObject?.activeSelf ?? false;
 
         // ESC pressed: toggle map selector visiblity
         if (Input.GetKeyDown(KeyCode.Escape)) {
@@ -172,5 +210,22 @@ public class Core : MonoBehaviour {
         if (mapRenderer.Ready) {
             mapRenderer.PostRender();
         }
+    }
+
+    public void SetWorldLight(Light worldLight) {
+        MapRenderer.WorldLight = worldLight;
+    }
+
+    public void InitCamera() {
+        MainCamera = Camera.main;
+    }
+
+    public void BeginMapLoading(string mapName) {
+        if (!MapRenderer.Ready && MapLoader.Progress != 0) return;
+        SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
+        MapRenderer.Clear();
+        StartCoroutine(
+            MapLoader.Load(mapName + ".rsw", MapRenderer.OnComplete)
+        );
     }
 }

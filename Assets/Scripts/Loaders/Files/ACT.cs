@@ -1,6 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
+/**
+ * Each Action represent a set of frames (think of idle, walk, pick)
+ * Each Frame represent a frame of a given action
+ * Each Layer has the information needed to render a frame
+ * 
+ * A single Motion can have multiple layers
+ * Some layers might have their index as negative, those must (?) be ignored
+ */
 public class ACT
 {
     public static string Header = "AC";
@@ -13,11 +22,11 @@ public class ACT
 
     public class Action
     {
-        public Animation[] animations;
+        public Frame[] frames;
         public float delay;
     }
 
-    public class Animation
+    public class Frame
     {
         public Layer[] layers;
         public int soundId;
@@ -28,11 +37,11 @@ public class ACT
     {
         public Vector2Int pos;
         public int index;
-        public int isMirror;
+        public bool isMirror;
         public Vector2 scale;
         public Color color;
         public float angle;
-        public int sprType;
+        public int sprType; // 0 = sprite, 1 = tga
         public int width;
         public int height;
     }

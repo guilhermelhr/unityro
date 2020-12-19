@@ -13,10 +13,14 @@ public abstract class OutPacket {
         isFixed = size > 0;
     }
 
-    public virtual bool Send(BinaryWriter writer) {
-        writer.Write((ushort) header);
+    public virtual bool Send() {
+        return Send(Core.NetworkClient.GetBinaryWriter());
+    }
 
-        if (!isFixed) {
+    public virtual bool Send(BinaryWriter writer) {
+        writer.Write(EncryptionHelper.Encrypt((ushort)header));
+
+        if(!isFixed) {
             ComputeSize();
             writer.Write((ushort)Size);
         }

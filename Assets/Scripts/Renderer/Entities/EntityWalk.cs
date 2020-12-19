@@ -1,48 +1,102 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 
 public class EntityWalk : MonoBehaviour {
 
-    /**
-	 * Direction look up table
-	 */
-    private int[][] DIRECTION = new int[][] {
-        new int[] { 1,2,3 },
-        new int[] { 0,0,4 },
-        new int[] { 7,6,5 }
-    };
-
-    int speed = 150;
-
+    private Entity Entity;
     private Coroutine MoveIE, MoveToIE;
 
-    public void WalkTo(Vector3 targetPosition) {
-        var path = Core.PathFinding.GetPath((int)transform.position.x, (int)transform.position.z, (int)targetPosition.x, (int)targetPosition.z);
+    private void Awake() {
+        Entity = GetComponent<Entity>();
+
+        if (Entity.HasAuthority)
+            Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERMOVE.HEADER, OnPlayerMovement); //Our movement
+        //Core.NetworkClient.HookPacket(ZC.STOPMOVE.HEADER, OnPlayerMovement); //Our movement
+    }
+
+    private void Update() {
+        if (Input.GetMouseButtonDown(0) && Entity.HasAuthority) {
+            var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 150)) {
+                RequestMove(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z), 0);
+            }
+        }
+    }
+
+    /**
+     * Server has acknowledged our request and set data back to us
+     */
+    private void OnPlayerMovement(ushort cmd, int size, InPacket packet) {
+        if (!Entity) return;
+        if (packet is ZC.NOTIFY_PLAYERMOVE) {
+            Entity.ChangeMotion(SpriteMotion.Walk);
+            var pkt = packet as ZC.NOTIFY_PLAYERMOVE;
+
+            StartMoving(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
+        } else if (packet is ZC.STOPMOVE) {
+            Entity.ChangeMotion(SpriteMotion.Walk);
+            var pkt = packet as ZC.STOPMOVE;
+            StartMoving((int)transform.position.x, (int)transform.position.z, pkt.PosX, pkt.PosY);
+        }
+    }
+
+    public void StartMoving(int startX, int startY, int endX, int endY) {
+        var path = Core.PathFinding.GetPath(startX, startY, endX, endY);
 
         if (MoveIE != null) {
-            Core.Instance.StopCoroutine(MoveIE);
+            StopCoroutine(MoveIE);
         }
         if (MoveToIE != null) {
-            Core.Instance.StopCoroutine(MoveToIE);
+            StopCoroutine(MoveToIE);
         }
-        MoveIE = Core.Instance.StartCoroutine(Move(path));
+        MoveIE = StartCoroutine(Move(path));
+    }
+
+    public void StopMoving() {
+        if (MoveIE != null) {
+            StopCoroutine(MoveIE);
+        }
+        if (MoveToIE != null) {
+            StopCoroutine(MoveToIE);
+        }
+        Entity.ChangeMotion(SpriteMotion.Idle);
     }
 
     IEnumerator Move(List<PathNode> path) {
-        foreach (var node in path) {
-            MoveToIE = Core.Instance.StartCoroutine(MoveTo(node));
+        var linkedList = new LinkedList<PathNode>(path);
+
+        foreach (var node in linkedList) {
+            var next = linkedList.Find(node).Next?.Value;
+            if (next != null) {
+                var offset = new Vector2Int(next.x, next.z) - new Vector2Int(node.x, node.z);
+                Entity.Direction = PathFindingManager.GetDirectionForOffset(offset);
+            }
+
+            MoveToIE = StartCoroutine(MoveTo(node));
             yield return MoveToIE;
         }
+
+        Entity.ChangeMotion(SpriteMotion.Idle);
     }
 
     IEnumerator MoveTo(PathNode node) {
         var destination = new Vector3(node.x, (float)node.y, node.z);
         while (transform.position != destination) {
-            transform.position = Vector3.MoveTowards(transform.position, destination, (speed / 10) * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, destination, Entity.WalkSpeed * Time.deltaTime / 20);
             yield return null;
+        }
+    }
+
+    public void RequestMove(int x, int y, int dir) {
+        /**
+         * Validate things such as if entity is sit, whatever
+         */
+        if (Core.Instance.Offline) {
+            Entity.ChangeMotion(SpriteMotion.Walk);
+            StartMoving((int)transform.position.x, (int)transform.position.z, x, y);
+        } else {
+            new CZ.REQUEST_MOVE2(x, y, dir).Send();
         }
     }
 }

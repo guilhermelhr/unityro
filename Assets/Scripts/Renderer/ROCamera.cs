@@ -3,31 +3,29 @@ using UnityEngine;
 
 public class ROCamera : MonoBehaviour {
 
-    public enum DIRECTION : int {
-        NORTH = 0,
-        NORTHEAST,
-        EAST,
-        SOUTHEAST,
-        SOUTH,
-        SOUTHWEST,
-        WEST,
-        NORTHWEST
-    }
+    public static ROCamera Instance;
 
-    private const float ZOOM_MIN = 12f;
-    private const float ZOOM_MAX = 60f;
-    private const float ALTITUDE_MIN = 10f;
-    private const float ALTITUDE_MAX = 35f;
-    private const float ROTATION_MIN = -360f;
-    private const float ROTATION_MAX = 360f;
+    private const float ZOOM_MIN = 25f;
+    private const float ZOOM_MAX = 80f;
+    private const float ALTITUDE_MIN = 35f;
+    private const float ALTITUDE_MAX = 50f;
 
     [SerializeField] private Transform _target;
-    [SerializeField] private DIRECTION pointDirection;
+    [SerializeField] public static Direction direction;
     [SerializeField] private float zoom = 0f;
     [SerializeField] private float distance = 30f;
-    [SerializeField] private float altitude = ALTITUDE_MAX;
-    [SerializeField] private float rotation = 0f;
+    [SerializeField] private float altitude = 50f;
+    [SerializeField] private float TargetRotation = 0f;
+    [SerializeField] public float Rotation = 0f;
     [SerializeField] private float angle;
+
+
+
+    private void Awake() {
+        if(Instance == null) {
+            Instance = this;
+        }
+    }
 
     public void Start() {
         HandleYawPitch();
@@ -36,28 +34,40 @@ public class ROCamera : MonoBehaviour {
 
     void LateUpdate() {
         float scrollDelta = Input.mouseScrollDelta.y;
-        if (Input.GetMouseButton(1)) {
-            this.rotation += Input.GetAxis("Mouse X");
+        if(Input.GetMouseButton(1)) {
+            this.TargetRotation += Input.GetAxis("Mouse X");
             HandleYawPitch();
-        } else if (Input.GetKey(KeyCode.LeftShift)) {
+        } else if(Input.GetKey(KeyCode.LeftShift)) {
             this.altitude = Mathf.Clamp(this.altitude + scrollDelta, ALTITUDE_MIN, ALTITUDE_MAX);
             HandleYawPitch();
-        } else if (scrollDelta != 0) {
+        } else if(scrollDelta != 0) {
             zoom += scrollDelta;
             HandleZoom();
         }
 
+        if(TargetRotation > 360)
+            TargetRotation -= 360;
+        if(TargetRotation < 0)
+            TargetRotation += 360;
+
+        if(Rotation > 360)
+            Rotation -= 360;
+        if(Rotation < 0)
+            Rotation += 360;
+
+        Rotation = Mathf.LerpAngle(Rotation, TargetRotation, 7.5f * Time.deltaTime);
+
         angle = GetAngleDirection();
-        pointDirection = (DIRECTION) angle;
+        direction = (Direction)angle;
     }
 
     private float GetAngleDirection() {
-        return (float)Math.Floor((Math.Abs(rotation) % 360 + 22.5f) / 45) % 8;
+        return (float)Math.Floor((Math.Abs(TargetRotation) % 360 + 22.5f) / 45) % 8;
     }
 
     private void HandleYawPitch() {
         var direction = new Vector3(0, 0, -distance);
-        var rotation = Quaternion.Euler(this.altitude, this.rotation, 0);
+        var rotation = Quaternion.Euler(this.altitude, this.TargetRotation, 0);
         transform.position = _target.position + rotation * direction;
         transform.LookAt(_target.position);
     }
@@ -70,15 +80,15 @@ public class ROCamera : MonoBehaviour {
         var direction = _target.position - transform.position;
         distance = direction.magnitude;
 
-        if (zoom > 0.0f) {
-            if (distance <= ZOOM_MIN) {
+        if(zoom > 0.0f) {
+            if(distance <= ZOOM_MIN) {
                 zoom = 0;
                 return;
             }
 
             zoom -= zoom / 5f;
 
-            if (zoom <= 0f) {
+            if(zoom <= 0f) {
                 zoom = 0f;
             } else {
                 direction /= distance;
@@ -86,15 +96,15 @@ public class ROCamera : MonoBehaviour {
 
                 transform.position += direction;
             }
-        } else if (zoom < 0f) {
-            if (distance >= ZOOM_MAX) {
+        } else if(zoom < 0f) {
+            if(distance >= ZOOM_MAX) {
                 zoom = 0;
                 return;
             }
 
             zoom -= zoom / 5f;
 
-            if (zoom >= 0f) {
+            if(zoom >= 0f) {
                 zoom = 0f;
             } else {
                 direction /= distance;
@@ -104,37 +114,9 @@ public class ROCamera : MonoBehaviour {
             }
         }
     }
-    
-    public DIRECTION GetDirection() {
-        var direction = _target.position - transform.position;
-        direction.y = 0;
-        direction /= direction.magnitude;
 
-        float a_cos = Vector3.Dot(direction, Vector3.forward);
-        angle = (float)(Math.Acos(a_cos) * 180 / Math.PI);
-
-        if (direction.y < 0) {
-            angle = 360 - angle;
-        }
-
-        if (angle <= 22.5)
-            return DIRECTION.NORTH;
-        else if (angle <= 67.5)
-            return DIRECTION.NORTHEAST;
-        else if (angle <= 112.5)
-            return DIRECTION.EAST;
-        else if (angle <= 157.5)
-            return DIRECTION.SOUTHEAST;
-        else if (angle <= 202.5)
-            return DIRECTION.SOUTH;
-        else if (angle <= 247.5)
-            return DIRECTION.SOUTHWEST;
-        else if (angle <= 292.5)
-            return DIRECTION.WEST;
-        else if (angle <= 337.5)
-            return DIRECTION.NORTHWEST;
-        else
-            return DIRECTION.NORTH;
+    public void SetTarget(Transform target) {
+        this._target = target;
     }
 
 }

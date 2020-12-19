@@ -3,26 +3,27 @@
 public partial class CZ {
     public class ENTER : OutPacket {
 
-        public const PacketHeader HEADER = PacketHeader.CZ_ENTER;
-        public const int SIZE = 13;
+        public const PacketHeader HEADER = PacketHeader.CZ_ENTER2;
+        public const int SIZE = 19;
 
-        private int aid, gid, auth;
+        private int AccountId, CharacterId, LoginId1, clienttime;
         private byte sex;
 
-        public ENTER(int aid, int gid, int auth, byte sex) : base(HEADER, SIZE) {
-            this.aid = aid;
-            this.gid = gid;
-            this.auth = auth;
+        public ENTER(int AccountId, int CharacterId, int LoginId1, int clienttime, byte sex) : base(HEADER, SIZE) {
+            this.AccountId = AccountId;
+            this.CharacterId = CharacterId;
+            this.LoginId1 = LoginId1;
+            this.clienttime = clienttime;
             this.sex = sex;
         }
 
         public override bool Send(BinaryWriter writer) {
             base.Send(writer);
 
-            writer.Write(aid);
-            writer.Write(gid);
-            writer.Write(auth);
-            writer.Write(0);
+            writer.Write(AccountId);
+            writer.Write(CharacterId);
+            writer.Write(LoginId1);
+            writer.Write(clienttime);
             writer.Write(sex);
             writer.Flush();
 

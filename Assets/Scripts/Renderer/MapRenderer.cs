@@ -10,6 +10,8 @@ using UnityEngine.Audio;
 /// Based on ROBrowser by Vincent Thibault (robrowser.com)
 /// </summary>
 public class MapRenderer {
+    public Action<GameObject> OnMapLoaded = null;
+
     public static int MAX_VERTICES = 65532;
 
     public static GameObject mapParent;
@@ -96,15 +98,16 @@ public class MapRenderer {
         GameObject lightsParent = new GameObject("_lights");
         lightsParent.transform.parent = mapParent.transform;
         
-        foreach(var light in world.lights) {         
-            //lightObj.transform.parent = lightsParent.transform;
-            //Light lightComponent = lightObj.AddComponent<Light>();
-            //lightComponent.lightmapBakeType = LightmapBakeType.Baked;
-            //lightComponent.color = new Color(light.color[0], light.color[1], light.color[2]);
-            //Debug.Log("color: " + lightComponent.color);
-            //lightComponent.range = light.range;
-            //Vector3 position = new Vector3(light.pos[0] + width, -light.pos[1], light.pos[2] + height);
-            //lightObj.transform.position = position;
+        foreach(var light in world.lights) {
+            var lightObj = new GameObject(light.name);
+            lightObj.transform.SetParent(lightsParent.transform);
+            Light lightComponent = lightObj.AddComponent<Light>();
+            lightComponent.lightmapBakeType = LightmapBakeType.Baked;
+            lightComponent.color = new Color(light.color[0], light.color[1], light.color[2]);
+            Debug.Log("color: " + lightComponent.color);
+            lightComponent.range = light.range;
+            Vector3 position = new Vector3(light.pos[0] + width, -light.pos[1], light.pos[2] + height);
+            lightObj.transform.position = position;
         }
     }
 
@@ -140,9 +143,6 @@ public class MapRenderer {
     /// </summary>
     /// <param name="altitude"></param>
     private void OnAltitudeComplete(Altitude altitude) {
-
-        //TODO
-        //var gl = Renderer.getContext();
         altitudeCompleted = true;
     }
 
@@ -176,7 +176,7 @@ public class MapRenderer {
 
     private void OnModelsComplete(List<RSM.CompiledModel> compiledModels) {
         models = new Models(compiledModels);
-        models.BuildMeshes();
+        Core.Instance.StartCoroutine(models.BuildMeshes());
 
         modelsCompleted = true;
     }

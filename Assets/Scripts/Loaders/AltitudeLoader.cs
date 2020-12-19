@@ -37,7 +37,7 @@ public class AltitudeLoader {
             heights[1] = data.ReadFloat() * 0.2f;         // height 2
             heights[2] = data.ReadFloat() * 0.2f;         // height 3
             heights[3] = data.ReadFloat() * 0.2f;         // height 4
-            cells[i].heights = heights;
+            cells[i].Heights = heights;
             cells[i].type = GAT.TYPE_TABLE[data.ReadULong()];    // type
         }
 

@@ -1,12 +1,13 @@
 ﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Models {
     private List<RSM.CompiledModel> models;
 
-    private Material material = (Material) Resources.Load("ModelMaterial", typeof(Material));
-    private Material material2s = (Material) Resources.Load("ModelMaterial2Sided", typeof(Material));
+    private Material material = (Material)Resources.Load("ModelMaterial", typeof(Material));
+    private Material material2s = (Material)Resources.Load("ModelMaterial2Sided", typeof(Material));
 
     public Models(List<RSM.CompiledModel> models) {
         this.models = models;
@@ -21,13 +22,17 @@ public class Models {
         internal bool isChild;
     }
 
-    public void BuildMeshes() {
+    public IEnumerator BuildMeshes() {
+        float remainingProgress = 100 - Core.MapLoader.Progress;
+        float modelProgress = remainingProgress / models.Count;
+
         GameObject parent = new GameObject("_Models");
         parent.transform.parent = MapRenderer.mapParent.transform;
         Dictionary<int, AnimProperties> anims = new Dictionary<int, AnimProperties>();
         int nodeId = 0;
 
-        foreach(RSM.CompiledModel model in models) {
+        for(var index = 0; index < models.Count; index++) {
+            RSM.CompiledModel model = models[index];
             GameObject modelObj = new GameObject(model.rsm.name);
             modelObj.transform.parent = parent.transform;
 
@@ -37,7 +42,7 @@ public class Models {
                     RSM.NodeMeshData meshData = meshesByTexture.Value;
                     RSM.Node node = meshData.node;
 
-                    if (meshesByTexture.Value.vertices.Count == 0) {
+                    if(meshesByTexture.Value.vertices.Count == 0) {
                         continue;
                     }
 
@@ -45,7 +50,7 @@ public class Models {
                         meshData.triangles.AddRange(new int[] {
                                 i + 0 , i + 1, i + 2
                             });
-                    }                   
+                    }
 
                     //create node unity mesh
                     Mesh mesh = new Mesh();
@@ -75,7 +80,7 @@ public class Models {
                             mr.material.renderQueue += 1;
                         }
                     }
-                    
+
                     mr.material.mainTexture = FileManager.Load("data/texture/" + textureFile) as Texture2D;
 
                     if(model.rsm.shadeType == RSM.SHADING.SMOOTH) {
@@ -105,7 +110,7 @@ public class Models {
                             isChild = properties.isChild
                         });
                     }
-                                        
+
                     nodeId++;
                 }
             }
@@ -121,7 +126,7 @@ public class Models {
                 } else {
                     instanceObj = UnityEngine.Object.Instantiate(modelObj);
                 }
-                
+
                 instanceObj.transform.parent = parent.transform;
                 instanceObj.name += "[" + i + "]";
 
@@ -162,14 +167,19 @@ public class Models {
                 }
 
                 instanceObj.SetActive(true);
+                if(index % MapLoader.BATCH_SIZE == 0)
+                    yield return new WaitForEndOfFrame();
             }
-            
+
+            Core.MapLoader.Progress += modelProgress;
         }
 
         anims.Clear();
+        Core.MapLoader.Progress += 1;
+        yield return null;
     }
 
     public void Render() {
-        
+
     }
 }

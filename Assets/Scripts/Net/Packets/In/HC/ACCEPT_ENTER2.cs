@@ -1,13 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 public partial class HC {
 
-    [PacketHandler(HEADER,
-        "HC_ACCEPT_ENTER2",
-        PacketHandlerAttribute.VariableSize,
-        PacketHandlerAttribute.PacketDirection.In
-        )]
+    [PacketHandler(HEADER, "HC_ACCEPT_ENTER2")]
     public class ACCEPT_ENTER2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.HC_ACCEPT_ENTER2;
@@ -17,8 +12,9 @@ public partial class HC {
         public int PremiumSlots { get; set; }
         public CharacterData[] Chars { get; set; }
 
-        public bool Read(byte[] data) {
-            BinaryReader br = new BinaryReader(data);
+        public PacketHeader GetHeader() => HEADER;
+
+        public bool Read(BinaryReader br) {
 
             var normal_slot = br.ReadUByte();
             var premium_slot = br.ReadUByte();

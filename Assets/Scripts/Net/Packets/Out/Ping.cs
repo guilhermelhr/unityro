@@ -14,7 +14,9 @@ public class Ping : OutPacket {
 
     public override bool Send(BinaryWriter writer) {
         base.Send(writer);
+
         writer.Write(time);
+        writer.Flush();
 
         return true;
     }

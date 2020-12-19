@@ -2,12 +2,7 @@
 using System.Net;
 
 public partial class AC {
-    [PacketHandler(
-        HEADER,
-        "AC_ACCEPT_LOGIN",
-        PacketHandlerAttribute.VariableSize,
-        PacketHandlerAttribute.PacketDirection.In
-    )]
+    [PacketHandler(HEADER, "AC_ACCEPT_LOGIN")]
     public class ACCEPT_LOGIN : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.AC_ACCEPT_LOGIN3;
@@ -15,11 +10,11 @@ public partial class AC {
         public int AccountID { get; set; }
         public int LoginID2 { get; set; }
         public byte Sex { get; set; }
-
         public CharServerInfo[] Servers { get; set; }
 
-        public bool Read(byte[] data) {
-            BinaryReader br = new BinaryReader(data);
+        public PacketHeader GetHeader() => HEADER;
+
+        public bool Read(BinaryReader br) {
 
             LoginID1 = br.ReadLong();
             AccountID = br.ReadLong();
@@ -36,9 +31,9 @@ public partial class AC {
              * Note: Here we've already skipped 4 bytes from reading the cmd and size
              */
 
-            long serverCount = (data.Length - br.Position) / 32;
+            long serverCount = (br.Length - br.Position) / 32;
             Servers = new CharServerInfo[serverCount];
-            for(int i = 0; i < serverCount; i++) {
+            for (int i = 0; i < serverCount; i++) {
                 CharServerInfo csi = new CharServerInfo();
                 csi.IP = new IPAddress(br.ReadULong());
                 csi.Port = br.ReadUShort();
