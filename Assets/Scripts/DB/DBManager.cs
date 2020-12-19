@@ -77,23 +77,52 @@ public class DBManager {
         return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/\xb8\xd3\xb8\xae\xc5\xeb/{SexTable[sex]}/{HairIndexPath[sex][headId]}_{SexTable[sex]}";
     }
 
-    public static Hashtable MapTable {
-        get {
-            return mapTable;
+    public static string GetShieldPath(int id, int job, int sex) {
+        if (id == 0) {
+            return null;
         }
+
+        // Dual weapon (based on range id)
+        if (id > 500 && (id < 2100 || id > 2200)) {
+            return GetWeaponPath(id, job, sex);
+        }
+
+        //var baseClass = WeaponJobTable[job] || WeaponJobTable[0];
+
+        //// ItemID to View Id
+        //if ((id in ItemTable) && ('ClassNum' in ItemTable[id])) {
+        //    id = ItemTable[id].ClassNum;
+        //}
+
+
+        //return 'data/sprite/\xb9\xe6\xc6\xd0/' + baseClass + '/' + baseClass + '_' + SexTable[sex] + '_' + (ShieldTable[id] || ShieldTable[1]);
+        return null;
     }
 
-    public static Hashtable MsgStringTable {
-        get {
-            return msgStringTable;
+    public static string GetWeaponPath(int id, int job, int sex) {
+        if (id == 0) {
+            return null;
         }
+
+        //var baseClass = WeaponJobTable[job] || WeaponJobTable[0];
+
+        //// ItemID to View Id
+        //if ((id in ItemTable) && ('ClassNum' in ItemTable[id])) {
+        //    id = ItemTable[id].ClassNum;
+        //}
+
+        //WeaponTable.TryGetValue(id, out var weapon);
+        //return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/{baseClass}/{baseClass}_{SexTable[sex]}";
+
+        //return 'data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/' + baseClass + '/' + baseClass + '_' + SexTable[sex] + (weapon ?? ('_' + id));
+        return null;
     }
 
-    public static Hashtable MapAlias {
-        get {
-            return mapAlias;
-        }
-    }
+    public static Hashtable MapTable => mapTable;
+
+    public static Hashtable MsgStringTable => msgStringTable;
+
+    public static Hashtable MapAlias => mapAlias;
 
     public static Dictionary<Job, String> BodyPath => bodyPathTable;
 
@@ -102,6 +131,7 @@ public class DBManager {
     public static int[][] HairIndexPath => HairIndexTable.table;
 
     public static void init() {
+        ItemTable.LoadDb();
         try {
             foreach (object[] args in LoadTable("data/msgstringtable.txt", 1)) {
                 msgStringTable[args[0]] = args[1];
@@ -128,6 +158,7 @@ public class DBManager {
             foreach (object[] args in LoadTable("data/resnametable.txt", 2)) {
                 mapAlias[args[1]] = args[2];
             }
+
 
 
             //TODO load these tables

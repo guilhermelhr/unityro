@@ -40,7 +40,7 @@ public class Core : MonoBehaviour {
     public static Camera MainCamera;
     public static long CurrentTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
-    private Hashtable configs = new Hashtable();
+    public static Hashtable Configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
 
     private bool roCamEnabled;
@@ -121,8 +121,8 @@ public class Core : MonoBehaviour {
     }
 
     private void LoadGrf() {
-        Debug.Log($"Loading GRF at {configs["grf"]} ...");
-        FileManager.loadGrf(configs["grf"] as string);
+        Debug.Log($"Loading GRF at {Configs["grf"]} ...");
+        FileManager.loadGrf(Configs["grf"] as string);
         Debug.Log($"GRF loaded, filetable contains {FileManager.Grf.files.Count} files.");
         OnGrfLoaded?.Invoke();
     }
@@ -148,7 +148,7 @@ public class Core : MonoBehaviour {
         foreach (string s in cfgTxt.Split('\n')) {
             string[] properties = s.Split('=');
             if (properties.Length == 2) {
-                configs.Add(properties[0], properties[1]);
+                Configs.Add(properties[0], properties[1]);
             }
         }
     }

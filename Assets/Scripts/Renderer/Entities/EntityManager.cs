@@ -193,6 +193,9 @@ public class EntityManager : MonoBehaviour {
         headViewer.Type = entity.Type;
         headViewer._ViewerType = ViewerType.HEAD;
 
+        if (data.Weapon != 0) {
+
+        }
 
         var controller = player.AddComponent<EntityControl>();
         controller.Entity = entity;
