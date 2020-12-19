@@ -1,3 +1,3 @@
 ﻿public enum ViewerType {
-    BODY, HEAD, SHADOW, LAYER
+    BODY, HEAD, SHADOW, LAYER, WEAPON
 }

@@ -26,6 +26,7 @@ public class Entity : MonoBehaviour {
     public short AttackSpeed { get; private set; }
     public short AttackRange { get; private set; } = 0;
     public short WalkSpeed { get; private set; } = 150;
+    public int Weapon { get; private set; }
 
     public void SetReady(bool ready) {
         IsReady = ready;
@@ -42,13 +43,9 @@ public class Entity : MonoBehaviour {
         Hair = data.hairStyle;
         Type = data.type;
         WalkSpeed = data.speed;
+        Weapon = data.weapon;
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
-    }
-
-    public void ChangeMotion(SpriteMotion motion) {
-        EntityViewer.ChangeMotion(motion);
-        //EntityViewer.State = AnimationHelper.GetStateForMotion(motion);
     }
 
     public void Init(CharacterData data) {
@@ -57,6 +54,12 @@ public class Entity : MonoBehaviour {
         Hair = data.Hair;
         WalkSpeed = data.Speed;
         Type = EntityType.PC;
+        Weapon = data.Weapon;
+    }
+
+    public void ChangeMotion(SpriteMotion motion) {
+        EntityViewer.ChangeMotion(motion);
+        //EntityViewer.State = AnimationHelper.GetStateForMotion(motion);
     }
 
     private void Update() {

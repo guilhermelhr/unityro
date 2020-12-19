@@ -23,10 +23,7 @@ public class DBManager {
     private static Hashtable mapAlias = new Hashtable();
     private static Dictionary<Job, string> bodyPathTable = BodyPathTable.init();
     private static Dictionary<int, string> monsterPathTable = MonsterTable.Table;
-    private static Dictionary<int, string> SexTable = new Dictionary<int, string>() {
-        { 0, "\xbf\xa9" },
-        { 1, "\xb3\xb2" },
-    };
+    private static string[] SexTable = new string[] {"\xbf\xa9","\xb3\xb2" };
 
     internal static int getWeaponAction(object weapon, Job job, object sex) {
         throw new NotImplementedException();
@@ -88,15 +85,16 @@ public class DBManager {
         }
 
         //var baseClass = WeaponJobTable[job] || WeaponJobTable[0];
+        var baseClass = 0; //TODO implement this
 
-        //// ItemID to View Id
-        //if ((id in ItemTable) && ('ClassNum' in ItemTable[id])) {
-        //    id = ItemTable[id].ClassNum;
-        //}
+        // ItemID to View Id
+        var ViewID = id;
+        if((ItemDB.ContainsKey(id)) && (ItemDB[id].ClassNum >= 0)) {
+            ViewID = ItemDB[id].ClassNum;
+        }
 
-
-        //return 'data/sprite/\xb9\xe6\xc6\xd0/' + baseClass + '/' + baseClass + '_' + SexTable[sex] + '_' + (ShieldTable[id] || ShieldTable[1]);
-        return null;
+        ItemTable.Shields.TryGetValue(ViewID, out var shield);
+        return $"data/sprite/\xb9\xe6\xc6\xd0/{baseClass}/{baseClass}_{SexTable[sex]}_{shield ?? ItemTable.Shields[1]}";
     }
 
     public static string GetWeaponPath(int id, int job, int sex) {
@@ -105,17 +103,18 @@ public class DBManager {
         }
 
         //var baseClass = WeaponJobTable[job] || WeaponJobTable[0];
+        var jobPath = BodyPath[(Job)job] == null ? BodyPath[0] : BodyPath[(Job)job];
+        var baseClass = jobPath; //TODO implement this
 
-        //// ItemID to View Id
-        //if ((id in ItemTable) && ('ClassNum' in ItemTable[id])) {
-        //    id = ItemTable[id].ClassNum;
-        //}
+        // ItemID to View Id
+        var ViewID = id;
+        if((ItemDB.ContainsKey(id)) && (ItemDB[id].ClassNum >= 0)) {
+            ViewID = ItemDB[id].ClassNum;
+        }
 
-        //WeaponTable.TryGetValue(id, out var weapon);
-        //return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/{baseClass}/{baseClass}_{SexTable[sex]}";
+        ItemTable.Weapons.TryGetValue((WeaponType)ViewID, out var weapon);
 
-        //return 'data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/' + baseClass + '/' + baseClass + '_' + SexTable[sex] + (weapon ?? ('_' + id));
-        return null;
+        return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/{baseClass}/{baseClass}_{SexTable[sex]}_{weapon ?? ViewID.ToString()}";
     }
 
     public static Hashtable MapTable => mapTable;
@@ -128,10 +127,12 @@ public class DBManager {
 
     public static Dictionary<int, string> MonsterPath => monsterPathTable;
 
+    public static Dictionary<int, Item> ItemDB => ItemTable.Items;
+
     public static int[][] HairIndexPath => HairIndexTable.table;
 
     public static void init() {
-        ItemTable.LoadDb();
+        ItemTable.LoadItemDb();
         try {
             foreach (object[] args in LoadTable("data/msgstringtable.txt", 1)) {
                 msgStringTable[args[0]] = args[1];

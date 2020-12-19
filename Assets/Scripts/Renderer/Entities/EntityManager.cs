@@ -63,7 +63,7 @@ public class EntityManager : MonoBehaviour {
         entity.ShadowSize = 1f;
         // Add more options such as sex etc
 
-        bodyViewer._ViewerType = ViewerType.BODY;
+        bodyViewer.ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
@@ -75,7 +75,7 @@ public class EntityManager : MonoBehaviour {
         headViewer.Entity = entity;
         headViewer.SpriteOrder = 1;
         headViewer.Type = entity.Type;
-        headViewer._ViewerType = ViewerType.HEAD;
+        headViewer.ViewerType = ViewerType.HEAD;
 
         entityCache.Add(data.id, entity);
         entity.GID = data.id;
@@ -104,7 +104,7 @@ public class EntityManager : MonoBehaviour {
         entity.SetReady(true);
         entity.ShadowSize = 1f;
 
-        bodyViewer._ViewerType = ViewerType.BODY;
+        bodyViewer.ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
@@ -138,7 +138,7 @@ public class EntityManager : MonoBehaviour {
         entity.SetReady(true);
         entity.ShadowSize = 1f;
 
-        bodyViewer._ViewerType = ViewerType.BODY;
+        bodyViewer.ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
@@ -179,7 +179,7 @@ public class EntityManager : MonoBehaviour {
         entity.GID = (uint)data.GID;
         // Add more options such as sex etc
 
-        bodyViewer._ViewerType = ViewerType.BODY;
+        bodyViewer.ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
@@ -191,10 +191,21 @@ public class EntityManager : MonoBehaviour {
         headViewer.Entity = entity;
         headViewer.SpriteOrder = 1;
         headViewer.Type = entity.Type;
-        headViewer._ViewerType = ViewerType.HEAD;
+        headViewer.ViewerType = ViewerType.HEAD;
 
         if (data.Weapon != 0) {
+            var weapon = new GameObject("Weapon");
+            weapon.layer = LayerMask.NameToLayer("Characters");
+            weapon.transform.SetParent(body.transform, false);
+            weapon.transform.localPosition = Vector3.zero;
 
+            var weaponViewer = weapon.AddComponent<EntityViewer>();
+            weaponViewer.Parent = bodyViewer;
+            weaponViewer.SpriteOrder = 2;
+            weaponViewer.Entity = entity;
+            weaponViewer.ViewerType = ViewerType.WEAPON;
+
+            bodyViewer.Children.Add(weaponViewer);
         }
 
         var controller = player.AddComponent<EntityControl>();
