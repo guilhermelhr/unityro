@@ -59,17 +59,18 @@ public class EntityViewer : MonoBehaviour {
 
         currentSPR = FileManager.Load(path + ".spr") as SPR;
         currentACT = FileManager.Load(path + ".act") as ACT;
+        currentSPR.SwitchToRGBA();
         sprites = currentSPR.GetSprites();
         meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
 
         if (currentAction == null)
             ChangeAction(0);
 
-        InitShadow();
-
         foreach (var child in Children) {
             child.Start();
         }
+
+        InitShadow();
     }
 
     void Update() {
@@ -235,7 +236,6 @@ public class EntityViewer : MonoBehaviour {
         }
         meshCollider.sharedMesh = mesh;
 
-        // Iterate each frame layer and do positioning magic
         if (ViewerType == ViewerType.WEAPON) {
             var spriteRenderer = gameObject.GetOrAddComponent<SpriteRenderer>();
             if (frame.layers.Length <= 0) {
@@ -253,6 +253,7 @@ public class EntityViewer : MonoBehaviour {
             spriteRenderer.transform.localPosition = newPos;
             spriteRenderer.transform.localScale = scale;
         } else {
+            // Iterate each frame layer and do positioning magic
             for (int i = 0; i < frame.layers.Length; i++) {
                 Layers.TryGetValue(i, out var spriteRenderer);
 
@@ -337,8 +338,8 @@ public class EntityViewer : MonoBehaviour {
         //if (ViewerType == ViewerType.WEAPON) {
         //    diff = ourAnchor;
         //}
-
-        transform.localPosition = new Vector3(diff.x, -diff.y, 0f) / SPR.PIXELS_PER_UNIT;
+        if (ViewerType != ViewerType.WEAPON)
+            transform.localPosition = new Vector3(diff.x, -diff.y, 0f) / SPR.PIXELS_PER_UNIT;
     }
 
     private void InitShadow() {
@@ -370,8 +371,8 @@ public class EntityViewer : MonoBehaviour {
 
     public Vector2 GetAnimationAnchor() {
         var frame = currentAction.frames[currentFrame];
-        //if (ViewerType == ViewerType.WEAPON && frame.layers.Length > 0)
-        //    return frame.layers[0].pos * -1;
+        if (ViewerType == ViewerType.WEAPON)
+            return Vector2.zero;
         if (frame.pos.Length > 0)
             return frame.pos[0];
         if (ViewerType == ViewerType.HEAD && (State == SpriteState.Idle || State == SpriteState.Sit))
