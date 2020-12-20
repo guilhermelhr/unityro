@@ -72,6 +72,8 @@ public class Entity : MonoBehaviour {
     public void UpdateHitPoints(int hp, int maxHp) {
         this.Hp = hp;
         this.MaxHp = maxHp;
+
+        Debug.Log($"{hp}/{maxHp}");
     }
 
     private void Update() {
