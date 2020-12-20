@@ -182,32 +182,30 @@ public class EntityViewer : MonoBehaviour {
          * since we cannot have more than one SpriteRenderer attached
          * to a single game object
          */
-        if (ViewerType != ViewerType.WEAPON) {
-            foreach (var frame in currentAction.frames) {
-                for (int i = 0; i < frame.layers.Length; i++) {
-                    var layer = frame.layers[i];
-                    var sprite = sprites[layer.index];
+        foreach (var frame in currentAction.frames) {
+            for (int i = 0; i < frame.layers.Length; i++) {
+                var layer = frame.layers[i];
+                var sprite = sprites[layer.index];
 
-                    Layers.TryGetValue(i, out var spriteRenderer);
+                Layers.TryGetValue(i, out var spriteRenderer);
 
-                    if (spriteRenderer == null) {
-                        var go = new GameObject($"Layer{i}");
-                        spriteRenderer = go.AddComponent<SpriteRenderer>();
-                        //spriteRenderer.flipY = true;
-                        spriteRenderer.sortingOrder = SpriteOrder;
+                if (spriteRenderer == null) {
+                    var go = new GameObject($"Layer{i}");
+                    spriteRenderer = go.AddComponent<SpriteRenderer>();
+                    //spriteRenderer.flipY = true;
+                    spriteRenderer.sortingOrder = SpriteOrder;
 
-                        spriteRenderer.transform.SetParent(gameObject.transform, false);
-                    }
+                    spriteRenderer.transform.SetParent(gameObject.transform, false);
+                }
 
-                    CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
+                CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
 
-                    spriteRenderer.transform.localRotation = rotation;
-                    spriteRenderer.transform.localPosition = newPos;
-                    spriteRenderer.transform.localScale = scale;
+                spriteRenderer.transform.localRotation = rotation;
+                spriteRenderer.transform.localPosition = newPos;
+                spriteRenderer.transform.localScale = scale;
 
-                    if (!Layers.ContainsKey(i)) {
-                        Layers.Add(i, spriteRenderer);
-                    }
+                if (!Layers.ContainsKey(i)) {
+                    Layers.Add(i, spriteRenderer);
                 }
             }
         }
@@ -236,38 +234,25 @@ public class EntityViewer : MonoBehaviour {
         }
         meshCollider.sharedMesh = mesh;
 
-        if (ViewerType == ViewerType.WEAPON) {
-            var spriteRenderer = gameObject.GetOrAddComponent<SpriteRenderer>();
-            if (frame.layers.Length <= 0) {
-                spriteRenderer.sprite = null;
-                return;
-            }
-            var layer = frame.layers[0];
-            var sprite = sprites[layer.index];
+        // If current frame doesn't have layers, cleanup layer cache
+        if (frame.layers.Length <= 0) {
+            Layers.Values.ToList().ForEach(Renderer => Renderer.sprite = null);
+        }
 
-            spriteRenderer.sprite = sprite;
-            spriteRenderer.sortingOrder = SpriteOrder;
+        // Iterate each frame layer and do positioning magic
+        for (int i = 0; i < frame.layers.Length; i++) {
+            Layers.TryGetValue(i, out var spriteRenderer);
 
-            CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
-            spriteRenderer.transform.localRotation = rotation;
-            spriteRenderer.transform.localPosition = newPos;
-            spriteRenderer.transform.localScale = scale;
-        } else {
-            // Iterate each frame layer and do positioning magic
-            for (int i = 0; i < frame.layers.Length; i++) {
-                Layers.TryGetValue(i, out var spriteRenderer);
+            if (spriteRenderer) {
+                var layer = frame.layers[i];
+                var sprite = sprites[layer.index];
 
-                if (spriteRenderer) {
-                    var layer = frame.layers[i];
-                    var sprite = sprites[layer.index];
+                spriteRenderer.sprite = sprite;
 
-                    spriteRenderer.sprite = sprite;
-
-                    CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
-                    spriteRenderer.transform.localRotation = rotation;
-                    spriteRenderer.transform.localPosition = newPos;
-                    spriteRenderer.transform.localScale = scale;
-                }
+                CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
+                spriteRenderer.transform.localRotation = rotation;
+                spriteRenderer.transform.localPosition = newPos;
+                spriteRenderer.transform.localScale = scale;
             }
         }
     }
@@ -335,9 +320,7 @@ public class EntityViewer : MonoBehaviour {
         var ourAnchor = GetAnimationAnchor();
 
         var diff = parentAnchor - ourAnchor;
-        //if (ViewerType == ViewerType.WEAPON) {
-        //    diff = ourAnchor;
-        //}
+
         if (ViewerType != ViewerType.WEAPON)
             transform.localPosition = new Vector3(diff.x, -diff.y, 0f) / SPR.PIXELS_PER_UNIT;
     }
@@ -371,8 +354,6 @@ public class EntityViewer : MonoBehaviour {
 
     public Vector2 GetAnimationAnchor() {
         var frame = currentAction.frames[currentFrame];
-        if (ViewerType == ViewerType.WEAPON)
-            return Vector2.zero;
         if (frame.pos.Length > 0)
             return frame.pos[0];
         if (ViewerType == ViewerType.HEAD && (State == SpriteState.Idle || State == SpriteState.Sit))
