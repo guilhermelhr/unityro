@@ -235,9 +235,7 @@ public class EntityViewer : MonoBehaviour {
         meshCollider.sharedMesh = mesh;
 
         // If current frame doesn't have layers, cleanup layer cache
-        if (frame.layers.Length <= 0) {
-            Layers.Values.ToList().ForEach(Renderer => Renderer.sprite = null);
-        }
+        Layers.Values.ToList().ForEach(Renderer => Renderer.sprite = null);
 
         // Iterate each frame layer and do positioning magic
         for (int i = 0; i < frame.layers.Length; i++) {
