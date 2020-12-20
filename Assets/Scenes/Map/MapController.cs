@@ -20,6 +20,7 @@ public class MapController : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_MOVE.HEADER, OnEntityMovement); //Others movement
         Core.NetworkClient.HookPacket(ZC.NPCACK_MAPMOVE.HEADER, OnEntityMoved);
         Core.NetworkClient.HookPacket(ZC.HP_INFO.HEADER, OnEntityHpChanged);
+        Core.NetworkClient.HookPacket(ZC.STOPMOVE.HEADER, OnEntityMovement);
 
         Core.Instance.InitCamera();
         Core.Instance.SetWorldLight(worldLight);
@@ -91,6 +92,13 @@ public class MapController : MonoBehaviour {
 
             entity.ChangeMotion(SpriteMotion.Walk);
             entity.StartMoving(pkt.StartPosition[0], pkt.StartPosition[1], pkt.EndPosition[0], pkt.EndPosition[1]);
+        } else if (packet is ZC.STOPMOVE) {
+            var pkt = packet as ZC.STOPMOVE;
+            var entity = Core.EntityManager.GetEntity(pkt.AID);
+            if(entity == null) return;
+
+            entity.ChangeMotion(SpriteMotion.Walk);
+            entity.StartMoving((int)entity.transform.position.x, (int)entity.transform.position.z, pkt.PosX, pkt.PosY);
         }
     }
 
