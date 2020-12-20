@@ -135,29 +135,29 @@ public class Entity : MonoBehaviour {
                                 // regular damage (and endure)
                                 case 9:
                                 case 0:
-                                    target.Damage(pkt.damage, Core.CurrentTime + pkt.attackMT);
+                                    target.Damage(pkt.damage, Core.Tick + pkt.attackMT);
                                     break;
 
                                 // double attack
                                 case 8:
                                     // Display combo only if entity is mob and the attack don't miss
                                     if (dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
-                                        dstEntity.Damage(pkt.damage / 2, Core.CurrentTime + pkt.attackMT * 1, DamageType.COMBO);
-                                        dstEntity.Damage(pkt.damage, Core.CurrentTime + pkt.attackMT * 2, DamageType.COMBO | DamageType.COMBO_FINAL);
+                                        dstEntity.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 1, DamageType.COMBO);
+                                        dstEntity.Damage(pkt.damage, Core.Tick + pkt.attackMT * 2, DamageType.COMBO | DamageType.COMBO_FINAL);
                                     }
 
-                                    target.Damage(pkt.damage / 2, Core.CurrentTime + pkt.attackMT * 1);
-                                    target.Damage(pkt.damage / 2, Core.CurrentTime + pkt.attackMT * 2);
+                                    target.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 1);
+                                    target.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 2);
                                     break;
 
                                 // TODO: critical damage
                                 case 10:
-                                    target.Damage(pkt.damage, Core.CurrentTime + pkt.attackMT);
+                                    target.Damage(pkt.damage, Core.Tick + pkt.attackMT);
                                     break;
 
                                 // TODO: lucky miss
                                 case 11:
-                                    target.Damage(0, Core.CurrentTime + pkt.attackMT);
+                                    target.Damage(0, Core.Tick + pkt.attackMT);
                                     break;
                             }
                         }
@@ -193,7 +193,7 @@ public class Entity : MonoBehaviour {
      * This method renders the damage sprites
      * The packet to receive damage data and etc is ZC_PAR_CHANGE
      */
-    public void Damage(float amount, float tick, DamageType? damageType = null) {
+    public void Damage(float amount, double tick, DamageType? damageType = null) {
         var DamagePrefab = (GameObject)Resources.Load("Prefabs/Damage");
         if (!DamagePrefab)
             throw new Exception("Could not load damage prefab");

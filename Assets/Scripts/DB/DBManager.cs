@@ -138,7 +138,7 @@ public class DBManager {
     public static int[][] HairIndexPath => HairIndexTable.table;
 
     public static void init() {
-        ItemTable.LoadItemDb();
+        //ItemTable.LoadItemDb();
         try {
             foreach (object[] args in LoadTable("data/msgstringtable.txt", 1)) {
                 msgStringTable[args[0]] = args[1];

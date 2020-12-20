@@ -45,9 +45,9 @@ public class EntityWalk : MonoBehaviour {
 
             StartMoving(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
         } else if (packet is ZC.STOPMOVE) {
-            Entity.ChangeMotion(SpriteMotion.Walk);
-            var pkt = packet as ZC.STOPMOVE;
-            StartMoving((int)transform.position.x, (int)transform.position.z, pkt.PosX, pkt.PosY);
+            //Entity.ChangeMotion(SpriteMotion.Walk);
+            //var pkt = packet as ZC.STOPMOVE;
+            //StartMoving((int)transform.position.x, (int)transform.position.z, pkt.PosX, pkt.PosY);
         }
     }
 

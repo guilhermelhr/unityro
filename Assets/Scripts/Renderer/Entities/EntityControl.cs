@@ -43,7 +43,7 @@ public class EntityControl : MonoBehaviour {
 
                         OutPacket packet = new CZ.REQUEST_ACT2() {
                             TargetGID = target.Entity.GID,
-                            action = 7
+                            action = 0
                         };
 
                         PathNode endNode;
@@ -62,7 +62,6 @@ public class EntityControl : MonoBehaviour {
                             y = (short)endNode.y,
                             dir = (byte)Entity.Direction
                         }.Send();
-
 
                         break;
                     case EntityType.WARP:

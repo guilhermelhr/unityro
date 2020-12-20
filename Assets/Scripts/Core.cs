@@ -38,7 +38,7 @@ public class Core : MonoBehaviour {
 
     public static Core Instance;
     public static Camera MainCamera;
-    public static long CurrentTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+    public static long Tick = 0;
 
     public static Hashtable Configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
@@ -160,6 +160,7 @@ public class Core : MonoBehaviour {
     }
 
     void Update() {
+        Tick = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
         if (mapRenderer.Ready) {
             mapRenderer.Render();
         }

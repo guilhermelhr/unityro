@@ -1,4 +1,4 @@
-﻿public enum DamageType : byte {
+﻿public enum DamageType {
     HEAL = 1 << 0,
     MISS = 1 << 1,
     DAMAGE = 1 << 2,
