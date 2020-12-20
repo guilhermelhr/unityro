@@ -10,15 +10,15 @@ public class EntityManager : MonoBehaviour {
     public Entity Spawn(EntityData data) {
         switch (data.type) {
             case EntityType.PC:
-                entityCache.TryGetValue(data.id, out var pc);
+                entityCache.TryGetValue(data.GID, out var pc);
                 pc?.gameObject.SetActive(true);
                 return pc ?? SpawnPC(data);
             case EntityType.NPC:
-                entityCache.TryGetValue(data.id, out var npc);
+                entityCache.TryGetValue(data.GID, out var npc);
                 npc?.gameObject.SetActive(true);
                 return npc ?? SpawnNPC(data);
             case EntityType.MOB:
-                entityCache.TryGetValue(data.id, out var mob);
+                entityCache.TryGetValue(data.GID, out var mob);
                 mob?.gameObject.SetActive(true);
                 return mob ?? SpawnMOB(data);
             default:
@@ -31,9 +31,12 @@ public class EntityManager : MonoBehaviour {
         return entity;
     }
 
-    public void HideEntity(uint GID, EntityType type) {
+    public void VanishEntity(uint GID, EntityType type) {
         entityCache.TryGetValue(GID, out var entity);
         entity?.gameObject.SetActive(false);
+        //if (entity != null) {
+        //    entityCache.Remove(GID);
+        //}
     }
 
     private Entity SpawnPC(EntityData data) {
@@ -46,7 +49,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0.5f, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.2f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -77,8 +80,8 @@ public class EntityManager : MonoBehaviour {
         headViewer.Type = entity.Type;
         headViewer.ViewerType = ViewerType.HEAD;
 
-        entityCache.Add(data.id, entity);
-        entity.GID = data.id;
+        entityCache.Add(data.GID, entity);
+        entity.GID = data.GID;
         entity.SetReady(true);
 
         return entity;
@@ -94,7 +97,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("NPC");
         body.transform.SetParent(npc.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0.5f, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.2f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -111,8 +114,8 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.CurrentMotion = SpriteMotion.Idle;
         bodyViewer.Type = entity.Type;
 
-        entityCache.Add(data.id, entity);
-        entity.GID = data.id;
+        entityCache.Add(data.GID, entity);
+        entity.GID = data.GID;
         entity.SetReady(true);
 
         return entity;
@@ -128,7 +131,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Monsters");
         body.transform.SetParent(mob.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0.5f, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.2f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -145,8 +148,8 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.CurrentMotion = SpriteMotion.Idle;
         bodyViewer.Type = entity.Type;
 
-        entityCache.Add(data.id, entity);
-        entity.GID = data.id;
+        entityCache.Add(data.GID, entity);
+        entity.GID = data.GID;
         entity.SetReady(true);
 
         return entity;
@@ -162,7 +165,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0.5f, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.2f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 

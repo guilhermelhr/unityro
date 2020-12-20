@@ -10,9 +10,10 @@ public class EntityWalk : MonoBehaviour {
     private void Awake() {
         Entity = GetComponent<Entity>();
 
-        if (Entity.HasAuthority)
+        if (Entity.HasAuthority) {
             Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERMOVE.HEADER, OnPlayerMovement); //Our movement
-        //Core.NetworkClient.HookPacket(ZC.STOPMOVE.HEADER, OnPlayerMovement); //Our movement
+            Core.NetworkClient.HookPacket(ZC.STOPMOVE.HEADER, OnPlayerMovement);
+        }
     }
 
     private void Update() {
@@ -21,6 +22,15 @@ public class EntityWalk : MonoBehaviour {
             if (Physics.Raycast(ray, out var hit, 150)) {
                 RequestMove(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z), 0);
             }
+        }
+    }
+
+    private void OnDisable() {
+        if (MoveIE != null) {
+            StopCoroutine(MoveIE);
+        }
+        if (MoveToIE != null) {
+            StopCoroutine(MoveToIE);
         }
     }
 
@@ -63,6 +73,15 @@ public class EntityWalk : MonoBehaviour {
         Entity.ChangeMotion(SpriteMotion.Idle);
     }
 
+    private IEnumerator OnWalkEnd() {
+        Entity.ChangeMotion(SpriteMotion.Idle);
+        yield return new WaitForEndOfFrame();
+        Entity.MoveAction?.Send();
+        Entity.MoveAction = null;
+
+        yield return null;
+    }
+
     IEnumerator Move(List<PathNode> path) {
         var linkedList = new LinkedList<PathNode>(path);
 
@@ -77,7 +96,7 @@ public class EntityWalk : MonoBehaviour {
             yield return MoveToIE;
         }
 
-        Entity.ChangeMotion(SpriteMotion.Idle);
+        yield return OnWalkEnd();
     }
 
     IEnumerator MoveTo(PathNode node) {

@@ -23,10 +23,16 @@ public class DBManager {
     private static Hashtable mapAlias = new Hashtable();
     private static Dictionary<Job, string> bodyPathTable = BodyPathTable.init();
     private static Dictionary<int, string> monsterPathTable = MonsterTable.Table;
-    private static string[] SexTable = new string[] {"\xbf\xa9","\xb3\xb2" };
+    private static string[] SexTable = new string[] { "\xbf\xa9", "\xb3\xb2" };
 
-    internal static int getWeaponAction(object weapon, Job job, object sex) {
-        throw new NotImplementedException();
+    public static void GetWeaponAction() {
+
+    }
+
+    public static int GetItemViewID(int itemId) {
+        ItemDB.TryGetValue(itemId, out Item item);
+
+        return item?.ClassNum ?? -1;
     }
 
     public static string GetBodyPath(Job job, int sex) {
@@ -89,7 +95,7 @@ public class DBManager {
 
         // ItemID to View Id
         var ViewID = id;
-        if((ItemDB.ContainsKey(id)) && (ItemDB[id].ClassNum >= 0)) {
+        if ((ItemDB.ContainsKey(id)) && (ItemDB[id].ClassNum >= 0)) {
             ViewID = ItemDB[id].ClassNum;
         }
 
@@ -108,7 +114,7 @@ public class DBManager {
 
         // ItemID to View Id
         var ViewID = id;
-        if((ItemDB.ContainsKey(id)) && (ItemDB[id].ClassNum >= 0)) {
+        if ((ItemDB.ContainsKey(id)) && (ItemDB[id].ClassNum >= 0)) {
             ViewID = ItemDB[id].ClassNum;
         }
 

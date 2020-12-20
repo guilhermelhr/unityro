@@ -43,7 +43,7 @@ public class EntityControl : MonoBehaviour {
 
                         OutPacket packet = new CZ.REQUEST_ACT2() {
                             TargetGID = target.Entity.GID,
-                            Size = 7
+                            action = 7
                         };
 
                         PathNode endNode;
@@ -55,7 +55,7 @@ public class EntityControl : MonoBehaviour {
                         }
 
                         //TODO figure out what this is
-                        //Session.MoveAction = packet;
+                        Entity.MoveAction = packet;
 
                         new CZ.REQUEST_MOVE2() {
                             x = (short)endNode.x,

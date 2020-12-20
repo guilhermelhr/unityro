@@ -10,11 +10,12 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_PAR_CHANGE;
         public const int SIZE = 8;
 
-        public bool Read(BinaryReader br) {
-            var varID = br.ReadUShort();
-            var value = br.ReadLong();
+        public EntityStatus varID;
+        public int value;
 
-            Debug.LogWarning($"ZC_PAR_CHANGE {(EntityStatus)varID}:{value}");
+        public bool Read(BinaryReader br) {
+            varID = (EntityStatus)br.ReadUShort();
+            value = br.ReadLong();
 
             return true;
         }

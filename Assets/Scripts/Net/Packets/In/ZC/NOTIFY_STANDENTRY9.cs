@@ -1,9 +1,9 @@
 ﻿public partial class ZC {
 
-	[PacketHandler(HEADER, "ZC_NOTIFY_STANDENTRY9")]
+    [PacketHandler(HEADER, "ZC_NOTIFY_STANDENTRY9")]
     public class NOTIFY_STANDENTRY9 : InPacket {
 
-        public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_STANDENTRY9;
+        public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_STANDENTRY11;
 
         public EntityData entityData;
 
@@ -11,8 +11,8 @@
             entityData = new EntityData() {
                 type = (EntityType)br.ReadUByte(),
 
-                id = br.ReadULong(),
                 GID = br.ReadULong(),
+                AID = br.ReadULong(),
 
                 speed = br.ReadShort(),
                 opt1 = br.ReadShort(),
@@ -65,6 +65,6 @@
             };
 
             return true;
-		}
+        }
     }
 }

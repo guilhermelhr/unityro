@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 public class Entity : MonoBehaviour {
 
     private EntityWalk _EntityWalk;
+    public OutPacket MoveAction;
 
     // Picking Priority
     // TODO
@@ -27,6 +28,8 @@ public class Entity : MonoBehaviour {
     public short AttackRange { get; private set; } = 0;
     public short WalkSpeed { get; private set; } = 150;
     public int Weapon { get; private set; }
+    public int Hp { get; private set; }
+    public int MaxHp { get; private set; }
 
     public void SetReady(bool ready) {
         IsReady = ready;
@@ -44,6 +47,8 @@ public class Entity : MonoBehaviour {
         Type = data.type;
         WalkSpeed = data.speed;
         Weapon = data.weapon;
+        Hp = data.hp;
+        MaxHp = data.maxhp;
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
     }
@@ -55,11 +60,18 @@ public class Entity : MonoBehaviour {
         WalkSpeed = data.Speed;
         Type = EntityType.PC;
         Weapon = data.Weapon;
+        Hp = data.HP;
+        MaxHp = data.MaxHP;
     }
 
-    public void ChangeMotion(SpriteMotion motion) {
-        EntityViewer.ChangeMotion(motion);
+    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null) {
+        EntityViewer.ChangeMotion(motion, nextMotion);
         //EntityViewer.State = AnimationHelper.GetStateForMotion(motion);
+    }
+
+    public void UpdateHitPoints(int hp, int maxHp) {
+        this.Hp = hp;
+        this.MaxHp = maxHp;
     }
 
     private void Update() {
@@ -73,6 +85,15 @@ public class Entity : MonoBehaviour {
 
     private void Awake() {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
+        Core.NetworkClient.HookPacket(ZC.PAR_CHANGE.HEADER, OnParameterChange);
+        Core.NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
+    }
+
+    private void OnParameterChange(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.PAR_CHANGE) {
+            var pkt = packet as ZC.PAR_CHANGE;
+
+        }
     }
 
     private void OnEntityAction(ushort cmd, int size, InPacket packet) {
@@ -104,8 +125,7 @@ public class Entity : MonoBehaviour {
                         // only if damage and do not have endure
                         // and damage isn't absorbed (healing)
                         if (pkt.damage > 0 && pkt.action != 9 && pkt.action != 4) {
-                            dstEntity.ChangeMotion(SpriteMotion.Hit);
-                            dstEntity.ChangeMotion(SpriteMotion.Standby);
+                            dstEntity.ChangeMotion(SpriteMotion.Hit, SpriteMotion.Standby);
                         }
 
                         target = pkt.damage > 0 ? dstEntity : srcEntity;
@@ -115,29 +135,29 @@ public class Entity : MonoBehaviour {
                                 // regular damage (and endure)
                                 case 9:
                                 case 0:
-                                    //Damage.add(pkt.damage, target, Renderer.tick + pkt.attackMT);
+                                    target.Damage(pkt.damage, Core.CurrentTime + pkt.attackMT);
                                     break;
 
                                 // double attack
                                 case 8:
                                     // Display combo only if entity is mob and the attack don't miss
-                                    //if (dstEntity.objecttype === Entity.TYPE_MOB && pkt.damage > 0) {
-                                    //    Damage.add(pkt.damage / 2, dstEntity, Renderer.tick + pkt.attackMT * 1, Damage.TYPE.COMBO);
-                                    //    Damage.add(pkt.damage, dstEntity, Renderer.tick + pkt.attackMT * 2, Damage.TYPE.COMBO | Damage.TYPE.COMBO_FINAL);
-                                    //}
+                                    if (dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
+                                        dstEntity.Damage(pkt.damage / 2, Core.CurrentTime + pkt.attackMT * 1, DamageType.COMBO);
+                                        dstEntity.Damage(pkt.damage, Core.CurrentTime + pkt.attackMT * 2, DamageType.COMBO | DamageType.COMBO_FINAL);
+                                    }
 
-                                    //Damage.add(pkt.damage / 2, target, Renderer.tick + pkt.attackMT * 1);
-                                    //Damage.add(pkt.damage / 2, target, Renderer.tick + pkt.attackMT * 2);
+                                    target.Damage(pkt.damage / 2, Core.CurrentTime + pkt.attackMT * 1);
+                                    target.Damage(pkt.damage / 2, Core.CurrentTime + pkt.attackMT * 2);
                                     break;
 
                                 // TODO: critical damage
                                 case 10:
-                                    //Damage.add(pkt.damage, target, Renderer.tick + pkt.attackMT);
+                                    target.Damage(pkt.damage, Core.CurrentTime + pkt.attackMT);
                                     break;
 
                                 // TODO: lucky miss
                                 case 11:
-                                    //Damage.add(0, target, Renderer.tick + pkt.attackMT);
+                                    target.Damage(0, Core.CurrentTime + pkt.attackMT);
                                     break;
                             }
                         }
@@ -146,8 +166,7 @@ public class Entity : MonoBehaviour {
                     }
 
                     srcEntity.AttackSpeed = (short)pkt.attackMT;
-                    srcEntity.ChangeMotion(SpriteMotion.Attack1);
-                    //srcEntity.ChangeMotion(SpriteMotion.Standby);
+                    srcEntity.ChangeMotion(SpriteMotion.Attack1, SpriteMotion.Standby);
                     break;
 
                 // Pickup Item
@@ -168,5 +187,18 @@ public class Entity : MonoBehaviour {
     private void LookTo(Vector3 position) {
         var offset = new Vector2Int((int)position.x, (int)position.z) - new Vector2Int((int)transform.position.x, (int)transform.position.z);
         Direction = PathFindingManager.GetDirectionForOffset(offset);
+    }
+
+    /**
+     * This method renders the damage sprites
+     * The packet to receive damage data and etc is ZC_PAR_CHANGE
+     */
+    public void Damage(float amount, float tick, DamageType? damageType = null) {
+        var DamagePrefab = (GameObject)Resources.Load("Prefabs/Damage");
+        if (!DamagePrefab)
+            throw new Exception("Could not load damage prefab");
+
+        var damageRenderer = Instantiate(DamagePrefab).GetComponent<DamageRenderer>();
+        damageRenderer.Display(amount, tick, damageType, this);
     }
 }

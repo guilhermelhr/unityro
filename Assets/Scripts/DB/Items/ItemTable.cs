@@ -128,34 +128,34 @@ public class ItemTable {
     public static Dictionary<WeaponType, string> WeaponSound = new Dictionary<WeaponType, string>() {
         { WeaponType.NONE                  , "_hit_mace.wav" },
         { WeaponType.SHORTSWORD            , "_hit_sword.wav" },
-	    { WeaponType.SWORD                 , "_hit_sword.wav" },
-	    { WeaponType.TWOHANDSWORD          , "_hit_sword.wav" },
-	    { WeaponType.SPEAR                 , "_hit_spear.wav" },
-	    { WeaponType.TWOHANDSPEAR          , "_hit_spear.wav" },
-	    { WeaponType.AXE                   , "_hit_axe.wav" },
-	    { WeaponType.TWOHANDAXE            , "_hit_axe.wav" },
-	    { WeaponType.MACE                  , "_hit_mace.wav" },
-	    { WeaponType.TWOHANDMACE           , "_hit_mace.wav" },
-	    { WeaponType.ROD                   , "_hit_rod.wav" },
-	    { WeaponType.BOW                   , "_hit_arrow.wav" },
-	    { WeaponType.KNUKLE                , "_hit_mace.wav" },
-	    { WeaponType.INSTRUMENT            , "_hit_mace.wav" },
-	    { WeaponType.WHIP                  , "_hit_mace.wav" },
-	    { WeaponType.BOOK                  , "_hit_mace.wav" },
-	    { WeaponType.KATAR                 , "_hit_mace.wav" },
-	    { WeaponType.GUN_HANDGUN           , "_hit_±ÇÃÑ.wav" },
-	    { WeaponType.GUN_RIFLE             , "_hit_¶óÀÌÇÃ.wav" },
-	    { WeaponType.GUN_GATLING           , "_hit_mace.wav" },
-	    { WeaponType.GUN_SHOTGUN           , "_hit_mace.wav" },
-	    { WeaponType.GUN_GRANADE           , "_hit_mace.wav" },
-	    { WeaponType.SYURIKEN              , "_hit_mace.wav" },
-	    { WeaponType.TWOHANDROD            , "_hit_rod.wav" },
-	    { WeaponType.SHORTSWORD_SHORTSWORD , "_hit_mace.wav" },
-	    { WeaponType.SWORD_SWORD           , "_hit_mace.wav" },
-	    { WeaponType.AXE_AXE               , "_hit_mace.wav" },
-	    { WeaponType.SHORTSWORD_SWORD      , "_hit_mace.wav" },
-	    { WeaponType.SHORTSWORD_AXE        , "_hit_mace.wav" },
-	    { WeaponType.SWORD_AXE             , "_hit_mace.wav" },
+        { WeaponType.SWORD                 , "_hit_sword.wav" },
+        { WeaponType.TWOHANDSWORD          , "_hit_sword.wav" },
+        { WeaponType.SPEAR                 , "_hit_spear.wav" },
+        { WeaponType.TWOHANDSPEAR          , "_hit_spear.wav" },
+        { WeaponType.AXE                   , "_hit_axe.wav" },
+        { WeaponType.TWOHANDAXE            , "_hit_axe.wav" },
+        { WeaponType.MACE                  , "_hit_mace.wav" },
+        { WeaponType.TWOHANDMACE           , "_hit_mace.wav" },
+        { WeaponType.ROD                   , "_hit_rod.wav" },
+        { WeaponType.BOW                   , "_hit_arrow.wav" },
+        { WeaponType.KNUKLE                , "_hit_mace.wav" },
+        { WeaponType.INSTRUMENT            , "_hit_mace.wav" },
+        { WeaponType.WHIP                  , "_hit_mace.wav" },
+        { WeaponType.BOOK                  , "_hit_mace.wav" },
+        { WeaponType.KATAR                 , "_hit_mace.wav" },
+        { WeaponType.GUN_HANDGUN           , "_hit_±ÇÃÑ.wav" },
+        { WeaponType.GUN_RIFLE             , "_hit_¶óÀÌÇÃ.wav" },
+        { WeaponType.GUN_GATLING           , "_hit_mace.wav" },
+        { WeaponType.GUN_SHOTGUN           , "_hit_mace.wav" },
+        { WeaponType.GUN_GRANADE           , "_hit_mace.wav" },
+        { WeaponType.SYURIKEN              , "_hit_mace.wav" },
+        { WeaponType.TWOHANDROD            , "_hit_rod.wav" },
+        { WeaponType.SHORTSWORD_SHORTSWORD , "_hit_mace.wav" },
+        { WeaponType.SWORD_SWORD           , "_hit_mace.wav" },
+        { WeaponType.AXE_AXE               , "_hit_mace.wav" },
+        { WeaponType.SHORTSWORD_SWORD      , "_hit_mace.wav" },
+        { WeaponType.SHORTSWORD_AXE        , "_hit_mace.wav" },
+        { WeaponType.SWORD_AXE             , "_hit_mace.wav" },
     };
 
     public static void LoadItemDb() {
@@ -164,18 +164,17 @@ public class ItemTable {
         script.DoFile(Core.Configs["itemInfo"] as string);
         Table table = (Table)script.Globals["tbl"];
 
-        foreach(var key in table.Keys) {
+        foreach (var key in table.Keys) {
             try {
                 var it = table[key] as Table;
-                var test = ((Table)it["unidentifiedDescriptionName"]).Values.ToList();
 
                 List<string> unidentifiedDescriptionName = new List<string>();
-                foreach(var desc in ((Table)it["unidentifiedDescriptionName"]).Values) {
+                foreach (var desc in ((Table)it["unidentifiedDescriptionName"]).Values) {
                     unidentifiedDescriptionName.Add(desc.ToString());
                 }
 
                 List<string> identifiedDescriptionName = new List<string>();
-                foreach(var desc in ((Table)it["identifiedDescriptionName"]).Values) {
+                foreach (var desc in ((Table)it["identifiedDescriptionName"]).Values) {
                     identifiedDescriptionName.Add(desc.ToString());
                 }
 
@@ -193,7 +192,7 @@ public class ItemTable {
                 };
 
                 Items.Add(item.id, item);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 Debug.LogError($"Could not load item {key} - {e}");
             }
         }

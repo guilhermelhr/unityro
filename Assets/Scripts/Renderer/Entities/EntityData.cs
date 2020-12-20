@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 public class EntityData {
     public EntityType type;
-    public uint id;
     public uint GID;
+    public uint AID;
     public short speed;
     public short opt1;
     public short opt2;
     public int optionVal;
     public short job;
     public short hairStyle;
-    public short weapon;
-    public short shield;
+    public int weapon;
+    public int shield;
     public short headBottom;
     public short headTop;
     public short headMid;
@@ -40,5 +40,6 @@ public class EntityData {
     public byte isBoss;
     public short body;
     public string name;
+    public uint moveStartTime;
 }
 

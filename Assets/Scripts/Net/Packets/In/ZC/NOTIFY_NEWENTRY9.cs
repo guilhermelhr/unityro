@@ -3,7 +3,7 @@
     [PacketHandler(HEADER, "ZC_NOTIFY_NEWENTRY9")]
     public class NOTIFY_NEWENTRY9 : InPacket {
 
-        public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_NEWENTRY9;
+        public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_NEWENTRY11;
 
         public EntityData entityData;
 
@@ -11,8 +11,8 @@
             entityData = new EntityData() {
                 type = (EntityType)br.ReadUByte(),
 
-                id = br.ReadULong(),
                 GID = br.ReadULong(),
+                AID = br.ReadULong(),
 
                 speed = br.ReadShort(),
                 opt1 = br.ReadShort(),

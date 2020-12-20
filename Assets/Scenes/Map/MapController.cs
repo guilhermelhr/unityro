@@ -15,10 +15,11 @@ public class MapController : MonoBehaviour {
 
         Core.NetworkClient.HookPacket(ZC.NOTIFY_STANDENTRY9.HEADER, OnEntitySpawn);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_NEWENTRY9.HEADER, OnEntitySpawn);
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_MOVEENTRY9.HEADER, OnEntitySpawn);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_VANISH.HEADER, OnEntityVanish);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_MOVE.HEADER, OnEntityMovement); //Others movement
         Core.NetworkClient.HookPacket(ZC.NPCACK_MAPMOVE.HEADER, OnEntityMoved);
-
+        Core.NetworkClient.HookPacket(ZC.HP_INFO.HEADER, OnEntityHpChanged);
 
         Core.Instance.InitCamera();
         Core.Instance.SetWorldLight(worldLight);
@@ -38,6 +39,15 @@ public class MapController : MonoBehaviour {
         Core.Session.Entity.SetReady(true);
     }
 
+    private void OnEntityHpChanged(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.HP_INFO) {
+            var pkt = packet as ZC.HP_INFO;
+
+            var entity = Core.EntityManager.GetEntity(pkt.GID);
+            entity.UpdateHitPoints(pkt.Hp, pkt.MaxHp);
+        }
+    }
+
     private void OnEntityMoved(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NPCACK_MAPMOVE) {
             var pkt = packet as ZC.NPCACK_MAPMOVE;
@@ -55,7 +65,7 @@ public class MapController : MonoBehaviour {
     private void OnEntityVanish(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NOTIFY_VANISH) {
             var pkt = packet as ZC.NOTIFY_VANISH;
-            Core.EntityManager.HideEntity(pkt.GID, pkt.Type);
+            Core.EntityManager.VanishEntity(pkt.GID, pkt.Type);
         }
     }
 
@@ -65,6 +75,9 @@ public class MapController : MonoBehaviour {
             Core.EntityManager.Spawn(pkt.entityData);
         } else if (packet is ZC.NOTIFY_STANDENTRY9) {
             var pkt = packet as ZC.NOTIFY_STANDENTRY9;
+            Core.EntityManager.Spawn(pkt.entityData);
+        } else if (packet is ZC.NOTIFY_MOVEENTRY9) {
+            var pkt = packet as ZC.NOTIFY_MOVEENTRY9;
             Core.EntityManager.Spawn(pkt.entityData);
         }
     }
