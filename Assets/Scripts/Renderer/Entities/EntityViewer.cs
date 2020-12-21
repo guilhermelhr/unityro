@@ -309,6 +309,10 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void ChildSetFrameData(int actionIndex, int angleIndex, int newCurrentFrame) {
+        if(currentACT == null) {
+            Debug.LogError($"Current ACT is null from {Entity}");
+            return;
+        }
         currentActionIndex = actionIndex;
         currentAngleIndex = angleIndex;
 
