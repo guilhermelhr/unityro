@@ -31,13 +31,12 @@ public class CursorRenderer : MonoBehaviour {
         };
 
     private CursorAction type;
-    private float tick;
-    private bool noRepeat;
-    private int animation;
-    private bool play = true;
+    private double tick;
+    private bool repeat;
 
-    public int currentAction = 0;
-    public bool freeze = false;
+    public int currentAction;
+    private int currentFrame;
+    private double currentFrameTime = 0;
 
     // Use this for initialization
     void Start() {
@@ -47,7 +46,7 @@ public class CursorRenderer : MonoBehaviour {
         tick = Time.deltaTime;
 
         FlipTextures();
-        //StartCoroutine(Animate());
+        SetAction(CursorAction.DEFAULT, true);
     }
 
     void Update() {
@@ -61,20 +60,20 @@ public class CursorRenderer : MonoBehaviour {
                 if (target != null) {
                     switch (target.Entity.Type) {
                         case EntityType.NPC:
-                            SetAction(CursorAction.TALK, true);
+                            SetAction(CursorAction.TALK, false);
                             break;
                         case EntityType.ITEM:
-                            SetAction(CursorAction.PICK, true);
+                            SetAction(CursorAction.PICK, false);
                             break;
                         case EntityType.MOB:
-                            SetAction(CursorAction.ATTACK, true);
+                            SetAction(CursorAction.ATTACK, false);
                             break;
                         case EntityType.WARP:
-                            SetAction(CursorAction.WARP, true);
+                            SetAction(CursorAction.WARP, false);
                             break;
                     }
                 } else {
-                    SetAction(CursorAction.DEFAULT, false);
+                    SetAction(CursorAction.DEFAULT, true);
                 }
             }
         }
@@ -82,41 +81,47 @@ public class CursorRenderer : MonoBehaviour {
 
     // Update is called once per frame
     void LateUpdate() {
-        ActionInformations.TryGetValue(type, out var info);
-        info = info ?? ActionInformations[CursorAction.DEFAULT];
-        var action = act.actions[(int)type];
-        var anim = animation;
-        var delay = action.delay * info.delayMult;
+        var action = act.actions[currentAction];
+        currentFrameTime -= Time.deltaTime;
 
+        if (currentFrameTime < 0 || currentFrame > action.frames.Length - 1) {
+            AdvanceFrame();
+        }
 
-        if (play) {
-            var frame = (int)((Time.deltaTime - tick) / delay) | 0;
-            if (noRepeat) {
-                anim = Math.Min(frame, action.frames.Length - 1);
+        var index = action.frames[currentFrame].layers[0].index;
+        Cursor.SetCursor(textures[index], Vector2.zero, CursorMode.ForceSoftware);
+    }
+
+    private void AdvanceFrame() {
+        var action = act.actions[currentAction];
+        currentFrame++;
+        if (currentFrame > action.frames.Length - 1) {
+            if (repeat) {
+                currentFrame = 0;
             } else {
-                anim = frame % action.frames.Length;
+                currentFrame = action.frames.Length - 1;
             }
         }
 
-        var index = action.frames[anim].layers[0].index;
-        Cursor.SetCursor(textures[index], Vector2.zero, CursorMode.Auto);
+        if (currentFrameTime < 0)
+            currentFrameTime += action.delay / 1000f;
     }
 
-    public void SetAction(CursorAction type, bool noRepeat, int? animation = null) {
-        if (freeze)
+    public void SetAction(CursorAction type, bool repeat, int? animation = null) {
+        if (type == this.type) {
             return;
+        }
 
         this.type = type;
-        this.tick = Time.deltaTime;
-        this.noRepeat = !!noRepeat;
+        this.tick = Core.Tick;
+        this.repeat = repeat;
 
-        if (animation != null) {
-            this.animation = animation.Value;
-            play = false;
-        } else {
-            this.animation = 0;
-            play = true;
-        }
+        this.currentAction = (int)type;
+        this.currentFrame = 0;
+
+        var action = act.actions[currentAction];
+
+        this.currentFrameTime = action.delay / 1000f;
     }
 
     private void FlipTextures() {
@@ -143,13 +148,13 @@ public class CursorRenderer : MonoBehaviour {
     }
 
     private IEnumerator Animate() {
-        var action = act.actions[currentAction];
-        for (int i = 0; i < action.frames.Length; i++) {
-            var spriteIndex = action.frames[i].layers[0].index;
+        //var action = act.actions[currentAction];
+        //for (int i = 0; i < action.frames.Length; i++) {
+        //    var spriteIndex = action.frames[i].layers[0].index;
 
-            Cursor.SetCursor(textures[spriteIndex], Vector2.zero, CursorMode.Auto);
-            yield return new WaitForSeconds(action.delay / 1000f);
-        }
+        //    Cursor.SetCursor(textures[spriteIndex], Vector2.zero, CursorMode.Auto);
+        //    yield return new WaitForSeconds(action.delay / 1000f);
+        //}
 
         yield return Animate();
     }

@@ -67,6 +67,7 @@ public class Core : MonoBehaviour {
     }
 
     void Start() {
+        Tick = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
         roCamEnabled = MainCamera.GetComponent<ROCamera>()?.enabled ?? false;

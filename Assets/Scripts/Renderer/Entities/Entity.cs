@@ -20,16 +20,16 @@ public class Entity : MonoBehaviour {
     public bool IsReady = false;
     public bool HasAuthority => GID == Core.Session?.Entity?.GID;
 
-    public uint GID;
-    public short Job { get; private set; }
-    public byte Sex { get; private set; }
-    public short Hair { get; private set; }
-    public short AttackSpeed { get; private set; }
-    public short AttackRange { get; private set; } = 0;
-    public short WalkSpeed { get; private set; } = 150;
-    public int Weapon { get; private set; }
-    public int Hp { get; private set; }
-    public int MaxHp { get; private set; }
+    [SerializeField] public uint GID;
+    [SerializeField] public short Job;
+    [SerializeField] public byte Sex;
+    [SerializeField] public short Hair;
+    [SerializeField] public short AttackSpeed;
+    [SerializeField] public short AttackRange = 0;
+    [SerializeField] public short WalkSpeed = 150;
+    [SerializeField] public int Weapon;
+    [SerializeField] public int Hp;
+    [SerializeField] public int MaxHp;
 
     public void SetReady(bool ready) {
         IsReady = ready;
