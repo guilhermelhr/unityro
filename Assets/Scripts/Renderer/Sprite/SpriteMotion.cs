@@ -4,9 +4,9 @@
     Sit,
     PickUp,
     Attack,
-    Attack1,
-    Attack2,
-    Attack3,
+    Attack1, // Normal attack
+    Attack2, // No weapon attack
+    Attack3, // Combo attack
     Standby,
     Hit,
     Freeze1,

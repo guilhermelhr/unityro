@@ -99,7 +99,7 @@ public class DBManager {
 
         var baseJob = (int)JobHelper.GetBaseClass((ushort)job, sex);
         var path = BodyPath[baseJob] == null ? BodyPath[0] : BodyPath[baseJob];
-        var baseClass = KoreanTo1252(path);
+        var baseClass = path.KoreanTo1252();
 
         // ItemID to View Id
         var ViewID = id;
@@ -118,7 +118,7 @@ public class DBManager {
 
         var baseJob = (int) JobHelper.GetBaseClass((ushort)job, sex);
         var path = BodyPath[baseJob] == null ? BodyPath[0] : BodyPath[baseJob];
-        var baseClass = KoreanTo1252(path);
+        var baseClass = path.KoreanTo1252();
 
         // ItemID to View Id
         var ViewID = id;
@@ -128,7 +128,7 @@ public class DBManager {
 
         ItemTable.Weapons.TryGetValue((WeaponType)ViewID, out var weapon);
 
-        return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/{baseClass}/{baseClass}_{SexTable[sex]}{KoreanTo1252(weapon) ?? $"_{ViewID}"}";
+        return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/{baseClass}/{baseClass}_{SexTable[sex]}{weapon.KoreanTo1252() ?? $"_{ViewID}"}";
     }
 
     public static Hashtable MapTable => mapTable;
@@ -213,6 +213,4 @@ public class DBManager {
 
         //DIFF ending callback
     }
-
-    public static string KoreanTo1252(string kr) => Encoding.GetEncoding(1252).GetString(Encoding.GetEncoding(949).GetBytes(kr));
 }
