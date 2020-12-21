@@ -1,130 +1,533 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class BodyPathTable {
+public static class BodyPathTable {
 
-    public static Dictionary<Job, String> JobNames = new Dictionary<Job, string>();
+    enum PCJobTable : int {
+        JT_NOVICE = 0,
+        JT_SWORDMAN = 1,
+        JT_MAGICIAN = 2,
+        JT_ARCHER = 3,
+        JT_ACOLYTE = 4,
+        JT_MERCHANT = 5,
+        JT_THIEF = 6,
+        JT_KNIGHT = 7,
+        JT_PRIEST = 8,
+        JT_WIZARD = 9,
+        JT_BLACKSMITH = 10,
+        JT_HUNTER = 11,
+        JT_ASSASSIN = 12,
+        JT_CHICKEN = 13,
+        JT_CRUSADER = 14,
+        JT_MONK = 15,
+        JT_SAGE = 16,
+        JT_ROGUE = 17,
+        JT_ALCHEMIST = 18,
+        JT_BARD = 19,
+        JT_DANCER = 20,
+        JT_CHICKEN2 = 21,
+        JT_MARRIED = 22,
+        JT_SUPERNOVICE = 23,
+        JT_GUNSLINGER = 24,
+        JT_NINJA = 25,
+        JT_SANTA = 26,
+        JT_SUMMER = 27,
+        JT_HANBOK = 28,
+        JT_OKTOBERFEST = 29,
+        JT_USER_LAST = 30, //maximum can be 44
 
-    public static Dictionary<Job, String> init() {
-		JobNames[Job.NOVICE] = "\xC3\xCA\xBA\xB8\xC0\xDA";
+        JT_2004_JOB_BEGIN = 4000,
+        JT_NOVICE_H = 4001,
+        JT_SWORDMAN_H = 4002,
+        JT_MAGICIAN_H = 4003,
+        JT_ARCHER_H = 4004,
+        JT_ACOLYTE_H = 4005,
+        JT_MERCHANT_H = 4006,
+        JT_THIEF_H = 4007,
+        JT_KNIGHT_H = 4008,
+        JT_PRIEST_H = 4009,
+        JT_WIZARD_H = 4010,
+        JT_BLACKSMITH_H = 4011,
+        JT_HUNTER_H = 4012,
+        JT_ASSASSIN_H = 4013,
+        JT_CHICKEN_H = 4014,
+        JT_CRUSADER_H = 4015,
+        JT_MONK_H = 4016,
+        JT_SAGE_H = 4017,
+        JT_ROGUE_H = 4018,
+        JT_ALCHEMIST_H = 4019,
+        JT_BARD_H = 4020,
+        JT_DANCER_H = 4021,
+        JT_CHICKEN2_H = 4022,
+        JT_NOVICE_B = 4023,
+        JT_SWORDMAN_B = 4024,
+        JT_MAGICIAN_B = 4025,
+        JT_ARCHER_B = 4026,
+        JT_ACOLYTE_B = 4027,
+        JT_MERCHANT_B = 4028,
+        JT_THIEF_B = 4029,
+        JT_KNIGHT_B = 4030,
+        JT_PRIEST_B = 4031,
+        JT_WIZARD_B = 4032,
+        JT_BLACKSMITH_B = 4033,
+        JT_HUNTER_B = 4034,
+        JT_ASSASSIN_B = 4035,
+        JT_CHICKEN_B = 4036,
+        JT_CRUSADER_B = 4037,
+        JT_MONK_B = 4038,
+        JT_SAGE_B = 4039,
+        JT_ROGUE_B = 4040,
+        JT_ALCHEMIST_B = 4041,
+        JT_BARD_B = 4042,
+        JT_DANCER_B = 4043,
+        JT_CHICKEN2_B = 4044,
+        JT_SUPERNOVICE_B = 4045,
+        JT_TAEKWON = 4046,
+        JT_STAR = 4047,
+        JT_STAR2 = 4048,
+        JT_LINKER = 4049,
+        JT_GANGSI = 4050,
+        JT_DEATHKNIGHT = 4051,
+        JT_COLLECTOR = 4052,
 
-		JobNames[Job.SWORDMAN] = "\xB0\xCB\xBB\xE7";
-		JobNames[Job.MAGICIAN] = "\xB8\xB6\xB9\xFD\xBB\xE7";
-		JobNames[Job.ARCHER] = "\xB1\xC3\xBC\xF6";
-		JobNames[Job.ACOLYTE] = "\xBC\xBA\xC1\xF7\xC0\xDA";
-		JobNames[Job.MERCHANT] = "\xBB\xF3\xC0\xCE";
-		JobNames[Job.THIEF] = "\xB5\xB5\xB5\xCF";
+        JT_THIRDJOB_BEGIN = 4053,
+        JT_RUNE_KNIGHT = 4054,
+        JT_WARLOCK = 4055,
+        JT_RANGER = 4056,
+        JT_ARCHBISHOP = 4057,
+        JT_MECHANIC = 4058,
+        JT_GUILLOTINE_CROSS = 4059,
+        JT_RUNE_KNIGHT_H = 4060,
+        JT_WARLOCK_H = 4061,
+        JT_RANGER_H = 4062,
+        JT_ARCHBISHOP_H = 4063,
+        JT_MECHANIC_H = 4064,
+        JT_GUILLOTINE_CROSS_H = 4065,
+        JT_ROYAL_GUARD = 4066,
+        JT_SORCERER = 4067,
+        JT_MINSTREL = 4068,
+        JT_WANDERER = 4069,
+        JT_SURA = 4070,
+        JT_GENETIC = 4071,
+        JT_SHADOW_CHASER = 4072,
+        JT_ROYAL_GUARD_H = 4073,
+        JT_SORCERER_H = 4074,
+        JT_MINSTREL_H = 4075,
+        JT_WANDERER_H = 4076,
+        JT_SURA_H = 4077,
+        JT_GENETIC_H = 4078,
+        JT_SHADOW_CHASER_H = 4079,
+        JT_RUNE_CHICKEN = 4080,
+        JT_RUNE_CHICKEN_H = 4081,
+        JT_ROYAL_CHICKEN = 4082,
+        JT_ROYAL_CHICKEN_H = 4083,
+        JT_WOLF_RANGER = 4084,
+        JT_WOLF_RANGER_H = 4085,
+        JT_MADOGEAR = 4086,
+        JT_MADOGEAR_H = 4087,
+        JT_RUNE_CHICKEN2 = 4088,
+        JT_RUNE_CHICKEN2_H = 4089,
+        JT_RUNE_CHICKEN3 = 4090,
+        JT_RUNE_CHICKEN3_H = 4091,
+        JT_RUNE_CHICKEN4 = 4092,
+        JT_RUNE_CHICKEN4_H = 4093,
+        JT_RUNE_CHICKEN5 = 4094,
+        JT_RUNE_CHICKEN5_H = 4095,
+        JT_RUNE_KNIGHT_B = 4096,
+        JT_WARLOCK_B = 4097,
+        JT_RANGER_B = 4098,
+        JT_ARCHBISHOP_B = 4099,
+        JT_MECHANIC_B = 4100,
+        JT_GUILLOTINE_CROSS_B = 4101,
+        JT_ROYAL_GUARD_B = 4102,
+        JT_SORCERER_B = 4103,
+        JT_MINSTREL_B = 4104,
+        JT_WANDERER_B = 4105,
+        JT_SURA_B = 4106,
+        JT_GENETIC_B = 4107,
+        JT_SHADOW_CHASER_B = 4108,
+        JT_RUNE_CHICKEN_B = 4109,
+        JT_ROYAL_CHICKEN_B = 4110,
+        JT_WOLF_RANGER_B = 4111,
+        JT_MADOGEAR_B = 4112,
+        JT_THIRDJOB_END = 4113,
 
-		JobNames[Job.KNIGHT] = "\xB1\xE2\xBB\xE7";
-		JobNames[Job.PRIEST] = "\xC7\xC1\xB8\xAE\xBD\xBA\xC6\xAE";
-		JobNames[Job.WIZARD] = "\xC0\xA7\xC0\xFA\xB5\xE5";
-		JobNames[Job.BLACKSMITH] = "\xC1\xA6\xC3\xB6\xB0\xF8";
-		JobNames[Job.HUNTER] = "\xC7\xE5\xC5\xCD";
-		JobNames[Job.ASSASSIN] = "\xBE\xEE\xBC\xBC\xBD\xC5";
-		JobNames[Job.KNIGHT2] = "\xC6\xE4\xC4\xDA\xC6\xE4\xC4\xDA_\xB1\xE2\xBB\xE7";
+        JT_FROG_NINJA = 4114,
+        JT_PECO_GUNNER = 4115,
+        JT_PECO_SWORD = 4116,
+        JT_FROG_LINKER = 4117,
+        JT_PIG_WHITESMITH = 4118,
+        JT_PIG_MERCHANT = 4119,
+        JT_PIG_GENETIC = 4120,
+        JT_PIG_CREATOR = 4121,
+        JT_OSTRICH_ARCHER = 4122,
+        JT_PORING_STAR = 4123,
+        JT_PORING_NOVICE = 4124,
+        JT_SHEEP_MONK = 4125,
+        JT_SHEEP_ACO = 4126,
+        JT_SHEEP_SURA = 4127,
+        JT_PORING_SNOVICE = 4128,
+        JT_SHEEP_ARCB = 4129,
+        JT_FOX_MAGICIAN = 4130,
+        JT_FOX_SAGE = 4131,
+        JT_FOX_SORCERER = 4132,
+        JT_FOX_WARLOCK = 4133,
+        JT_FOX_WIZ = 4134,
+        JT_FOX_PROF = 4135,
+        JT_FOX_HWIZ = 4136,
+        JT_PIG_ALCHE = 4137,
+        JT_PIG_BLACKSMITH = 4138,
+        JT_SHEEP_CHAMP = 4139,
+        JT_DOG_G_CROSS = 4140,
+        JT_DOG_THIEF = 4141,
+        JT_DOG_ROGUE = 4142,
+        JT_DOG_CHASER = 4143,
+        JT_DOG_STALKER = 4144,
+        JT_DOG_ASSASSIN = 4145,
+        JT_DOG_ASSA_X = 4146,
+        JT_OSTRICH_DANCER = 4147,
+        JT_OSTRICH_MINSTREL = 4148,
+        JT_OSTRICH_BARD = 4149,
+        JT_OSTRICH_SNIPER = 4150,
+        JT_OSTRICH_WANDER = 4151,
+        JT_OSTRICH_ZIPSI = 4152,
+        JT_OSTRICH_CROWN = 4153,
+        JT_OSTRICH_HUNTER = 4154,
+        JT_PORING_TAEKWON = 4155,
+        JT_SHEEP_PRIEST = 4156,
+        JT_SHEEP_HPRIEST = 4157,
+        JT_PORING_NOVICE_B = 4158,
+        JT_PECO_SWORD_B = 4159,
+        JT_FOX_MAGICIAN_B = 4160,
+        JT_OSTRICH_ARCHER_B = 4161,
+        JT_SHEEP_ACO_B = 4162,
+        JT_PIG_MERCHANT_B = 4163,
+        JT_OSTRICH_HUNTER_B = 4164,
+        JT_DOG_ASSASSIN_B = 4165,
+        JT_SHEEP_MONK_B = 4166,
+        JT_FOX_SAGE_B = 4167,
+        JT_DOG_ROGUE_B = 4168,
+        JT_PIG_ALCHE_B = 4169,
+        JT_OSTRICH_BARD_B = 4170,
+        JT_OSTRICH_DANCER_B = 4171,
+        JT_PORING_SNOVICE_B = 4172,
+        JT_FOX_WARLOCK_B = 4173,
+        JT_SHEEP_ARCB_B = 4174,
+        JT_DOG_G_CROSS_B = 4175,
+        JT_FOX_SORCERER_B = 4176,
+        JT_OSTRICH_MINSTREL_B = 4177,
+        JT_OSTRICH_WANDER_B = 4178,
+        JT_SHEEP_SURA_B = 4179,
+        JT_PIG_GENETIC_B = 4180,
+        JT_DOG_THIEF_B = 4181,
+        JT_DOG_CHASER_B = 4182,
+        JT_PORING_NOVICE_H = 4183,
+        JT_PECO_SWORD_H = 4184,
+        JT_FOX_MAGICIAN_H = 4185,
+        JT_OSTRICH_ARCHER_H = 4186,
+        JT_SHEEP_ACO_H = 4187,
+        JT_PIG_MERCHANT_H = 4188,
+        JT_DOG_THIEF_H = 4189,
+        JT_SUPERNOVICE2 = 4190,
+        JT_SUPERNOVICE2_B = 4191,
+        JT_PORING_SNOVICE2 = 4192,
+        JT_PORING_SNOVICE2_B = 4193,
+        JT_SHEEP_PRIEST_B = 4194,
+        JT_FOX_WIZ_B = 4195,
+        JT_PIG_BLACKSMITH_B = 4196,
+        JT_PIG_MECHANIC = 4197,
+        JT_OSTRICH_RANGER = 4198,
+        JT_LION_KNIGHT = 4199,
+        JT_LION_KNIGHT_H = 4200,
+        JT_LION_ROYAL_GUARD = 4201,
+        JT_LION_RUNE_KNIGHT = 4202,
+        JT_LION_CRUSADER = 4203,
+        JT_LION_CRUSADER_H = 4204,
+        JT_PIG_MECHANIC_B = 4205,
+        JT_OSTRICH_RANGER_B = 4206,
+        JT_LION_KNIGHT_B = 4207,
+        JT_LION_ROYAL_GUARD_B = 4208,
+        JT_LION_RUNE_KNIGHT_B = 4209,
+        JT_LION_CRUSADER_B = 4210,
 
-		JobNames[Job.CRUSADER] = "\xC5\xA9\xB7\xE7\xBC\xBC\xC0\xCC\xB4\xF5";
-		JobNames[Job.MONK] = "\xB8\xF9\xC5\xA9";
-		JobNames[Job.SAGE] = "\xBC\xBC\xC0\xCC\xC1\xF6";
-		JobNames[Job.ROGUE] = "\xB7\xCE\xB1\xD7";
-		JobNames[Job.ALCHEMIST] = "\xBF\xAC\xB1\xDD\xBC\xFA\xBB\xE7";
-		JobNames[Job.BARD] = "\xB9\xD9\xB5\xE5";
-		JobNames[Job.DANCER] = "\xB9\xAB\xC8\xF1";
-		JobNames[Job.CRUSADER2] = "\xBD\xC5\xC6\xE4\xC4\xDA\xC5\xA9\xB7\xE7\xBC\xBC\xC0\xCC\xB4\xF5";
+        JT_KAGEROU = 4211,
+        JT_OBORO = 4212,
+        JT_FROG_KAGEROU = 4213,
+        JT_FROG_OBORO = 4214,
+        JT_REBELLION = 4215,
+        JT_PECO_REBELLION = 4216,
+        JT_2004_JOB_LAST = 4217
+    }
 
-		JobNames[Job.SUPERNOVICE] = "\xBD\xB4\xC6\xDB\xB3\xEB\xBA\xF1\xBD\xBA";
-		JobNames[Job.GUNSLINGER] = "\xB0\xC7\xB3\xCA";
-		JobNames[Job.NINJA] = "\xB4\xD1\xC0\xDA";
-		JobNames[Job.TAEKWON] = "\xc5\xc2\xb1\xc7\xbc\xd2\xb3\xe2";
-		JobNames[Job.STAR] = "\xb1\xc7\xbc\xba";
-		JobNames[Job.STAR2] = "\xb1\xc7\xbc\xba\xc0\xb6\xc7\xd5";
-		JobNames[Job.LINKER] = "\xbc\xd2\xbf\xef\xb8\xb5\xc4\xbf";
+    public static Dictionary<int, string> BodyPath = new Dictionary<int, string>();
 
-		JobNames[Job.MARRIED] = "\xB0\xE1\xC8\xA5";
-		JobNames[Job.XMAS] = "\xBB\xEA\xC5\xB8";
-		JobNames[Job.SUMMER] = "\xBF\xA9\xB8\xA7";
+    static BodyPathTable() {
+        Init();
+    }
 
-		JobNames[Job.KNIGHT_H] = "\xB7\xCE\xB5\xE5\xB3\xAA\xC0\xCC\xC6\xAE";
-		JobNames[Job.PRIEST_H] = "\xC7\xCF\xC0\xCC\xC7\xC1\xB8\xAE";
-		JobNames[Job.WIZARD_H] = "\xC7\xCF\xC0\xCC\xC0\xA7\xC0\xFA\xB5\xE5";
-		JobNames[Job.BLACKSMITH_H] = "\xC8\xAD\xC0\xCC\xC6\xAE\xBD\xBA\xB9\xCC\xBD\xBA";
-		JobNames[Job.HUNTER_H] = "\xBD\xBA\xB3\xAA\xC0\xCC\xC6\xDB";
-		JobNames[Job.ASSASSIN_H] = "\xBE\xEE\xBD\xD8\xBD\xC5\xC5\xA9\xB7\xCE\xBD\xBA";
-		JobNames[Job.KNIGHT2_H] = "\xB7\xCE\xB5\xE5\xC6\xE4\xC4\xDA";
-		JobNames[Job.CRUSADER_H] = "\xC6\xC8\xB6\xF3\xB5\xF2";
-		JobNames[Job.MONK_H] = "\xC3\xA8\xC7\xC7\xBF\xC2";
-		JobNames[Job.SAGE_H] = "\xC7\xC1\xB7\xCE\xC6\xE4\xBC\xAD";
-		JobNames[Job.ROGUE_H] = "\xBD\xBA\xC5\xE4\xC4\xBF";
-		JobNames[Job.ALCHEMIST_H] = "\xC5\xA9\xB8\xAE\xBF\xA1\xC0\xCC\xC5\xCD";
-		JobNames[Job.BARD_H] = "\xC5\xAC\xB6\xF3\xBF\xEE";
-		JobNames[Job.DANCER_H] = "\xC1\xFD\xBD\xC3";
-		JobNames[Job.CRUSADER2_H] = "\xC6\xE4\xC4\xDA\xC6\xC8\xB6\xF3\xB5\xF2";
+    private static void Init() {
+        BodyPath[(int)PCJobTable.JT_NOVICE] = "초보자";
+        BodyPath[(int)PCJobTable.JT_SWORDMAN] = "검사";
+        BodyPath[(int)PCJobTable.JT_MAGICIAN] = "마법사";
+        BodyPath[(int)PCJobTable.JT_ARCHER] = "궁수";
+        BodyPath[(int)PCJobTable.JT_ACOLYTE] = "성직자";
+        BodyPath[(int)PCJobTable.JT_MERCHANT] = "상인";
+        BodyPath[(int)PCJobTable.JT_THIEF] = "도둑";
+        BodyPath[(int)PCJobTable.JT_KNIGHT] = "기사";
+        BodyPath[(int)PCJobTable.JT_PRIEST] = "프리스트";
+        BodyPath[(int)PCJobTable.JT_WIZARD] = "위저드";
+        BodyPath[(int)PCJobTable.JT_BLACKSMITH] = "제철공";
+        BodyPath[(int)PCJobTable.JT_HUNTER] = "헌터";
+        BodyPath[(int)PCJobTable.JT_ASSASSIN] = "어세신";
+        BodyPath[(int)PCJobTable.JT_CHICKEN] = "페코페코_기사";
+        BodyPath[(int)PCJobTable.JT_CRUSADER] = "크루세이더";
+        BodyPath[(int)PCJobTable.JT_MONK] = "몽크";
+        BodyPath[(int)PCJobTable.JT_SAGE] = "세이지";
+        BodyPath[(int)PCJobTable.JT_ROGUE] = "로그";
+        BodyPath[(int)PCJobTable.JT_ALCHEMIST] = "연금술사";
+        BodyPath[(int)PCJobTable.JT_BARD] = "바드";
+        BodyPath[(int)PCJobTable.JT_DANCER] = "무희";
+        BodyPath[(int)PCJobTable.JT_CHICKEN2] = "신페코크루세이더";
+        BodyPath[(int)PCJobTable.JT_MARRIED] = "결혼";
+        BodyPath[(int)PCJobTable.JT_SUPERNOVICE] = "슈퍼노비스";
+        BodyPath[(int)PCJobTable.JT_GUNSLINGER] = "건너";
+        BodyPath[(int)PCJobTable.JT_NINJA] = "닌자";
+        BodyPath[(int)PCJobTable.JT_SANTA] = "산타";
+        BodyPath[(int)PCJobTable.JT_SUMMER] = "여름";
+        BodyPath[(int)PCJobTable.JT_HANBOK] = "한복";
+        BodyPath[(int)PCJobTable.JT_OKTOBERFEST] = "옥토버패스트";
 
-		JobNames[Job.RUNE_KNIGHT] = "\xB7\xE9\xB3\xAA\xC0\xCC\xC6\xAE";
-		JobNames[Job.WARLOCK] = "\xBF\xF6\xB7\xCF";
-		JobNames[Job.RANGER] = "\xB7\xB9\xC0\xCE\xC1\xAE";
-		JobNames[Job.ARCHBISHOP] = "\xBE\xC6\xC5\xA9\xBA\xF1\xBC\xF3";
-		JobNames[Job.MECHANIC] = "\xB9\xCC\xC4\xC9\xB4\xD0";
-		JobNames[Job.GUILLOTINE_CROSS] = "\xB1\xE6\xB7\xCE\xC6\xBE\xC5\xA9\xB7\xCE\xBD\xBA";
+        BodyPath[(int)PCJobTable.JT_KNIGHT_H] = "로드나이트";
+        BodyPath[(int)PCJobTable.JT_PRIEST_H] = "하이프리";
+        BodyPath[(int)PCJobTable.JT_WIZARD_H] = "하이위저드";
+        BodyPath[(int)PCJobTable.JT_BLACKSMITH_H] = "화이트스미스";
+        BodyPath[(int)PCJobTable.JT_HUNTER_H] = "스나이퍼";
+        BodyPath[(int)PCJobTable.JT_ASSASSIN_H] = "어쌔신크로스";
+        BodyPath[(int)PCJobTable.JT_CHICKEN_H] = "로드페코";
+        BodyPath[(int)PCJobTable.JT_CRUSADER_H] = "팔라딘";
+        BodyPath[(int)PCJobTable.JT_MONK_H] = "챔피온";
+        BodyPath[(int)PCJobTable.JT_SAGE_H] = "프로페서";
+        BodyPath[(int)PCJobTable.JT_ROGUE_H] = "스토커";
+        BodyPath[(int)PCJobTable.JT_ALCHEMIST_H] = "크리에이터";
+        BodyPath[(int)PCJobTable.JT_BARD_H] = "클라운";
+        BodyPath[(int)PCJobTable.JT_DANCER_H] = "집시";
+        BodyPath[(int)PCJobTable.JT_CHICKEN2_H] = "페코팔라딘";
 
-		JobNames[Job.ROYAL_GUARD] = "\xB0\xA1\xB5\xE5";
-		JobNames[Job.SORCERER] = "\xBC\xD2\xBC\xAD\xB7\xAF";
-		JobNames[Job.MINSTREL] = "\xB9\xCE\xBD\xBA\xC6\xAE\xB7\xB2";
-		JobNames[Job.WANDERER] = "\xBF\xF8\xB4\xF5\xB7\xAF";
-		JobNames[Job.SURA] = "\xBD\xB4\xB6\xF3";
-		JobNames[Job.GENETIC] = "\xC1\xA6\xB3\xD7\xB8\xAF";
-		JobNames[Job.SHADOW_CHASER] = "\xBD\xA6\xB5\xB5\xBF\xEC\xC3\xBC\xC0\xCC\xBC\xAD";
+        BodyPath[(int)PCJobTable.JT_DANCER_B] = "무희바지";
+        BodyPath[(int)PCJobTable.JT_CHICKEN2_B] = "구페코크루세이더";
 
-		JobNames[Job.RUNE_KNIGHT2] = "\xB7\xE9\xB3\xAA\xC0\xCC\xC6\xAE\xBB\xDA\xB6\xEC";
-		JobNames[Job.ROYAL_GUARD2] = "\xB1\xD7\xB8\xAE\xC6\xF9\xB0\xA1\xB5\xE5";
-		JobNames[Job.RANGER2] = "\xB7\xB9\xC0\xCE\xC1\xAE\xB4\xC1\xB4\xEB";
-		JobNames[Job.MECHANIC2] = "\xB8\xB6\xB5\xB5\xB1\xE2\xBE\xEE";
+        BodyPath[(int)PCJobTable.JT_TAEKWON] = "태권소년";
+        BodyPath[(int)PCJobTable.JT_STAR] = "권성";
+        BodyPath[(int)PCJobTable.JT_STAR2] = "권성융합";
+        BodyPath[(int)PCJobTable.JT_LINKER] = "소울링커";
 
-		/**
-		 * Inherit
-		 */
-		JobNames[Job.NOVICE_B]		= JobNames[Job.NOVICE_H]		= JobNames[Job.NOVICE];
-		JobNames[Job.SWORDMAN_B]	= JobNames[Job.SWORDMAN_H]		= JobNames[Job.SWORDMAN];
-		JobNames[Job.MAGICIAN_B]	= JobNames[Job.MAGICIAN_H]		= JobNames[Job.MAGICIAN];
-		JobNames[Job.ARCHER_B]		= JobNames[Job.ARCHER_H]		= JobNames[Job.ARCHER];
-		JobNames[Job.ACOLYTE_B]		= JobNames[Job.ACOLYTE_H]		= JobNames[Job.ACOLYTE];
-		JobNames[Job.MERCHANT_B]	= JobNames[Job.MERCHANT_H]		= JobNames[Job.MERCHANT];
-		JobNames[Job.THIEF_B]		= JobNames[Job.THIEF_H]			= JobNames[Job.THIEF];
+        BodyPath[(int)PCJobTable.JT_RUNE_KNIGHT] = "룬나이트";
+        BodyPath[(int)PCJobTable.JT_WARLOCK] = "워록";
+        BodyPath[(int)PCJobTable.JT_RANGER] = "레인져";
+        BodyPath[(int)PCJobTable.JT_ARCHBISHOP] = "아크비숍";
+        BodyPath[(int)PCJobTable.JT_MECHANIC] = "미케닉";
+        BodyPath[(int)PCJobTable.JT_GUILLOTINE_CROSS] = "길로틴크로스";
+        BodyPath[(int)PCJobTable.JT_ROYAL_GUARD] = "가드";
+        BodyPath[(int)PCJobTable.JT_SORCERER] = "소서러";
+        BodyPath[(int)PCJobTable.JT_MINSTREL] = "민스트럴";
+        BodyPath[(int)PCJobTable.JT_WANDERER] = "원더러";
+        BodyPath[(int)PCJobTable.JT_SURA] = "슈라";
+        BodyPath[(int)PCJobTable.JT_GENETIC] = "제네릭";
+        BodyPath[(int)PCJobTable.JT_SHADOW_CHASER] = "쉐도우체이서";
 
-		JobNames[Job.KNIGHT_B]		= JobNames[Job.KNIGHT];
-		JobNames[Job.KNIGHT2_B]		= JobNames[Job.KNIGHT2];
-		JobNames[Job.PRIEST_B]		= JobNames[Job.PRIEST];
-		JobNames[Job.WIZARD_B]		= JobNames[Job.WIZARD];
-		JobNames[Job.BLACKSMITH_B]	= JobNames[Job.BLACKSMITH];
-		JobNames[Job.HUNTER_B]		= JobNames[Job.HUNTER];
-		JobNames[Job.ASSASSIN_B]	= JobNames[Job.ASSASSIN];
-		JobNames[Job.CRUSADER_B]	= JobNames[Job.CRUSADER];
-		JobNames[Job.CRUSADER2_B]	= JobNames[Job.CRUSADER2];
-		JobNames[Job.MONK_B]		= JobNames[Job.MONK];
-		JobNames[Job.SAGE_B]		= JobNames[Job.SAGE];
-		JobNames[Job.ROGUE_B]		= JobNames[Job.ROGUE];
-		JobNames[Job.ALCHEMIST_B]	= JobNames[Job.ALCHEMIST];
-		JobNames[Job.BARD_B]		= JobNames[Job.BARD];
-		JobNames[Job.DANCER_B]		= JobNames[Job.DANCER];
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN] = "룬나이트쁘띠";
+        BodyPath[(int)PCJobTable.JT_ROYAL_CHICKEN] = "그리폰가드";
+        BodyPath[(int)PCJobTable.JT_WOLF_RANGER] = "레인져늑대";
+        BodyPath[(int)PCJobTable.JT_MADOGEAR] = "마도기어";
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN2] = "룬나이트쁘띠2";
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN3] = "룬나이트쁘띠3";
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN4] = "룬나이트쁘띠4";
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN5] = "룬나이트쁘띠5";
 
-		JobNames[Job.RUNE_KNIGHT_H]			= JobNames[Job.RUNE_KNIGHT_B]		= JobNames[Job.RUNE_KNIGHT];
-		JobNames[Job.RUNE_KNIGHT2_H]		= JobNames[Job.RUNE_KNIGHT2_B]		= JobNames[Job.RUNE_KNIGHT2];
-		JobNames[Job.WARLOCK_H]				= JobNames[Job.WARLOCK_B]			= JobNames[Job.WARLOCK];
-		JobNames[Job.RANGER_H]				= JobNames[Job.RANGER_B]			= JobNames[Job.RANGER];
-		JobNames[Job.RANGER2_H]				= JobNames[Job.RANGER2_B]			= JobNames[Job.RANGER2];
-		JobNames[Job.ARCHBISHOP_H]			= JobNames[Job.ARCHBISHOP_B]		= JobNames[Job.ARCHBISHOP];
-		JobNames[Job.MECHANIC_H]			= JobNames[Job.MECHANIC_B]			= JobNames[Job.MECHANIC];
-		JobNames[Job.MECHANIC2_H]			= JobNames[Job.MECHANIC2_B]			= JobNames[Job.MECHANIC2];
-		JobNames[Job.GUILLOTINE_CROSS_H]	= JobNames[Job.GUILLOTINE_CROSS_B]	= JobNames[Job.GUILLOTINE_CROSS];
-		JobNames[Job.ROYAL_GUARD_H]			= JobNames[Job.ROYAL_GUARD_B]		= JobNames[Job.ROYAL_GUARD];
-		JobNames[Job.ROYAL_GUARD2_H]		= JobNames[Job.ROYAL_GUARD2_B]		= JobNames[Job.ROYAL_GUARD2];
-		JobNames[Job.SORCERER_H]			= JobNames[Job.SORCERER_B]			= JobNames[Job.SORCERER];
-		JobNames[Job.MINSTREL_H]			= JobNames[Job.MINSTREL_B]			= JobNames[Job.MINSTREL];
-		JobNames[Job.WANDERER_H]			= JobNames[Job.WANDERER_B]			= JobNames[Job.WANDERER];
-		JobNames[Job.SURA_H]				= JobNames[Job.SURA_B]				= JobNames[Job.SURA];
-		JobNames[Job.GENETIC_H]				= JobNames[Job.GENETIC_B]			= JobNames[Job.GENETIC];
-		JobNames[Job.SHADOW_CHASER_H]		= JobNames[Job.SHADOW_CHASER_B]		= JobNames[Job.SHADOW_CHASER];
+        BodyPath[(int)PCJobTable.JT_FROG_NINJA] = "두꺼비닌자";
+        BodyPath[(int)PCJobTable.JT_PECO_GUNNER] = "페코건너";
+        BodyPath[(int)PCJobTable.JT_PECO_SWORD] = "페코검사";
+        BodyPath[(int)PCJobTable.JT_FROG_LINKER] = "두꺼비소울링커";
+        BodyPath[(int)PCJobTable.JT_PIG_WHITESMITH] = "화이트스미스멧돼지";
+        BodyPath[(int)PCJobTable.JT_PIG_MERCHANT] = "상인멧돼지";
+        BodyPath[(int)PCJobTable.JT_PIG_GENETIC] = "제네릭멧돼지";
+        BodyPath[(int)PCJobTable.JT_PIG_CREATOR] = "크리에이터멧돼지";
+        BodyPath[(int)PCJobTable.JT_OSTRICH_ARCHER] = "타조궁수";
+        BodyPath[(int)PCJobTable.JT_PORING_STAR] = "권성포링";
+        BodyPath[(int)PCJobTable.JT_PORING_NOVICE] = "노비스포링";
+        BodyPath[(int)PCJobTable.JT_SHEEP_MONK] = "몽크알파카";
+        BodyPath[(int)PCJobTable.JT_SHEEP_ACO] = "복사알파카";
+        BodyPath[(int)PCJobTable.JT_SHEEP_SURA] = "슈라알파카";
+        BodyPath[(int)PCJobTable.JT_PORING_SNOVICE] = "슈퍼노비스포링";
+        BodyPath[(int)PCJobTable.JT_SHEEP_ARCB] = "아크비숍알파카";
+        BodyPath[(int)PCJobTable.JT_FOX_MAGICIAN] = "여우마법사";
+        BodyPath[(int)PCJobTable.JT_FOX_SAGE] = "여우세이지";
+        BodyPath[(int)PCJobTable.JT_FOX_SORCERER] = "여우소서러";
+        BodyPath[(int)PCJobTable.JT_FOX_WARLOCK] = "여우워록";
+        BodyPath[(int)PCJobTable.JT_FOX_WIZ] = "여우위저드";
+        BodyPath[(int)PCJobTable.JT_FOX_PROF] = "여우프로페서";
+        BodyPath[(int)PCJobTable.JT_FOX_HWIZ] = "여우하이위저드";
+        BodyPath[(int)PCJobTable.JT_PIG_ALCHE] = "연금술사멧돼지";
+        BodyPath[(int)PCJobTable.JT_PIG_BLACKSMITH] = "제철공멧돼지";
+        BodyPath[(int)PCJobTable.JT_SHEEP_CHAMP] = "챔피온알파카";
+        BodyPath[(int)PCJobTable.JT_DOG_G_CROSS] = "켈베로스길로틴크로스";
+        BodyPath[(int)PCJobTable.JT_DOG_THIEF] = "켈베로스도둑";
+        BodyPath[(int)PCJobTable.JT_DOG_ROGUE] = "켈베로스로그";
+        BodyPath[(int)PCJobTable.JT_DOG_CHASER] = "켈베로스쉐도우체이서";
+        BodyPath[(int)PCJobTable.JT_DOG_STALKER] = "켈베로스스토커";
+        BodyPath[(int)PCJobTable.JT_DOG_ASSASSIN] = "켈베로스어쎄신";
+        BodyPath[(int)PCJobTable.JT_DOG_ASSA_X] = "켈베로스어쎄신크로스";
+        BodyPath[(int)PCJobTable.JT_OSTRICH_DANCER] = "타조무희";
+        BodyPath[(int)PCJobTable.JT_OSTRICH_MINSTREL] = "타조민스트럴";
+        BodyPath[(int)PCJobTable.JT_OSTRICH_BARD] = "타조바드";
+        BodyPath[(int)PCJobTable.JT_OSTRICH_SNIPER] = "타조스나이퍼";
+        BodyPath[(int)PCJobTable.JT_OSTRICH_WANDER] = "타조원더러";
+        BodyPath[(int)PCJobTable.JT_OSTRICH_ZIPSI] = "타조짚시";
+        BodyPath[(int)PCJobTable.JT_OSTRICH_CROWN] = "타조크라운";
+        BodyPath[(int)PCJobTable.JT_OSTRICH_HUNTER] = "타조헌터";
+        BodyPath[(int)PCJobTable.JT_PORING_TAEKWON] = "태권소년포링";
+        BodyPath[(int)PCJobTable.JT_SHEEP_PRIEST] = "프리스트알파카";
+        BodyPath[(int)PCJobTable.JT_SHEEP_HPRIEST] = "하이프리스트알파카";
+        BodyPath[(int)PCJobTable.JT_PIG_MECHANIC] = "미케닉멧돼지";
+        BodyPath[(int)PCJobTable.JT_OSTRICH_RANGER] = "타조레인져";
+        BodyPath[(int)PCJobTable.JT_LION_KNIGHT] = "사자기사";
+        BodyPath[(int)PCJobTable.JT_LION_KNIGHT_H] = "사자로드나이트";
+        BodyPath[(int)PCJobTable.JT_LION_ROYAL_GUARD] = "사자로얄가드";
+        BodyPath[(int)PCJobTable.JT_LION_RUNE_KNIGHT] = "사자룬나이트";
+        BodyPath[(int)PCJobTable.JT_LION_CRUSADER] = "사자크루세이더";
+        BodyPath[(int)PCJobTable.JT_LION_CRUSADER_H] = "사자팔라딘";
 
-		return JobNames;
-	}
+        BodyPath[(int)PCJobTable.JT_KAGEROU] = "kagerou";
+        BodyPath[(int)PCJobTable.JT_OBORO] = "oboro";
+        BodyPath[(int)PCJobTable.JT_FROG_KAGEROU] = "frog_kagerou";
+        BodyPath[(int)PCJobTable.JT_FROG_OBORO] = "frog_oboro";
+        BodyPath[(int)PCJobTable.JT_REBELLION] = "rebellion";
+        BodyPath[(int)PCJobTable.JT_PECO_REBELLION] = "peco_rebellion";
+
+        //Inherit
+        BodyPath[(int)PCJobTable.JT_NOVICE_H] = BodyPath[(int)PCJobTable.JT_NOVICE];
+        BodyPath[(int)PCJobTable.JT_SWORDMAN_H] = BodyPath[(int)PCJobTable.JT_SWORDMAN];
+        BodyPath[(int)PCJobTable.JT_MAGICIAN_H] = BodyPath[(int)PCJobTable.JT_MAGICIAN];
+        BodyPath[(int)PCJobTable.JT_ARCHER_H] = BodyPath[(int)PCJobTable.JT_ARCHER];
+        BodyPath[(int)PCJobTable.JT_ACOLYTE_H] = BodyPath[(int)PCJobTable.JT_ACOLYTE];
+        BodyPath[(int)PCJobTable.JT_MERCHANT_H] = BodyPath[(int)PCJobTable.JT_MERCHANT];
+        BodyPath[(int)PCJobTable.JT_THIEF_H] = BodyPath[(int)PCJobTable.JT_THIEF];
+
+        BodyPath[(int)PCJobTable.JT_NOVICE_B] = BodyPath[(int)PCJobTable.JT_NOVICE];
+        BodyPath[(int)PCJobTable.JT_SWORDMAN_B] = BodyPath[(int)PCJobTable.JT_SWORDMAN];
+        BodyPath[(int)PCJobTable.JT_MAGICIAN_B] = BodyPath[(int)PCJobTable.JT_MAGICIAN];
+        BodyPath[(int)PCJobTable.JT_ARCHER_B] = BodyPath[(int)PCJobTable.JT_ARCHER];
+        BodyPath[(int)PCJobTable.JT_ACOLYTE_B] = BodyPath[(int)PCJobTable.JT_ACOLYTE];
+        BodyPath[(int)PCJobTable.JT_MERCHANT_B] = BodyPath[(int)PCJobTable.JT_MERCHANT];
+        BodyPath[(int)PCJobTable.JT_THIEF_B] = BodyPath[(int)PCJobTable.JT_THIEF];
+
+        BodyPath[(int)PCJobTable.JT_KNIGHT_B] = BodyPath[(int)PCJobTable.JT_KNIGHT];
+        BodyPath[(int)PCJobTable.JT_PRIEST_B] = BodyPath[(int)PCJobTable.JT_PRIEST];
+        BodyPath[(int)PCJobTable.JT_WIZARD_B] = BodyPath[(int)PCJobTable.JT_WIZARD];
+        BodyPath[(int)PCJobTable.JT_BLACKSMITH_B] = BodyPath[(int)PCJobTable.JT_BLACKSMITH];
+        BodyPath[(int)PCJobTable.JT_HUNTER_B] = BodyPath[(int)PCJobTable.JT_HUNTER];
+        BodyPath[(int)PCJobTable.JT_ASSASSIN_B] = BodyPath[(int)PCJobTable.JT_ASSASSIN];
+        BodyPath[(int)PCJobTable.JT_CHICKEN_B] = BodyPath[(int)PCJobTable.JT_CHICKEN];
+        BodyPath[(int)PCJobTable.JT_CRUSADER_B] = BodyPath[(int)PCJobTable.JT_CRUSADER];
+        BodyPath[(int)PCJobTable.JT_MONK_B] = BodyPath[(int)PCJobTable.JT_MONK];
+        BodyPath[(int)PCJobTable.JT_SAGE_B] = BodyPath[(int)PCJobTable.JT_SAGE];
+        BodyPath[(int)PCJobTable.JT_ROGUE_B] = BodyPath[(int)PCJobTable.JT_ROGUE];
+        BodyPath[(int)PCJobTable.JT_ALCHEMIST_B] = BodyPath[(int)PCJobTable.JT_ALCHEMIST];
+        BodyPath[(int)PCJobTable.JT_BARD_B] = BodyPath[(int)PCJobTable.JT_BARD];
+        BodyPath[(int)PCJobTable.JT_SUPERNOVICE_B] = BodyPath[(int)PCJobTable.JT_SUPERNOVICE];
+
+        BodyPath[(int)PCJobTable.JT_GANGSI] = BodyPath[(int)PCJobTable.JT_ACOLYTE];
+        BodyPath[(int)PCJobTable.JT_DEATHKNIGHT] = BodyPath[(int)PCJobTable.JT_KNIGHT];
+        BodyPath[(int)PCJobTable.JT_COLLECTOR] = BodyPath[(int)PCJobTable.JT_SAGE];
+
+        BodyPath[(int)PCJobTable.JT_RUNE_KNIGHT_H] = BodyPath[(int)PCJobTable.JT_RUNE_KNIGHT];
+        BodyPath[(int)PCJobTable.JT_WARLOCK_H] = BodyPath[(int)PCJobTable.JT_WARLOCK];
+        BodyPath[(int)PCJobTable.JT_RANGER_H] = BodyPath[(int)PCJobTable.JT_RANGER];
+        BodyPath[(int)PCJobTable.JT_ARCHBISHOP_H] = BodyPath[(int)PCJobTable.JT_ARCHBISHOP];
+        BodyPath[(int)PCJobTable.JT_MECHANIC_H] = BodyPath[(int)PCJobTable.JT_MECHANIC];
+        BodyPath[(int)PCJobTable.JT_GUILLOTINE_CROSS_H] = BodyPath[(int)PCJobTable.JT_GUILLOTINE_CROSS];
+        BodyPath[(int)PCJobTable.JT_ROYAL_GUARD_H] = BodyPath[(int)PCJobTable.JT_ROYAL_GUARD];
+        BodyPath[(int)PCJobTable.JT_SORCERER_H] = BodyPath[(int)PCJobTable.JT_SORCERER];
+        BodyPath[(int)PCJobTable.JT_MINSTREL_H] = BodyPath[(int)PCJobTable.JT_MINSTREL];
+        BodyPath[(int)PCJobTable.JT_WANDERER_H] = BodyPath[(int)PCJobTable.JT_WANDERER];
+        BodyPath[(int)PCJobTable.JT_SURA_H] = BodyPath[(int)PCJobTable.JT_SURA];
+        BodyPath[(int)PCJobTable.JT_GENETIC_H] = BodyPath[(int)PCJobTable.JT_GENETIC];
+        BodyPath[(int)PCJobTable.JT_SHADOW_CHASER_H] = BodyPath[(int)PCJobTable.JT_SHADOW_CHASER];
+
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN_H] = BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN];
+        BodyPath[(int)PCJobTable.JT_ROYAL_CHICKEN_H] = BodyPath[(int)PCJobTable.JT_ROYAL_CHICKEN];
+        BodyPath[(int)PCJobTable.JT_WOLF_RANGER_H] = BodyPath[(int)PCJobTable.JT_WOLF_RANGER];
+        BodyPath[(int)PCJobTable.JT_MADOGEAR_H] = BodyPath[(int)PCJobTable.JT_MADOGEAR];
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN2_H] = BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN2];
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN3_H] = BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN3];
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN4_H] = BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN4];
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN5_H] = BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN5];
+
+        BodyPath[(int)PCJobTable.JT_RUNE_KNIGHT_B] = BodyPath[(int)PCJobTable.JT_RUNE_KNIGHT];
+        BodyPath[(int)PCJobTable.JT_WARLOCK_B] = BodyPath[(int)PCJobTable.JT_WARLOCK];
+        BodyPath[(int)PCJobTable.JT_RANGER_B] = BodyPath[(int)PCJobTable.JT_RANGER];
+        BodyPath[(int)PCJobTable.JT_ARCHBISHOP_B] = BodyPath[(int)PCJobTable.JT_ARCHBISHOP];
+        BodyPath[(int)PCJobTable.JT_MECHANIC_B] = BodyPath[(int)PCJobTable.JT_MECHANIC];
+        BodyPath[(int)PCJobTable.JT_GUILLOTINE_CROSS_B] = BodyPath[(int)PCJobTable.JT_GUILLOTINE_CROSS];
+        BodyPath[(int)PCJobTable.JT_ROYAL_GUARD_B] = BodyPath[(int)PCJobTable.JT_ROYAL_GUARD];
+        BodyPath[(int)PCJobTable.JT_SORCERER_B] = BodyPath[(int)PCJobTable.JT_SORCERER];
+        BodyPath[(int)PCJobTable.JT_MINSTREL_B] = BodyPath[(int)PCJobTable.JT_MINSTREL];
+        BodyPath[(int)PCJobTable.JT_WANDERER_B] = BodyPath[(int)PCJobTable.JT_WANDERER];
+        BodyPath[(int)PCJobTable.JT_SURA_B] = BodyPath[(int)PCJobTable.JT_SURA];
+        BodyPath[(int)PCJobTable.JT_GENETIC_B] = BodyPath[(int)PCJobTable.JT_GENETIC];
+        BodyPath[(int)PCJobTable.JT_SHADOW_CHASER_B] = BodyPath[(int)PCJobTable.JT_SHADOW_CHASER];
+
+        BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN_B] = BodyPath[(int)PCJobTable.JT_RUNE_CHICKEN];
+        BodyPath[(int)PCJobTable.JT_ROYAL_CHICKEN_B] = BodyPath[(int)PCJobTable.JT_ROYAL_CHICKEN];
+        BodyPath[(int)PCJobTable.JT_WOLF_RANGER_B] = BodyPath[(int)PCJobTable.JT_WOLF_RANGER];
+        BodyPath[(int)PCJobTable.JT_MADOGEAR_B] = BodyPath[(int)PCJobTable.JT_MADOGEAR];
+
+        BodyPath[(int)PCJobTable.JT_PORING_NOVICE_B] = BodyPath[(int)PCJobTable.JT_PORING_NOVICE];
+        BodyPath[(int)PCJobTable.JT_PECO_SWORD_B] = BodyPath[(int)PCJobTable.JT_PECO_SWORD];
+        BodyPath[(int)PCJobTable.JT_FOX_MAGICIAN_B] = BodyPath[(int)PCJobTable.JT_FOX_MAGICIAN];
+        BodyPath[(int)PCJobTable.JT_OSTRICH_ARCHER_B] = BodyPath[(int)PCJobTable.JT_OSTRICH_ARCHER];
+        BodyPath[(int)PCJobTable.JT_SHEEP_ACO_B] = BodyPath[(int)PCJobTable.JT_SHEEP_ACO];
+        BodyPath[(int)PCJobTable.JT_PIG_MERCHANT_B] = BodyPath[(int)PCJobTable.JT_PIG_MERCHANT];
+        BodyPath[(int)PCJobTable.JT_OSTRICH_HUNTER_B] = BodyPath[(int)PCJobTable.JT_OSTRICH_HUNTER];
+        BodyPath[(int)PCJobTable.JT_DOG_ASSASSIN_B] = BodyPath[(int)PCJobTable.JT_DOG_ASSASSIN];
+        BodyPath[(int)PCJobTable.JT_SHEEP_MONK_B] = BodyPath[(int)PCJobTable.JT_SHEEP_MONK];
+        BodyPath[(int)PCJobTable.JT_FOX_SAGE_B] = BodyPath[(int)PCJobTable.JT_FOX_SAGE];
+        BodyPath[(int)PCJobTable.JT_DOG_ROGUE_B] = BodyPath[(int)PCJobTable.JT_DOG_ROGUE];
+        BodyPath[(int)PCJobTable.JT_PIG_ALCHE_B] = BodyPath[(int)PCJobTable.JT_PIG_ALCHE];
+        BodyPath[(int)PCJobTable.JT_OSTRICH_BARD_B] = BodyPath[(int)PCJobTable.JT_OSTRICH_BARD];
+        BodyPath[(int)PCJobTable.JT_OSTRICH_DANCER_B] = BodyPath[(int)PCJobTable.JT_OSTRICH_DANCER];
+        BodyPath[(int)PCJobTable.JT_PORING_SNOVICE_B] = BodyPath[(int)PCJobTable.JT_PORING_SNOVICE];
+        BodyPath[(int)PCJobTable.JT_FOX_WARLOCK_B] = BodyPath[(int)PCJobTable.JT_FOX_WARLOCK];
+        BodyPath[(int)PCJobTable.JT_SHEEP_ARCB_B] = BodyPath[(int)PCJobTable.JT_SHEEP_ARCB];
+        BodyPath[(int)PCJobTable.JT_DOG_G_CROSS_B] = BodyPath[(int)PCJobTable.JT_DOG_G_CROSS];
+        BodyPath[(int)PCJobTable.JT_FOX_SORCERER_B] = BodyPath[(int)PCJobTable.JT_FOX_SORCERER];
+        BodyPath[(int)PCJobTable.JT_OSTRICH_MINSTREL_B] = BodyPath[(int)PCJobTable.JT_OSTRICH_MINSTREL];
+        BodyPath[(int)PCJobTable.JT_OSTRICH_WANDER_B] = BodyPath[(int)PCJobTable.JT_OSTRICH_WANDER];
+        BodyPath[(int)PCJobTable.JT_SHEEP_SURA_B] = BodyPath[(int)PCJobTable.JT_SHEEP_SURA];
+        BodyPath[(int)PCJobTable.JT_PIG_GENETIC_B] = BodyPath[(int)PCJobTable.JT_PIG_GENETIC];
+        BodyPath[(int)PCJobTable.JT_DOG_THIEF_B] = BodyPath[(int)PCJobTable.JT_DOG_THIEF];
+        BodyPath[(int)PCJobTable.JT_DOG_CHASER_B] = BodyPath[(int)PCJobTable.JT_DOG_CHASER];
+        BodyPath[(int)PCJobTable.JT_PORING_NOVICE_H] = BodyPath[(int)PCJobTable.JT_PORING_NOVICE];
+        BodyPath[(int)PCJobTable.JT_PECO_SWORD_H] = BodyPath[(int)PCJobTable.JT_PECO_SWORD];
+        BodyPath[(int)PCJobTable.JT_FOX_MAGICIAN_H] = BodyPath[(int)PCJobTable.JT_FOX_MAGICIAN];
+        BodyPath[(int)PCJobTable.JT_OSTRICH_ARCHER_H] = BodyPath[(int)PCJobTable.JT_OSTRICH_ARCHER];
+        BodyPath[(int)PCJobTable.JT_SHEEP_ACO_H] = BodyPath[(int)PCJobTable.JT_SHEEP_ACO];
+        BodyPath[(int)PCJobTable.JT_PIG_MERCHANT_H] = BodyPath[(int)PCJobTable.JT_PIG_MERCHANT];
+        BodyPath[(int)PCJobTable.JT_DOG_THIEF_H] = BodyPath[(int)PCJobTable.JT_DOG_THIEF];
+
+        BodyPath[(int)PCJobTable.JT_SUPERNOVICE2] = BodyPath[(int)PCJobTable.JT_SUPERNOVICE];
+        BodyPath[(int)PCJobTable.JT_SUPERNOVICE2_B] = BodyPath[(int)PCJobTable.JT_SUPERNOVICE];
+
+        BodyPath[(int)PCJobTable.JT_PORING_SNOVICE2] = BodyPath[(int)PCJobTable.JT_PORING_SNOVICE];
+        BodyPath[(int)PCJobTable.JT_PORING_SNOVICE2_B] = BodyPath[(int)PCJobTable.JT_PORING_SNOVICE];
+        BodyPath[(int)PCJobTable.JT_SHEEP_PRIEST_B] = BodyPath[(int)PCJobTable.JT_SHEEP_PRIEST];
+        BodyPath[(int)PCJobTable.JT_FOX_WIZ_B] = BodyPath[(int)PCJobTable.JT_FOX_WIZ];
+        BodyPath[(int)PCJobTable.JT_PIG_BLACKSMITH_B] = BodyPath[(int)PCJobTable.JT_PIG_BLACKSMITH];
+        BodyPath[(int)PCJobTable.JT_PIG_MECHANIC_B] = BodyPath[(int)PCJobTable.JT_PIG_MECHANIC];
+        BodyPath[(int)PCJobTable.JT_OSTRICH_RANGER_B] = BodyPath[(int)PCJobTable.JT_OSTRICH_RANGER];
+        BodyPath[(int)PCJobTable.JT_LION_KNIGHT_B] = BodyPath[(int)PCJobTable.JT_LION_KNIGHT];
+        BodyPath[(int)PCJobTable.JT_LION_ROYAL_GUARD_B] = BodyPath[(int)PCJobTable.JT_LION_ROYAL_GUARD];
+        BodyPath[(int)PCJobTable.JT_LION_RUNE_KNIGHT_B] = BodyPath[(int)PCJobTable.JT_LION_RUNE_KNIGHT];
+        BodyPath[(int)PCJobTable.JT_LION_CRUSADER_B] = BodyPath[(int)PCJobTable.JT_LION_CRUSADER];
+    }
 }

@@ -3,6 +3,7 @@
     Walk,
     Sit,
     PickUp,
+    Attack,
     Attack1,
     Attack2,
     Attack3,

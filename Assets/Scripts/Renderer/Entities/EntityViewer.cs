@@ -159,11 +159,15 @@ public class EntityViewer : MonoBehaviour {
 
     private void ChangeAction(int newActionIndex) {
         if (currentACT == null || !Entity.gameObject.activeSelf) return;
+
         Entity.Action = newActionIndex;
         currentActionIndex = newActionIndex;
+
         //if (!isInitialized) return;
+
         currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
         maxFrame = currentAction.frames.Length - 1;
+
         currentFrameTime = currentAction.delay / 1000f * AnimSpeed; //reset current frame time
         isDirty = true;
 
@@ -280,7 +284,11 @@ public class EntityViewer : MonoBehaviour {
             child.ChangeMotion(motion, nextMotion);
         }
 
+
         var action = AnimationHelper.GetMotionIdForSprite(Type, motion);
+        if (motion == SpriteMotion.Attack) {
+            var attackAction = DBManager.GetWeaponAction((Job)Entity.Job, Entity.Sex, Entity.Weapon);
+        }
         if (action < 0 || action > currentACT.actions.Length) {
             action = 0;
         }

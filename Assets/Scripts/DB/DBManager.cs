@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -21,12 +22,15 @@ public class DBManager {
     private static Hashtable mapTable = new Hashtable();
     private static Hashtable msgStringTable = new Hashtable();
     private static Hashtable mapAlias = new Hashtable();
-    private static Dictionary<Job, string> bodyPathTable = BodyPathTable.init();
+    private static Dictionary<int, string> bodyPathTable = BodyPathTable.BodyPath;
     private static Dictionary<int, string> monsterPathTable = MonsterTable.Table;
     private static string[] SexTable = new string[] { "\xbf\xa9", "\xb3\xb2" };
 
-    public static void GetWeaponAction() {
+    public static int GetWeaponAction(Job job, int sex, int weapon) {
+        var baseJob = JobHelper.GetBaseClass((ushort)job, sex);
 
+        ItemDB.TryGetValue(weapon, out Item item);
+        return 1;
     }
 
     public static int GetItemViewID(int itemId) {
@@ -40,7 +44,9 @@ public class DBManager {
 
         // PC
         if (id < 45) {
-            var jobPath = BodyPath[job] == null ? BodyPath[0] : BodyPath[job];
+            var path = BodyPath[id] == null ? BodyPath[0] : BodyPath[id];
+            var jobPath = Encoding.GetEncoding(1252).GetString(Encoding.GetEncoding(949).GetBytes(path));
+
             return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/\xb8\xf6\xc5\xeb/{SexTable[sex]}/{jobPath}_{SexTable[sex]}";
         }
 
@@ -66,7 +72,8 @@ public class DBManager {
 
         // PC
         if (id < 6000) {
-            var jobPath = BodyPath[job] == null ? BodyPath[0] : BodyPath[job];
+            var path = BodyPath[id] == null ? BodyPath[0] : BodyPath[id];
+            var jobPath = Encoding.GetEncoding(1252).GetString(Encoding.GetEncoding(949).GetBytes(path));
             return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/\xb8\xf6\xc5\xeb/{SexTable[sex]}/{jobPath}_{SexTable[sex]}";
         }
 
@@ -90,8 +97,7 @@ public class DBManager {
             return GetWeaponPath(id, job, sex);
         }
 
-        //var baseClass = WeaponJobTable[job] || WeaponJobTable[0];
-        var baseClass = 0; //TODO implement this
+        var baseClass = GetBodyPath(JobHelper.GetBaseClass((ushort)job, sex), sex);
 
         // ItemID to View Id
         var ViewID = id;
@@ -108,9 +114,7 @@ public class DBManager {
             return null;
         }
 
-        //var baseClass = WeaponJobTable[job] || WeaponJobTable[0];
-        var jobPath = BodyPath[(Job)job] == null ? BodyPath[0] : BodyPath[(Job)job];
-        var baseClass = jobPath; //TODO implement this
+        var baseClass = GetBodyPath(JobHelper.GetBaseClass((ushort)job, sex), sex);
 
         // ItemID to View Id
         var ViewID = id;
@@ -129,7 +133,7 @@ public class DBManager {
 
     public static Hashtable MapAlias => mapAlias;
 
-    public static Dictionary<Job, String> BodyPath => bodyPathTable;
+    public static Dictionary<int, string> BodyPath => bodyPathTable;
 
     public static Dictionary<int, string> MonsterPath => monsterPathTable;
 
