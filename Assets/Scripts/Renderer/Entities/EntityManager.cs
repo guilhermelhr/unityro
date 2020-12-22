@@ -59,7 +59,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Type = entity.Type;
 
         entity.Init(spr, act);
-        entity.GID = (uint)itemSpawnInfo.GID;
+        entity.GID = (uint)itemSpawnInfo.mapID;
         entity.SetReady(true);
 
         return entity;

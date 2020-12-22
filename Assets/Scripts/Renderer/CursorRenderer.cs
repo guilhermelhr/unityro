@@ -53,8 +53,9 @@ public class CursorRenderer : MonoBehaviour {
         if (Input.GetKey(KeyCode.Mouse1)) {
             SetAction(CursorAction.ROTATE, false);
         } else {
+            // TODO remove this raycast and move to entity control
             var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 150, LayerMask.GetMask("NPC", "Ground", "Monsters"))) {
+            if (Physics.Raycast(ray, out var hit, 150, LayerMask.GetMask("NPC", "Ground", "Monsters", "Items"))) {
                 hit.collider.gameObject.TryGetComponent<EntityViewer>(out var target);
 
                 if (target != null) {
@@ -63,7 +64,7 @@ public class CursorRenderer : MonoBehaviour {
                             SetAction(CursorAction.TALK, false);
                             break;
                         case EntityType.ITEM:
-                            SetAction(CursorAction.PICK, false);
+                            SetAction(CursorAction.PICK, true);
                             break;
                         case EntityType.MOB:
                             SetAction(CursorAction.ATTACK, false);
@@ -116,7 +117,7 @@ public class CursorRenderer : MonoBehaviour {
         this.tick = Core.Tick;
         this.repeat = repeat;
 
-        this.currentAction = (int)type;
+        this.currentAction = animation ?? (int)type;
         this.currentFrame = 0;
 
         var action = act.actions[currentAction];

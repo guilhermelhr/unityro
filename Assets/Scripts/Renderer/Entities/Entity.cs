@@ -91,6 +91,7 @@ public class Entity : MonoBehaviour {
 
     private void Awake() {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT.HEADER, OnEntityAction);
         Core.NetworkClient.HookPacket(ZC.PAR_CHANGE.HEADER, OnParameterChange);
         Core.NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
     }
@@ -103,94 +104,113 @@ public class Entity : MonoBehaviour {
     }
 
     private void OnEntityAction(ushort cmd, int size, InPacket packet) {
+        EntityActionRequest actionRequest = null;
+
         if (packet is ZC.NOTIFY_ACT3) {
-            var pkt = packet as ZC.NOTIFY_ACT3;
-            var srcEntity = Core.EntityManager.GetEntity(pkt.GID);
-            var dstEntity = Core.EntityManager.GetEntity(pkt.targetGID);
+            var p = packet as ZC.NOTIFY_ACT3;
+            actionRequest = p.ActionRequest;
+        } else if (packet is ZC.NOTIFY_ACT) {
+            var p = packet as ZC.NOTIFY_ACT;
+            actionRequest = p.ActionRequest;
+        } else {
+            return;
+        }
 
-            if (pkt.GID == Core.Session.Entity.GID || pkt.GID == Core.Session.AccountID) {
-                srcEntity = Core.Session.Entity;
-            } else if (pkt.targetGID == Core.Session.Entity.GID || pkt.targetGID == Core.Session.AccountID) {
-                dstEntity = Core.Session.Entity;
-            }
-            Entity target;
+        if (actionRequest == null) return;
 
-            // entity out of screen
-            if (!srcEntity) {
-                return;
-            }
+        var srcEntity = Core.EntityManager.GetEntity(actionRequest.GID);
+        var dstEntity = Core.EntityManager.GetEntity(actionRequest.targetGID);
 
-            switch (pkt.action) {
-                // Damage
-                case 0:
-                case 4:
-                case 8:
-                case 9:
-                case 10:
-                    if (dstEntity) {
-                        // only if damage and do not have endure
-                        // and damage isn't absorbed (healing)
-                        if (pkt.damage > 0 && pkt.action != 9 && pkt.action != 4) {
-                            dstEntity.ChangeMotion(SpriteMotion.Hit, SpriteMotion.Standby);
-                        }
+        if (actionRequest.GID == Core.Session.Entity.GID || actionRequest.GID == Core.Session.AccountID) {
+            srcEntity = Core.Session.Entity;
+        } else if (actionRequest.targetGID == Core.Session.Entity.GID || actionRequest.targetGID == Core.Session.AccountID) {
+            dstEntity = Core.Session.Entity;
+        }
 
-                        target = pkt.damage > 0 ? dstEntity : srcEntity;
+        // entity out of screen
+        if (!srcEntity) {
+            return;
+        }
 
-                        if (target) {
-                            switch (pkt.action) {
-                                // regular damage (and endure)
-                                case 9:
-                                case 0:
-                                    target.Damage(pkt.damage, Core.Tick + pkt.attackMT);
-                                    break;
+        switch (actionRequest.action) {
+            // Damage
+            case 0:
+            case 4:
+            case 8:
+            case 9:
+            case 10:
+                OnEntityAttack(actionRequest, srcEntity, dstEntity);
+                break;
 
-                                // double attack
-                                case 8:
-                                    // Display combo only if entity is mob and the attack don't miss
-                                    if (dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
-                                        dstEntity.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 1, DamageType.COMBO);
-                                        dstEntity.Damage(pkt.damage, Core.Tick + pkt.attackMT * 2, DamageType.COMBO | DamageType.COMBO_FINAL);
-                                    }
+            // Pickup Item
+            case 1:
+                srcEntity.ChangeMotion(SpriteMotion.PickUp, SpriteMotion.Idle);
+                if (dstEntity) {
+                    srcEntity.LookTo(dstEntity.transform.position);
+                }
+                break;
 
-                                    target.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 1);
-                                    target.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 2);
-                                    break;
+            // Sit
+            case 2:
+                break;
 
-                                // TODO: critical damage
-                                case 10:
-                                    target.Damage(pkt.damage, Core.Tick + pkt.attackMT);
-                                    break;
-
-                                // TODO: lucky miss
-                                case 11:
-                                    target.Damage(0, Core.Tick + pkt.attackMT);
-                                    break;
-                            }
-                        }
-
-                        srcEntity.LookTo(dstEntity.transform.position);
-                    }
-
-                    srcEntity.AttackSpeed = (short)pkt.attackMT;
-                    srcEntity.ChangeMotion(SpriteMotion.Attack1, SpriteMotion.Standby);
-                    break;
-
-                // Pickup Item
-                case 1:
-                    break;
-
-                // Sit
-                case 2:
-                    break;
-
-                // Stand
-                case 3:
-                    break;
-            }
+            // Stand
+            case 3:
+                break;
         }
     }
 
-    private void LookTo(Vector3 position) {
+    private static void OnEntityAttack(EntityActionRequest pkt, Entity srcEntity, Entity dstEntity) {
+        Entity target;
+        if (dstEntity) {
+            // only if damage and do not have endure
+            // and damage isn't absorbed (healing)
+            if (pkt.damage > 0 && pkt.action != 9 && pkt.action != 4) {
+                dstEntity.ChangeMotion(SpriteMotion.Hit, SpriteMotion.Standby);
+            }
+
+            target = pkt.damage > 0 ? dstEntity : srcEntity;
+
+            if (target) {
+                switch (pkt.action) {
+                    // regular damage (and endure)
+                    case 9:
+                    case 0:
+                        target.Damage(pkt.damage, Core.Tick + pkt.attackMT);
+                        break;
+
+                    // double attack
+                    case 8:
+                        // Display combo only if entity is mob and the attack don't miss
+                        if (dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
+                            dstEntity.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 1, DamageType.COMBO);
+                            dstEntity.Damage(pkt.damage, Core.Tick + pkt.attackMT * 2, DamageType.COMBO | DamageType.COMBO_FINAL);
+                        }
+
+                        target.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 1);
+                        target.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 2);
+                        break;
+
+                    // TODO: critical damage
+                    case 10:
+                        target.Damage(pkt.damage, Core.Tick + pkt.attackMT);
+                        break;
+
+                    // TODO: lucky miss
+                    case 11:
+                        target.Damage(0, Core.Tick + pkt.attackMT);
+                        break;
+                }
+            }
+
+            srcEntity.LookTo(dstEntity.transform.position);
+        }
+
+        srcEntity.AttackSpeed = (short)pkt.attackMT;
+        srcEntity.ChangeMotion(SpriteMotion.Attack1, SpriteMotion.Standby);
+    }
+
+    public void LookTo(Vector3 position) {
         var offset = new Vector2Int((int)position.x, (int)position.z) - new Vector2Int((int)transform.position.x, (int)transform.position.z);
         Direction = PathFindingManager.GetDirectionForOffset(offset);
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 public class ItemSpawnInfo {
 
     public Vector3 Position;
-    public int ViewID;
+    public int mapID;
     public int GID;
     public bool IsIdentified;
     public int amount;

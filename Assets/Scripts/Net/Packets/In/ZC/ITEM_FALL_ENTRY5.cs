@@ -9,7 +9,7 @@ public partial class ZC {
         public const int SIZE = 22;
 
         public int id;
-        public int viewID;
+        public int mapID;
         public short itemType;
         public int identified;
         public short x;
@@ -22,7 +22,7 @@ public partial class ZC {
 
         public bool Read(BinaryReader br) {
 
-            viewID = br.ReadLong();
+            mapID = br.ReadLong();
             id = br.ReadShort();
             itemType = br.ReadShort();
             identified = br.ReadByte();

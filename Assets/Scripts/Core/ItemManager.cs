@@ -5,6 +5,17 @@ public class ItemManager : MonoBehaviour {
 
     private void Awake() {
         Core.NetworkClient.HookPacket(ZC.ITEM_FALL_ENTRY5.HEADER, OnItemSpamInGround);
+        Core.NetworkClient.HookPacket(ZC.ITEM_PICKUP_ACK7.HEADER, OnItemPickup);
+    }
+
+    private void OnItemPickup(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.ITEM_PICKUP_ACK7) {
+            var pkt = packet as ZC.ITEM_PICKUP_ACK7;
+
+            if (pkt.result != 0) {
+                Debug.Log("Failed to pick item");
+            }
+        }
     }
 
     private void OnItemSpamInGround(ushort cmd, int size, InPacket packet) {
@@ -17,7 +28,7 @@ public class ItemManager : MonoBehaviour {
 
             Core.EntityManager.SpawnItem(new ItemSpawnInfo() {
                 GID = pkt.id,
-                ViewID = pkt.viewID,
+                mapID = pkt.mapID,
                 Position = new Vector3((float)x, (float)y, (float)z),
                 amount = pkt.amount,
                 IsIdentified = pkt.identified == 1,

@@ -9,30 +9,23 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_ACT3;
         public const int SIZE = 34;
 
-        public uint GID;
-        public uint targetGID;
-        public uint startTime;
-        public int attackMT;
-        public int attackedMT;
-        public int damage;
-        public short count;
-        public byte action;
-        public int leftDamage;
+        public EntityActionRequest ActionRequest;
 
         public bool Read(BinaryReader br) {
-
-            this.GID = br.ReadULong();
-            this.targetGID = br.ReadULong();
-            this.startTime = br.ReadULong();
-            this.attackMT = br.ReadLong();
-            this.attackedMT = br.ReadLong();
-            this.damage = br.ReadLong();
+            ActionRequest = new EntityActionRequest() {
+                GID = br.ReadULong(),
+                targetGID = br.ReadULong(),
+                startTime = br.ReadULong(),
+                attackMT = br.ReadLong(),
+                attackedMT = br.ReadLong(),
+                damage = br.ReadLong()
+            };
 
             br.Seek(1, SeekOrigin.Current);
 
-            this.count = br.ReadShort();
-            this.action = br.ReadUByte();
-            this.leftDamage = br.ReadLong();
+            ActionRequest.count = br.ReadShort();
+            ActionRequest.action = br.ReadUByte();
+            ActionRequest.leftDamage = br.ReadLong();
 
             return true;
         }

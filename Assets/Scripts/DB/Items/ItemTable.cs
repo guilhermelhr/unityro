@@ -364,8 +364,6 @@ public class ItemTable {
                     identifiedDescriptionName.Add(desc.ToString());
                 }
 
-                var test = it["identifiedResourceName"].ToString();
-
                 var item = new Item() {
                     id = int.Parse(key.ToString()),
                     unidentifiedDisplayName = it["unidentifiedDisplayName"].ToString(),
