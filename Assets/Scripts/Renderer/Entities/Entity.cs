@@ -104,7 +104,7 @@ public class Entity : MonoBehaviour {
     }
 
     private void OnEntityAction(ushort cmd, int size, InPacket packet) {
-        EntityActionRequest actionRequest = null;
+        EntityActionRequest actionRequest;
 
         if (packet is ZC.NOTIFY_ACT3) {
             var p = packet as ZC.NOTIFY_ACT3;
