@@ -616,6 +616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7086719cce558a44489091c3f16b6408, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Offline: 0
   mapname: 
   soundsMixerGroup: {fileID: 243063458056754506, guid: 80607cd4d5abb9d49824975c92ad1afc, type: 2}
   worldLight: {fileID: 2052593200}

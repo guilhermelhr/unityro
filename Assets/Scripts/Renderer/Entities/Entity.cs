@@ -53,6 +53,10 @@ public class Entity : MonoBehaviour {
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
     }
 
+    public void Init(SPR spr, ACT act) {
+        EntityViewer.Init(spr, act);
+    }
+
     public void Init(CharacterData data) {
         Job = data.Job;
         Sex = (byte)data.Sex;

@@ -42,23 +42,30 @@ public class EntityViewer : MonoBehaviour {
 
     private MeshCollider meshCollider;
 
+    public void Init(SPR spr, ACT act) {
+        currentSPR = spr;
+        currentACT = act;
+    }
+
     public void Start() {
-        string path = "";
+        if (currentSPR == null) {
+            string path = "";
 
-        switch (ViewerType) {
-            case ViewerType.BODY:
-                path = DBManager.GetBodyPath((Job)Entity.Job, Entity.Sex);
-                break;
-            case ViewerType.HEAD:
-                path = DBManager.GetHeadPath(Entity.Hair, Entity.Sex);
-                break;
-            case ViewerType.WEAPON:
-                path = DBManager.GetWeaponPath(Entity.Weapon, Entity.Job, Entity.Sex);
-                break;
+            switch (ViewerType) {
+                case ViewerType.BODY:
+                    path = DBManager.GetBodyPath((Job)Entity.Job, Entity.Sex);
+                    break;
+                case ViewerType.HEAD:
+                    path = DBManager.GetHeadPath(Entity.Hair, Entity.Sex);
+                    break;
+                case ViewerType.WEAPON:
+                    path = DBManager.GetWeaponPath(Entity.Weapon, Entity.Job, Entity.Sex);
+                    break;
+            }
+
+            currentSPR = FileManager.Load(path + ".spr") as SPR;
+            currentACT = FileManager.Load(path + ".act") as ACT;
         }
-
-        currentSPR = FileManager.Load(path + ".spr") as SPR;
-        currentACT = FileManager.Load(path + ".act") as ACT;
         currentSPR.SwitchToRGBA();
         sprites = currentSPR.GetSprites();
         meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
@@ -309,7 +316,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void ChildSetFrameData(int actionIndex, int angleIndex, int newCurrentFrame) {
-        if(currentACT == null) {
+        if (currentACT == null) {
             Debug.LogError($"Current ACT is null from {Entity}");
             return;
         }

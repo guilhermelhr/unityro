@@ -21,7 +21,7 @@ public partial class ZC {
             var count = (br.Length - br.Position) / 57;
             var list = new List<ItemInfo>();
 
-            for(int i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++) {
                 var itemInfo = new ItemInfo();
 
                 itemInfo.index = br.ReadShort();
@@ -32,7 +32,7 @@ public partial class ZC {
 
                 var normal = locationAmount < 0;
 
-                if(!normal) { // equip 31B
+                if (!normal) { // equip 31B
                     itemInfo.location = locationAmount;
                     itemInfo.wearState = br.ReadLong();
                     itemInfo.refine = br.ReadByte();
@@ -48,7 +48,7 @@ public partial class ZC {
                     itemInfo.look = br.ReadShort();
                     itemInfo.randomOptionCount = br.ReadByte();
                     itemInfo.options = new List<ItemInfo.Option>();
-                    for(int j = 0; j < 5; j++) {
+                    for (int j = 0; j < 5; j++) {
                         itemInfo.options.Add(new ItemInfo.Option() {
                             optIndex = br.ReadShort(),
                             value = br.ReadShort(),

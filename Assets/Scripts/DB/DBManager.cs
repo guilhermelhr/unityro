@@ -26,6 +26,18 @@ public class DBManager {
     private static Dictionary<int, string> monsterPathTable = MonsterTable.Table;
     private static string[] SexTable = new string[] { "\xbf\xa9", "\xb3\xb2" };
 
+    public static Item GetItemInfo(int gID) {
+        ItemDB.TryGetValue(gID, out Item item);
+
+        return item;
+    }
+
+    public static string GetItemPath(int gID, bool isIdentified) {
+        var it = GetItemInfo(gID);
+        var resName = isIdentified ? it.identifiedResourceName : it.unidentifiedResourceName;
+        return $"data/sprite/\xbe\xc6\xc0\xcc\xc5\xdb/{resName}";
+    }
+
     public static int GetWeaponAction(Job job, int sex, int weapon) {
         var baseJob = JobHelper.GetBaseClass((ushort)job, sex);
 
@@ -116,7 +128,7 @@ public class DBManager {
             return null;
         }
 
-        var baseJob = (int) JobHelper.GetBaseClass((ushort)job, sex);
+        var baseJob = (int)JobHelper.GetBaseClass((ushort)job, sex);
         var path = BodyPath[baseJob] == null ? BodyPath[0] : BodyPath[baseJob];
         var baseClass = path.KoreanTo1252();
 
@@ -146,7 +158,7 @@ public class DBManager {
     public static int[][] HairIndexPath => HairIndexTable.table;
 
     public static void init() {
-        //ItemTable.LoadItemDb();
+        ItemTable.LoadItemDb();
         try {
             foreach (object[] args in LoadTable("data/msgstringtable.txt", 1)) {
                 msgStringTable[args[0]] = args[1];

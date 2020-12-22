@@ -26,6 +26,7 @@ public class Core : MonoBehaviour {
     private static NetworkClient networkClient;
 
     public static EntityManager EntityManager;
+    public static ItemManager ItemManager;
     public static MapLoader MapLoader => mapLoader;
     public static MapRenderer MapRenderer => mapRenderer;
     public static Session Session;
@@ -229,5 +230,11 @@ public class Core : MonoBehaviour {
         StartCoroutine(
             MapLoader.Load(mapName + ".rsw", MapRenderer.OnComplete)
         );
+    }
+
+    public void InitManagers() {
+        if (ItemManager == null) {
+            ItemManager = gameObject.AddComponent<ItemManager>();
+        }
     }
 }

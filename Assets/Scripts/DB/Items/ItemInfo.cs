@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 public class ItemInfo {
 
-
     public Slot slot;
     public List<Option> options;
-    internal short index;
-    internal short viewID;
-    internal int itemType;
-    internal int location;
-    internal int wearState;
-    internal int refine;
-    internal int expireTime;
-    internal short bindOnEquip;
-    internal short look;
-    internal int randomOptionCount;
-    internal int flag;
-    internal int ammount;
+
+    public short index;
+    public short viewID;
+    public int itemType;
+    public int location;
+    public int wearState;
+    public int refine;
+    public int expireTime;
+    public short bindOnEquip;
+    public short look;
+    public int randomOptionCount;
+    public int flag;
+    public int ammount;
 
     public class Slot {
         public ushort card1;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 using UnityEngine;
@@ -345,7 +346,7 @@ public class ItemTable {
 
     public static void LoadItemDb() {
         Script script = new Script();
-        script.Options.ScriptLoader = new FileSystemScriptLoader();
+        script.Options.ScriptLoader = new CustomScriptLoader();
         script.DoFile(Core.Configs["itemInfo"] as string);
         Table table = (Table)script.Globals["tbl"];
 
@@ -362,6 +363,8 @@ public class ItemTable {
                 foreach (var desc in ((Table)it["identifiedDescriptionName"]).Values) {
                     identifiedDescriptionName.Add(desc.ToString());
                 }
+
+                var test = it["identifiedResourceName"].ToString();
 
                 var item = new Item() {
                     id = int.Parse(key.ToString()),

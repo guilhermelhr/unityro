@@ -22,6 +22,7 @@ public class MapController : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.HP_INFO.HEADER, OnEntityHpChanged);
         Core.NetworkClient.HookPacket(ZC.STOPMOVE.HEADER, OnEntityMovement);
 
+        Core.Instance.InitManagers();
         Core.Instance.InitCamera();
         Core.Instance.SetWorldLight(worldLight);
         Core.Instance.BeginMapLoading(mapInfo.mapname);
@@ -95,7 +96,7 @@ public class MapController : MonoBehaviour {
         } else if (packet is ZC.STOPMOVE) {
             var pkt = packet as ZC.STOPMOVE;
             var entity = Core.EntityManager.GetEntity(pkt.AID);
-            if(entity == null) return;
+            if (entity == null) return;
 
             entity.ChangeMotion(SpriteMotion.Walk);
             entity.StartMoving((int)entity.transform.position.x, (int)entity.transform.position.z, pkt.PosX, pkt.PosY);

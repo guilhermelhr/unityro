@@ -26,6 +26,45 @@ public class EntityManager : MonoBehaviour {
         }
     }
 
+    public Entity SpawnItem(ItemSpawnInfo itemSpawnInfo) {
+
+        Item item = DBManager.GetItemInfo(itemSpawnInfo.GID);
+        string itemPath = DBManager.GetItemPath(itemSpawnInfo.GID, itemSpawnInfo.IsIdentified);
+
+        ACT act = FileManager.Load(itemPath + ".act") as ACT;
+        SPR spr = FileManager.Load(itemPath + ".spr") as SPR;
+
+        var itemGO = new GameObject(item.identifiedDisplayName);
+        itemGO.layer = LayerMask.NameToLayer("Items");
+        itemGO.transform.localScale = Vector3.one;
+        var entity = itemGO.AddComponent<Entity>();
+
+        var body = new GameObject("Body");
+        body.layer = LayerMask.NameToLayer("Items");
+        body.transform.SetParent(itemGO.transform, false);
+        body.transform.localPosition = itemSpawnInfo.Position;
+        body.AddComponent<Billboard>();
+        body.AddComponent<SortingGroup>();
+
+        var bodyViewer = body.AddComponent<EntityViewer>();
+
+        entity.EntityViewer = bodyViewer;
+        entity.Type = EntityType.ITEM;
+
+        bodyViewer.ViewerType = ViewerType.BODY;
+        bodyViewer.Entity = entity;
+        bodyViewer.SpriteOffset = 0.5f;
+        bodyViewer.HeadDirection = 0;
+        bodyViewer.CurrentMotion = SpriteMotion.Idle;
+        bodyViewer.Type = entity.Type;
+
+        entity.Init(spr, act);
+        entity.GID = (uint)itemSpawnInfo.GID;
+        entity.SetReady(true);
+
+        return entity;
+    }
+
     public Entity GetEntity(uint GID) {
         entityCache.TryGetValue(GID, out var entity);
         return entity;

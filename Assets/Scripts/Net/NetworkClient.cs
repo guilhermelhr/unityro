@@ -45,9 +45,9 @@ public class NetworkClient : MonoBehaviour {
     }
 
     public void Ping() {
-        if(!IsConnected) return;
+        if (!IsConnected) return;
         var ticks = Time.realtimeSinceStartup;
-        if(ticks % 12 < 1f) {
+        if (ticks % 12 < 1f) {
             new Ping((int)Time.realtimeSinceStartup).Send(CurrentConnection.GetBinaryWriter());
         }
     }
