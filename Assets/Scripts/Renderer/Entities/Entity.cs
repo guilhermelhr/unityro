@@ -144,10 +144,7 @@ public class Entity : MonoBehaviour {
 
             // Pickup Item
             case 1:
-                srcEntity.ChangeMotion(SpriteMotion.PickUp, SpriteMotion.Idle);
-                if (dstEntity) {
-                    srcEntity.LookTo(dstEntity.transform.position);
-                }
+                OnEntityPickup(srcEntity, dstEntity);
                 break;
 
             // Sit
@@ -157,6 +154,13 @@ public class Entity : MonoBehaviour {
             // Stand
             case 3:
                 break;
+        }
+    }
+
+    private static void OnEntityPickup(Entity srcEntity, Entity dstEntity) {
+        srcEntity.ChangeMotion(SpriteMotion.PickUp, SpriteMotion.Idle);
+        if (dstEntity) {
+            srcEntity.LookTo(dstEntity.transform.position);
         }
     }
 
