@@ -8,13 +8,16 @@ public class MapUiController : MonoBehaviour {
 
     [SerializeField] private NpcBoxController NpcBox;
     [SerializeField] private NpcBoxMenuController NpcMenu;
+    [SerializeField] private PopupController PopupController;
 
     void Awake() {
+        #region NPCS
         Core.NetworkClient.HookPacket(ZC.SAY_DIALOG.HEADER, NpcBox.OnNpcMessage);
         Core.NetworkClient.HookPacket(ZC.CLOSE_DIALOG.HEADER, NpcBox.AddCloseButton);
         Core.NetworkClient.HookPacket(ZC.WAIT_DIALOG.HEADER, NpcBox.AddNextButton);
         Core.NetworkClient.HookPacket(ZC.CLOSE_SCRIPT.HEADER, NpcBox.CloseAndReset);
         Core.NetworkClient.HookPacket(ZC.MENU_LIST.HEADER, NpcMenu.SetMenu);
+        #endregion
 
         NpcMenu.OnNpcMenuSelected = OnNpcMenuSelected;
     }
@@ -38,5 +41,9 @@ public class MapUiController : MonoBehaviour {
             NAID = NAID,
             Index = index
         }.Send();
+    }
+
+    public void DisplayPopup(Sprite sprite, string label) {
+        PopupController.DisplayPopup(sprite, label);
     }
 }

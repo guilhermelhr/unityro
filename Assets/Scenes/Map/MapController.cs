@@ -5,9 +5,18 @@ using UnityEngine;
 
 public class MapController : MonoBehaviour {
 
+    public static MapController Instance;
+
     [SerializeField] private Light worldLight;
 
+    public MapUiController UIController;
+
     private void Awake() {
+
+        if (Instance == null) {
+            Instance = this;
+        }
+
         var mapInfo = Core.NetworkClient.State.MapLoginInfo;
         if (mapInfo == null) {
             throw new Exception("Map Login info cannot be null");

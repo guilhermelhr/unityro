@@ -6,6 +6,15 @@ public class ItemManager : MonoBehaviour {
     private void Awake() {
         Core.NetworkClient.HookPacket(ZC.ITEM_FALL_ENTRY5.HEADER, OnItemSpamInGround);
         Core.NetworkClient.HookPacket(ZC.ITEM_PICKUP_ACK7.HEADER, OnItemPickup);
+        Core.NetworkClient.HookPacket(ZC.ITEM_DISAPPEAR.HEADER, OnItemDisappear);
+    }
+
+    private void OnItemDisappear(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.ITEM_DISAPPEAR) {
+            var pkt = packet as ZC.ITEM_DISAPPEAR;
+
+            Core.EntityManager.RemoveEntity(pkt.GID);
+        }
     }
 
     private void OnItemPickup(ushort cmd, int size, InPacket packet) {
@@ -15,7 +24,19 @@ public class ItemManager : MonoBehaviour {
             if (pkt.result != 0) {
                 Debug.Log("Failed to pick item");
             }
+
+            DisplayPopup(pkt);
+            // TODO add to inventory
         }
+    }
+
+    private void DisplayPopup(ZC.ITEM_PICKUP_ACK7 pkt) {
+        Item item = DBManager.GetItemInfo(pkt.id);
+        string itemPath = DBManager.GetItemPath(pkt.id, pkt.IsIdentified);
+        SPR spr = FileManager.Load(itemPath + ".spr") as SPR;
+        if (spr == null) return;
+        var label = $"{(pkt.IsIdentified ? item.identifiedDisplayName : item.unidentifiedDisplayName)} - {pkt.count} obtained";
+        MapController.Instance.UIController.DisplayPopup(spr.GetSprites()[0], label);
     }
 
     private void OnItemSpamInGround(ushort cmd, int size, InPacket packet) {

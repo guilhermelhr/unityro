@@ -26,6 +26,14 @@ public class EntityManager : MonoBehaviour {
         }
     }
 
+    public void RemoveEntity(uint GID) {
+        entityCache.TryGetValue(GID, out Entity entity);
+        if (entity != null) {
+            Destroy(entity.gameObject);
+            entityCache.Remove(GID);
+        }
+    }
+
     public Entity SpawnItem(ItemSpawnInfo itemSpawnInfo) {
 
         Item item = DBManager.GetItemInfo(itemSpawnInfo.GID);
@@ -61,6 +69,7 @@ public class EntityManager : MonoBehaviour {
         entity.Init(spr, act);
         entity.GID = (uint)itemSpawnInfo.mapID;
         entity.SetReady(true);
+        entityCache.Add(entity.GID, entity);
 
         return entity;
     }
@@ -70,6 +79,7 @@ public class EntityManager : MonoBehaviour {
         return entity;
     }
 
+    //TODO this needs checking
     public void VanishEntity(uint GID, EntityType type) {
         entityCache.TryGetValue(GID, out var entity);
         entity?.gameObject.SetActive(false);
