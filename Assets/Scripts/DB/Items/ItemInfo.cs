@@ -10,7 +10,7 @@ public class ItemInfo {
     public List<Option> options;
 
     public short index;
-    public short viewID;
+    public short ItemID;
     public int itemType;
     public int location;
     public int wearState;

@@ -12,20 +12,19 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_ITEMLIST_EQUIPPABLE;
 
-        private ItemInfo.Slot slot;
-
         public PacketHeader GetHeader() => HEADER;
+
+        public List<ItemInfo> Inventory = new List<ItemInfo>();
 
         public bool Read(BinaryReader br) {
 
             var count = (br.Length - br.Position) / 57;
-            var list = new List<ItemInfo>();
 
             for (int i = 0; i < count; i++) {
                 var itemInfo = new ItemInfo();
 
                 itemInfo.index = br.ReadShort();
-                itemInfo.viewID = br.ReadShort();
+                itemInfo.ItemID = br.ReadShort();
                 itemInfo.itemType = br.ReadByte();
 
                 var locationAmount = br.ReadLong();
@@ -72,7 +71,7 @@ public partial class ZC {
                     // If this eventually breaks, we need to skip bytes to match sizes
                     //br.Seek(7, SeekOrigin.Current);
                 }
-                list.Add(itemInfo);
+                Inventory.Add(itemInfo);
             }
             return true;
         }
