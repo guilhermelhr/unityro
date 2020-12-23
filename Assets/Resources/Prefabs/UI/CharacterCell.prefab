@@ -165,7 +165,7 @@ GameObject:
   - component: {fileID: 4032596202115033324}
   - component: {fileID: 4032596202115033326}
   - component: {fileID: 1467296937053791371}
-  - component: {fileID: 7171133042123798290}
+  - component: {fileID: 6410550655584254627}
   m_Layer: 5
   m_Name: CharacterCell
   m_TagString: Untagged
@@ -216,7 +216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: {fileID: 4032596201144418157}
   image: {fileID: 755641223}
---- !u!114 &7171133042123798290
+--- !u!114 &6410550655584254627
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -232,7 +232,7 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -244,8 +244,8 @@ MonoBehaviour:
     width: 1
     height: 1
   backgroundImage: select_character_ver3/img_slot_normal.bmp
-  hoverImage: select_character_ver3/img_slot_normal_over.bmp
-  pressedImage: select_character_ver3/img_slot_normal_press.bmp
+  hoverImage: select_character_ver3/img_slot_over.bmp
+  pressedImage: select_character_ver3/img_slot_press.bmp
 --- !u!1 &4032596202461930749
 GameObject:
   m_ObjectHideFlags: 0

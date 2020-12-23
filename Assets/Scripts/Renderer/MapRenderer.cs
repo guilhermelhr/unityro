@@ -102,7 +102,10 @@ public class MapRenderer {
             var lightObj = new GameObject(light.name);
             lightObj.transform.SetParent(lightsParent.transform);
             Light lightComponent = lightObj.AddComponent<Light>();
+#if UNITY_EDITOR
             lightComponent.lightmapBakeType = LightmapBakeType.Baked;
+#endif
+
             lightComponent.color = new Color(light.color[0], light.color[1], light.color[2]);
             Debug.Log("color: " + lightComponent.color);
             lightComponent.range = light.range;

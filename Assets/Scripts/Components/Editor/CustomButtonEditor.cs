@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+#if UNITY_EDITOR
 using UnityEditor;
 
 [CustomEditor(typeof(CustomButton))]
@@ -18,3 +20,4 @@ public class CustomButtonEditor : UnityEditor.UI.ButtonEditor {
         component.pressedImage = EditorGUILayout.TextField("Pressed Image", component.pressedImage);
     }
 }
+#endif
