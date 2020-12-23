@@ -40,7 +40,6 @@ public class MapController : MonoBehaviour {
         Core.Session = new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID);
         Core.Session.SetCurrentMap(mapInfo.mapname);
         Core.Session.Entity.transform.position = new Vector3(mapInfo.PosX, Core.PathFinding.GetCellHeight(mapInfo.PosX, mapInfo.PosY), mapInfo.PosY);
-        UIController.EquipmentWindow.UpdateEquipment();
 
         /**
         * Hack

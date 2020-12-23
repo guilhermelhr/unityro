@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -31,6 +32,8 @@ public class Entity : MonoBehaviour {
     [SerializeField] public int Hp;
     [SerializeField] public int MaxHp;
 
+    public List<Item> Inventory;
+
     public void SetReady(bool ready) {
         IsReady = ready;
         _EntityWalk = gameObject.AddComponent<EntityWalk>();
@@ -51,6 +54,10 @@ public class Entity : MonoBehaviour {
         MaxHp = data.maxhp;
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
+    }
+
+    public void SetInventory(List<Item> inventory) {
+        Inventory = inventory;
     }
 
     public void Init(SPR spr, ACT act) {

@@ -7,10 +7,10 @@ public partial class ZC {
     /**
      * Non-stackable (Equippable) inventory list
      */
-    [PacketHandler(HEADER, "ZC_INVENTORY_ITEMLIST_EQUIPPABLE")]
-    public class INVENTORY_ITEMLIST_EQUIPPABLE : InPacket {
+    [PacketHandler(HEADER, "ZC_INVENTORY_ITEMLIST_EQUIP")]
+    public class INVENTORY_ITEMLIST_EQUIP : InPacket {
 
-        public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_ITEMLIST_EQUIPPABLE;
+        public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_ITEMLIST_EQUIP;
 
         public PacketHeader GetHeader() => HEADER;
 

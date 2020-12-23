@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class NormalEquipmentWindow : MonoBehaviour {
@@ -7,42 +8,20 @@ public class NormalEquipmentWindow : MonoBehaviour {
     public List<UIEquipSlot> slots;
 
     public void UpdateEquipment() {
-        var entity = Core.Session.Entity;
-        slots.ForEach(slot => {
-            switch(slot.location) {
-                case EquipLocation.HEAD_TOP:
-                    slot.SetItem(2302);
-                    break;
-                case EquipLocation.HEAD_MID:
-                    slot.SetItem(2302);
-                    break;
-                case EquipLocation.HEAD_BOTTOM:
-                    slot.SetItem(2302);
-                    break;
-                case EquipLocation.ARMOR:
-                    slot.SetItem(2302);
-                    break;
-                case EquipLocation.WEAPON:
-                    slot.SetItem(2302);
-                    break;
-                case EquipLocation.SHIELD:
-                    slot.SetItem(2302);
-                    break;
-                case EquipLocation.SHOES:
-                    slot.SetItem(2302);
-                    break;
-                case EquipLocation.GARMENT:
-                    slot.SetItem(2302);
-                    break;
-                case EquipLocation.ACCESSORY1:
-                    slot.SetItem(2302);
-                    break;
-                case EquipLocation.ACCESSORY2:
-                    slot.SetItem(2302);
-                    break;
-                case EquipLocation.AMMO:
-                    break;
+        var inventory = Core.Session.Entity.Inventory;
+        if (inventory == null || inventory.IsEmpty()) return;
+
+        Dictionary<int, UIEquipSlot> slotDictionary = slots.ToDictionary(it => (int)it.location);
+        Dictionary<int, Item> equippedItems = inventory.Where(it => it.info.wearState > 0).ToDictionary(it => it.info.location);
+
+        if (equippedItems.Count == 0) return;
+
+        foreach (var key in equippedItems.Keys) {
+            equippedItems.TryGetValue(key, out var item);
+            if (item != null) {
+                slotDictionary.TryGetValue(key, out var slot);
+                slot?.SetItem(item);
             }
-        });
+        }
     }
 }

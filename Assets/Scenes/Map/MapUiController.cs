@@ -11,8 +11,6 @@ public class MapUiController : MonoBehaviour {
     [SerializeField] private PopupController PopupController;
     [SerializeField] public EquipmentWindowController EquipmentWindow;
 
-    private HashSet<KeyCode> CurrentlyPressedKeys = new HashSet<KeyCode>();
-
     void Awake() {
         #region NPCS
         Core.NetworkClient.HookPacket(ZC.SAY_DIALOG.HEADER, NpcBox.OnNpcMessage);
@@ -26,22 +24,22 @@ public class MapUiController : MonoBehaviour {
     }
 
     private void OnGUI() {
-        if(!Event.current.isKey || Event.current.keyCode == KeyCode.None) return;
-        switch(Event.current.type) {
+        if (!Event.current.isKey || Event.current.keyCode == KeyCode.None) return;
+        switch (Event.current.type) {
             case EventType.KeyDown:
-                CurrentlyPressedKeys.Add(Event.current.keyCode);
-                break;
-            case EventType.KeyUp:
-                CurrentlyPressedKeys.Remove(Event.current.keyCode);
+                if (Event.current.modifiers == EventModifiers.Alt) {
+
+                    switch (Event.current.keyCode) {
+                        case KeyCode.Q:
+                            EquipmentWindow.gameObject.SetActive(!EquipmentWindow.gameObject.activeInHierarchy);
+                            break;
+                        default:
+                            break;
+                    }
+                }
                 break;
             default:
                 break;
-        }
-
-        if (CurrentlyPressedKeys.Count == 2) {
-            if (CurrentlyPressedKeys.Contains(KeyCode.LeftAlt) && CurrentlyPressedKeys.Contains(KeyCode.Q)) {
-                EquipmentWindow.gameObject.SetActive(!EquipmentWindow.gameObject.activeInHierarchy);
-            }
         }
     }
 

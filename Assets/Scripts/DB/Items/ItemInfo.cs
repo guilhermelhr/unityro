@@ -22,6 +22,9 @@ public class ItemInfo {
     public int flag;
     public int ammount;
 
+    public bool IsIdentified => (flag & 0x1) == 1;
+    public bool IsFavorite => (flag & 0x2) == 1;
+
     public class Slot {
         public ushort card1;
         public ushort card2;

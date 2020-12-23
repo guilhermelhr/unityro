@@ -8,11 +8,13 @@ public class UIEquipSlot : MonoBehaviour {
     public TextMeshProUGUI name;
     public EquipLocation location;
 
+    public Item item;
+
     public void SetItem(int itemID) {
         var item = DBManager.GetItemInfo(itemID);
         var itemPath = DBManager.GetItemPath(itemID, true);
         var SPR = FileManager.Load(itemPath + ".spr") as SPR;
-        if(SPR == null) return;
+        if (SPR == null) return;
 
         SPR.SwitchToRGBA();
 
@@ -21,4 +23,10 @@ public class UIEquipSlot : MonoBehaviour {
         name.text = item.identifiedDisplayName;
     }
 
+    public void SetItem(Item item) {
+        this.item = item;
+        icon.enabled = true;
+        icon.sprite = item.sprite;
+        name.text = item.identifiedDisplayName;
+    }
 }

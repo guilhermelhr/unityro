@@ -9,7 +9,7 @@ public partial class ZC {
     [PacketHandler(HEADER, "ZC_INVENTORY_ITEMLIST_STACKABLE")]
     public class INVENTORY_ITEMLIST_STACKABLE : InPacket {
 
-        public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_ITEMLIST_STACKABLE;
+        public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_ITEMLIST_NORMAL;
 
         private ItemInfo.Slot slot;
 

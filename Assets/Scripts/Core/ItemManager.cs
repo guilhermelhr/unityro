@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ItemManager : MonoBehaviour {
@@ -7,6 +9,35 @@ public class ItemManager : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.ITEM_FALL_ENTRY5.HEADER, OnItemSpamInGround);
         Core.NetworkClient.HookPacket(ZC.ITEM_PICKUP_ACK7.HEADER, OnItemPickup);
         Core.NetworkClient.HookPacket(ZC.ITEM_DISAPPEAR.HEADER, OnItemDisappear);
+        Core.NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_EQUIP.HEADER, OnInventoryUpdate);
+    }
+
+    private void OnInventoryUpdate(ushort cmd, int size, InPacket packet) {
+        var list = new List<ItemInfo>();
+        if (packet is ZC.INVENTORY_ITEMLIST_EQUIP) {
+            var pkt = packet as ZC.INVENTORY_ITEMLIST_EQUIP;
+            list = pkt.Inventory;
+        }
+
+        if (list.IsEmpty()) return;
+
+        // TODO apply a diff here
+        List<Item> inventory = list.Select(itemInfo => {
+            var item = DBManager.GetItemInfo(itemInfo.ItemID);
+            if (item == null) return null;
+            var path = DBManager.GetItemPath(itemInfo.ItemID, itemInfo.IsIdentified);
+            var spr = FileManager.Load(path + ".spr") as SPR;
+            spr.SwitchToRGBA();
+
+            var sprite = spr.GetSprites()[0];
+            item.info = itemInfo;
+            item.sprite = sprite;
+
+            return item;
+        }).Where(it => it != null).ToList();
+
+        Core.Session.Entity.SetInventory(inventory);
+        MapController.Instance.UIController.EquipmentWindow.UpdateEquipment();
     }
 
     private void OnItemDisappear(ushort cmd, int size, InPacket packet) {
