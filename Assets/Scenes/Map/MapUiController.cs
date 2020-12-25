@@ -10,6 +10,7 @@ public class MapUiController : MonoBehaviour {
     [SerializeField] private NpcBoxMenuController NpcMenu;
     [SerializeField] private PopupController PopupController;
     [SerializeField] public EquipmentWindowController EquipmentWindow;
+    [SerializeField] public InventoryWindowController InventoryWindow;
 
     void Awake() {
         #region NPCS
@@ -31,7 +32,10 @@ public class MapUiController : MonoBehaviour {
 
                     switch (Event.current.keyCode) {
                         case KeyCode.Q:
-                            EquipmentWindow.gameObject.SetActive(!EquipmentWindow.gameObject.activeInHierarchy);
+                            EquipmentWindow.ToggleActive();
+                            break;
+                        case KeyCode.E:
+                            InventoryWindow.ToggleActive();
                             break;
                         default:
                             break;
