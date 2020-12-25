@@ -12,7 +12,7 @@ public class NormalEquipmentWindow : MonoBehaviour {
         if (inventory == null || inventory.IsEmpty()) return;
 
         Dictionary<int, UIEquipSlot> slotDictionary = slots.ToDictionary(it => (int)it.location);
-        Dictionary<int, Item> equippedItems = inventory.Where(it => it.info.wearState > 0).ToDictionary(it => it.info.location);
+        Dictionary<int, Item> equippedItems = inventory.Where(it => it.info.wearState > 0).ToDictionary(it => it.info.wearState);
 
         if (equippedItems.Count == 0) return;
 

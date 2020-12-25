@@ -38,6 +38,10 @@ public class DBManager {
         return $"data/sprite/\xbe\xc6\xc0\xcc\xc5\xdb/{resName}";
     }
 
+    public static string GetItemResPath(Item item, bool isIdentified) {
+        return $"{INTERFACE_PATH}item/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.bmp";
+    }
+
     public static int GetWeaponAction(Job job, int sex, int weapon) {
         var baseJob = JobHelper.GetBaseClass((ushort)job, sex);
 

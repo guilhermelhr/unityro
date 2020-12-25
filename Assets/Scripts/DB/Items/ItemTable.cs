@@ -176,7 +176,7 @@ public class ItemTable {
         { WeaponType.WPCLASS_GUN_GRANADE, "_샷건" },
         { WeaponType.WPCLASS_SYURIKEN, "_수리검" },
         { WeaponType.WPCLASS_TWOHANDROD, "_롯드" },
-        { WeaponType.WEAPONTYPE_SHORTSWORD_SHORTSWORD, "_단검_단검" },
+        { WeaponType.WEAPONTYPE_SHORTSWORD_SHORTSWORD, "_단검" },
         { WeaponType.WEAPONTYPE_SWORD_SWORD, "_검_검" },
         { WeaponType.WEAPONTYPE_AXE_AXE, "_도끼_도끼" },
         { WeaponType.WEAPONTYPE_SHORTSWORD_SWORD, "_단검_검" },

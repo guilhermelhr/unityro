@@ -13,5 +13,5 @@ public class Item {
     public bool costume = false;
 
     public ItemInfo info;
-    public Sprite sprite;
+    public Texture2D texture;
 }

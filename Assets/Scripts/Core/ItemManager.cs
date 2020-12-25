@@ -25,13 +25,10 @@ public class ItemManager : MonoBehaviour {
         List<Item> inventory = list.Select(itemInfo => {
             var item = DBManager.GetItemInfo(itemInfo.ItemID);
             if (item == null) return null;
-            var path = DBManager.GetItemPath(itemInfo.ItemID, itemInfo.IsIdentified);
-            var spr = FileManager.Load(path + ".spr") as SPR;
-            spr.SwitchToRGBA();
+            var texture = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D; 
 
-            var sprite = spr.GetSprites()[0];
             item.info = itemInfo;
-            item.sprite = sprite;
+            item.texture = texture;
 
             return item;
         }).Where(it => it != null).ToList();
