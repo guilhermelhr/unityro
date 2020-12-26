@@ -61,4 +61,9 @@ public class MapUiController : MonoBehaviour {
     public void DisplayPopup(Sprite sprite, string label) {
         PopupController.DisplayPopup(sprite, label);
     }
+
+    public void UpdateEquipment() {
+        EquipmentWindow.UpdateEquipment();
+        InventoryWindow.UpdateEquipment();
+    }
 }

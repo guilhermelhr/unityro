@@ -34,7 +34,7 @@ public class ItemManager : MonoBehaviour {
         }).Where(it => it != null).ToList();
 
         Core.Session.Entity.SetInventory(inventory);
-        MapController.Instance.UIController.EquipmentWindow.UpdateEquipment();
+        MapController.Instance.UIController.UpdateEquipment();
     }
 
     private void OnItemDisappear(ushort cmd, int size, InPacket packet) {

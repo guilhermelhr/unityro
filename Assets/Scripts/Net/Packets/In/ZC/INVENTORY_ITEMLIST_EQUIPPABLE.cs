@@ -57,7 +57,7 @@ public partial class ZC {
 
                     itemInfo.flag = br.ReadByte();
                 } else { // normal 24B
-                    itemInfo.ammount = locationAmount;
+                    itemInfo.amount = locationAmount;
                     itemInfo.wearState = br.ReadLong();
                     itemInfo.slot = new ItemInfo.Slot() {
                         card1 = br.ReadUShort(),

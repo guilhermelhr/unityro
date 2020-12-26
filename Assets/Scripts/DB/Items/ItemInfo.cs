@@ -20,7 +20,7 @@ public class ItemInfo {
     public short look;
     public int randomOptionCount;
     public int flag;
-    public int ammount;
+    public int amount;
 
     public bool IsIdentified => (flag & 0x1) == 1;
     public bool IsFavorite => (flag & 0x2) == 1;
