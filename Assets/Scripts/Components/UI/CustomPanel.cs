@@ -34,8 +34,10 @@ public class CustomPanel : RawImage,
         }
     }
 
-    private void Update() {
-
+    public void SetBackground(string path) {
+        backgroundTexture = (Texture2D)FileManager.Load(DBManager.INTERFACE_PATH + path);
+        texture = backgroundTexture;
+        GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundTexture.width, backgroundTexture.height);
     }
 
     public void OnPointerDown(PointerEventData eventData) {

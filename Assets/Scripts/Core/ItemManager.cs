@@ -22,6 +22,7 @@ public class ItemManager : MonoBehaviour {
         if (list.IsEmpty()) return;
 
         // TODO apply a diff here
+        // TODO find out how favorite tab works
         List<Item> inventory = list.Select(itemInfo => {
             var item = DBManager.GetItemInfo(itemInfo.ItemID);
             if (item == null) return null;
@@ -29,6 +30,29 @@ public class ItemManager : MonoBehaviour {
 
             item.info = itemInfo;
             item.texture = texture;
+            
+            switch((ItemType)item.info.itemType) {
+                case ItemType.HEALING:
+                case ItemType.USABLE:
+                case ItemType.USABLE_SKILL:
+                case ItemType.USABLE_UNK:
+                    item.tab = InventoryType.ITEM;
+                    break;
+
+                case ItemType.WEAPON:
+                case ItemType.EQUIP:
+                case ItemType.PETEGG:
+                case ItemType.PETEQUIP:
+                    item.tab = InventoryType.EQUIP;
+                    break;
+
+                default:
+                case ItemType.ETC:
+                case ItemType.CARD:
+                case ItemType.AMMO:
+                    item.tab = InventoryType.ETC;
+                    break;
+            }
 
             return item;
         }).Where(it => it != null).ToList();

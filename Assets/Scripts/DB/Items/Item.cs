@@ -14,4 +14,5 @@ public class Item {
 
     public ItemInfo info;
     public Texture2D texture;
+    public InventoryType tab;
 }

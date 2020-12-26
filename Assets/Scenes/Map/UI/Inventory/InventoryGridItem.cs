@@ -18,10 +18,17 @@ public class InventoryGridItem : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void SetItem(Item item) {
         this.item = item;
-        itemImage.enabled = true;
-        itemImage.texture = item.texture;
-        amountLabel.enabled = item.info.amount > 0;
-        amountLabel.text = "" + item.info.amount;
+        if(item != null) {
+            itemImage.enabled = true;
+            itemImage.texture = item.texture;
+            amountLabel.enabled = item.info.amount > 0;
+            amountLabel.text = "" + item.info.amount;
+        } else {
+            itemImage.enabled = false;
+            itemImage.texture = null;
+            amountLabel.enabled = false;
+            amountLabel.text = "";
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData) {

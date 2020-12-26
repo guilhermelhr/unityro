@@ -4,6 +4,11 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+public enum InventoryType : int {
+    ITEM, EQUIP, ETC, FAV
+}
+
 public class InventoryWindowController : MonoBehaviour {
 
     [SerializeField]
@@ -11,6 +16,15 @@ public class InventoryWindowController : MonoBehaviour {
 
     [SerializeField]
     private InventoryGridItem GridItemPrefab;
+
+    [SerializeField]
+    private InventoryType CurrentTab = InventoryType.ITEM;
+
+    [SerializeField]
+    private CustomPanel Tabs;
+
+    [SerializeField]
+    private string ResName;
 
     public const int MIN_WINDOW_COLUMNS = 6;
     public const int MAX_WINDOW_COLUMNS = 8;
@@ -32,28 +46,30 @@ public class InventoryWindowController : MonoBehaviour {
         }
     }
 
-    void Start() {
-
-    }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
-
     public void UpdateEquipment() {
-        if (Items.IsEmpty()) {
+        if(Items.IsEmpty()) {
             InitGrid();
         }
 
         var inventory = Core.Session.Entity.Inventory;
         if(inventory == null || inventory.IsEmpty()) return;
 
-        var filteredInventory = inventory.Where(it => it.info.wearState <= 0).ToList();
+        var filteredInventory = inventory.Where(it => it.info.wearState <= 0 && it.tab == CurrentTab).ToList();
         for(int i = 0; i < Items.Count; i++) {
-            if(i >= filteredInventory.Count) break;
-
-            Items[i].SetItem(filteredInventory[i]);
+            if(i < filteredInventory.Count) {
+                Items[i].SetItem(filteredInventory[i]);
+            } else {
+                Items[i].SetItem(null);
+            }
         }
+    }
+
+    public void ChangeCurrentTab(int newTab) {
+        if((InventoryType)newTab != CurrentTab) {
+            CurrentTab = (InventoryType)newTab;
+        }
+
+        Tabs.SetBackground($"{ResName}{(int)CurrentTab + 1}.bmp");
+        UpdateEquipment();
     }
 }
