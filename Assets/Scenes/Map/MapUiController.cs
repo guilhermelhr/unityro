@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class MapUiController : MonoBehaviour {
 
+    [SerializeField] private Tooltip Tooltip;
     [SerializeField] private NpcBoxController NpcBox;
     [SerializeField] private NpcBoxMenuController NpcMenu;
     [SerializeField] private PopupController PopupController;
@@ -65,5 +66,13 @@ public class MapUiController : MonoBehaviour {
     public void UpdateEquipment() {
         EquipmentWindow.UpdateEquipment();
         InventoryWindow.UpdateEquipment();
+    }
+
+    public void DisplayTooltip(string text, Vector3 position) {
+        Tooltip.SetText(text, position);
+    }
+
+    public void HideTooltip() {
+        Tooltip.SetText(null, Vector3.zero);
     }
 }
