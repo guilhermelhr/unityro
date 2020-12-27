@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class EntityWalk : MonoBehaviour {
 
@@ -16,7 +17,7 @@ public class EntityWalk : MonoBehaviour {
     }
 
     private void Update() {
-        if (Input.GetMouseButtonDown(0) && Entity.HasAuthority) {
+        if (Input.GetMouseButtonDown(0) && Entity.HasAuthority && !EventSystem.current.IsPointerOverGameObject()) {
             var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 150)) {
                 RequestMove(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z), 0);
