@@ -6,12 +6,11 @@ using UnityEngine.UI;
 
 public class PopupController : MonoBehaviour {
 
-    [SerializeField] private Image image;
+    [SerializeField] private RawImage image;
     [SerializeField] private TextMeshProUGUI label;
 
-    public void DisplayPopup(Sprite sprite, string label) {
-        image.sprite = sprite;
-        image.preserveAspect = true;
+    public void DisplayPopup(Texture2D texture, string label) {
+        image.texture = texture;
         this.label.text = label;
 
         gameObject.SetActive(true);
@@ -21,7 +20,7 @@ public class PopupController : MonoBehaviour {
     private IEnumerator TearDown() {
         yield return new WaitForSeconds(3);
 
-        image.sprite = null;
+        image.texture = null;
         label.text = "";
         gameObject.SetActive(false);
     }

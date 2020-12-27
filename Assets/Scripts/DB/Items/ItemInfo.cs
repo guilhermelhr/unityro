@@ -19,8 +19,10 @@ public class ItemInfo {
     public short bindOnEquip;
     public short look;
     public int randomOptionCount;
+    public bool IsDamaged;
     public int flag;
     public int amount;
+    internal short viewID;
 
     public bool IsIdentified => (flag & 0x1) == 1;
     public bool IsFavorite => (flag & 0x2) == 1;

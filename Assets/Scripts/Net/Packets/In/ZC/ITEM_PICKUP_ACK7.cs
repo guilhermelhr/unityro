@@ -9,24 +9,11 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_ITEM_PICKUP_ACK_V7;
         public const int SIZE = 59;
 
-        public short index;
-        public short count;
-        public short id;
         public bool IsIdentified;
         public bool IsDamaged;
-        public int Refine;
-        public short card1;
-        public short card2;
-        public short card3;
-        public short card4;
-        public int location;
-        public int itemType;
+        public bool IsFavorite;
         public int result;
-        public int expireDate;
-        public short bindOnEquipType;
-        public List<ItemInfo.Option> options;
-        public int IsFavorite;
-        public short viewID;
+        public ItemInfo itemInfo;
 
         /**
          * 0a37 
@@ -51,36 +38,41 @@ public partial class ZC {
          * (ZC_ITEM_PICKUP_ACK_V7)
          */
         public bool Read(BinaryReader br) {
-
-            index = br.ReadShort();
-            count = br.ReadShort();
-            id = br.ReadShort();
+            itemInfo = new ItemInfo {
+                index = br.ReadShort(),
+                amount = br.ReadShort(),
+                ItemID = br.ReadShort()
+            };
             IsIdentified = br.ReadByte() == 1;
-            IsDamaged = br.ReadByte() == 1;
-            Refine = br.ReadByte();
+            itemInfo.IsDamaged = br.ReadByte() == 1;
+            itemInfo.refine = br.ReadByte();
 
-            card1 = br.ReadShort();
-            card2 = br.ReadShort();
-            card3 = br.ReadShort();
-            card4 = br.ReadShort();
+            itemInfo.slot = new ItemInfo.Slot() {
+                card1 = br.ReadUShort(),
+                card2 = br.ReadUShort(),
+                card3 = br.ReadUShort(),
+                card4 = br.ReadUShort()
+            };
 
-            location = br.ReadLong();
-            itemType = br.ReadByte();
+            itemInfo.location = br.ReadLong();
+            itemInfo.itemType = br.ReadByte();
             result = br.ReadByte();
-            expireDate = br.ReadLong();
-            bindOnEquipType = br.ReadShort();
+            itemInfo.expireTime = br.ReadLong();
+            itemInfo.bindOnEquip = br.ReadShort();
 
-            options = new List<ItemInfo.Option>();
+            itemInfo.options = new List<ItemInfo.Option>();
             for (int j = 0; j < 5; j++) {
-                options.Add(new ItemInfo.Option() {
+                itemInfo.options.Add(new ItemInfo.Option() {
                     optIndex = br.ReadShort(),
                     value = br.ReadShort(),
                     param1 = br.ReadByte()
                 });
             }
 
-            IsFavorite = br.ReadByte();
-            viewID = br.ReadShort();
+            IsFavorite = br.ReadByte() == 1;
+            itemInfo.flag = IsIdentified ? 0x1 : 0;
+            itemInfo.flag |= IsFavorite ? 0x2 : 0;
+            itemInfo.viewID = br.ReadShort();
 
             return true;
         }

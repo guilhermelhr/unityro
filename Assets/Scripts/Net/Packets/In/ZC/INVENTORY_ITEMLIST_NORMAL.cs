@@ -1,17 +1,16 @@
 ﻿
 using System.Collections.Generic;
-using System.IO;
 
 public partial class ZC {
 
     /**
      * Non-stackable (Equippable) inventory list
      */
-    [PacketHandler(HEADER, "ZC_INVENTORY_ITEMLIST_EQUIP")]
-    public class INVENTORY_ITEMLIST_EQUIP : InPacket {
+    [PacketHandler(HEADER, "ZC_INVENTORY_ITEMLIST_NORMAL")]
+    public class INVENTORY_ITEMLIST_NORMAL : InPacket {
 
-        private const int BLOCK_SIZE = 57;
-        public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_ITEMLIST_EQUIP;
+        private const int BLOCK_SIZE = 24;
+        public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_ITEMLIST_NORMAL;
 
         public List<ItemInfo> Inventory = new List<ItemInfo>();
 
@@ -25,32 +24,17 @@ public partial class ZC {
                     ItemID = br.ReadShort(),
                     itemType = br.ReadByte(),
 
-                    location = br.ReadLong(),
+                    amount = br.ReadLong(),
                     wearState = br.ReadLong(),
-                    refine = br.ReadByte(),
                     slot = new ItemInfo.Slot() {
                         card1 = br.ReadUShort(),
                         card2 = br.ReadUShort(),
                         card3 = br.ReadUShort(),
                         card4 = br.ReadUShort()
                     },
-
                     expireTime = br.ReadLong(),
-                    bindOnEquip = br.ReadShort(),
-                    look = br.ReadShort(),
-                    randomOptionCount = br.ReadByte(),
-                    options = new List<ItemInfo.Option>()
+                    flag = br.ReadByte()
                 };
-
-                for(int j = 0; j < 5; j++) {
-                    itemInfo.options.Add(new ItemInfo.Option() {
-                        optIndex = br.ReadShort(),
-                        value = br.ReadShort(),
-                        param1 = br.ReadByte()
-                    });
-                }
-
-                itemInfo.flag = br.ReadByte();
 
                 Inventory.Add(itemInfo);
             }

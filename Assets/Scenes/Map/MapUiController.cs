@@ -59,8 +59,8 @@ public class MapUiController : MonoBehaviour {
         }.Send();
     }
 
-    public void DisplayPopup(Sprite sprite, string label) {
-        PopupController.DisplayPopup(sprite, label);
+    public void DisplayPopup(Texture2D itemRes, string label) {
+        PopupController.DisplayPopup(itemRes, label);
     }
 
     public void UpdateEquipment() {

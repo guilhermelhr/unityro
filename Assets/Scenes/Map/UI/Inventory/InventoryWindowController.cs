@@ -52,9 +52,9 @@ public class InventoryWindowController : MonoBehaviour {
         }
 
         var inventory = Core.Session.Entity.Inventory;
-        if(inventory == null || inventory.IsEmpty()) return;
+        if(inventory == null || inventory.IsEmpty) return;
 
-        var filteredInventory = inventory.Where(it => it.info.wearState <= 0 && it.tab == CurrentTab).ToList();
+        var filteredInventory = inventory.ItemList.Where(it => it.info.wearState <= 0 && it.tab == CurrentTab).ToList();
         for(int i = 0; i < Items.Count; i++) {
             if(i < filteredInventory.Count) {
                 Items[i].SetItem(filteredInventory[i]);
