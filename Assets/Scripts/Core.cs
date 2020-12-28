@@ -39,7 +39,7 @@ public class Core : MonoBehaviour {
 
     public static Core Instance;
     public static Camera MainCamera;
-    public static long Tick = 0;
+    public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
 
     public static Hashtable Configs = new Hashtable();
     private static string CFG_NAME = "config.txt";
@@ -68,7 +68,6 @@ public class Core : MonoBehaviour {
     }
 
     void Start() {
-        Tick = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
         roCamEnabled = MainCamera.GetComponent<ROCamera>()?.enabled ?? false;
@@ -162,7 +161,6 @@ public class Core : MonoBehaviour {
     }
 
     void Update() {
-        Tick = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
         if (mapRenderer.Ready) {
             mapRenderer.Render();
         }

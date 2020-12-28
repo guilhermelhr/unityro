@@ -231,6 +231,10 @@ public class PathFindingManager {
         return false;
     }
 
+    public static Direction GetDirectionForOffset(Vector3 v1, Vector3 v2) {
+        return GetDirectionForOffset(new Vector2Int((int)v1.x, (int)v1.z) - new Vector2Int((int)v2.x, (int)v2.z));
+    }
+
     public static Direction GetDirectionForOffset(Vector2Int offset) {
 
         if (offset.x == -1 && offset.y == -1) return Direction.SouthWest;
@@ -243,6 +247,10 @@ public class PathFindingManager {
         if (offset.x == 0 && offset.y == -1) return Direction.South;
 
         return Direction.South;
+    }
+
+    public static bool IsDiagonal(Vector3 v1, Vector3 v2) {
+        return IsDiagonal(GetDirectionForOffset(v1, v2));
     }
 
     public static bool IsDiagonal(Direction dir) {

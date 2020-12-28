@@ -38,7 +38,7 @@ public class EntityControl : MonoBehaviour {
 
                 OutPacket pickPacket = new CZ.ITEM_PICKUP2() { ID = (int)target.GID };
                 if (Vector3.Distance(transform.position, target.transform.position) > 2) {
-                    Entity.MoveAction = pickPacket;
+                    Entity.AfterMoveAction = pickPacket;
 
                     new CZ.REQUEST_MOVE2() {
                         x = (short)target.transform.position.x,
@@ -73,7 +73,7 @@ public class EntityControl : MonoBehaviour {
                     endNode = path[path.Count - 2];
                 }
 
-                Entity.MoveAction = packet;
+                Entity.AfterMoveAction = packet;
 
                 new CZ.REQUEST_MOVE2() {
                     x = (short)endNode.x,

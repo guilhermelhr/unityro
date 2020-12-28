@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 public class Entity : MonoBehaviour {
 
     private EntityWalk _EntityWalk;
-    public OutPacket MoveAction;
+    public OutPacket AfterMoveAction;
 
     // Picking Priority
     // TODO
