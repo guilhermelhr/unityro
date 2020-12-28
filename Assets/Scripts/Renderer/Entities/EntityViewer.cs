@@ -359,13 +359,6 @@ public class EntityViewer : MonoBehaviour {
 
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite.GetSprites()[0];
-
-        var shader = Shader.Find("Unlit/CustomSpriteShader");
-        var mat = new Material(shader);
-        mat.color = new Color(1f, 1f, 1f, 0.5f);
-        mat.mainTexture = spriteRenderer.sprite.texture;
-
-        spriteRenderer.material = mat;
         spriteRenderer.sortingOrder = -1;
     }
 
