@@ -70,8 +70,8 @@ public class EntityWalk : MonoBehaviour {
     private void OnPlayerMovement(ushort cmd, int size, InPacket packet) {
         if(!Entity) return;
         if(packet is ZC.NOTIFY_PLAYERMOVE) {
-            Entity.ChangeMotion(SpriteMotion.Walk);
             var pkt = packet as ZC.NOTIFY_PLAYERMOVE;
+            Entity.ChangeMotion(SpriteMotion.Walk);
 
             StartMoving(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
         }
@@ -86,12 +86,6 @@ public class EntityWalk : MonoBehaviour {
     }
 
     public void StopMoving() {
-        if(MoveIE != null) {
-            StopCoroutine(MoveIE);
-        }
-        if(MoveToIE != null) {
-            StopCoroutine(MoveToIE);
-        }
         Entity.ChangeMotion(SpriteMotion.Idle);
     }
 
