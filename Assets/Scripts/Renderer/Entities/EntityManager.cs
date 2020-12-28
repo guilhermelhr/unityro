@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -7,8 +8,12 @@ public class EntityManager : MonoBehaviour {
 
     private Dictionary<uint, Entity> entityCache = new Dictionary<uint, Entity>();
 
+    private void Awake() {
+
+    }
+
     public Entity Spawn(EntityData data) {
-        switch (data.type) {
+        switch(data.type) {
             case EntityType.PC:
                 entityCache.TryGetValue(data.GID, out var pc);
                 pc?.gameObject.SetActive(true);
@@ -28,7 +33,7 @@ public class EntityManager : MonoBehaviour {
 
     public void RemoveEntity(uint GID) {
         entityCache.TryGetValue(GID, out Entity entity);
-        if (entity != null) {
+        if(entity != null) {
             Destroy(entity.gameObject);
             entityCache.Remove(GID);
         }
@@ -41,23 +46,27 @@ public class EntityManager : MonoBehaviour {
 
         ACT act = FileManager.Load(itemPath + ".act") as ACT;
         SPR spr = FileManager.Load(itemPath + ".spr") as SPR;
+        spr.SwitchToRGBA();
 
         var itemGO = new GameObject(item.identifiedDisplayName);
         itemGO.layer = LayerMask.NameToLayer("Items");
         itemGO.transform.localScale = Vector3.one;
+        itemGO.transform.localPosition = itemSpawnInfo.Position;
         var entity = itemGO.AddComponent<Entity>();
 
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Items");
         body.transform.SetParent(itemGO.transform, false);
-        body.transform.localPosition = itemSpawnInfo.Position;
+        body.transform.localPosition = Vector3.zero;
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
+        body.AddComponent<Animator>().runtimeAnimatorController = Instantiate(Resources.Load("Animations/ItemDropAnimator")) as RuntimeAnimatorController;
 
         var bodyViewer = body.AddComponent<EntityViewer>();
 
         entity.EntityViewer = bodyViewer;
         entity.Type = EntityType.ITEM;
+        entity.ShadowSize = 0.5f;
 
         bodyViewer.ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
@@ -245,7 +254,7 @@ public class EntityManager : MonoBehaviour {
         headViewer.Type = entity.Type;
         headViewer.ViewerType = ViewerType.HEAD;
 
-        if (data.Weapon != 0) {
+        if(data.Weapon != 0) {
             var weapon = new GameObject("Weapon");
             weapon.layer = LayerMask.NameToLayer("Characters");
             weapon.transform.SetParent(body.transform, false);

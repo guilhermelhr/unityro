@@ -73,7 +73,6 @@ public class Entity : MonoBehaviour {
 
     public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null) {
         EntityViewer.ChangeMotion(motion, nextMotion);
-        //EntityViewer.State = AnimationHelper.GetStateForMotion(motion);
     }
 
     public void UpdateHitPoints(int hp, int maxHp) {
@@ -83,14 +82,9 @@ public class Entity : MonoBehaviour {
         Debug.Log($"{hp}/{maxHp}");
     }
 
-    private void Update() {
-
-    }
-
     public void StopMoving() {
         _EntityWalk.StopMoving();
     }
-
 
     private void Awake() {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
