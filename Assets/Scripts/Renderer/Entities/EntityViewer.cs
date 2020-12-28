@@ -293,6 +293,7 @@ public class EntityViewer : MonoBehaviour {
 
 
         var action = AnimationHelper.GetMotionIdForSprite(Type, motion);
+        // TODO implement this
         if (motion == SpriteMotion.Attack) {
             var attackAction = DBManager.GetWeaponAction((Job)Entity.Job, Entity.Sex, Entity.Weapon);
         }
