@@ -47,7 +47,7 @@ public class EntityWalk : MonoBehaviour {
                 nodeIndex++;
             }
 
-            var currentNode = nodeIndex == 1 ? lastPosition : nodes[nodeIndex - 1];
+            var currentNode = nodeIndex == 0 ? lastPosition : nodes[nodeIndex - 1];
             var nextNode = nodes[nodeIndex];
             var direction = nextNode - currentNode;
             float timeDelta = 1 - Math.Max(_tick - Core.Tick, 0f) / lastSpeed;
