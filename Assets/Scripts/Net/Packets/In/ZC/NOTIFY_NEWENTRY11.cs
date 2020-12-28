@@ -1,9 +1,9 @@
 ﻿public partial class ZC {
 
-    [PacketHandler(HEADER, "ZC_NOTIFY_STANDENTRY9")]
-    public class NOTIFY_STANDENTRY9 : InPacket {
+    [PacketHandler(HEADER, "ZC_NOTIFY_NEWENTRY11")]
+    public class NOTIFY_NEWENTRY11 : InPacket {
 
-        public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_STANDENTRY11;
+        public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_NEWENTRY11;
 
         public EntityData entityData;
 
@@ -18,7 +18,7 @@
                 opt1 = br.ReadShort(),
                 opt2 = br.ReadShort(),
 
-                optionVal = br.ReadLong(),
+                option = br.ReadLong(),
 
                 job = br.ReadShort(),
                 hairStyle = br.ReadShort(),
@@ -32,13 +32,14 @@
                 headBottom = br.ReadShort(),
                 headTop = br.ReadShort(),
                 headMid = br.ReadShort(),
-
                 hairColor = br.ReadShort(),
                 clothColor = br.ReadShort(),
                 headDir = br.ReadShort(),
-                Robe = br.ReadShort(),
+                robe = br.ReadShort(),
+
                 GUID = br.ReadULong(),
-                GEmblemVer = br.ReadShort(),
+
+                guildEmblem = br.ReadShort(),
                 manner = br.ReadShort(),
 
                 opt3 = br.ReadLong(),
@@ -52,16 +53,16 @@
                 ySize = br.ReadUByte(),
                 deadSit = br.ReadUByte(),
 
-                clevel = br.ReadShort(),
+                level = br.ReadShort(),
                 font = br.ReadShort(),
 
-                hp = br.ReadLong(),
                 maxhp = br.ReadLong(),
+                hp = br.ReadLong(),
 
-                isBoss = br.ReadUByte(),
+                isBoss = br.ReadUByte() == 1,
 
                 body = br.ReadShort(),
-                name = br.ReadBinaryString((int)(br.Length - br.Position))
+                name = br.ReadBinaryString(br.Length - br.Position)
             };
 
             return true;

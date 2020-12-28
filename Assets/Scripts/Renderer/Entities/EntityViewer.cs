@@ -276,7 +276,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, bool forceUpdate = false) {
-        if (CurrentMotion == motion && !forceUpdate)
+        if (CurrentMotion == motion && !forceUpdate || currentACT == null)
             return;
 
         CurrentMotion = motion;

@@ -17,7 +17,7 @@ public static class EncryptionHelper {
     public static ushort Encrypt(ushort cmd) {
         if(Enabled) {
             var key = (((((ENCRYPTION_KEY_1 * ENCRYPTION_KEY_2) + ENCRYPTION_KEY_3) & 0xFFFFFFFF) * ENCRYPTION_KEY_2) + ENCRYPTION_KEY_3) & 0xFFFFFFFF;
-            cmd ^= (ushort)(key << 16 & 0x7FFF);
+            cmd |= (ushort)(key << 16 & 0x7FFF);
         }
         return cmd;
     }

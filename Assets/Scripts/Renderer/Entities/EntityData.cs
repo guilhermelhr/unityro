@@ -11,7 +11,7 @@ public class EntityData {
     public short speed;
     public short opt1;
     public short opt2;
-    public int optionVal;
+    public int option;
     public short job;
     public short hairStyle;
     public short hairColor;
@@ -22,9 +22,9 @@ public class EntityData {
     public int headMid;
     public int weapon;
     public int shield;
-    public int Robe;
+    public int robe;
     public uint GUID;
-    public short GEmblemVer;
+    public short guildEmblem;
     public short manner;
     public int opt3;
     public byte karma;
@@ -33,13 +33,13 @@ public class EntityData {
     public byte xSize;
     public byte ySize;
     public byte deadSit;
-    public short clevel;
+    public short level;
     public short font;
     public int hp;
     public int maxhp;
-    public byte isBoss;
+    public bool isBoss;
     public short body;
     public string name;
-    public uint moveStartTime;
+    public int moveStartTime;
 }
 

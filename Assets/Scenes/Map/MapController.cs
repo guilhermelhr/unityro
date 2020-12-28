@@ -22,9 +22,9 @@ public class MapController : MonoBehaviour {
             throw new Exception("Map Login info cannot be null");
         }
 
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_STANDENTRY9.HEADER, OnEntitySpawn);
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_NEWENTRY9.HEADER, OnEntitySpawn);
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_MOVEENTRY9.HEADER, OnEntitySpawn);
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_STANDENTRY11.HEADER, OnEntitySpawn);
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_NEWENTRY11.HEADER, OnEntitySpawn);
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_MOVEENTRY11.HEADER, OnEntitySpawn);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_VANISH.HEADER, OnEntityVanish);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_MOVE.HEADER, OnEntityMovement); //Others movement
         Core.NetworkClient.HookPacket(ZC.NPCACK_MAPMOVE.HEADER, OnEntityMoved);
@@ -81,15 +81,18 @@ public class MapController : MonoBehaviour {
     }
 
     private void OnEntitySpawn(ushort cmd, int size, InPacket packet) {
-        if (packet is ZC.NOTIFY_NEWENTRY9) {
-            var pkt = packet as ZC.NOTIFY_NEWENTRY9;
+        if (packet is ZC.NOTIFY_NEWENTRY11) {
+            var pkt = packet as ZC.NOTIFY_NEWENTRY11;
             Core.EntityManager.Spawn(pkt.entityData);
-        } else if (packet is ZC.NOTIFY_STANDENTRY9) {
-            var pkt = packet as ZC.NOTIFY_STANDENTRY9;
+        } else if (packet is ZC.NOTIFY_STANDENTRY11) {
+            var pkt = packet as ZC.NOTIFY_STANDENTRY11;
             Core.EntityManager.Spawn(pkt.entityData);
-        } else if (packet is ZC.NOTIFY_MOVEENTRY9) {
-            var pkt = packet as ZC.NOTIFY_MOVEENTRY9;
-            Core.EntityManager.Spawn(pkt.entityData);
+        } else if (packet is ZC.NOTIFY_MOVEENTRY11) {
+            var pkt = packet as ZC.NOTIFY_MOVEENTRY11;
+            var entity = Core.EntityManager.Spawn(pkt.entityData);
+
+            entity.ChangeMotion(SpriteMotion.Walk);
+            entity.StartMoving(pkt.entityData.PosDir[0], pkt.entityData.PosDir[1], pkt.entityData.PosDir[2], pkt.entityData.PosDir[3]);
         }
     }
 

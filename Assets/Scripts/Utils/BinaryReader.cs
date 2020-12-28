@@ -122,9 +122,11 @@ public class BinaryReader : MemoryStream {
         var c = ReadByte();
         var d = ReadByte();
         var e = ReadByte();
+        var f = ReadByte();
 
         var x1 = ((a & 0xFF) << 2) | ((b & 0xC0) >> 6);
         var y1 = ((b & 0x3F) << 4) | ((c & 0xF0) >> 4);
+
         var x2 = ((d & 0xFC) >> 2) | ((c & 0x0F) << 6);
         var y2 = ((d & 0x03) << 8) | ((e & 0xFF));
 
