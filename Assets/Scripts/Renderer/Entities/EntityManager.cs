@@ -13,7 +13,7 @@ public class EntityManager : MonoBehaviour {
     }
 
     public Entity Spawn(EntityData data) {
-        switch (data.type) {
+        switch(data.type) {
             case EntityType.PC:
                 entityCache.TryGetValue(data.GID, out var pc);
                 pc?.gameObject.SetActive(true);
@@ -33,10 +33,20 @@ public class EntityManager : MonoBehaviour {
 
     public void RemoveEntity(uint GID) {
         entityCache.TryGetValue(GID, out Entity entity);
-        if (entity != null) {
+        if(entity != null) {
             Destroy(entity.gameObject);
             entityCache.Remove(GID);
         }
+    }
+    public Entity GetEntity(uint GID) {
+        entityCache.TryGetValue(GID, out var entity);
+        return entity;
+    }
+
+    //TODO this needs checking
+    public void VanishEntity(uint GID, int type) {
+        entityCache.TryGetValue(GID, out Entity entity);
+        entity?.Vanish(type);
     }
 
     public Entity SpawnItem(ItemSpawnInfo itemSpawnInfo) {
@@ -81,16 +91,6 @@ public class EntityManager : MonoBehaviour {
         entityCache.Add(entity.GID, entity);
 
         return entity;
-    }
-
-    public Entity GetEntity(uint GID) {
-        entityCache.TryGetValue(GID, out var entity);
-        return entity;
-    }
-
-    //TODO this needs checking
-    public void VanishEntity(uint GID, EntityType type) {
-        RemoveEntity(GID);
     }
 
     private Entity SpawnPC(EntityData data) {
@@ -250,7 +250,7 @@ public class EntityManager : MonoBehaviour {
         headViewer.Type = entity.Type;
         headViewer.ViewerType = ViewerType.HEAD;
 
-        if (data.Weapon != 0) {
+        if(data.Weapon != 0) {
             var weapon = new GameObject("Weapon");
             weapon.layer = LayerMask.NameToLayer("Characters");
             weapon.transform.SetParent(body.transform, false);

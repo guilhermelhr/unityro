@@ -9,12 +9,12 @@ public partial class ZC {
         public const int SIZE = 7;
 
         public uint GID;
-        public EntityType Type;
+        public int Type;
 
         public bool Read(BinaryReader br) {
 
             GID = br.ReadULong();
-            Type = (EntityType)br.ReadUByte();
+            Type = br.ReadUByte();
 
             return true;
         }

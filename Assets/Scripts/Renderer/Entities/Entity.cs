@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -55,6 +56,31 @@ public class Entity : MonoBehaviour {
         Direction = (Direction)data.PosDir[2];
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
+    }
+
+    public void Vanish(int type) {
+        switch(type) {
+            case 0: // Moved out of sight
+                // TODO start coroutine to fade-out entity
+                Core.EntityManager.RemoveEntity(GID);
+                break;
+            case 1: // Died
+                var isPC = Type == EntityType.PC;
+                ChangeMotion(SpriteMotion.Dead);
+                if (!isPC) {
+                    StartCoroutine(DestroyAfterSeconds());
+                }
+                break;
+            default:
+                Core.EntityManager.RemoveEntity(GID);
+                break;
+        }
+    }
+
+    IEnumerator DestroyAfterSeconds() {
+        yield return new WaitForSeconds(1f);
+        Core.EntityManager.RemoveEntity(GID);
+        yield return null;
     }
 
     public void Init(SPR spr, ACT act) {
