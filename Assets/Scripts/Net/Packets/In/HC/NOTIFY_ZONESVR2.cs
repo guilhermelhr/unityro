@@ -6,7 +6,7 @@ public partial class HC {
     public class NOTIFY_ZONESVR2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.HC_NOTIFY_ZONESVR2;
-        public const int SIZE = 28;
+        public const int SIZE = 156;
 
         public int GID;
         public string Mapname;

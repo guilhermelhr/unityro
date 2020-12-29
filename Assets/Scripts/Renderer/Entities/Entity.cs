@@ -6,6 +6,8 @@ using UnityEngine.Rendering;
 
 public class Entity : MonoBehaviour {
 
+    public Action OnParameterUpdated;
+
     private EntityWalk _EntityWalk;
     public OutPacket AfterMoveAction;
 
@@ -32,6 +34,8 @@ public class Entity : MonoBehaviour {
     [SerializeField] public int Weapon;
     [SerializeField] public int Hp;
     [SerializeField] public int MaxHp;
+
+    public EntityBaseStatus Status = new EntityBaseStatus();
 
     public Inventory Inventory = new Inventory();
 
@@ -67,7 +71,7 @@ public class Entity : MonoBehaviour {
             case 1: // Died
                 var isPC = Type == EntityType.PC;
                 ChangeMotion(SpriteMotion.Dead);
-                if (!isPC) {
+                if(!isPC) {
                     StartCoroutine(DestroyAfterSeconds());
                 }
                 break;
@@ -87,6 +91,7 @@ public class Entity : MonoBehaviour {
         EntityViewer.Init(spr, act);
     }
 
+    // TODO refactor to use only Status class
     public void Init(CharacterData data) {
         Job = data.Job;
         Sex = (byte)data.Sex;
@@ -94,8 +99,18 @@ public class Entity : MonoBehaviour {
         WalkSpeed = data.Speed;
         Type = EntityType.PC;
         Weapon = data.Weapon;
-        Hp = data.HP;
-        MaxHp = data.MaxHP;
+
+        Status.base_exp = (uint)data.Exp;
+        Status.base_level = (uint)data.BaseLevel;
+        Status.job_exp = (uint)data.JobExp;
+        Status.job_level = (uint)data.JobLevel;
+        Status.sp = data.SP;
+        Status.max_sp = data.MaxSP;
+        Status.class_ = data.Job;
+        Status.sex = (byte)data.Sex;
+        Status.hp = data.HP;
+        Status.max_hp = data.MaxHP;
+        Status.name = data.Name;
     }
 
     public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null) {
@@ -105,7 +120,8 @@ public class Entity : MonoBehaviour {
     public void UpdateHitPoints(int hp, int maxHp) {
         this.Hp = hp;
         this.MaxHp = maxHp;
-
+        Status.hp = hp;
+        Status.max_hp = maxHp;
         Debug.Log($"{hp}/{maxHp}");
     }
 
@@ -117,46 +133,103 @@ public class Entity : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT.HEADER, OnEntityAction);
         Core.NetworkClient.HookPacket(ZC.PAR_CHANGE.HEADER, OnParameterChange);
+        Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE.HEADER, OnParameterChange);
+        Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE2.HEADER, OnParameterChange);
         Core.NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
     }
 
     private void OnParameterChange(ushort cmd, int size, InPacket packet) {
-        if (packet is ZC.PAR_CHANGE) {
-            var pkt = packet as ZC.PAR_CHANGE;
+        EntityStatus? status = null;
+        int value = 0;
+        int plusValue = 0;
 
+        if(packet is ZC.PAR_CHANGE PAR_CHANGE) {
+            status = PAR_CHANGE.varID;
+            value = PAR_CHANGE.value;
+        } else if(packet is ZC.LONGPAR_CHANGE LONGPAR_CHANGE) {
+            status = LONGPAR_CHANGE.varID;
+            value = LONGPAR_CHANGE.value;
+        } else if(packet is ZC.LONGPAR_CHANGE2 LONGPAR_CHANGE2) {
+            status = LONGPAR_CHANGE2.varID;
+            value = LONGPAR_CHANGE2.value;
+        } else if(packet is ZC.COUPLESTATUS COUPLESTATUS) {
+            status = COUPLESTATUS.status;
+            value = COUPLESTATUS.value;
+            plusValue = COUPLESTATUS.plusValue;
         }
+
+        if(status == null) {
+            return;
+        }
+
+        switch(status) {
+            case EntityStatus.SP_BASEEXP:
+                Status.base_exp = (uint)value;
+                break;
+            case EntityStatus.SP_JOBEXP:
+                Status.job_exp = (uint)value;
+                break;
+            case EntityStatus.SP_HP:
+                Status.hp = value;
+                break;
+            case EntityStatus.SP_MAXHP:
+                Status.max_hp = value;
+                break;
+            case EntityStatus.SP_SP:
+                Status.sp = value;
+                break;
+            case EntityStatus.SP_MAXSP:
+                Status.max_sp = value;
+                break;
+            case EntityStatus.SP_BASELEVEL:
+                Status.base_level = (uint)value;
+                break;
+            case EntityStatus.SP_JOBLEVEL:
+                Status.job_level = (uint)value;
+                break;
+            case EntityStatus.SP_NEXTBASEEXP:
+                Status.next_base_exp = value;
+                break;
+            case EntityStatus.SP_NEXTJOBEXP:
+                Status.next_job_exp = value;
+                break;
+            default:
+                break;
+        }
+
+        OnParameterUpdated?.Invoke();
     }
 
     private void OnEntityAction(ushort cmd, int size, InPacket packet) {
         EntityActionRequest actionRequest;
 
-        if (packet is ZC.NOTIFY_ACT3) {
+        if(packet is ZC.NOTIFY_ACT3) {
             var p = packet as ZC.NOTIFY_ACT3;
             actionRequest = p.ActionRequest;
-        } else if (packet is ZC.NOTIFY_ACT) {
+        } else if(packet is ZC.NOTIFY_ACT) {
             var p = packet as ZC.NOTIFY_ACT;
             actionRequest = p.ActionRequest;
         } else {
             return;
         }
 
-        if (actionRequest == null) return;
+        if(actionRequest == null) return;
 
         var srcEntity = Core.EntityManager.GetEntity(actionRequest.GID);
         var dstEntity = Core.EntityManager.GetEntity(actionRequest.targetGID);
 
-        if (actionRequest.GID == Core.Session.Entity.GID || actionRequest.GID == Core.Session.AccountID) {
+        if(actionRequest.GID == Core.Session.Entity.GID || actionRequest.GID == Core.Session.AccountID) {
             srcEntity = Core.Session.Entity;
-        } else if (actionRequest.targetGID == Core.Session.Entity.GID || actionRequest.targetGID == Core.Session.AccountID) {
+        } else if(actionRequest.targetGID == Core.Session.Entity.GID || actionRequest.targetGID == Core.Session.AccountID) {
             dstEntity = Core.Session.Entity;
         }
 
         // entity out of screen
-        if (!srcEntity) {
+        if(!srcEntity) {
             return;
         }
 
-        switch (actionRequest.action) {
+        switch(actionRequest.action) {
             // Damage
             case 0:
             case 4:
@@ -183,24 +256,24 @@ public class Entity : MonoBehaviour {
 
     private static void OnEntityPickup(Entity srcEntity, Entity dstEntity) {
         srcEntity.ChangeMotion(SpriteMotion.PickUp, SpriteMotion.Idle);
-        if (dstEntity) {
+        if(dstEntity) {
             srcEntity.LookTo(dstEntity.transform.position);
         }
     }
 
     private static void OnEntityAttack(EntityActionRequest pkt, Entity srcEntity, Entity dstEntity) {
         Entity target;
-        if (dstEntity) {
+        if(dstEntity) {
             // only if damage and do not have endure
             // and damage isn't absorbed (healing)
-            if (pkt.damage > 0 && pkt.action != 9 && pkt.action != 4) {
+            if(pkt.damage > 0 && pkt.action != 9 && pkt.action != 4) {
                 dstEntity.ChangeMotion(SpriteMotion.Hit, SpriteMotion.Standby);
             }
 
             target = pkt.damage > 0 ? dstEntity : srcEntity;
 
-            if (target) {
-                switch (pkt.action) {
+            if(target) {
+                switch(pkt.action) {
                     // regular damage (and endure)
                     case 9:
                     case 0:
@@ -210,7 +283,7 @@ public class Entity : MonoBehaviour {
                     // double attack
                     case 8:
                         // Display combo only if entity is mob and the attack don't miss
-                        if (dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
+                        if(dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
                             dstEntity.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 1, DamageType.COMBO);
                             dstEntity.Damage(pkt.damage, Core.Tick + pkt.attackMT * 2, DamageType.COMBO | DamageType.COMBO_FINAL);
                         }
@@ -249,7 +322,7 @@ public class Entity : MonoBehaviour {
      */
     public void Damage(float amount, double tick, DamageType? damageType = null) {
         var DamagePrefab = (GameObject)Resources.Load("Prefabs/Damage");
-        if (!DamagePrefab)
+        if(!DamagePrefab)
             throw new Exception("Could not load damage prefab");
 
         var damageRenderer = Instantiate(DamagePrefab).GetComponent<DamageRenderer>();

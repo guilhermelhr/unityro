@@ -9,7 +9,7 @@ public class LoginController : MonoBehaviour {
 
     void Start() {
         Core.NetworkClient.ChangeServer("127.0.0.1", 6900);
-        Core.NetworkClient.HookPacket(AC.ACCEPT_LOGIN.HEADER, this.OnLoginResponse);
+        Core.NetworkClient.HookPacket(AC.ACCEPT_LOGIN3.HEADER, this.OnLoginResponse);
 
         usernameField.text = "danilo3";
     }
@@ -35,8 +35,8 @@ public class LoginController : MonoBehaviour {
     }
 
     private void OnLoginResponse(ushort cmd, int size, InPacket packet) {
-        if (packet is AC.ACCEPT_LOGIN) {
-            var pkt = packet as AC.ACCEPT_LOGIN;
+        if (packet is AC.ACCEPT_LOGIN3) {
+            var pkt = packet as AC.ACCEPT_LOGIN3;
 
             Core.NetworkClient.State.LoginInfo = pkt;
             SceneManager.LoadSceneAsync("CharServerSelectionScene");

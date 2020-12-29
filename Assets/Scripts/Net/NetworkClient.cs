@@ -8,7 +8,7 @@ public class NetworkClient : MonoBehaviour {
         public MapLoginInfo MapLoginInfo;
         public CharServerInfo CharServer;
         public CharacterData SelectedCharacter;
-        public AC.ACCEPT_LOGIN LoginInfo;
+        public AC.ACCEPT_LOGIN3 LoginInfo;
         public HC.ACCEPT_ENTER CurrentCharactersInfo;
     }
 

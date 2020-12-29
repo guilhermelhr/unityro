@@ -8,10 +8,14 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_COUPLESTATUS;
         public const int SIZE = 14;
 
+        public EntityStatus status;
+        public int value;
+        public int plusValue;
+
         public bool Read(BinaryReader br) {
-            var statupType = br.ReadULong();
-            var defaultStatus = br.ReadLong();
-            var plusStatus = br.ReadLong();
+            status = (EntityStatus)br.ReadULong();
+            value = br.ReadLong();
+            plusValue = br.ReadLong();
 
             return true;
         }
