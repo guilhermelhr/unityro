@@ -41,6 +41,7 @@ public class EntityViewer : MonoBehaviour {
     private bool isDirty;
 
     private MeshCollider meshCollider;
+    private Material material;
 
     public void Init(SPR spr, ACT act) {
         currentSPR = spr;
@@ -66,6 +67,11 @@ public class EntityViewer : MonoBehaviour {
             currentSPR = FileManager.Load(path + ".spr") as SPR;
             currentACT = FileManager.Load(path + ".act") as ACT;
         }
+
+        //if (material == null) {
+        //    material = Resources.Load("Materials/Unlit_CustomSpriteShader") as Material;
+        //}
+
         currentSPR.SwitchToRGBA();
         sprites = currentSPR.GetSprites();
         meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
@@ -205,6 +211,7 @@ public class EntityViewer : MonoBehaviour {
                     spriteRenderer = go.AddComponent<SpriteRenderer>();
                     //spriteRenderer.flipY = true;
                     spriteRenderer.sortingOrder = SpriteOrder;
+                    //spriteRenderer.material = material;
 
                     spriteRenderer.transform.SetParent(gameObject.transform, false);
                 }
@@ -361,6 +368,8 @@ public class EntityViewer : MonoBehaviour {
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite.GetSprites()[0];
         spriteRenderer.sortingOrder = -1;
+        //spriteRenderer.material = material;
+        //spriteRenderer.material.color = new Color(1, 1, 1, 0.4f);
     }
 
     public Vector2 GetAnimationAnchor() {

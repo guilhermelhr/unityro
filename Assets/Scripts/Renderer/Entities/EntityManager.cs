@@ -13,7 +13,7 @@ public class EntityManager : MonoBehaviour {
     }
 
     public Entity Spawn(EntityData data) {
-        switch(data.type) {
+        switch (data.type) {
             case EntityType.PC:
                 entityCache.TryGetValue(data.GID, out var pc);
                 pc?.gameObject.SetActive(true);
@@ -33,7 +33,7 @@ public class EntityManager : MonoBehaviour {
 
     public void RemoveEntity(uint GID) {
         entityCache.TryGetValue(GID, out Entity entity);
-        if(entity != null) {
+        if (entity != null) {
             Destroy(entity.gameObject);
             entityCache.Remove(GID);
         }
@@ -57,7 +57,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Items");
         body.transform.SetParent(itemGO.transform, false);
-        body.transform.localPosition = Vector3.zero;
+        body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
         body.AddComponent<Animator>().runtimeAnimatorController = Instantiate(Resources.Load("Animations/ItemDropAnimator")) as RuntimeAnimatorController;
@@ -90,11 +90,7 @@ public class EntityManager : MonoBehaviour {
 
     //TODO this needs checking
     public void VanishEntity(uint GID, EntityType type) {
-        entityCache.TryGetValue(GID, out var entity);
-        entity?.gameObject.SetActive(false);
-        //if (entity != null) {
-        //    entityCache.Remove(GID);
-        //}
+        RemoveEntity(GID);
     }
 
     private Entity SpawnPC(EntityData data) {
@@ -107,7 +103,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0.2f, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -155,7 +151,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("NPC");
         body.transform.SetParent(npc.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0.2f, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -189,7 +185,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Monsters");
         body.transform.SetParent(mob.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0.2f, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -223,7 +219,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Characters");
         body.transform.SetParent(player.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0.2f, 0.5f);
+        body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
@@ -254,7 +250,7 @@ public class EntityManager : MonoBehaviour {
         headViewer.Type = entity.Type;
         headViewer.ViewerType = ViewerType.HEAD;
 
-        if(data.Weapon != 0) {
+        if (data.Weapon != 0) {
             var weapon = new GameObject("Weapon");
             weapon.layer = LayerMask.NameToLayer("Characters");
             weapon.transform.SetParent(body.transform, false);

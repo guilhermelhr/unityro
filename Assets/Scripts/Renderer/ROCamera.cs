@@ -7,22 +7,20 @@ public class ROCamera : MonoBehaviour {
 
     private const float ZOOM_MIN = 25f;
     private const float ZOOM_MAX = 80f;
-    private const float ALTITUDE_MIN = 35f;
-    private const float ALTITUDE_MAX = 50f;
+    private const float ALTITUDE_MIN = 30f;
+    private const float ALTITUDE_MAX = 37f;
 
     [SerializeField] private Transform _target;
     [SerializeField] public static Direction direction;
     [SerializeField] private float zoom = 0f;
     [SerializeField] private float distance = 30f;
-    [SerializeField] private float altitude = 50f;
+    [SerializeField] private float altitude = 35f;
     [SerializeField] private float TargetRotation = 0f;
     [SerializeField] public float Rotation = 0f;
     [SerializeField] private float angle;
 
-
-
     private void Awake() {
-        if(Instance == null) {
+        if (Instance == null) {
             Instance = this;
         }
     }
@@ -34,25 +32,25 @@ public class ROCamera : MonoBehaviour {
 
     void LateUpdate() {
         float scrollDelta = Input.mouseScrollDelta.y;
-        if(Input.GetMouseButton(1)) {
+        if (Input.GetMouseButton(1)) {
             this.TargetRotation += Input.GetAxis("Mouse X");
             HandleYawPitch();
-        } else if(Input.GetKey(KeyCode.LeftShift)) {
+        } else if (Input.GetKey(KeyCode.LeftShift)) {
             this.altitude = Mathf.Clamp(this.altitude + scrollDelta, ALTITUDE_MIN, ALTITUDE_MAX);
             HandleYawPitch();
-        } else if(scrollDelta != 0) {
+        } else if (scrollDelta != 0) {
             zoom += scrollDelta;
             HandleZoom();
         }
 
-        if(TargetRotation > 360)
+        if (TargetRotation > 360)
             TargetRotation -= 360;
-        if(TargetRotation < 0)
+        if (TargetRotation < 0)
             TargetRotation += 360;
 
-        if(Rotation > 360)
+        if (Rotation > 360)
             Rotation -= 360;
-        if(Rotation < 0)
+        if (Rotation < 0)
             Rotation += 360;
 
         Rotation = Mathf.LerpAngle(Rotation, TargetRotation, 7.5f * Time.deltaTime);
@@ -80,15 +78,15 @@ public class ROCamera : MonoBehaviour {
         var direction = _target.position - transform.position;
         distance = direction.magnitude;
 
-        if(zoom > 0.0f) {
-            if(distance <= ZOOM_MIN) {
+        if (zoom > 0.0f) {
+            if (distance <= ZOOM_MIN) {
                 zoom = 0;
                 return;
             }
 
             zoom -= zoom / 5f;
 
-            if(zoom <= 0f) {
+            if (zoom <= 0f) {
                 zoom = 0f;
             } else {
                 direction /= distance;
@@ -96,15 +94,15 @@ public class ROCamera : MonoBehaviour {
 
                 transform.position += direction;
             }
-        } else if(zoom < 0f) {
-            if(distance >= ZOOM_MAX) {
+        } else if (zoom < 0f) {
+            if (distance >= ZOOM_MAX) {
                 zoom = 0;
                 return;
             }
 
             zoom -= zoom / 5f;
 
-            if(zoom >= 0f) {
+            if (zoom >= 0f) {
                 zoom = 0f;
             } else {
                 direction /= distance;

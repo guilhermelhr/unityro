@@ -52,6 +52,7 @@ public class Entity : MonoBehaviour {
         Weapon = data.weapon;
         Hp = data.hp;
         MaxHp = data.maxhp;
+        Direction = (Direction)data.PosDir[2];
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
     }
@@ -94,7 +95,7 @@ public class Entity : MonoBehaviour {
     }
 
     private void OnParameterChange(ushort cmd, int size, InPacket packet) {
-        if(packet is ZC.PAR_CHANGE) {
+        if (packet is ZC.PAR_CHANGE) {
             var pkt = packet as ZC.PAR_CHANGE;
 
         }
@@ -103,33 +104,33 @@ public class Entity : MonoBehaviour {
     private void OnEntityAction(ushort cmd, int size, InPacket packet) {
         EntityActionRequest actionRequest;
 
-        if(packet is ZC.NOTIFY_ACT3) {
+        if (packet is ZC.NOTIFY_ACT3) {
             var p = packet as ZC.NOTIFY_ACT3;
             actionRequest = p.ActionRequest;
-        } else if(packet is ZC.NOTIFY_ACT) {
+        } else if (packet is ZC.NOTIFY_ACT) {
             var p = packet as ZC.NOTIFY_ACT;
             actionRequest = p.ActionRequest;
         } else {
             return;
         }
 
-        if(actionRequest == null) return;
+        if (actionRequest == null) return;
 
         var srcEntity = Core.EntityManager.GetEntity(actionRequest.GID);
         var dstEntity = Core.EntityManager.GetEntity(actionRequest.targetGID);
 
-        if(actionRequest.GID == Core.Session.Entity.GID || actionRequest.GID == Core.Session.AccountID) {
+        if (actionRequest.GID == Core.Session.Entity.GID || actionRequest.GID == Core.Session.AccountID) {
             srcEntity = Core.Session.Entity;
-        } else if(actionRequest.targetGID == Core.Session.Entity.GID || actionRequest.targetGID == Core.Session.AccountID) {
+        } else if (actionRequest.targetGID == Core.Session.Entity.GID || actionRequest.targetGID == Core.Session.AccountID) {
             dstEntity = Core.Session.Entity;
         }
 
         // entity out of screen
-        if(!srcEntity) {
+        if (!srcEntity) {
             return;
         }
 
-        switch(actionRequest.action) {
+        switch (actionRequest.action) {
             // Damage
             case 0:
             case 4:
@@ -156,24 +157,24 @@ public class Entity : MonoBehaviour {
 
     private static void OnEntityPickup(Entity srcEntity, Entity dstEntity) {
         srcEntity.ChangeMotion(SpriteMotion.PickUp, SpriteMotion.Idle);
-        if(dstEntity) {
+        if (dstEntity) {
             srcEntity.LookTo(dstEntity.transform.position);
         }
     }
 
     private static void OnEntityAttack(EntityActionRequest pkt, Entity srcEntity, Entity dstEntity) {
         Entity target;
-        if(dstEntity) {
+        if (dstEntity) {
             // only if damage and do not have endure
             // and damage isn't absorbed (healing)
-            if(pkt.damage > 0 && pkt.action != 9 && pkt.action != 4) {
+            if (pkt.damage > 0 && pkt.action != 9 && pkt.action != 4) {
                 dstEntity.ChangeMotion(SpriteMotion.Hit, SpriteMotion.Standby);
             }
 
             target = pkt.damage > 0 ? dstEntity : srcEntity;
 
-            if(target) {
-                switch(pkt.action) {
+            if (target) {
+                switch (pkt.action) {
                     // regular damage (and endure)
                     case 9:
                     case 0:
@@ -183,7 +184,7 @@ public class Entity : MonoBehaviour {
                     // double attack
                     case 8:
                         // Display combo only if entity is mob and the attack don't miss
-                        if(dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
+                        if (dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
                             dstEntity.Damage(pkt.damage / 2, Core.Tick + pkt.attackMT * 1, DamageType.COMBO);
                             dstEntity.Damage(pkt.damage, Core.Tick + pkt.attackMT * 2, DamageType.COMBO | DamageType.COMBO_FINAL);
                         }
@@ -222,7 +223,7 @@ public class Entity : MonoBehaviour {
      */
     public void Damage(float amount, double tick, DamageType? damageType = null) {
         var DamagePrefab = (GameObject)Resources.Load("Prefabs/Damage");
-        if(!DamagePrefab)
+        if (!DamagePrefab)
             throw new Exception("Could not load damage prefab");
 
         var damageRenderer = Instantiate(DamagePrefab).GetComponent<DamageRenderer>();
