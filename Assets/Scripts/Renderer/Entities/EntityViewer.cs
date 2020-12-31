@@ -30,11 +30,8 @@ public class EntityViewer : MonoBehaviour {
     private SPR currentSPR;
     private ACT.Action currentAction;
     private int currentActionIndex;
-    private int currentAngleIndex;
 
     private int currentFrame = 0;
-    private float currentFrameTime = 0;
-    private int maxFrame = 0;
 
     private long _start;
     private ushort _time;
@@ -42,9 +39,7 @@ public class EntityViewer : MonoBehaviour {
     private int _action = -1;
     private int _next = -1;
 
-    private bool isLooping;
     private bool isPaused;
-    private bool isDirty;
 
     private MeshCollider meshCollider;
     private Material material;
@@ -90,7 +85,7 @@ public class EntityViewer : MonoBehaviour {
             child.Start();
         }
 
-        //InitShadow();
+        InitShadow();
     }
 
     void Update() {
@@ -226,16 +221,6 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    public void ChildUpdate() {
-        var parentAnchor = Parent.GetAnimationAnchor();
-        var ourAnchor = GetAnimationAnchor();
-
-        var diff = parentAnchor - ourAnchor;
-
-        if (ViewerType != ViewerType.WEAPON)
-            transform.localPosition = new Vector3(diff.x, -diff.y, 0f) / SPR.PIXELS_PER_UNIT;
-    }
-
     private void InitShadow() {
         if (ViewerType != ViewerType.BODY) return;
 
@@ -254,8 +239,7 @@ public class EntityViewer : MonoBehaviour {
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite.GetSprites()[0];
         spriteRenderer.sortingOrder = -1;
-        //spriteRenderer.material = material;
-        //spriteRenderer.material.color = new Color(1, 1, 1, 0.4f);
+        spriteRenderer.material.color = new Color(1, 1, 1, 0.4f);
     }
 
     public Vector2 GetAnimationAnchor() {
