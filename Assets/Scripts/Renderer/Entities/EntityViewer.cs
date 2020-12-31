@@ -18,12 +18,12 @@ public class EntityViewer : MonoBehaviour {
     public float SpriteOffset;
     public int HeadDirection;
     public int SpriteOrder;
-    public float AnimSpeed = 1f;
     public SpriteState State = SpriteState.Idle;
 
     public List<EntityViewer> Children = new List<EntityViewer>();
     private Dictionary<int, SpriteRenderer> Layers = new Dictionary<int, SpriteRenderer>();
     private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
+    private AudioSource AudioSource;
 
     private Sprite[] sprites;
     private ACT currentACT;
@@ -86,6 +86,17 @@ public class EntityViewer : MonoBehaviour {
         }
 
         InitShadow();
+
+        if (AudioSource == null && Parent == null) {
+            AudioSource = gameObject.AddComponent<AudioSource>();
+            AudioSource.spatialBlend = 0.7f;
+            AudioSource.priority = 60;
+            AudioSource.maxDistance = 40;
+            AudioSource.rolloffMode = AudioRolloffMode.Linear;
+            AudioSource.volume = 1f;
+            AudioSource.dopplerLevel = 0;
+            AudioSource.outputAudioMixerGroup = MapRenderer.SoundsMixerGroup;
+        }
     }
 
     void Update() {
@@ -146,8 +157,16 @@ public class EntityViewer : MonoBehaviour {
             }
         }
 
-        if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length && !isPaused) {
-            // TODO sounds
+        if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length) {
+            var clipName = currentACT.sounds[frame.soundId];
+            if (clipName == "atk") return;
+
+            var clip = FileManager.Load($"data/wav/{clipName}") as AudioClip;
+
+            if (clip != null && AudioSource != null) {
+                AudioSource.clip = clip;
+                AudioSource.Play();
+            }
         }
 
         if (Parent != null && ViewerType != ViewerType.WEAPON) {
