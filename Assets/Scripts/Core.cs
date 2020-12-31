@@ -89,18 +89,18 @@ public class Core : MonoBehaviour {
         if (!Offline) {
             NetworkClient.Start();
         } else {
-            var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 0, Name = "Player", GID = 20001, Weapon = 1, Speed = 150 });
-            entity.transform.position = new Vector3(150, 0, 150);
-            entity.AttackSpeed = 135;
-            Core.Session = new Session(entity, 0);
+            //var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 0, Name = "Player", GID = 20001, Weapon = 1, Speed = 150 });
+            //entity.transform.position = new Vector3(150, 0, 150);
+            //entity.AttackSpeed = 135;
+            //Core.Session = new Session(entity, 0);
 
-            Core.MainCamera.GetComponent<ROCamera>().SetTarget(Core.Session.Entity.EntityViewer.transform);
-            Core.MainCamera.transform.SetParent(Core.Session.Entity.transform);
+            //Core.MainCamera.GetComponent<ROCamera>().SetTarget(Core.Session.Entity.EntityViewer.transform);
+            //Core.MainCamera.transform.SetParent(Core.Session.Entity.transform);
 
-            Core.Session.Entity.SetReady(true);
+            //Core.Session.Entity.SetReady(true);
 
-            //var npc = EntityManager.Spawn(new EntityData() { job = 909, type = EntityType.NPC, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
-            //npc.transform.position = new Vector3(160, 0, 150);
+            var npc = EntityManager.Spawn(new EntityData() { job = 1002, type = EntityType.MOB, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
+            npc.transform.position = new Vector3(160, 0, 150);
         }
     }
 

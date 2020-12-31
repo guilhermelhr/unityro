@@ -9,5 +9,6 @@ public enum SpriteState {
     Walking,
     Standby,
     Sit,
-    Dead
+    Dead,
+    Alive
 }

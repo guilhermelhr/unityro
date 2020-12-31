@@ -102,21 +102,35 @@ public class EntityViewer : MonoBehaviour {
     void Update() {
         if (!Entity.IsReady || currentACT == null)
             return;
+        if (State == SpriteState.Dead) {
+            return;
+        }
 
         var tm = Core.Tick - _start;
         if (_time > 0 && tm > _time) {
-            _action = _next;
-            _start = Core.Tick;
-
-            tm = _time = 0;
+            if (NextMotion != null) {
+                ChangeMotion(NextMotion.Value, null);
+            } else {
+                ChangeMotion(SpriteMotion.Idle, null);
+            }
         }
 
-        var actionIndex = _action + GetFacingDirection() % currentACT.actions.Length;
-        currentActionIndex = actionIndex;
+        currentActionIndex = _action + GetFacingDirection() % currentACT.actions.Length;
         currentAction = currentACT.actions[currentActionIndex];
 
         var newFrame = GetCurrentFrame(tm);
-        currentFrame = newFrame;
+
+        // Are we looping or stopping?
+        if (newFrame >= currentAction.frames.Length - 1) {
+            if (NextMotion != null) {
+                ChangeMotion(NextMotion.Value, null);
+            } else if (CurrentMotion == SpriteMotion.Dead) {
+                State = SpriteState.Dead;
+            }
+        } else {
+            currentFrame = newFrame;
+        }
+
         var frame = currentAction.frames[currentFrame];
 
         // We need this mesh collider in order to have the raycast to hit the sprite
@@ -188,11 +202,14 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private int GetFacingDirection() {
+        int angle;
         if (AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion)) {
-            return AnimationHelper.GetFourDirectionSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
+            angle = AnimationHelper.GetFourDirectionSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
         } else {
-            return AnimationHelper.GetSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
+            angle = AnimationHelper.GetSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
         }
+
+        return angle < 0 ? 0 : angle;
     }
 
     private int GetFrameIndex(double tm) {
@@ -215,6 +232,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0, ushort factor = 0) {
+        State = SpriteState.Alive;
         var newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion);
         var nextAction = 0;
         if (nextMotion != null) {

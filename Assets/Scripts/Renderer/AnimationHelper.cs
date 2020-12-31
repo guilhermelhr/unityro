@@ -107,7 +107,7 @@ public static class AnimationHelper {
         }
 
 
-        return -1;
+        return 0;
     }
 
     public static SpriteState GetStateForMotion(SpriteMotion motion) {
