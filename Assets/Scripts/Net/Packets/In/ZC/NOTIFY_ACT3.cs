@@ -16,8 +16,8 @@ public partial class ZC {
                 GID = br.ReadULong(),
                 targetGID = br.ReadULong(),
                 startTime = br.ReadULong(),
-                attackMT = br.ReadLong(),
-                attackedMT = br.ReadLong(),
+                sourceSpeed = (ushort)br.ReadLong(),
+                targetSpeed = (ushort)br.ReadLong(),
                 damage = br.ReadLong()
             };
 

@@ -17,7 +17,7 @@ public class ROCamera : MonoBehaviour {
     [SerializeField] private float altitude = 35f;
     [SerializeField] private float TargetRotation = 0f;
     [SerializeField] public float Rotation = 0f;
-    [SerializeField] private float angle;
+    [SerializeField] public int Angle;
 
     private void Awake() {
         if (Instance == null) {
@@ -55,12 +55,12 @@ public class ROCamera : MonoBehaviour {
 
         Rotation = Mathf.LerpAngle(Rotation, TargetRotation, 7.5f * Time.deltaTime);
 
-        angle = GetAngleDirection();
-        direction = (Direction)angle;
+        Angle = GetAngleDirection();
+        direction = (Direction)Angle;
     }
 
-    private float GetAngleDirection() {
-        return (float)Math.Floor((Math.Abs(TargetRotation) % 360 + 22.5f) / 45) % 8;
+    private int GetAngleDirection() {
+        return (int)(Math.Floor((Math.Abs(TargetRotation) % 360 + 22.5f) / 45) % 8);
     }
 
     private void HandleYawPitch() {

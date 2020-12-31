@@ -36,6 +36,12 @@ public class EntityViewer : MonoBehaviour {
     private float currentFrameTime = 0;
     private int maxFrame = 0;
 
+    private long _start;
+    private ushort _time;
+    private ushort _factor;
+    private int _action = -1;
+    private int _next = -1;
+
     private bool isLooping;
     private bool isPaused;
     private bool isDirty;
@@ -76,173 +82,32 @@ public class EntityViewer : MonoBehaviour {
         sprites = currentSPR.GetSprites();
         meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
 
-        if (currentAction == null)
-            ChangeAction(0);
+        if (currentAction == null) {
+            ChangeMotion(SpriteMotion.Idle);
+        }
 
         foreach (var child in Children) {
             child.Start();
         }
 
-        InitShadow();
+        //InitShadow();
     }
 
     void Update() {
         if (!Entity.IsReady || currentACT == null)
             return;
 
-        if (currentAction == null)
-            ChangeAction(0);
+        var tm = Core.Tick - _start;
+        if (_time > 0 && tm > _time) {
+            _action = _next;
+            _start = Core.Tick;
 
-        bool is4dir = AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion);
-        int angleIndex;
-        if (is4dir) {
-            angleIndex = AnimationHelper.GetFourDirectionSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
-        } else {
-            angleIndex = AnimationHelper.GetSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
+            tm = _time = 0;
         }
 
-        if (currentAngleIndex != angleIndex) {
-            ChangeAngle(angleIndex);
-        }
-
-        if (currentActionIndex != Entity.Action) {
-            ChangeAction(Entity.Action);
-        }
-
-        if (Parent == null)
-            currentFrameTime -= Time.deltaTime;
-
-        if (currentFrameTime < 0 || currentFrame > maxFrame) {
-            AdvanceFrame();
-        }
-
-        if (isDirty) {
-            UpdateSpriteFrame();
-
-            foreach (var child in Children) {
-                child.ChildSetFrameData(currentActionIndex, currentAngleIndex, currentFrame);
-            }
-
-            isDirty = false;
-        }
-    }
-
-    private void AdvanceFrame() {
-        if (!isPaused)
-            currentFrame++;
-        if (currentFrame > maxFrame) {
-            //var nextMotion = AnimationHelper.GetMotionForState(State);
-            if (NextMotion != null) {
-                ChangeMotion(NextMotion.Value, null);
-            } else {
-                if (State != SpriteState.Dead)
-                    currentFrame = 0;
-                else {
-                    currentFrame = maxFrame;
-                    isPaused = true;
-                }
-            }
-            //if (nextMotion != CurrentMotion)
-            //    ChangeMotion(nextMotion);
-            //else {
-            //    if (State != SpriteState.Dead)
-            //        currentFrame = 0;
-            //    else {
-            //        currentFrame = maxFrame;
-            //        isPaused = true;
-            //    }
-            //}
-        }
-
-        if (currentFrameTime < 0)
-            currentFrameTime += currentAction.delay / 1000f * AnimSpeed;
-
-        if (!isPaused)
-            isDirty = true;
-    }
-
-    private void ChangeAngle(int newAngleIndex) {
-        if (currentACT == null && !Entity.gameObject.activeSelf) return;
-        currentAngleIndex = newAngleIndex;
-        //if (!isInitialized) return;
-        currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
-        maxFrame = currentAction.frames.Length - 1;
-        isDirty = true;
-    }
-
-    private void ChangeAction(int newActionIndex) {
-        if (currentACT == null || !Entity.gameObject.activeSelf) return;
-
-        Entity.Action = newActionIndex;
-        currentActionIndex = newActionIndex;
-
-        //if (!isInitialized) return;
-
-        currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
-        maxFrame = currentAction.frames.Length - 1;
-
-        currentFrameTime = currentAction.delay / 1000f * AnimSpeed; //reset current frame time
-        isDirty = true;
-
-        RenderLayers();
-    }
-
-    /** 
-     * TODO 
-     * Figure out a way of cleaning the layers not used by the
-     * current animation.
-     */
-    private void RenderLayers() {
-        /**
-         * Some animations have more than one layer (think of npcs)
-         * so this is needed to render each layer of the animation
-         * since we cannot have more than one SpriteRenderer attached
-         * to a single game object
-         */
-        foreach (var frame in currentAction.frames) {
-            for (int i = 0; i < frame.layers.Length; i++) {
-                var layer = frame.layers[i];
-                var sprite = sprites[layer.index];
-
-                Layers.TryGetValue(i, out var spriteRenderer);
-
-                if (spriteRenderer == null) {
-                    var go = new GameObject($"Layer{i}");
-                    spriteRenderer = go.AddComponent<SpriteRenderer>();
-                    //spriteRenderer.flipY = true;
-                    spriteRenderer.sortingOrder = SpriteOrder;
-                    //spriteRenderer.material = material;
-
-                    spriteRenderer.transform.SetParent(gameObject.transform, false);
-                }
-
-                CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
-
-                spriteRenderer.transform.localRotation = rotation;
-                spriteRenderer.transform.localPosition = newPos;
-                spriteRenderer.transform.localScale = scale;
-
-                if (!Layers.ContainsKey(i)) {
-                    Layers.Add(i, spriteRenderer);
-                }
-            }
-        }
-    }
-
-    public void UpdateSpriteFrame() {
-        if (currentFrame >= currentAction.frames.Length) {
-            if (AnimationHelper.IsLoopingMotion(CurrentMotion)) {
-                currentFrame = 0;
-                currentFrameTime = currentAction.delay / 1000f * AnimSpeed;
-            } else {
-                return;
-            }
-        }
+        currentAction = currentACT.actions[_action + GetFacingDirection() % currentACT.actions.Length];
+        currentFrame = (Entity.HeadDir < 0 || _action >= 0 ? GetFrameIndex(tm) : Entity.HeadDir) % currentAction.frames.Length;
         var frame = currentAction.frames[currentFrame];
-
-        if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length && !isPaused) {
-            // TODO sounds
-        }
 
         // We need this mesh collider in order to have the raycast to hit the sprite
         MeshCache.TryGetValue(frame, out Mesh mesh);
@@ -255,21 +120,56 @@ public class EntityViewer : MonoBehaviour {
         // If current frame doesn't have layers, cleanup layer cache
         Layers.Values.ToList().ForEach(Renderer => Renderer.sprite = null);
 
-        // Iterate each frame layer and do positioning magic
         for (int i = 0; i < frame.layers.Length; i++) {
+            var layer = frame.layers[i];
+            var sprite = sprites[layer.index];
+
             Layers.TryGetValue(i, out var spriteRenderer);
 
-            if (spriteRenderer) {
-                var layer = frame.layers[i];
-                var sprite = sprites[layer.index];
-
-                spriteRenderer.sprite = sprite;
-
-                CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
-                spriteRenderer.transform.localRotation = rotation;
-                spriteRenderer.transform.localPosition = newPos;
-                spriteRenderer.transform.localScale = scale;
+            if (spriteRenderer == null) {
+                var go = new GameObject($"Layer{i}");
+                spriteRenderer = go.AddComponent<SpriteRenderer>();
+                spriteRenderer.sortingOrder = SpriteOrder;
+                spriteRenderer.transform.SetParent(gameObject.transform, false);
             }
+
+            CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
+
+            spriteRenderer.transform.localRotation = rotation;
+            spriteRenderer.transform.localPosition = newPos;
+            spriteRenderer.transform.localScale = scale;
+
+            spriteRenderer.sprite = sprite;
+
+            if (!Layers.ContainsKey(i)) {
+                Layers.Add(i, spriteRenderer);
+            }
+        }
+
+        if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length && !isPaused) {
+            // TODO sounds
+        }
+
+        foreach (var child in Children) {
+            child.ChildUpdate();
+        }
+    }
+
+    private int GetFacingDirection() {
+        if (AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion)) {
+            return AnimationHelper.GetFourDirectionSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
+        } else {
+            return AnimationHelper.GetSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
+        }
+    }
+
+    private int GetFrameIndex(double tm) {
+        if (_time > 0) {
+            return (int)tm * currentAction.frames.Length / _time;
+        } else if (_factor > 0) {
+            return (int)(tm / (currentAction.delay * _factor / 100));
+        } else {
+            return (int)(tm / currentAction.delay);
         }
     }
 
@@ -282,62 +182,30 @@ public class EntityViewer : MonoBehaviour {
         newPos = new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / sprite.pixelsPerUnit;
     }
 
-    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, bool forceUpdate = false) {
-        if (CurrentMotion == motion && !forceUpdate || currentACT == null)
-            return;
+    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0, ushort factor = 0) {
+        var newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion);
+        var nextAction = 0;
+        if (nextMotion != null) {
+            nextAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, nextMotion.Value);
+        }
 
-        CurrentMotion = motion;
-        NextMotion = nextMotion;
-        State = AnimationHelper.GetStateForMotion(CurrentMotion);
-        currentFrame = 0;
+        if (newAction != _action) {
+            CurrentMotion = motion;
+            NextMotion = nextMotion;
 
-        if (!Entity.IsReady)
-            return;
+            Entity.Action = newAction;
+
+            _action = newAction;
+            _start = Core.Tick;
+        }
+
+        _next = nextAction;
+        _time = speed;
+        _factor = factor;
 
         foreach (var child in Children) {
             child.ChangeMotion(motion, nextMotion);
         }
-
-
-        var action = AnimationHelper.GetMotionIdForSprite(Type, motion);
-        // TODO implement this
-        if (motion == SpriteMotion.Attack) {
-            var attackAction = DBManager.GetWeaponAction((Job)Entity.Job, Entity.Sex, Entity.Weapon);
-        }
-        if (action < 0 || action > currentACT.actions.Length) {
-            action = 0;
-        }
-
-        ChangeAction(action);
-        isPaused = false;
-        isDirty = true;
-
-        if (Type == EntityType.PC) {
-            if (CurrentMotion == SpriteMotion.Idle || CurrentMotion == SpriteMotion.Sit) {
-                //currentFrame = (int) HeadF
-                UpdateSpriteFrame();
-                isPaused = true;
-            } else {
-                //HeadFacing 
-            }
-        }
-    }
-
-    public void ChildSetFrameData(int actionIndex, int angleIndex, int newCurrentFrame) {
-        if (currentACT == null) {
-            Debug.LogError($"Current ACT is null from {Entity}");
-            return;
-        }
-        currentActionIndex = actionIndex;
-        currentAngleIndex = angleIndex;
-
-        //if(!isInitialized)
-        //    return;
-
-        currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
-        currentFrame = newCurrentFrame;
-        UpdateSpriteFrame();
-        ChildUpdate();
     }
 
     public void ChildUpdate() {
