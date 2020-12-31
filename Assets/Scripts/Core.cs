@@ -91,6 +91,7 @@ public class Core : MonoBehaviour {
         } else {
             var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 0, Name = "Player", GID = 20001, Weapon = 1, Speed = 150 });
             entity.transform.position = new Vector3(150, 0, 150);
+            entity.AttackSpeed = 135;
             Core.Session = new Session(entity, 0);
 
             Core.MainCamera.GetComponent<ROCamera>().SetTarget(Core.Session.Entity.EntityViewer.transform);

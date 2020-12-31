@@ -2,8 +2,8 @@
     public uint GID;
     public uint targetGID;
     public uint startTime;
-    public int attackMT;
-    public int attackedMT;
+    public ushort sourceSpeed;
+    public ushort targetSpeed;
     public int damage;
     public short count;
     public byte action;
