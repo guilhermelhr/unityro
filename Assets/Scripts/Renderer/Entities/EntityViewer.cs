@@ -105,8 +105,12 @@ public class EntityViewer : MonoBehaviour {
             tm = _time = 0;
         }
 
-        currentAction = currentACT.actions[_action + GetFacingDirection() % currentACT.actions.Length];
-        currentFrame = (Entity.HeadDir < 0 || _action >= 0 ? GetFrameIndex(tm) : Entity.HeadDir) % currentAction.frames.Length;
+        var actionIndex = _action + GetFacingDirection() % currentACT.actions.Length;
+        currentActionIndex = actionIndex;
+        currentAction = currentACT.actions[currentActionIndex];
+
+        var newFrame = GetCurrentFrame(tm);
+        currentFrame = newFrame;
         var frame = currentAction.frames[currentFrame];
 
         // We need this mesh collider in order to have the raycast to hit the sprite
@@ -140,6 +144,7 @@ public class EntityViewer : MonoBehaviour {
             spriteRenderer.transform.localScale = scale;
 
             spriteRenderer.sprite = sprite;
+            spriteRenderer.material.color = layer.color;
 
             if (!Layers.ContainsKey(i)) {
                 Layers.Add(i, spriteRenderer);
@@ -150,8 +155,21 @@ public class EntityViewer : MonoBehaviour {
             // TODO sounds
         }
 
-        foreach (var child in Children) {
-            child.ChildUpdate();
+        if (Parent != null && ViewerType != ViewerType.WEAPON) {
+            var parentAnchor = Parent.GetAnimationAnchor();
+            var ourAnchor = GetAnimationAnchor();
+
+            var diff = parentAnchor - ourAnchor;
+
+            transform.localPosition = new Vector3(diff.x, -diff.y, 0f) / SPR.PIXELS_PER_UNIT;
+        }
+    }
+
+    private int GetCurrentFrame(long tm) {
+        if (Entity.Type == EntityType.PC) {
+            return (Entity.HeadDir < 0 || _action > 0 ? GetFrameIndex(tm) : Entity.HeadDir) % currentAction.frames.Length;
+        } else {
+            return (Entity.HeadDir < 0 || _action >= 0 ? GetFrameIndex(tm) : Entity.HeadDir) % currentAction.frames.Length;
         }
     }
 
