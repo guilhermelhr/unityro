@@ -10,5 +10,6 @@ public class ItemSpawnInfo {
     public int amount;
     public int showDropEffect;
     public short dropEffectMode;
+    public bool animate;
 
 }
