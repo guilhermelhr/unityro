@@ -62,7 +62,7 @@ public class EntityControl : MonoBehaviour {
 
                 OutPacket packet = new CZ.REQUEST_ACT2() {
                     TargetGID = target.GID,
-                    action = 0
+                    action = 7
                 };
 
                 PathNode endNode;

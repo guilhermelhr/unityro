@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 public class EntityViewer : MonoBehaviour {
+    private const float AVERAGE_ASPD = 432f;
 
     public Entity Entity;
     public EntityType Type;
@@ -106,7 +107,7 @@ public class EntityViewer : MonoBehaviour {
             return;
         }
 
-        var tm = Core.Tick - _start;
+        long tm = Core.Tick - _start;
         if (_time > 0 && tm > _time) {
             if (NextMotion != null) {
                 ChangeMotion(NextMotion.Value, null);
@@ -212,9 +213,11 @@ public class EntityViewer : MonoBehaviour {
         return angle < 0 ? 0 : angle;
     }
 
-    private int GetFrameIndex(double tm) {
+    private int GetFrameIndex(long tm) {
         if (_time > 0) {
-            return (int)tm * currentAction.frames.Length / _time;
+            var motion_speed = (currentAction.delay < 0 ? 4f : currentAction.delay) * (_time / AVERAGE_ASPD);
+
+            return (int)((tm * 0.37f * 4.0f) / motion_speed) % currentAction.frames.Length;
         } else if (_factor > 0) {
             return (int)(tm / (currentAction.delay * _factor / 100));
         } else {
