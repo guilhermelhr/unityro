@@ -6,6 +6,34 @@
         public const PacketHeader HEADER = PacketHeader.ZC_STATUS;
         public const int SIZE = 44;
 
+        public short stpoint;
+        public int str;
+        public int needStr;
+        public int agi;
+        public int needAgi;
+        public int vit;
+        public int needVit;
+        public int inte;
+        public int needInte;
+        public int dex;
+        public int needDex;
+        public int luk;
+        public int needLuk;
+        public short atk;
+        public short atk2;
+        public short matkMin;
+        public short matkMax;
+        public short def;
+        public short def2;
+        public short mdef;
+        public short mdef2;
+        public short hit;
+        public short flee;
+        public short flee2;
+        public short crit;
+        public short aspd;
+        public short aspd2;
+
         /// Character status (ZC_STATUS).
         /// 00bd 
         /// <stpoint>.W 
@@ -24,6 +52,33 @@
         /// <crit>.W 
         /// <aspd>.W <aspd2>.W
         public bool Read(BinaryReader br) {
+            stpoint = br.ReadShort();
+            str = br.ReadByte();
+            needStr = br.ReadByte();
+            agi = br.ReadByte();
+            needAgi = br.ReadByte();
+            vit = br.ReadByte();
+            needVit = br.ReadByte();
+            inte = br.ReadByte();
+            needInte = br.ReadByte();
+            dex = br.ReadByte();
+            needDex = br.ReadByte();
+            luk = br.ReadByte();
+            needLuk = br.ReadByte();
+            atk = br.ReadShort();
+            atk2 = br.ReadShort();
+            matkMin = br.ReadShort();
+            matkMax = br.ReadShort();
+            def = br.ReadShort();
+            def2 = br.ReadShort();
+            mdef = br.ReadShort();
+            mdef2 = br.ReadShort();
+            hit = br.ReadShort();
+            flee = br.ReadShort();
+            flee2 = br.ReadShort();
+            crit = br.ReadShort();
+            aspd = br.ReadShort();
+            aspd2 = br.ReadShort();
 
             return true;
         }

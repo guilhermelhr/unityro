@@ -6,14 +6,21 @@ using UnityEngine.UI;
 
 public class MapUiController : MonoBehaviour {
 
+    public static MapUiController Instance;
+
     [SerializeField] private Tooltip Tooltip;
     [SerializeField] private NpcBoxController NpcBox;
     [SerializeField] private NpcBoxMenuController NpcMenu;
     [SerializeField] private PopupController PopupController;
     [SerializeField] public EquipmentWindowController EquipmentWindow;
     [SerializeField] public InventoryWindowController InventoryWindow;
+    [SerializeField] public StatsWindowController StatsWindow;
 
     void Awake() {
+        if (Instance == null) {
+            Instance = this;
+        }
+
         #region NPCS
         Core.NetworkClient.HookPacket(ZC.SAY_DIALOG.HEADER, NpcBox.OnNpcMessage);
         Core.NetworkClient.HookPacket(ZC.CLOSE_DIALOG.HEADER, NpcBox.AddCloseButton);
@@ -37,6 +44,9 @@ public class MapUiController : MonoBehaviour {
                             break;
                         case KeyCode.E:
                             InventoryWindow.ToggleActive();
+                            break;
+                        case KeyCode.A:
+                            StatsWindow.ToggleActive();
                             break;
                         default:
                             break;

@@ -28,7 +28,14 @@ public class Entity : MonoBehaviour {
     [SerializeField] public short Job;
     [SerializeField] public byte Sex;
     [SerializeField] public short Hair;
-    [SerializeField] public ushort AttackSpeed;
+
+    private ushort _AttackSpeed;
+    [SerializeField]
+    public ushort AttackSpeed {
+        get => _AttackSpeed;
+        set => _AttackSpeed = (ushort)((2000 - value) / 10);
+    }
+
     [SerializeField] public short AttackRange = 0;
     [SerializeField] public short WalkSpeed = 150;
     [SerializeField] public int Weapon;
@@ -136,6 +143,13 @@ public class Entity : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE.HEADER, OnParameterChange);
         Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE2.HEADER, OnParameterChange);
         Core.NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
+        Core.NetworkClient.HookPacket(ZC.STATUS.HEADER, OnStatsWindowData);
+    }
+
+    private void OnStatsWindowData(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.STATUS STATUS) {
+            MapUiController.Instance.StatsWindow.UpdateData(STATUS);
+        }
     }
 
     private void OnParameterChange(ushort cmd, int size, InPacket packet) {
@@ -192,6 +206,15 @@ public class Entity : MonoBehaviour {
                 break;
             case EntityStatus.SP_NEXTJOBEXP:
                 Status.next_job_exp = value;
+                break;
+
+            case EntityStatus.SP_STR:
+            case EntityStatus.SP_AGI:
+            case EntityStatus.SP_VIT:
+            case EntityStatus.SP_INT:
+            case EntityStatus.SP_DEX:
+            case EntityStatus.SP_LUK:
+                MapUiController.Instance.StatsWindow.UpdateData($"{value} + {plusValue}", status);
                 break;
             default:
                 break;

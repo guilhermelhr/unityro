@@ -19,31 +19,30 @@ public class CustomPanel : RawImage,
 
     protected override void Start() {
         try {
-            if(backgroundImage != null) {
+            if (backgroundImage != null && backgroundTexture == null) {
                 backgroundTexture = FileManager.Load(DBManager.INTERFACE_PATH + backgroundImage) as Texture2D;
                 texture = backgroundTexture;
-                if(overrideSize)
+                if (overrideSize)
                     GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundTexture.width, backgroundTexture.height);
             }
         } catch {
-            Debug.LogError("Failed to load background image from" + this);
+            Debug.LogError("Failed to load background image from " + this);
         }
 
         try {
-
-            if(hoverImage != null) {
+            if (hoverImage != null && hoverImage == null) {
                 hoverTexture = FileManager.Load(DBManager.INTERFACE_PATH + hoverImage) as Texture2D;
             }
         } catch {
-            Debug.LogError("Failed to load hover image from" + this);
+            Debug.LogError("Failed to load hover image from " + this);
         }
 
         try {
-            if(pressedImage != null) {
+            if (pressedImage != null && pressedImage == null) {
                 pressedTexture = FileManager.Load(DBManager.INTERFACE_PATH + pressedImage) as Texture2D;
             }
         } catch {
-            Debug.LogError("Failed to load pressed image from" + this);
+            Debug.LogError("Failed to load pressed image from " + this);
         }
     }
 
@@ -54,25 +53,25 @@ public class CustomPanel : RawImage,
     }
 
     public void OnPointerDown(PointerEventData eventData) {
-        if(pressedTexture != null) {
+        if (pressedTexture != null) {
             texture = pressedTexture;
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
-        if(hoverTexture != null) {
+        if (hoverTexture != null) {
             texture = hoverTexture;
         }
     }
 
     public void OnPointerExit(PointerEventData eventData) {
-        if(backgroundTexture != null) {
+        if (backgroundTexture != null) {
             texture = backgroundTexture;
         }
     }
 
     public void OnPointerUp(PointerEventData eventData) {
-        if(hoverTexture != null) {
+        if (hoverTexture != null) {
             texture = hoverTexture;
         }
     }
