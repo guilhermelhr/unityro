@@ -28,14 +28,7 @@ public class Entity : MonoBehaviour {
     [SerializeField] public short Job;
     [SerializeField] public byte Sex;
     [SerializeField] public short Hair;
-
-    private ushort _AttackSpeed;
-    [SerializeField]
-    public ushort AttackSpeed {
-        get => _AttackSpeed;
-        set => _AttackSpeed = (ushort)((2000 - value) / 10);
-    }
-
+    [SerializeField] public ushort AttackSpeed;
     [SerializeField] public short AttackRange = 0;
     [SerializeField] public short WalkSpeed = 150;
     [SerializeField] public int Weapon;
