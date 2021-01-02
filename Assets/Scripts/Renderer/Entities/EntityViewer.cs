@@ -215,10 +215,9 @@ public class EntityViewer : MonoBehaviour {
 
     private int GetFrameIndex(long tm) {
         if (_time > 0) {
-            _time += (ushort)(currentActionIndex * 24);
-            var motion_speed = currentAction.delay < 0 ? 4f : currentAction.delay;
-            motion_speed *= (_time / AVERAGE_ASPD);
-            return (int)(tm / 24 / motion_speed);
+            var motion_speed = (currentAction.delay < 0 ? 4f : currentAction.delay) * (_time / AVERAGE_ASPD);
+
+            return (int)((tm * 0.37f * 4.0f) / motion_speed) % currentAction.frames.Length;
         } else if (_factor > 0) {
             return (int)(tm / (currentAction.delay * _factor / 100));
         } else {
