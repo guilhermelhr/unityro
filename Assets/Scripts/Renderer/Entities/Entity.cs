@@ -111,6 +111,8 @@ public class Entity : MonoBehaviour {
         Status.hp = data.HP;
         Status.max_hp = data.MaxHP;
         Status.name = data.Name;
+
+        HookPackets();
     }
 
     public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0) {
@@ -129,7 +131,7 @@ public class Entity : MonoBehaviour {
         _EntityWalk.StopMoving();
     }
 
-    private void Awake() {
+    private void HookPackets() {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT.HEADER, OnEntityAction);
         Core.NetworkClient.HookPacket(ZC.PAR_CHANGE.HEADER, OnParameterChange);
@@ -137,6 +139,22 @@ public class Entity : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE2.HEADER, OnParameterChange);
         Core.NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
         Core.NetworkClient.HookPacket(ZC.STATUS.HEADER, OnStatsWindowData);
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_EXP2.HEADER, OnExpReceived);
+    }
+
+    private void OnExpReceived(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.NOTIFY_EXP2 NOTIFY_EXP2) {
+            switch ((EntityStatus)NOTIFY_EXP2.expType) {
+                case EntityStatus.SP_JOBEXP:
+                    Status.job_exp += NOTIFY_EXP2.exp;
+                    break;
+                case EntityStatus.SP_BASEEXP:
+                    Status.base_exp += NOTIFY_EXP2.exp;
+                    break;
+            }
+        }
+
+        OnParameterUpdated?.Invoke();
     }
 
     private void OnStatsWindowData(ushort cmd, int size, InPacket packet) {
