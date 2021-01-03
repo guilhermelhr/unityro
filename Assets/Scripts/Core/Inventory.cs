@@ -27,11 +27,14 @@ public class Inventory {
         }
     }
 
-    public void RemoveItem(int index) {
+    public Item RemoveItem(int index) {
         Items.TryGetValue(index, out var it);
         if(it != null) {
             Items.Remove(index);
+            return it;
         }
+
+        return null;
     }
 
     public void UpdateItem(short index, short count) {
@@ -46,10 +49,24 @@ public class Inventory {
         MapUiController.Instance.InventoryWindow.UpdateEquipment();
     }
 
-    public void OnUseItem(int index) {
+    public void EquipItem(short index, int equipLocation) {
+        Items.TryGetValue(index, out Item item);
+        if(item == null) return;
+
+        item.info.wearState = equipLocation;
+    }
+
+    public void OnUseItem(short index) {
         new CZ.USE_ITEM2() {
             AID = Core.Session.AccountID,
-            index = (short)index
+            index = index
+        }.Send();
+    }
+
+    public void OnEquipItem(short index, int location) {
+        new CZ.REQ_WEAR_EQUIP_V5() {
+            index = index,
+            location = location
         }.Send();
     }
 }

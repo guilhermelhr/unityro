@@ -47,7 +47,10 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 case ItemType.PETEQUIP:
                 case ItemType.AMMO:
                     if(item.info.IsIdentified && !item.info.IsDamaged) {
-                        //Inventory.onEquipItem(item.index, item.location);
+                        if(item.info.wearState <= 0) {//wear
+                            Core.Session.Entity.Inventory.OnEquipItem(item.info.index, item.info.location);
+                        } else {//takeoff
+                        }
                     }
                     break;
             }
@@ -61,7 +64,7 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         var extra = "";
         if(item.tab == InventoryType.EQUIP) {
             extra = $"[{item.slotCount}]";
-        } else if (item.info.amount > 0) {
+        } else if(item.info.amount > 0) {
             extra = $"- {item.info.amount} ea";
         }
 

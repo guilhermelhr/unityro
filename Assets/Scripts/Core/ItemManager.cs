@@ -13,6 +13,18 @@ public class ItemManager : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_EQUIP.HEADER, OnInventoryUpdate);
         Core.NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_NORMAL.HEADER, OnInventoryUpdate);
         Core.NetworkClient.HookPacket(ZC.USE_ITEM_ACK2.HEADER, OnUseItemAnswer);
+        Core.NetworkClient.HookPacket(ZC.ACK_WEAR_EQUIP_V5.HEADER, OnItemEquipAnswer);
+    }
+
+    private void OnItemEquipAnswer(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.ACK_WEAR_EQUIP_V5 USE_ITEM_ACK2) {
+            if (USE_ITEM_ACK2.result == 1) {
+                Core.Session.Entity.Inventory.EquipItem(USE_ITEM_ACK2.index, USE_ITEM_ACK2.equipLocation);
+                MapUiController.Instance.UpdateEquipment();
+            } else {
+                //TODO display error message
+            }
+        }
     }
 
     private void OnUseItemAnswer(ushort cmd, int size, InPacket packet) {
