@@ -13,7 +13,7 @@ public class Inventory {
 
     public void AddItem(Item item) {
         Items.TryGetValue(item.info.index, out var it);
-        if (it != null) {
+        if(it != null) {
             it.info.amount++;
         } else {
             Items.Add(item.info.index, item);
@@ -22,7 +22,7 @@ public class Inventory {
 
     public void RemoveItem(Item item) {
         Items.TryGetValue(item.info.index, out var it);
-        if (it != null) {
+        if(it != null) {
             Items.Remove(item.info.index);
         }
     }
@@ -32,5 +32,24 @@ public class Inventory {
         if(it != null) {
             Items.Remove(index);
         }
+    }
+
+    public void UpdateItem(ushort index, short count) {
+        Items.TryGetValue(index, out Item item);
+        if(item == null) return;
+
+        item.info.amount = count;
+
+        if(item.info.amount <= 0) {
+            RemoveItem(index);
+        }
+        MapUiController.Instance.InventoryWindow.UpdateEquipment();
+    }
+
+    public void OnUseItem(int index) {
+        new CZ.USE_ITEM2() {
+            AID = Core.Session.AccountID,
+            index = index
+        }.Send();
     }
 }

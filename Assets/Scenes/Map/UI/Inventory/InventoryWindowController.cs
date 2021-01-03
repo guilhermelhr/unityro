@@ -15,7 +15,10 @@ public class InventoryWindowController : MonoBehaviour {
     private GridLayoutGroup GridLayout;
 
     [SerializeField]
-    private InventoryGridItem GridItemPrefab;
+    private InventoryCell GridCellPrefab;
+
+    [SerializeField]
+    private UIItem UIItemPrefab;
 
     [SerializeField]
     private InventoryType CurrentTab = InventoryType.ITEM;
@@ -30,24 +33,24 @@ public class InventoryWindowController : MonoBehaviour {
     public const int MAX_WINDOW_COLUMNS = 8;
     public const int MIN_WINDOW_ROWS = 6;
 
-    private List<InventoryGridItem> Items = new List<InventoryGridItem>();
+    private List<InventoryCell> Cells = new List<InventoryCell>();
 
     private void Awake() {
-        if(Items.IsEmpty()) {
+        if(Cells.IsEmpty()) {
             InitGrid();
         }
     }
 
     private void InitGrid() {
         for(int i = 0; i < MIN_WINDOW_COLUMNS * MIN_WINDOW_ROWS; i++) {
-            var item = Instantiate<InventoryGridItem>(GridItemPrefab);
-            item.transform.SetParent(GridLayout.transform, false);
-            Items.Add(item);
+            var cell = Instantiate<InventoryCell>(GridCellPrefab);
+            cell.transform.SetParent(GridLayout.transform, false);
+            Cells.Add(cell);
         }
     }
 
     public void UpdateEquipment() {
-        if(Items.IsEmpty()) {
+        if(Cells.IsEmpty()) {
             InitGrid();
         }
 
@@ -55,11 +58,11 @@ public class InventoryWindowController : MonoBehaviour {
         if(inventory == null || inventory.IsEmpty) return;
 
         var filteredInventory = inventory.ItemList.Where(it => it.info.wearState <= 0 && it.tab == CurrentTab).ToList();
-        for(int i = 0; i < Items.Count; i++) {
+        for(int i = 0; i < Cells.Count; i++) {
             if(i < filteredInventory.Count) {
-                Items[i].SetItem(filteredInventory[i]);
+                Cells[i].SetItem(filteredInventory[i]);
             } else {
-                Items[i].SetItem(null);
+                Cells[i].SetItem(null);
             }
         }
     }

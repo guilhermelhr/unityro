@@ -217,9 +217,8 @@ GameObject:
   - component: {fileID: 6642920350483313016}
   - component: {fileID: 6642920350483313018}
   - component: {fileID: 6642920350483313019}
-  - component: {fileID: 8137659593899416269}
   m_Layer: 5
-  m_Name: InventoryGridItem
+  m_Name: UIItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -268,33 +267,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemImage: {fileID: 6642920349513672709}
   amountLabel: {fileID: 6642920349031015634}
---- !u!114 &8137659593899416269
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6642920350483313015}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9033da0c08362e04099dce8c3e458fd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Texture: {fileID: 0}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-  backgroundImage: basic_interface/itemwin_mid.bmp
-  hoverImage: 
-  pressedImage: 

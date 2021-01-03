@@ -3258,6 +3258,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 677085983}
   m_CullTransparentMesh: 0
+--- !u!28 &702375207
+Texture2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: "maptexture@data/texture/\xC0\xAF\xC0\xFA\xC0\xCE\xC5\xCD\xC6\xE4\xC0\xCC\xBD\xBA/basic_interface/sys_mini_off.bmp"
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  serializedVersion: 2
+  m_Width: 11
+  m_Height: 11
+  m_CompleteImageSize: 604
+  m_MipsStripped: 0
+  m_TextureFormat: 4
+  m_MipCount: 4
+  m_IsReadable: 1
+  m_IsPreProcessed: 0
+  m_IgnoreMasterTextureLimit: 0
+  m_StreamingMipmaps: 0
+  m_StreamingMipmapsPriority: 0
+  m_VTOnly: 0
+  m_AlphaIsTransparency: 0
+  m_ImageCount: 1
+  m_TextureDimension: 2
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 0
+    m_WrapV: 0
+    m_WrapW: 0
+  m_LightmapFormat: 0
+  m_ColorSpace: 0
+  image data: 604
+  _typelessdata: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007696d7ff517acdff5f85d1ff517acdff7696d7ff0000000000000000000000000000000000000000839eceff567fcfff95ade0ffadc1e8ff95ade0ff567fcfff839eceff000000000000000000000000829bcfff416ec8ffa6bbe5ffc1cfedffd0dbf1ffc6d4efffb2c4e9ff4c76cbff829bcfff00000000000000004a659eff688bd4ff8496bbff738fc2ff7691c4ff738fc2ff718dc2ff819edbff4a659eff0000000000000000274279ff5c82d0ff475c8aff09235aff09235aff09235aff08235aff7394d6ff274279ff0000000000000000355087ff3c5ca1ff6585c5ff7087bbff8ba4d7ff8ba6deff6683bfff4463a5ff355087ff00000000000000005876b3ff294a8aff698bd4ff86a2dcff8aa5ddff809edbff678ad3ff2b4b8bff5876b3ff0000000000000000000000004563a0ff4872caffc3d1eeffd9e2f4ffc3d1eeff4872caff4563a0ff00000000000000000000000000000000000000006381bbff38558fff294379ff38548fff6380bbff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000038476679384e7c9838476679000000003d49627986a3dbffc7d4eeff90aadeff3e4a6279172748984b6398ff09235aff1d3972ff1727489929385479577ac3ff98b0e0ff577ac3ff2938557a000000002e3d597a182848992f3d597a000000006076a0bc667aa2bc405a8dbc415a8dbc516997bc
+  m_StreamData:
+    serializedVersion: 2
+    offset: 0
+    size: 0
+    path: 
 --- !u!1 &791604263
 GameObject:
   m_ObjectHideFlags: 0
@@ -3957,7 +4002,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 490431078495271221, guid: d94c2d7ce7b6d6e41ac6165883c4a8f3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.09
+      value: 6.0899997
       objectReference: {fileID: 0}
     - target: {fileID: 490431078495271221, guid: d94c2d7ce7b6d6e41ac6165883c4a8f3, type: 3}
       propertyPath: m_LocalRotation.x
@@ -4009,27 +4054,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 490431078495271221, guid: d94c2d7ce7b6d6e41ac6165883c4a8f3, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 490431078495271221, guid: d94c2d7ce7b6d6e41ac6165883c4a8f3, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 490431078495271221, guid: d94c2d7ce7b6d6e41ac6165883c4a8f3, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 490431078495271221, guid: d94c2d7ce7b6d6e41ac6165883c4a8f3, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 490431078495271221, guid: d94c2d7ce7b6d6e41ac6165883c4a8f3, type: 3}
       propertyPath: m_Pivot.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 490431078495271221, guid: d94c2d7ce7b6d6e41ac6165883c4a8f3, type: 3}
       propertyPath: m_Pivot.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6423510682091483473, guid: d94c2d7ce7b6d6e41ac6165883c4a8f3, type: 3}
       propertyPath: m_AnchorMin.y
@@ -4167,7 +4212,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GridLayout: {fileID: 1254766919}
-  GridItemPrefab: {fileID: 6642920350483313019, guid: 186f9851a7aa2c645a386416f37d4bd1, type: 3}
+  GridCellPrefab: {fileID: 6246234315325650294, guid: 186f9851a7aa2c645a386416f37d4bd1, type: 3}
+  UIItemPrefab: {fileID: 6642920350483313019, guid: 65b7b8595e87b4d4a91e142de45c224b, type: 3}
   CurrentTab: 0
   Tabs: {fileID: 499521363}
   ResName: basic_interface/tab_itm_0
@@ -5464,7 +5510,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 564722364}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.61804897
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

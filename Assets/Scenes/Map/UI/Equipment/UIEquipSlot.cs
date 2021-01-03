@@ -2,13 +2,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIEquipSlot : MonoBehaviour {
+public class UIEquipSlot : GenericUIItem {
 
     public RawImage icon;
     public TextMeshProUGUI itemName;
     public EquipLocation location;
-
-    public Item item;
 
     public void SetItem(Item item) {
         this.item = item;

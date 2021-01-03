@@ -12,6 +12,15 @@ public class ItemManager : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.ITEM_DISAPPEAR.HEADER, OnItemDisappear);
         Core.NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_EQUIP.HEADER, OnInventoryUpdate);
         Core.NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_NORMAL.HEADER, OnInventoryUpdate);
+        Core.NetworkClient.HookPacket(ZC.USE_ITEM_ACK2.HEADER, OnUseItemAnswer);
+    }
+
+    private void OnUseItemAnswer(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.USE_ITEM_ACK2 USE_ITEM_ACK2) {
+            if (USE_ITEM_ACK2.AID == Core.Session.AccountID && USE_ITEM_ACK2.result > 0) {
+                Core.Session.Entity.Inventory.UpdateItem(USE_ITEM_ACK2.index, USE_ITEM_ACK2.count);
+            }
+        }
     }
 
     private void OnInventoryUpdate(ushort cmd, int size, InPacket packet) {
