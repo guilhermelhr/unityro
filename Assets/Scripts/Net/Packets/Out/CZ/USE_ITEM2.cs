@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ public partial class CZ {
         public const PacketHeader HEADER = PacketHeader.CZ_USE_ITEM2;
         public const int SIZE = 8;
 
-        public long AID;
+        public int AID;
         public short index;
 
         public USE_ITEM2() : base(HEADER, SIZE) { }
@@ -19,8 +20,8 @@ public partial class CZ {
         public override bool Send(BinaryWriter writer) {
             base.Send(writer);
 
-            writer.Write((short)index);
-            writer.Write((long)AID);
+            writer.Write(index);
+            writer.Write(AID);
             writer.Flush();
 
             return true;

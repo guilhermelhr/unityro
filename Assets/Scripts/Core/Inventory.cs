@@ -34,7 +34,7 @@ public class Inventory {
         }
     }
 
-    public void UpdateItem(ushort index, short count) {
+    public void UpdateItem(short index, short count) {
         Items.TryGetValue(index, out Item item);
         if(item == null) return;
 
@@ -44,10 +44,6 @@ public class Inventory {
             RemoveItem(index);
         }
         MapUiController.Instance.InventoryWindow.UpdateEquipment();
-    }
-
-    internal void UpdateItem(short index, short count) {
-        throw new NotImplementedException();
     }
 
     public void OnUseItem(int index) {

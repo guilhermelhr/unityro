@@ -24,6 +24,7 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnPointerClick(PointerEventData eventData) {
         if(eventData.clickCount == 2) {
+            MapController.Instance.UIController.HideTooltip();
             switch((ItemType)item.info.itemType) {
                 // Usable item
                 case ItemType.HEALING:
