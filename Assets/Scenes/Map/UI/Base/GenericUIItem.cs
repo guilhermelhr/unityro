@@ -50,6 +50,7 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                         if (itemInfo.wearState <= 0) {//wear
                             Core.Session.Entity.Inventory.OnEquipItem(itemInfo.index, itemInfo.location);
                         } else {//takeoff
+                            Core.Session.Entity.Inventory.OnTakeOffItem(itemInfo.index);
                         }
                     }
                     break;

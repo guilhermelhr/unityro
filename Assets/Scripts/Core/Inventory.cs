@@ -49,6 +49,13 @@ public class Inventory {
         MapUiController.Instance.InventoryWindow.UpdateEquipment();
     }
 
+    public void TakeOffItem(int index, int equipLocation) {
+        Items.TryGetValue(index, out ItemInfo item);
+        if (item == null) return;
+
+        item.wearState = 0;
+    }
+
     public void EquipItem(short index, int equipLocation) {
         Items.TryGetValue(index, out ItemInfo item);
         if (item == null) return;
@@ -67,6 +74,12 @@ public class Inventory {
         new CZ.REQ_WEAR_EQUIP_V5() {
             index = index,
             location = location
+        }.Send();
+    }
+
+    public void OnTakeOffItem(short index) {
+        new CZ.REQ_TAKEOFF_EQUIP() {
+            index = index
         }.Send();
     }
 }

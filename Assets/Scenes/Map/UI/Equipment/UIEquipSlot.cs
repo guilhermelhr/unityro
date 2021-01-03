@@ -10,8 +10,14 @@ public class UIEquipSlot : GenericUIItem {
 
     public void SetItem(ItemInfo itemInfo) {
         this.itemInfo = itemInfo;
-        icon.enabled = true;
-        icon.texture = itemInfo.texture;
-        itemName.text = itemInfo.item.identifiedDisplayName;
+        if (itemInfo != null) {
+            icon.enabled = true;
+            icon.texture = itemInfo.texture;
+            itemName.text = itemInfo.item.identifiedDisplayName;
+        } else {
+            icon.enabled = false;
+            icon.texture = null;
+            itemName.text = "";
+        }
     }
 }

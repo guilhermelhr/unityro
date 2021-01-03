@@ -14,12 +14,24 @@ public class ItemManager : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_NORMAL.HEADER, OnInventoryUpdate);
         Core.NetworkClient.HookPacket(ZC.USE_ITEM_ACK2.HEADER, OnUseItemAnswer);
         Core.NetworkClient.HookPacket(ZC.ACK_WEAR_EQUIP_V5.HEADER, OnItemEquipAnswer);
+        Core.NetworkClient.HookPacket(ZC.ACK_TAKEOFF_EQUIP_V5.HEADER, OnItemTakeOffAnswer);
+    }
+
+    private void OnItemTakeOffAnswer(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.ACK_TAKEOFF_EQUIP_V5 ACK_TAKEOFF_EQUIP_V5) {
+            if (ACK_TAKEOFF_EQUIP_V5.result == 0) {
+                Core.Session.Entity.Inventory.TakeOffItem(ACK_TAKEOFF_EQUIP_V5.index, ACK_TAKEOFF_EQUIP_V5.equipLocation);
+                MapUiController.Instance.UpdateEquipment();
+            } else {
+                //TODO display error message
+            }
+        }
     }
 
     private void OnItemEquipAnswer(ushort cmd, int size, InPacket packet) {
-        if (packet is ZC.ACK_WEAR_EQUIP_V5 USE_ITEM_ACK2) {
-            if (USE_ITEM_ACK2.result == 0) {
-                Core.Session.Entity.Inventory.EquipItem(USE_ITEM_ACK2.index, USE_ITEM_ACK2.equipLocation);
+        if (packet is ZC.ACK_WEAR_EQUIP_V5 ACK_WEAR_EQUIP_V5) {
+            if (ACK_WEAR_EQUIP_V5.result == 0) {
+                Core.Session.Entity.Inventory.EquipItem(ACK_WEAR_EQUIP_V5.index, ACK_WEAR_EQUIP_V5.equipLocation);
                 MapUiController.Instance.UpdateEquipment();
             } else {
                 //TODO display error message
