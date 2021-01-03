@@ -46,10 +46,14 @@ public class Inventory {
         MapUiController.Instance.InventoryWindow.UpdateEquipment();
     }
 
+    internal void UpdateItem(short index, short count) {
+        throw new NotImplementedException();
+    }
+
     public void OnUseItem(int index) {
         new CZ.USE_ITEM2() {
             AID = Core.Session.AccountID,
-            index = index
+            index = (short)index
         }.Send();
     }
 }

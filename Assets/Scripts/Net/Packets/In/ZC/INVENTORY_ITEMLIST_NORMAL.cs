@@ -23,8 +23,7 @@ public partial class ZC {
                     index = br.ReadShort(),
                     ItemID = br.ReadShort(),
                     itemType = br.ReadByte(),
-
-                    amount = br.ReadLong(),
+                    amount = br.ReadShort(),
                     wearState = br.ReadLong(),
                     slot = new ItemInfo.Slot() {
                         card1 = br.ReadUShort(),
