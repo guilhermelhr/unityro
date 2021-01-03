@@ -18,7 +18,7 @@ public class ItemManager : MonoBehaviour {
 
     private void OnItemEquipAnswer(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.ACK_WEAR_EQUIP_V5 USE_ITEM_ACK2) {
-            if (USE_ITEM_ACK2.result == 1) {
+            if (USE_ITEM_ACK2.result == 0) {
                 Core.Session.Entity.Inventory.EquipItem(USE_ITEM_ACK2.index, USE_ITEM_ACK2.equipLocation);
                 MapUiController.Instance.UpdateEquipment();
             } else {
@@ -54,16 +54,16 @@ public class ItemManager : MonoBehaviour {
             if (item == null) continue;
             var texture = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D;
 
-            item.info = itemInfo;
-            item.texture = texture;
-            item.tab = FindItemTab(item);
-            Core.Session.Entity.Inventory.AddItem(item);
+            itemInfo.item = item;
+            itemInfo.texture = texture;
+            itemInfo.tab = FindItemTab(itemInfo);
+            Core.Session.Entity.Inventory.AddItem(itemInfo);
         }
         MapController.Instance.UIController.UpdateEquipment();
     }
 
-    private InventoryType FindItemTab(Item item) {
-        switch ((ItemType)item.info.itemType) {
+    private InventoryType FindItemTab(ItemInfo item) {
+        switch ((ItemType)item.itemType) {
             case ItemType.HEALING:
             case ItemType.USABLE:
             case ItemType.USABLE_SKILL:
@@ -104,23 +104,23 @@ public class ItemManager : MonoBehaviour {
             var itemInfo = pkt.itemInfo;
 
             Item item = DBManager.GetItemInfo(itemInfo.ItemID);
-            item.info = itemInfo;
+            itemInfo.item = item;
 
             Texture2D itemRes = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D;
-            item.texture = itemRes;
+            itemInfo.texture = itemRes;
 
-            item.tab = FindItemTab(item);
+            itemInfo.tab = FindItemTab(itemInfo);
 
-            Core.Session.Entity.Inventory.AddItem(item);
+            Core.Session.Entity.Inventory.AddItem(itemInfo);
             MapController.Instance.UIController.UpdateEquipment();
 
-            DisplayPopup(item);
+            DisplayPopup(itemInfo);
         }
     }
 
-    private void DisplayPopup(Item item) {
-        var label = $"{(item.info.IsIdentified ? item.identifiedDisplayName : item.unidentifiedDisplayName)} - {item.info.amount} obtained";
-        MapController.Instance.UIController.DisplayPopup(item.texture, label);
+    private void DisplayPopup(ItemInfo itemInfo) {
+        var label = $"{(itemInfo.IsIdentified ? itemInfo.item.identifiedDisplayName : itemInfo.item.unidentifiedDisplayName)} - {itemInfo.amount} obtained";
+        MapController.Instance.UIController.DisplayPopup(itemInfo.texture, label);
     }
 
     private void OnItemSpamInGround(ushort cmd, int size, InPacket packet) {

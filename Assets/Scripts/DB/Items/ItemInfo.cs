@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class ItemInfo {
 
@@ -22,10 +19,14 @@ public class ItemInfo {
     public bool IsDamaged;
     public int flag;
     public int amount;
-    internal short viewID;
+    public short viewID;
 
     public bool IsIdentified => (flag & 0x1) == 1;
     public bool IsFavorite => (flag & 0x2) == 1;
+
+    public Item item;
+    public Texture2D texture;
+    public InventoryType tab;
 
     public class Slot {
         public ushort card1;
