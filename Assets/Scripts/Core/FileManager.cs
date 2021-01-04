@@ -19,6 +19,7 @@ public class FileManager {
     private static Regex rext = new Regex(@".[^\.]+$");
     private static BMPLoader loader = new BMPLoader();
     private static Grf grf = null;
+    private static Grf customGrf = null;
     private static bool batching = false;
     private static List<string> batch = new List<string>();
 
@@ -26,12 +27,17 @@ public class FileManager {
         get { return grf; }
     }
 
+    public static Grf CustomGrf => customGrf;
+
     public class RawImage {
         public byte[] data;
     }
 
-    public static void loadGrf(string grfPath) {
-        grf = Grf.grf_callback_open(grfPath, "r", null);
+    public static void loadGrf(string grfPath, bool custom = false) {
+        var file = Grf.grf_callback_open(grfPath, "r", null);
+
+        if(custom) customGrf = file;
+        else grf = file;
     }
 
     public static void InitBatch() {
@@ -178,6 +184,22 @@ public class FileManager {
     /// <param name="path">file path</param>
     /// <returns>file or null</returns>
     public static BinaryReader ReadSync(string path) {
+        //try custom grf first
+        //try grf first
+        if(customGrf != null) {
+            GrfFile file = customGrf.GetDescriptor(path);
+            if(file != null) {
+                byte[] data = customGrf.GetData(file);
+
+                if(data != null) {
+                    return new BinaryReader(data);
+                } else {
+                    Debug.Log("Could not read grf data for " + path);
+                }
+            } else {
+                Debug.Log("File not found on custom GRF: " + path);
+            }
+        }
         //try grf first
         if(grf != null) {
             GrfFile file = grf.GetDescriptor(path);

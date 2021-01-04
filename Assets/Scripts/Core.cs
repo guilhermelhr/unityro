@@ -123,9 +123,11 @@ public class Core : MonoBehaviour {
     }
 
     private void LoadGrf() {
-        Debug.Log($"Loading GRF at {Configs["grf"]} ...");
         FileManager.loadGrf(Configs["grf"] as string);
-        Debug.Log($"GRF loaded, filetable contains {FileManager.Grf.files.Count} files.");
+        var custom = Configs["rdata"] as string;
+        if (custom != null) {
+            FileManager.loadGrf(custom, true);
+        }
         OnGrfLoaded?.Invoke();
     }
 
