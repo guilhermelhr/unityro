@@ -169,6 +169,7 @@ public class DBManager {
 
     public static void init() {
         ItemTable.LoadItemDb();
+        SkillTable.LoadSkillData();
         try {
             foreach (object[] args in LoadTable("data/msgstringtable.txt", 1)) {
                 msgStringTable[args[0]] = args[1];
