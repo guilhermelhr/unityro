@@ -11,13 +11,13 @@ public class UIItem : GenericUIItem {
     [SerializeField]
     private TextMeshProUGUI amountLabel;
 
-    public void SetItem(Item item) {
-        this.item = item;
-        if(item != null) {
+    public void SetItem(ItemInfo itemInfo) {
+        this.itemInfo = itemInfo;
+        if (itemInfo != null) {
             itemImage.enabled = true;
-            itemImage.texture = item.texture;
-            amountLabel.enabled = item.info.amount > 0;
-            amountLabel.text = "" + item.info.amount;
+            itemImage.texture = itemInfo.texture;
+            amountLabel.enabled = itemInfo.amount > 0;
+            amountLabel.text = "" + itemInfo.amount;
         } else {
             itemImage.enabled = false;
             itemImage.texture = null;

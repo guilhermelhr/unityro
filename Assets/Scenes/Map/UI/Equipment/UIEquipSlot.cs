@@ -8,10 +8,16 @@ public class UIEquipSlot : GenericUIItem {
     public TextMeshProUGUI itemName;
     public EquipLocation location;
 
-    public void SetItem(Item item) {
-        this.item = item;
-        icon.enabled = true;
-        icon.texture = item.texture;
-        itemName.text = item.identifiedDisplayName;
+    public void SetItem(ItemInfo itemInfo) {
+        this.itemInfo = itemInfo;
+        if (itemInfo != null) {
+            icon.enabled = true;
+            icon.texture = itemInfo.texture;
+            itemName.text = itemInfo.item.identifiedDisplayName;
+        } else {
+            icon.enabled = false;
+            icon.texture = null;
+            itemName.text = "";
+        }
     }
 }

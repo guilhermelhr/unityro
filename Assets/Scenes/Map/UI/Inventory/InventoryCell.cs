@@ -10,7 +10,7 @@ public class InventoryCell : MonoBehaviour {
     [SerializeField]
     private UIItem Item;
 
-    public void SetItem(Item item) {
+    public void SetItem(ItemInfo item) {
         Item.SetItem(item);
     }
 }
