@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class SkillInfo {
     public short SkillID;
@@ -14,4 +15,5 @@ public class SkillInfo {
     public bool CanUpgrade;
 
     public Skill data;
+    public Texture2D texture;
 }

@@ -15,4 +15,5 @@ public class Skill {
     public List<int[]> SkillScale;
     public Dictionary<int, int> NeededSkillList;
     public Dictionary<short, Dictionary<int, int>> SexNeededSkillList;
+    public string SkillTag;
 }

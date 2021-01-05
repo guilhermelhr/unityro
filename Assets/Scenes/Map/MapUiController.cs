@@ -15,6 +15,7 @@ public class MapUiController : MonoBehaviour {
     [SerializeField] public EquipmentWindowController EquipmentWindow;
     [SerializeField] public InventoryWindowController InventoryWindow;
     [SerializeField] public StatsWindowController StatsWindow;
+    [SerializeField] public SkillWindowController SkillWindow;
 
     void Awake() {
         if (Instance == null) {
@@ -47,6 +48,9 @@ public class MapUiController : MonoBehaviour {
                             break;
                         case KeyCode.A:
                             StatsWindow.ToggleActive();
+                            break;
+                        case KeyCode.S:
+                            SkillWindow.ToggleActive();
                             break;
                         default:
                             break;

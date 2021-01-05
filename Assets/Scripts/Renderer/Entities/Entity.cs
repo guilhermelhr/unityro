@@ -151,6 +151,13 @@ public class Entity : MonoBehaviour {
                 if(data != null) {
                     info.data = data;
                 }
+
+                try {
+                    var texture = FileManager.Load($"{DBManager.INTERFACE_PATH}item/{info.SkillName.ToLower()}.bmp") as Texture2D;
+                    info.texture = texture;
+                } catch {
+
+                }
             }
             SkillTree.Init(Job, SKILLINFO_LIST.skills);
         }

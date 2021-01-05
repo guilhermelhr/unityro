@@ -1,19 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 public class SkillTree {
 
-    public List<SkillInfo> SkillInfos = new List<SkillInfo>();
-    public List<Dictionary<int, int>> Tree = new List<Dictionary<int, int>>();
+    public List<SkillInfo> OwnedSkillsInfos = new List<SkillInfo>();
+    public List<Dictionary<int, SkillInfo>> OwnedTree = new List<Dictionary<int, SkillInfo>>();
+    public List<Dictionary<int, Skill>> ClassTree = new List<Dictionary<int, Skill>>();
 
     public void Init(short job, List<SkillInfo> skills) {
-        SkillInfos.AddRange(skills);
+        OwnedSkillsInfos.AddRange(skills);
         var tree = SkillTable.GetSkillTree(job);
-        if (tree != null) {
-            Tree = tree;
+
+        if(tree != null) {
+            //OwnedTree = tree
+            //    .Select(j => j
+            //        .Select(tr => new KeyValuePair<int, SkillInfo>(tr.Key, OwnedSkillsInfos.Find(a => a.SkillID == tr.Value))
+            //    ).ToDictionary(t => t.Key, t => t.Value))
+            //    .ToList();
+            ClassTree = tree;
         }
+
+        MapUiController.Instance.SkillWindow.UpdateSkills();
     }
 }

@@ -8,7 +8,7 @@ public class SkillTable {
 
     public static Dictionary<short, Skill> Skills = new Dictionary<short, Skill>();
 
-    public static Dictionary<short, Dictionary<int, int>> SkillTree = new Dictionary<short, Dictionary<int, int>>();
+    public static Dictionary<short, Dictionary<int, Skill>> SkillTree = new Dictionary<short, Dictionary<int, Skill>>();
 
     private static Func<TablePair, KeyValuePair<int, int>> TablePairToKeyValueTransform = t => new KeyValuePair<int, int>(int.Parse(t.Key.ToString()), int.Parse(t.Value.ToString()));
 
@@ -23,19 +23,13 @@ public class SkillTable {
         var skillTree = script.Globals["SKILL_TREEVIEW_FOR_JOB"] as Table;
         var skillInfo = script.Globals["SKILL_INFO_LIST"] as Table;
 
-        foreach(var key in skillTree.Keys) {
-            var job = short.Parse(key.ToString());
-            var dict = skillTree[key] as Table;
-            var tree = dict.Pairs.ToList().Select(TablePairToKeyValueTransform).ToDictionary(it => it.Key, it => it.Value);
-            SkillTree.Add(job, tree);
-        }
-
         foreach(var key in skillInfo.Keys) {
             var skid = short.Parse(key.ToString());
             var dict = skillInfo[key] as Table;
             var tree = dict.Pairs.ToList();
             var skill = new Skill {
                 SkillId = skid,
+                SkillTag = tree.Last().Value.ToString().Replace("\"",""),
                 SkillName = dict["SkillName"].ToString(),
                 MaxLv = int.Parse(dict["MaxLv"].ToString()),
                 SpAmount = (dict["SpAmount"] as Table).Pairs.Select(t => int.Parse(t.Value.ToString())).ToList(),
@@ -82,12 +76,23 @@ public class SkillTable {
 
             Skills.Add(skid, skill);
         }
+
+        foreach(var key in skillTree.Keys) {
+            var job = short.Parse(key.ToString());
+            var dict = skillTree[key] as Table;
+            var tree = dict
+                .Pairs
+                .ToList()
+                .Select(TablePairToKeyValueTransform)
+                .ToDictionary(it => it.Key, it => Skills[(short)it.Value]);
+            SkillTree.Add(job, tree);
+        }
     }
 
-    public static List<Dictionary<int, int>> GetSkillTree(short jobID) {
+    public static List<Dictionary<int, Skill>> GetSkillTree(short jobID) {
         var tree = GetInheritance(jobID);
         tree.Sort((a, b) => a.CompareTo(b));
-        var completeTree = new List<Dictionary<int, int>>();
+        var completeTree = new List<Dictionary<int, Skill>>();
         foreach(var job in tree) {
             if (!SkillTree.ContainsKey(job)) {
                 continue;
