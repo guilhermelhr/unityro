@@ -12,4 +12,6 @@ public class SkillInfo {
     public short AttackRange;
     public string SkillName;
     public bool CanUpgrade;
+
+    public Skill data;
 }

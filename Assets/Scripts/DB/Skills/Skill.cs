@@ -14,5 +14,5 @@ public class Skill {
     public List<int> AttackRange;
     public List<int[]> SkillScale;
     public Dictionary<int, int> NeededSkillList;
-    public Dictionary<Job, Dictionary<int, int>> SexNeededSkillList;
+    public Dictionary<short, Dictionary<int, int>> SexNeededSkillList;
 }

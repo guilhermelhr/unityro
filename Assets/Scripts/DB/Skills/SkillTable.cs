@@ -4,27 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class SkillTable {
+    private static Script script = new Script();
 
     public static Dictionary<short, Skill> Skills = new Dictionary<short, Skill>();
 
-    public static Dictionary<Job, Dictionary<int, int>> SkillTree = new Dictionary<Job, Dictionary<int, int>>();
+    public static Dictionary<short, Dictionary<int, int>> SkillTree = new Dictionary<short, Dictionary<int, int>>();
 
     private static Func<TablePair, KeyValuePair<int, int>> TablePairToKeyValueTransform = t => new KeyValuePair<int, int>(int.Parse(t.Key.ToString()), int.Parse(t.Value.ToString()));
 
     public static void LoadSkillData() {
-        Script script = new Script();
-        script.Globals["rag"] = "";
         script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/jobinheritlist.lub"));
         script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillid.lub"));
         script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skilldescript.lub"));
         script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillinfolist.lub"));
         script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skilltreeview.lub"));
+        script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillinfo_f.lub"));
 
         var skillTree = script.Globals["SKILL_TREEVIEW_FOR_JOB"] as Table;
         var skillInfo = script.Globals["SKILL_INFO_LIST"] as Table;
 
         foreach(var key in skillTree.Keys) {
-            var job = (Job)int.Parse(key.ToString());
+            var job = short.Parse(key.ToString());
             var dict = skillTree[key] as Table;
             var tree = dict.Pairs.ToList().Select(TablePairToKeyValueTransform).ToDictionary(it => it.Key, it => it.Value);
             SkillTree.Add(job, tree);
@@ -66,9 +66,9 @@ public class SkillTable {
 
             var sexNeeded = dict["NeedSkillList"] as Table;
             if(sexNeeded != null) {
-                var _dict = new Dictionary<Job, Dictionary<int, int>>();
+                var _dict = new Dictionary<short, Dictionary<int, int>>();
                 foreach(var pair in sexNeeded.Pairs) {
-                    var job = (Job)int.Parse(pair.Key.ToString());
+                    var job = short.Parse(pair.Key.ToString());
                     var skills = pair.Value.Table.Pairs
                     .ToList()
                     .ToDictionary(
@@ -83,4 +83,46 @@ public class SkillTable {
             Skills.Add(skid, skill);
         }
     }
+
+    public static List<Dictionary<int, int>> GetSkillTree(short jobID) {
+        var tree = GetInheritance(jobID);
+        tree.Sort((a, b) => a.CompareTo(b));
+        var completeTree = new List<Dictionary<int, int>>();
+        foreach(var job in tree) {
+            if (!SkillTree.ContainsKey(job)) {
+                continue;
+            }
+
+            completeTree.Add(SkillTree[job]);
+        }
+
+        return completeTree;
+    }
+
+    private static List<short> GetInheritance(short jobID) {
+        var tree = new List<object> {
+            jobID
+        };
+
+        var thirdJob = GetTable("JOB_INHERIT_LIST2")[jobID];
+        if (thirdJob != null) {
+            tree.Add(thirdJob);
+        }
+
+        var secondJob = GetTable("JOB_INHERIT_LIST")[thirdJob ?? jobID];
+        if (secondJob != null) {
+            tree.Add(secondJob);
+        }
+
+        var firstJob = GetTable("JOB_INHERIT_LIST")[secondJob ?? jobID];
+        if (firstJob != null) {
+            tree.Add(firstJob);
+        }
+
+        tree.Add(0); //novice
+
+        return tree.Select(t => short.Parse(t.ToString())).Distinct().ToList();
+    }
+
+    private static Table GetTable(string name) => script.Globals[name] as Table;
 }
