@@ -4,8 +4,10 @@ using UnityEngine;
 public class Billboard : MonoBehaviour {
 
     public void LateUpdate() {
-        var rotation = Core.MainCamera.transform.localRotation.y;
-        transform.localRotation = new Quaternion(transform.localRotation.x, rotation, transform.localRotation.z, transform.localRotation.w);
+        transform.localRotation = Core.MainCamera.transform.rotation;
+        var euler = transform.localEulerAngles;
+        euler.x = 0;
+        transform.localEulerAngles = euler;
 
         var y = 1 / Mathf.Cos(ROCamera.Instance.Altitude * Mathf.Deg2Rad);
         transform.localScale = new Vector3(1, y, 1);
