@@ -11,10 +11,10 @@ public class ROCamera : MonoBehaviour {
     private const float ALTITUDE_MAX = 37f;
 
     [SerializeField] private Transform _target;
-    [SerializeField] public static Direction direction;
     [SerializeField] private float zoom = 0f;
     [SerializeField] private float distance = 30f;
     [SerializeField] private float TargetRotation = 0f;
+    [SerializeField] public Direction Direction;
     [SerializeField] public float Altitude = 35f;
     [SerializeField] public float Rotation = 0f;
     [SerializeField] public int Angle;
@@ -56,11 +56,11 @@ public class ROCamera : MonoBehaviour {
         Rotation = Mathf.LerpAngle(Rotation, TargetRotation, 7.5f * Time.deltaTime);
 
         Angle = GetAngleDirection();
-        direction = (Direction)Angle;
+        Direction = (Direction)Angle;
     }
 
     private int GetAngleDirection() {
-        return (int)(Math.Floor((Math.Abs(TargetRotation) % 360 + 22.5f) / 45) % 8);
+        return (int)((Math.Abs(transform.eulerAngles.y) % 360 + 22.5f) / 45) % 8;
     }
 
     private void HandleYawPitch() {

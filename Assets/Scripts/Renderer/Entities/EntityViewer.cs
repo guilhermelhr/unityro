@@ -202,16 +202,7 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    private int GetFacingDirection() {
-        int angle;
-        if (AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion)) {
-            angle = AnimationHelper.GetFourDirectionSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
-        } else {
-            angle = AnimationHelper.GetSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
-        }
-
-        return angle < 0 ? 0 : angle;
-    }
+    private int GetFacingDirection() => ((int)ROCamera.Instance.Direction + (int)Entity.Direction + 8) % 8;
 
     private int GetFrameIndex(long tm) {
         if (_time > 0) {
