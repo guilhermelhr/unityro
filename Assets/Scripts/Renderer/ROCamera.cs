@@ -14,8 +14,8 @@ public class ROCamera : MonoBehaviour {
     [SerializeField] public static Direction direction;
     [SerializeField] private float zoom = 0f;
     [SerializeField] private float distance = 30f;
-    [SerializeField] private float altitude = 35f;
     [SerializeField] private float TargetRotation = 0f;
+    [SerializeField] public float Altitude = 35f;
     [SerializeField] public float Rotation = 0f;
     [SerializeField] public int Angle;
 
@@ -36,7 +36,7 @@ public class ROCamera : MonoBehaviour {
             this.TargetRotation += Input.GetAxis("Mouse X");
             HandleYawPitch();
         } else if (Input.GetKey(KeyCode.LeftShift)) {
-            this.altitude = Mathf.Clamp(this.altitude + scrollDelta, ALTITUDE_MIN, ALTITUDE_MAX);
+            this.Altitude = Mathf.Clamp(this.Altitude + scrollDelta, ALTITUDE_MIN, ALTITUDE_MAX);
             HandleYawPitch();
         } else if (scrollDelta != 0) {
             zoom += scrollDelta;
@@ -65,7 +65,7 @@ public class ROCamera : MonoBehaviour {
 
     private void HandleYawPitch() {
         var direction = new Vector3(0, 0, -distance);
-        var rotation = Quaternion.Euler(this.altitude, this.TargetRotation, 0);
+        var rotation = Quaternion.Euler(this.Altitude, this.TargetRotation, 0);
         transform.position = _target.position + rotation * direction;
         transform.LookAt(_target.position);
     }
