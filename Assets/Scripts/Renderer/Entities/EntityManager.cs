@@ -8,10 +8,6 @@ public class EntityManager : MonoBehaviour {
 
     private Dictionary<uint, Entity> entityCache = new Dictionary<uint, Entity>();
 
-    private void Awake() {
-
-    }
-
     public Entity Spawn(EntityData data) {
         switch (data.type) {
             case EntityType.PC:
@@ -146,7 +142,7 @@ public class EntityManager : MonoBehaviour {
     private Entity SpawnNPC(EntityData data) {
         var npc = new GameObject(data.name);
         npc.layer = LayerMask.NameToLayer("NPC");
-        npc.transform.localScale = new Vector3(1f, 1f, 1f);
+        npc.transform.localScale = Vector3.one;
         var entity = npc.AddComponent<Entity>();
         entity.Init(data);
 
@@ -180,7 +176,7 @@ public class EntityManager : MonoBehaviour {
     private Entity SpawnMOB(EntityData data) {
         var mob = new GameObject(data.name);
         mob.layer = LayerMask.NameToLayer("Monsters");
-        mob.transform.localScale = new Vector3(1f, 1f, 1f);
+        mob.transform.localScale = Vector3.one;
         var entity = mob.AddComponent<Entity>();
         entity.Init(data);
 
