@@ -89,16 +89,16 @@ public class SkillTable {
         }
     }
 
-    public static List<Dictionary<int, Skill>> GetSkillTree(short jobID) {
+    public static Dictionary<int, Dictionary<int, Skill>> GetSkillTree(short jobID) {
         var tree = GetInheritance(jobID);
         tree.Sort((a, b) => a.CompareTo(b));
-        var completeTree = new List<Dictionary<int, Skill>>();
+        var completeTree = new Dictionary<int, Dictionary<int, Skill>>();
         foreach(var job in tree) {
             if (!SkillTree.ContainsKey(job)) {
                 continue;
             }
 
-            completeTree.Add(SkillTree[job]);
+            completeTree.Add(job, SkillTree[job]);
         }
 
         return completeTree;

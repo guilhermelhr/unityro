@@ -193,12 +193,8 @@ public class FileManager {
 
                 if(data != null) {
                     return new BinaryReader(data);
-                } else {
-                    Debug.Log("Could not read grf data for " + path);
                 }
-            } else {
-                Debug.Log("File not found on custom GRF: " + path);
-            }
+            } 
         }
         //try grf first
         if(grf != null) {

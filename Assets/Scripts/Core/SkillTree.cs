@@ -4,7 +4,7 @@ public class SkillTree {
 
     public List<SkillInfo> OwnedSkillsInfos = new List<SkillInfo>();
     public List<Dictionary<int, SkillInfo>> OwnedTree = new List<Dictionary<int, SkillInfo>>();
-    public List<Dictionary<int, Skill>> ClassTree = new List<Dictionary<int, Skill>>();
+    public Dictionary<int, Dictionary<int, Skill>> ClassTree = new Dictionary<int, Dictionary<int, Skill>>();
 
     public void Init(short job, List<SkillInfo> skills) {
         OwnedSkillsInfos.AddRange(skills);

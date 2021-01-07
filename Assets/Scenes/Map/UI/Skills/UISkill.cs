@@ -30,8 +30,8 @@ public class UISkill : MonoBehaviour {
     }
 
     public void SetSkill(Skill skill) {
+        this.Skill = skill;
         if(skill != null) {
-            this.Skill = skill;
             try {
                 var texture = FileManager.Load($"{DBManager.INTERFACE_PATH}item/{skill.SkillTag.ToLower()}.bmp") as Texture2D;
                 skillImage.texture = texture;
