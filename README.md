@@ -15,7 +15,7 @@ Join discussions at our [Discord](https://discord.gg/YZjGanTNb5).
 
 ### Why this instead of contributing to roBrowser or any other?
 
-We at UnityRO recognize the power WebGL has over a "Jack of all trades" solution like Unity, however for being such a broad solution and therefore having much of the work specially physics (not that RO has much) would make things much easier to handle and maintain in the future. Without mentioning the multi-platform support.
+We at UnityRO recognize the power WebGL has over a "Jack of all trades" solution like Unity. However, it is a stable multi-platform solution with lots of plug and play features, specially physics (not that RO has much), which makes things much easier to handle, maintain and future-proof.
 
 ## How to contribute?
 
