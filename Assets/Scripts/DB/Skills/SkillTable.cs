@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class SkillTable {
-    private static Script script = new Script();
 
     public static Dictionary<short, Skill> Skills = new Dictionary<short, Skill>();
 
@@ -13,15 +12,9 @@ public class SkillTable {
     private static Func<TablePair, KeyValuePair<int, int>> TablePairToKeyValueTransform = t => new KeyValuePair<int, int>(int.Parse(t.Key.ToString()), int.Parse(t.Value.ToString()));
 
     public static void LoadSkillData() {
-        script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/jobinheritlist.lub"));
-        script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillid.lub"));
-        script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skilldescript.lub"));
-        script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillinfolist.lub"));
-        script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skilltreeview.lub"));
-        script.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillinfo_f.lub"));
-
-        var skillTree = script.Globals["SKILL_TREEVIEW_FOR_JOB"] as Table;
-        var skillInfo = script.Globals["SKILL_INFO_LIST"] as Table;
+        
+        var skillTree = LuaInterface.GetTable("SKILL_TREEVIEW_FOR_JOB");
+        var skillInfo = LuaInterface.GetTable("SKILL_INFO_LIST");
 
         foreach(var key in skillInfo.Keys) {
             var skid = short.Parse(key.ToString());
@@ -109,17 +102,17 @@ public class SkillTable {
             jobID
         };
 
-        var thirdJob = GetTable("JOB_INHERIT_LIST2")[jobID];
+        var thirdJob = LuaInterface.GetTable("JOB_INHERIT_LIST2")[jobID];
         if (thirdJob != null) {
             tree.Add(thirdJob);
         }
 
-        var secondJob = GetTable("JOB_INHERIT_LIST")[thirdJob ?? jobID];
+        var secondJob = LuaInterface.GetTable("JOB_INHERIT_LIST")[thirdJob ?? jobID];
         if (secondJob != null) {
             tree.Add(secondJob);
         }
 
-        var firstJob = GetTable("JOB_INHERIT_LIST")[secondJob ?? jobID];
+        var firstJob = LuaInterface.GetTable("JOB_INHERIT_LIST")[secondJob ?? jobID];
         if (firstJob != null) {
             tree.Add(firstJob);
         }
@@ -128,6 +121,4 @@ public class SkillTable {
 
         return tree.Select(t => short.Parse(t.ToString())).Distinct().ToList();
     }
-
-    private static Table GetTable(string name) => script.Globals[name] as Table;
 }

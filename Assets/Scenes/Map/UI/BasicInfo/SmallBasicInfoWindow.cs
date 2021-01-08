@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
+using System.Globalization;
 
 public class SmallBasicInfoWindow : MonoBehaviour {
 
@@ -32,7 +33,7 @@ public class SmallBasicInfoWindow : MonoBehaviour {
         if (status.next_base_exp > 0) {
             exp = status.base_exp / (float)status.next_base_exp * 100;
         }
-        line1.text = $"Nv. {status.base_level} / {status.class_} / Nv. {status.job_level} / Exp. {exp}%";
+        line1.text = $"Nv. {status.base_level} / {CultureInfo.InvariantCulture.TextInfo.ToTitleCase(JobHelper.GetJobName(status.class_, status.sex).ToLower())} / Nv. {status.job_level} / Exp. {exp}%";
         line2.text = $"HP. {status.hp} / {status.max_hp} | SP. {status.sp} / {status.max_sp}";
     }
 }

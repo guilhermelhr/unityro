@@ -44,7 +44,7 @@ public class SkillWindowController : MonoBehaviour {
             tab.onValueChanged.AddListener(delegate {
                 OnTabChanged(tab, job);
             });
-            tab.GetComponent<Tab>().SetLabel($"{job.Key}");
+            tab.GetComponent<Tab>().SetLabel(JobHelper.GetJobName(job.Key, Core.Session.Entity.Sex));
             tab.group = tabLayout;
             tab.transform.SetParent(tabLayout.transform);
             tabLayout.RegisterToggle(tab);
