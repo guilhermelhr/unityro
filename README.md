@@ -33,7 +33,7 @@ As for the branch naming, we encourage of having every branch linked to a specif
 
 ## Getting Started
 
-We're creating a few pieces of documentation, feel free to check them at [Wiki](https://github.com/guilhermelhr/unityro/wiki/Getting-Started)
+We're creating a few pieces of documentation, feel free to check them at [Wiki](https://github.com/guilhermelhr/unityro/wiki/Getting-Started).
 
 ## Current Features
 - This is the current state we're at:
