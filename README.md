@@ -9,7 +9,7 @@
 >Ragnarok Online was released in 2002, thus its engine is severely outdated.
 >This project aims to port some of its functionalities to a modern engine, Unity.
 
-Join discussions at our [Discord](https://discord.gg/YZjGanTNb5)
+Join discussions at our [Discord](https://discord.gg/YZjGanTNb5).
 
 ## Motivation
 
