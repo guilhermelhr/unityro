@@ -8,61 +8,61 @@
         public EntityData entityData;
 
         public bool Read(BinaryReader br) {
-            entityData = new EntityData() {
-                type = (EntityType)br.ReadUByte(),
+            entityData = new EntityData();
 
-                GID = br.ReadULong(),
-                AID = br.ReadULong(),
+            var type = (EntityType)br.ReadUByte();
 
-                speed = br.ReadShort(),
-                opt1 = br.ReadShort(),
-                opt2 = br.ReadShort(),
+            var GID = br.ReadULong();
+            var AID = br.ReadULong();
 
-                option = br.ReadLong(),
+            var speed = br.ReadShort();
+            var opt1 = br.ReadShort();
+            var opt2 = br.ReadShort();
 
-                job = br.ReadShort(),
-                hairStyle = br.ReadShort(),
-                weapon = br.ReadShort(),
-                shield = br.ReadShort(),
+            var option = br.ReadLong();
 
-                /**
-                 * might represent emblem/guild_id1/guild_id0
-                 * rA clif.cpp #1102
-                 */
-                headBottom = br.ReadShort(),
-                headTop = br.ReadShort(),
-                headMid = br.ReadShort(),
+            var job = br.ReadShort();
+            var hairStyle = br.ReadShort();
+            var weapon = br.ReadShort();
+            var shield = br.ReadShort();
 
-                hairColor = br.ReadShort(),
-                clothColor = br.ReadShort(),
-                headDir = br.ReadShort(),
-                robe = br.ReadShort(),
-                GUID = br.ReadULong(),
-                guildEmblem = br.ReadShort(),
-                manner = br.ReadShort(),
+            /**
+             * might represent emblem/guild_id1/guild_id0
+             * rA clif.cpp #1102
+             */
+            var accessory = br.ReadShort();
+            var accessory2 = br.ReadShort();
+            var accessory3 = br.ReadShort();
 
-                opt3 = br.ReadLong(),
+            var hairColor = br.ReadShort();
+            var clothColor = br.ReadShort();
+            var headDir = br.ReadShort();
+            var robe = br.ReadShort();
+            var GUID = br.ReadULong();
+            var guildEmblem = br.ReadShort();
+            var manner = br.ReadShort();
 
-                karma = br.ReadUByte(),
-                sex = br.ReadUByte(),
+            var opt3 = br.ReadLong();
 
-                PosDir = br.ReadPos(),
+            var karma = br.ReadUByte();
+            var sex = br.ReadUByte();
 
-                xSize = br.ReadUByte(),
-                ySize = br.ReadUByte(),
-                deadSit = br.ReadUByte(),
+            var PosDir = br.ReadPos();
 
-                level = br.ReadShort(),
-                font = br.ReadShort(),
+            var xSize = br.ReadUByte();
+            var ySize = br.ReadUByte();
+            var deadSit = br.ReadUByte();
 
-                maxhp = br.ReadLong(),
-                hp = br.ReadLong(),
+            var level = br.ReadShort();
+            var font = br.ReadShort();
 
-                isBoss = br.ReadUByte() == 1,
+            var maxhp = br.ReadLong();
+            var hp = br.ReadLong();
 
-                body = br.ReadShort(),
-                name = br.ReadBinaryString(br.Length - br.Position)
-            };
+            var isBoss = br.ReadUByte() == 1;
+
+            var body = br.ReadShort();
+            var name = br.ReadBinaryString(br.Length - br.Position);
 
             return true;
         }

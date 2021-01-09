@@ -17,6 +17,9 @@ public class MapController : MonoBehaviour {
             Instance = this;
         }
 
+        UIController = FindObjectOfType<MapUiController>();
+        UIController.GetComponent<CanvasGroup>().alpha = 1;
+
         var mapInfo = Core.NetworkClient.State.MapLoginInfo;
         if (mapInfo == null) {
             throw new Exception("Map Login info cannot be null");
@@ -36,9 +39,9 @@ public class MapController : MonoBehaviour {
         Core.Instance.SetWorldLight(worldLight);
         Core.Instance.BeginMapLoading(mapInfo.mapname);
 
-        var entity = Core.EntityManager.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
-        Core.Session = new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID);
-        Core.Session.SetCurrentMap(mapInfo.mapname);
+        //var entity = Core.EntityManager.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
+        //Core.Session = new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID);
+        //Core.Session.SetCurrentMap(mapInfo.mapname);
         Core.Session.Entity.transform.position = new Vector3(mapInfo.PosX, Core.PathFinding.GetCellHeight(mapInfo.PosX, mapInfo.PosY), mapInfo.PosY);
 
         /**
