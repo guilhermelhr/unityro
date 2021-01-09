@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
@@ -20,16 +22,25 @@ public partial class CZ {
         }
 
         public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+            var stream = Core.NetworkClient.CurrentConnection.Stream;
 
-            writer.Write(AccountId);
-            writer.Write(CharacterId);
-            writer.Write(LoginId1);
-            writer.Write(clienttime);
-            writer.Write(sex);
-            writer.Flush();
+            var bytes = BitConverter.GetBytes((ushort)HEADER)
+                .Concat(BitConverter.GetBytes(AccountId))
+                .Concat(BitConverter.GetBytes(CharacterId))
+                .Concat(BitConverter.GetBytes(LoginId1))
+                .Concat(BitConverter.GetBytes(clienttime))
+                .Concat(BitConverter.GetBytes(sex));
 
-            Debug.Log(Marshal.SizeOf((ushort)HEADER) + Marshal.SizeOf(AccountId) + Marshal.SizeOf(CharacterId) + Marshal.SizeOf(LoginId1) + Marshal.SizeOf(clienttime) + Marshal.SizeOf(sex));
+            stream.Write(bytes.ToArray(), 0, SIZE);
+            stream.Flush();
+
+            //base.Send(w);
+            //w.Write(AccountId);
+            //w.Write(CharacterId);
+            //w.Write(LoginId1);
+            //w.Write(clienttime);
+            //w.Write(sex);
+            //w.Flush();
 
             return true;
         }

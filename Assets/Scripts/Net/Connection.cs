@@ -9,7 +9,7 @@ public class Connection {
     public static System.Action OnDisconnect;
 
     private TcpClient Client;
-    private NetworkStream Stream;
+    public NetworkStream Stream;
     private BinaryWriter BinaryWriter;
     private PacketSerializer PacketSerializer;
     private byte[] receiveBuffer;
