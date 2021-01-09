@@ -4,6 +4,7 @@ public abstract class OutPacket {
 
     private PacketHeader header;
     public int Size;
+
     private bool isFixed;
 
     public OutPacket(PacketHeader header, int size) {
@@ -18,7 +19,7 @@ public abstract class OutPacket {
     }
 
     public virtual bool Send(BinaryWriter writer) {
-        writer.Write(EncryptionHelper.Encrypt((ushort)header));
+        writer.Write((ushort)header);
 
         if(!isFixed) {
             ComputeSize();

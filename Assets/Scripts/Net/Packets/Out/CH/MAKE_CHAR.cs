@@ -16,7 +16,7 @@ public partial class CH {
         public byte Luk = 0;
         public byte CharNum = 0;
         public ushort HeadPal = 0;
-        public ushort Head = 0;
+        public ushort Head = 1;
 
         public MAKE_CHAR() : base(HEADER, SIZE) { }
 

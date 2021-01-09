@@ -1,7 +1,9 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices;
+using UnityEngine;
 
 public partial class CZ {
-    public class ENTER : OutPacket {
+    public class ENTER2 : OutPacket {
 
         public const PacketHeader HEADER = PacketHeader.CZ_ENTER2;
         public const int SIZE = 19;
@@ -9,7 +11,7 @@ public partial class CZ {
         private int AccountId, CharacterId, LoginId1, clienttime;
         private byte sex;
 
-        public ENTER(int AccountId, int CharacterId, int LoginId1, int clienttime, byte sex) : base(HEADER, SIZE) {
+        public ENTER2(int AccountId, int CharacterId, int LoginId1, int clienttime, byte sex) : base(HEADER, SIZE) {
             this.AccountId = AccountId;
             this.CharacterId = CharacterId;
             this.LoginId1 = LoginId1;
@@ -26,6 +28,8 @@ public partial class CZ {
             writer.Write(clienttime);
             writer.Write(sex);
             writer.Flush();
+
+            Debug.Log(Marshal.SizeOf((ushort)HEADER) + Marshal.SizeOf(AccountId) + Marshal.SizeOf(CharacterId) + Marshal.SizeOf(LoginId1) + Marshal.SizeOf(clienttime) + Marshal.SizeOf(sex));
 
             return true;
         }

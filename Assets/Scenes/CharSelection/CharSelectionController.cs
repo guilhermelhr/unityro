@@ -55,7 +55,7 @@ public class CharSelectionController : MonoBehaviour {
             DontDestroyOnLoad(mapUI);
 
             var loginInfo = Core.NetworkClient.State.LoginInfo;
-            new CZ.ENTER(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int)new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
+            new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int)new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
         }
     }
 

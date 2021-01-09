@@ -38,7 +38,7 @@ public class PacketSerializer {
         }
 
         if (DUMP_REGISTERED_PACKETS) {
-            using (StreamWriter w = File.AppendText("./Logs/registered_packets.txt")) {
+            using (StreamWriter w = File.AppendText(Path.Combine(Directory.GetCurrentDirectory(), "Logs", "registered_packets.txt"))) {
                 foreach (var pkt in RegisteredPackets) {
                     w.WriteLine($"{string.Format("0x{0:x3}", pkt.Key)},{pkt.Value.Size} \t//{pkt.Value.Type}");
                 }
@@ -120,8 +120,8 @@ public class PacketSerializer {
                     PacketReceived?.Invoke(cmd, size, packet);
 
                     if (DUMP_RECEIVED_PACKETS) {
-                        using (StreamWriter w = File.AppendText("./Logs/received_packets.txt")) {
-                            w.WriteLine($"{string.Format("0x{0:x3}", cmd)},{size} \t//{(PacketHeader)cmd}");
+                        using (StreamWriter w = File.AppendText(Path.Combine(Directory.GetCurrentDirectory(), "Logs","received_packets.txt"))) {
+                            w.WriteLine($"{string.Format("0x{0:x3}", cmd)} \tReceived Size:{size} \tRegistered Size:{RegisteredPackets.Where(it => it.Key == cmd).First().Value.Size} \t//{(PacketHeader)cmd}");
                         }
                     }
 
