@@ -14,7 +14,7 @@ public partial class AC {
         public byte Sex { get; set; }
         public CharServerInfo[] Servers { get; set; }
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
 
             LoginID1 = br.ReadLong();
             AccountID = br.ReadLong();
@@ -39,8 +39,6 @@ public partial class AC {
 
                 Servers[i] = csi;
             }
-
-            return true;
         }
     }
 }

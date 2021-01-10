@@ -9,13 +9,13 @@ public class EntityManager : MonoBehaviour {
     private Dictionary<uint, Entity> entityCache = new Dictionary<uint, Entity>();
 
     public Entity Spawn(EntityData data) {
-        switch (data.type) {
+        switch (data.objecttype) {
             case EntityType.PC:
                 entityCache.TryGetValue(data.GID, out var pc);
                 pc?.gameObject.SetActive(true);
                 return pc ?? SpawnPC(data);
             case EntityType.NPC:
-                entityCache.TryGetValue(data.GID, out var npc);
+                entityCache.TryGetValue(data.AID, out var npc);
                 npc?.gameObject.SetActive(true);
                 return npc ?? SpawnNPC(data);
             case EntityType.MOB:
@@ -166,7 +166,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.CurrentMotion = SpriteMotion.Idle;
         bodyViewer.Type = entity.Type;
 
-        entityCache.Add(data.GID, entity);
+        entityCache.Add(data.AID, entity);
         entity.GID = data.GID;
         entity.SetReady(true);
 

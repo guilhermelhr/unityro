@@ -11,7 +11,7 @@ public partial class ZC {
 
         public List<SkillInfo> skills = new List<SkillInfo>();
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             var count = Math.Max(0, (br.Length - br.Position) / BLOCK_SIZE);
 
             for(int i = 0; i < count; i++) {
@@ -27,8 +27,6 @@ public partial class ZC {
 
                 skills.Add(skill);
             }
-
-            return true;
         }
     }
 }

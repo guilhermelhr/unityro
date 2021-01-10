@@ -8,15 +8,10 @@ public partial class HC {
         public const PacketHeader HEADER = PacketHeader.HC_SECOND_PASSWD_LOGIN;
         public const int SIZE = 12;
 
-        public PacketHeader GetHeader() => HEADER;
-
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             var seed = br.ReadLong();
             var accountId = br.ReadLong();
             var state = br.ReadShort();
-
-            return true;
         }
     }
 }

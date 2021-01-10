@@ -12,13 +12,11 @@ public partial class ZC {
         public short expType;
         public short questExp;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             id = br.ReadULong();
             exp = br.ReadULong(); //negative if losing
             expType = br.ReadShort(); //SP_BASEEXP, SP_JOBEXP
             questExp = br.ReadShort();
-
-            return true;
         }
     }
 }

@@ -4,42 +4,122 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+unsafe public struct packet_idle_unit {
+	public short PacketType;
+	public short PacketLength;
+
+	public EntityType objecttype;
+
+	public uint AID;
+	public uint GID;
+
+	public short speed;
+	public short bodyState;
+	public short healthState;
+
+	public int effectState;
+
+	public short job;
+
+	public ushort head;
+
+	public uint weapon;
+	public uint shield;
+
+	public ushort accessory;
+	public ushort accessory2;
+	public ushort accessory3;
+
+	public short headpalette;
+	public short bodypalette;
+	public short headDir;
+
+	public ushort robe;
+
+	public uint GUID;
+
+	public short GEmblemVer;
+	public short honor;
+
+	public int virtue;
+
+	public byte isPKModeON;
+	public byte sex;
+
+	public int[] PosDir;
+
+	public byte xSize;
+	public byte ySize;
+	public byte state;
+
+	public short clevel;
+	public short font;
+
+	public int maxHP;
+	public int HP;
+
+	public byte isBoss;
+
+	public ushort body;
+	/* Might be earlier, this is when the named item bug began */
+	public string name;
+}
+
 public class EntityData {
-    public EntityType type;
-    public uint GID;
-    public uint AID;
-    public short speed;
-    public short opt1;
-    public short opt2;
-    public int option;
-    public short job;
-    public short hairStyle;
-    public short hairColor;
-    public short clothColor;
-    public short headDir;
-    public int headBottom;
-    public int headTop;
-    public int headMid;
-    public int weapon;
-    public int shield;
-    public int robe;
-    public uint GUID;
-    public short guildEmblem;
-    public short manner;
-    public int opt3;
-    public byte karma;
-    public byte sex;
-    public int[] PosDir;
-    public byte xSize;
-    public byte ySize;
-    public byte deadSit;
-    public short level;
-    public short font;
-    public int hp;
-    public int maxhp;
-    public bool isBoss;
-    public short body;
-    public string name;
-    public int moveStartTime;
+	public EntityType objecttype;
+
+	public uint AID;
+	public uint GID;
+
+	public short speed;
+	public short bodyState;
+	public short healthState;
+
+	public int effectState;
+
+	public short job;
+
+	public ushort head;
+
+	public uint weapon;
+	public uint shield;
+
+	public ushort accessory;
+	public ushort accessory2;
+	public ushort accessory3;
+
+	public short headpalette;
+	public short bodypalette;
+	public short headDir;
+
+	public ushort robe;
+
+	public uint GUID;
+
+	public short GEmblemVer;
+	public short honor;
+
+	public int virtue;
+
+	public byte isPKModeON;
+	public byte sex;
+
+	public int[] PosDir;
+
+	public byte xSize;
+	public byte ySize;
+	public byte state;
+
+	public short clevel;
+	public short font;
+
+	public int maxHP;
+	public int HP;
+
+	public byte isBoss;
+
+	public ushort body;
+	/* Might be earlier, this is when the named item bug began */
+	public string name;
 }
 

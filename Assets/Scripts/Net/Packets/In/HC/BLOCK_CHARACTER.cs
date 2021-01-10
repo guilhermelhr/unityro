@@ -7,16 +7,13 @@
 
         public PacketHeader GetHeader() => HEADER;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             var count = (br.Length - br.Position) / 24;
 
             for(var i = 0; i < count; i++) {
                 var GID = br.ReadULong();
                 var szExpireDate = br.ReadBinaryString(20);
             }
-
-            return true;
         }
     }
-
 }

@@ -6,9 +6,8 @@
         public const PacketHeader HEADER = PacketHeader.ZC_OPEN_EDITDLG;
         public const int SIZE = 6;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             var NAID = br.ReadULong();
-            return true;
         }
     }
 }

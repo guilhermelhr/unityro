@@ -11,14 +11,12 @@
         public int[] EndPosition;
         public uint MoveStartTime;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             this.GID = br.ReadULong();
             var moveData = br.ReadPos2();
             StartPosition = new int[2] { moveData[0], moveData[1] };
             EndPosition = new int[2] { moveData[2], moveData[3] };
             this.MoveStartTime = br.ReadULong();
-
-            return true;
         }
     }
 }

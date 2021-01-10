@@ -10,11 +10,8 @@ public partial class ZC {
 
         public ushort MessageID;
 
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             MessageID = br.ReadUShort();
-
-            return true;
         }
     }
 }

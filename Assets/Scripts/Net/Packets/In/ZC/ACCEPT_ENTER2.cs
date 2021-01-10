@@ -20,7 +20,7 @@ public partial class ZC {
             return HEADER;
         }
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             Tick = br.ReadLong();
             var posDir = br.ReadPos();
             PosX = posDir[0];
@@ -31,8 +31,6 @@ public partial class ZC {
 
             Font = br.ReadShort();
             Sex = br.ReadByte();
-
-            return true;
         }
     }
 }

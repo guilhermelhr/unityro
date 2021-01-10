@@ -27,11 +27,11 @@ public class Entity : MonoBehaviour {
     [SerializeField] public uint GID;
     [SerializeField] public short Job;
     [SerializeField] public byte Sex;
-    [SerializeField] public short Hair;
+    [SerializeField] public ushort Hair;
     [SerializeField] public ushort AttackSpeed;
     [SerializeField] public short AttackRange = 0;
     [SerializeField] public short WalkSpeed = 150;
-    [SerializeField] public int Weapon;
+    [SerializeField] public uint Weapon;
     [SerializeField] public int Hp;
     [SerializeField] public int MaxHp;
 
@@ -52,12 +52,12 @@ public class Entity : MonoBehaviour {
     public void Init(EntityData data) {
         Job = data.job;
         Sex = data.sex;
-        Hair = data.hairStyle;
-        Type = data.type;
+        Hair = data.head;
+        Type = data.objecttype;
         WalkSpeed = data.speed;
         Weapon = data.weapon;
-        Hp = data.hp;
-        MaxHp = data.maxhp;
+        Hp = data.HP;
+        MaxHp = data.maxHP;
         Direction = ((NpcDirection)data.PosDir[2]).ToDirection();
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
@@ -96,10 +96,10 @@ public class Entity : MonoBehaviour {
     public void Init(CharacterData data) {
         Job = data.Job;
         Sex = (byte)data.Sex;
-        Hair = data.Hair;
+        Hair = (ushort)data.Hair;
         WalkSpeed = data.Speed;
         Type = EntityType.PC;
-        Weapon = data.Weapon;
+        Weapon = (uint)data.Weapon;
 
         Status.base_exp = (uint)data.Exp;
         Status.base_level = (uint)data.BaseLevel;

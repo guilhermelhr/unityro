@@ -14,10 +14,8 @@ public partial class ZC {
 
         public int WeightPercentage;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             WeightPercentage = br.ReadLong();
-
-            return true;
         }
     }
 }

@@ -13,16 +13,12 @@ public partial class HC {
         public IPAddress IP;
         public short Port;
 
-        public PacketHeader GetHeader() => HEADER;
-
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             GID = br.ReadLong();
             Mapname = br.ReadBinaryString(16);
             IP = new IPAddress(br.ReadUBytes(4));
             Port = br.ReadShort();
-
-            return true;
+            br.Seek(128, System.IO.SeekOrigin.Current);
         }
     }
 }

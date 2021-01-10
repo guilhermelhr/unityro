@@ -10,12 +10,9 @@ public partial class ZC {
         public uint NAID;
         public string Message;
 
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             NAID = br.ReadULong();
             Message = br.ReadBinaryString(br.Length - br.Position);
-
-            return true;
         }
     }
 }

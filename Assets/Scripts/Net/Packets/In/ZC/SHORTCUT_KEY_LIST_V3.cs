@@ -12,9 +12,7 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_SHORTCUT_KEY_LIST_V3;
         public const int SIZE = 269;
 
-        public bool Read(BinaryReader br) {
-
-            return true;
+        public void Read(BinaryReader br, int size) {
         }
     }
 }

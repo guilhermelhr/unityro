@@ -9,12 +9,9 @@
         public uint GID;
         public byte type;
 
-        public bool Read(BinaryReader fp) {
-
+        public void Read(BinaryReader fp, int size) {
             this.GID = fp.ReadULong();
             this.type = fp.ReadUByte();
-
-            return true;
         }
     }
 

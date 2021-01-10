@@ -20,8 +20,7 @@ public partial class ZC {
         public int showDropEffect;
         public short dropEffectMode;
 
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             mapID = br.ReadLong();
             id = br.ReadShort();
             itemType = br.ReadShort();
@@ -33,8 +32,6 @@ public partial class ZC {
             amount = br.ReadShort();
             showDropEffect = br.ReadByte();
             dropEffectMode = br.ReadShort();
-
-            return true;
         }
     }
 }

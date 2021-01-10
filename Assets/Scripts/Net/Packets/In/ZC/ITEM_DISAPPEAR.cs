@@ -10,11 +10,8 @@ public partial class ZC {
 
         public uint GID;
 
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             GID = br.ReadULong();
-
-            return true;
         }
     }
 }

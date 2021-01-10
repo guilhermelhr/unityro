@@ -11,13 +11,11 @@
         public short ViewID;
         public int result;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             index = br.ReadShort();
             equipLocation = br.ReadLong();
             ViewID = br.ReadShort();
             result = br.ReadByte();
-
-            return true;
         }
     }
 }

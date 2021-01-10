@@ -12,12 +12,10 @@ public partial class ZC {
         public int value;
         public int plusValue;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             status = (EntityStatus)br.ReadULong();
             value = br.ReadLong();
             plusValue = br.ReadLong();
-
-            return true;
         }
     }
 }

@@ -10,61 +10,67 @@ public partial class ZC {
 
         public EntityData entityData;
 
-        public bool Read(BinaryReader fp) {
-            entityData = new EntityData {
-                type = (EntityType)fp.ReadUByte(),
+        public void Read(BinaryReader br, int size) {
+            entityData = new EntityData();
 
-                GID = fp.ReadULong(),
-                AID = fp.ReadULong(),
+            entityData.objecttype = (EntityType)br.ReadUByte();
 
-                speed = fp.ReadShort(),
-                opt1 = fp.ReadShort(),
-                opt2 = fp.ReadShort(),
+            entityData.AID = br.ReadULong();
+            entityData.GID = br.ReadULong();
 
-                option = fp.ReadLong(),
+            entityData.speed = br.ReadShort();
+            entityData.bodyState = br.ReadShort();
+            entityData.healthState = br.ReadShort();
 
-                job = fp.ReadShort(),
-                hairStyle = fp.ReadShort(),
-                weapon = fp.ReadShort(),
-                shield = fp.ReadShort(),
-                headBottom = fp.ReadShort(),
+            entityData.effectState = br.ReadLong();
 
-                moveStartTime = fp.ReadLong(),
+            entityData.job = br.ReadShort();
 
-                headTop = fp.ReadShort(),
-                headMid = fp.ReadShort(),
-                hairColor = fp.ReadShort(),
-                clothColor = fp.ReadShort(),
-                headDir = fp.ReadShort(),
-                robe = fp.ReadShort(),
+            entityData.head = br.ReadUShort();
 
-                GUID = fp.ReadULong(),
+            entityData.weapon = br.ReadULong();
+            entityData.shield = br.ReadULong();
 
-                guildEmblem = fp.ReadShort(),
-                manner = fp.ReadShort(),
+            /**
+             * might represent emblem/guild_id1/guild_id0
+             * rA clif.cpp #1102
+             */
+            entityData.accessory = br.ReadUShort();
+            entityData.accessory2 = br.ReadUShort();
+            entityData.accessory3 = br.ReadUShort();
 
-                opt3 = fp.ReadLong(),
+            entityData.headpalette = br.ReadShort();
+            entityData.bodypalette = br.ReadShort();
+            entityData.headDir = br.ReadShort();
 
-                karma = fp.ReadUByte(),
-                sex = fp.ReadUByte(),
-                PosDir = fp.ReadPos2(),
+            entityData.robe = br.ReadUShort();
 
-                xSize = fp.ReadUByte(),
-                ySize = fp.ReadUByte(),
+            entityData.GUID = br.ReadULong();
 
-                level = fp.ReadShort(),
-                font = fp.ReadShort(),
+            entityData.GEmblemVer = br.ReadShort();
+            entityData.honor = br.ReadShort();
 
-                maxhp = fp.ReadLong(),
-                hp = fp.ReadLong(),
+            entityData.virtue = br.ReadLong();
 
-                isBoss = fp.ReadUByte() == 1,
+            entityData.isPKModeON = br.ReadUByte();
+            entityData.sex = br.ReadUByte();
 
-                body = fp.ReadShort(),
-                name = fp.ReadBinaryString(fp.Length - fp.Position)
-            };
+            entityData.PosDir = br.ReadPos();
 
-            return true;
+            entityData.xSize = br.ReadUByte();
+            entityData.ySize = br.ReadUByte();
+            entityData.state = br.ReadUByte();
+
+            entityData.clevel = br.ReadShort();
+            entityData.font = br.ReadShort();
+
+            entityData.maxHP = br.ReadLong();
+            entityData.HP = br.ReadLong();
+
+            entityData.isBoss = br.ReadUByte();
+
+            entityData.body = br.ReadUShort();
+            entityData.name = br.ReadBinaryString(24);
         }
     }
 }

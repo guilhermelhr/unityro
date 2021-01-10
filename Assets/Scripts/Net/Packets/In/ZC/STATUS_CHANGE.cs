@@ -12,11 +12,9 @@ public partial class ZC {
         public int value;
 
         //used to update the amount of points necessary to increase that stat
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             status = (EntityStatus)br.ReadShort();
             value = br.ReadByte();
-
-            return true;
         }
     }
 }

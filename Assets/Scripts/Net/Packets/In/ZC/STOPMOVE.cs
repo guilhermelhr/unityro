@@ -10,13 +10,10 @@
         public short PosX;
         public short PosY;
 
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             AID = br.ReadULong();
             PosX = br.ReadShort();
             PosY = br.ReadShort();
-
-            return true;
         }
     }
 }

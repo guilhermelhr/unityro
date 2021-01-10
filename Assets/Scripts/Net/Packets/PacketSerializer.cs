@@ -14,7 +14,7 @@ using UnityEngine;
 public class PacketSerializer {
 
     private const bool DUMP_REGISTERED_PACKETS = false;
-    private const bool DUMP_RECEIVED_PACKETS = false;
+    private const bool DUMP_RECEIVED_PACKETS = true;
 
     public struct PacketInfo {
         public int Size;
@@ -77,8 +77,9 @@ public class PacketSerializer {
             var tmp = new byte[2];
             Memory.Read(tmp, 0, 2);
             ushort cmd = BitConverter.ToUInt16(tmp, 0);
-
+            Debug.Log($"Received {string.Format("0x{0:x4}", cmd)}");
             if (!RegisteredPackets.ContainsKey(cmd)) {
+                DumpReceivedPacket(cmd, -1);
                 // We gotta break because we don't know the size of the packet
                 Debug.LogWarning($"Received Unknown Command: {string.Format("0x{0:x4}", cmd)}\nProbably: {(PacketHeader)cmd}");
                 Memory.Position -= 2;
@@ -107,9 +108,9 @@ public class PacketSerializer {
                 ConstructorInfo ci = RegisteredPackets[cmd].Type.GetConstructor(new Type[] { });
                 InPacket packet = (InPacket)ci.Invoke(null);
                 using (var br = new BinaryReader(data)) {
-                    var shouldContinue = packet.Read(br);
+                    packet.Read(br, size - (isFixed ? 2 : 4));
 
-                    if (PacketHooks.ContainsKey(cmd)) {
+                    if(PacketHooks.ContainsKey(cmd)) {
                         ThreadManager.ExecuteOnMainThread(() => {
                             PacketHooks[cmd].DynamicInvoke(cmd, size, packet);
                         });
@@ -118,16 +119,7 @@ public class PacketSerializer {
                     }
 
                     PacketReceived?.Invoke(cmd, size, packet);
-
-                    if (DUMP_RECEIVED_PACKETS) {
-                        using (StreamWriter w = File.AppendText(Path.Combine(Directory.GetCurrentDirectory(), "Logs","received_packets.txt"))) {
-                            w.WriteLine($"{string.Format("0x{0:x3}", cmd)} \tReceived Size:{size} \tRegistered Size:{RegisteredPackets.Where(it => it.Key == cmd).First().Value.Size} \t//{(PacketHeader)cmd}");
-                        }
-                    }
-
-                    if (!shouldContinue) {
-                        break;
-                    }
+                    DumpReceivedPacket(cmd, size, packet);
                 }
             }
         }
@@ -138,6 +130,14 @@ public class PacketSerializer {
             Memory.Dispose();
 
             Memory = ms;
+        }
+    }
+
+    private static void DumpReceivedPacket(ushort cmd, int size, InPacket packet = null) {
+        if(DUMP_RECEIVED_PACKETS) {
+            using(StreamWriter w = File.AppendText(Path.Combine(Directory.GetCurrentDirectory(), "Logs", "received_packets.txt"))) {
+                w.WriteLine($"{string.Format("0x{0:x3}", cmd)} \tReceived Size:{size} \tRegistered Size:{RegisteredPackets.Where(it => it.Key == cmd).FirstOrDefault().Value.Size} \t// {(PacketHeader)cmd} - {packet}");
+            }
         }
     }
 

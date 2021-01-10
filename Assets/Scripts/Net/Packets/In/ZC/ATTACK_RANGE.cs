@@ -7,10 +7,8 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_ATTACK_RANGE;
         public const int SIZE = 4;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             var currentRange = br.ReadShort();
-
-            return true;
         }
     }
 }

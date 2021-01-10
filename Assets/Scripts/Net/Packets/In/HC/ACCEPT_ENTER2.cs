@@ -14,7 +14,7 @@ public partial class HC {
 
         public PacketHeader GetHeader() => HEADER;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int Size) {
 
             var size = br.ReadShort();
             var normal_slot = br.ReadByte(); //MIN_CHARS 15
@@ -24,8 +24,6 @@ public partial class HC {
             var valid_slot = br.ReadByte(); //MAX_CHARS 15
 
             br.Seek(9, SeekOrigin.Current);
-
-            return true;
         }
     }
 }

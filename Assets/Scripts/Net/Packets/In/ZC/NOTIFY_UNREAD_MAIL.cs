@@ -5,10 +5,8 @@
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_UNREAD_MAIL;
         public const int SIZE = 3;
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             var count = br.ReadByte();
-
-            return true;
         }
     }
 }

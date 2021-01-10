@@ -37,7 +37,7 @@ public partial class ZC {
          * <view id>.W 
          * (ZC_ITEM_PICKUP_ACK_V7)
          */
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             itemInfo = new ItemInfo {
                 index = br.ReadShort(),
                 amount = br.ReadShort(),
@@ -73,8 +73,6 @@ public partial class ZC {
             itemInfo.flag = IsIdentified ? 0x1 : 0;
             itemInfo.flag |= IsFavorite ? 0x2 : 0;
             itemInfo.viewID = br.ReadShort();
-
-            return true;
         }
     }
 }

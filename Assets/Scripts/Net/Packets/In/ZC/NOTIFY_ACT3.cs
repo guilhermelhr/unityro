@@ -11,7 +11,7 @@ public partial class ZC {
 
         public EntityActionRequest ActionRequest;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             ActionRequest = new EntityActionRequest() {
                 GID = br.ReadULong(),
                 targetGID = br.ReadULong(),
@@ -26,8 +26,6 @@ public partial class ZC {
             ActionRequest.count = br.ReadShort();
             ActionRequest.action = br.ReadUByte();
             ActionRequest.leftDamage = br.ReadLong();
-
-            return true;
         }
     }
 }

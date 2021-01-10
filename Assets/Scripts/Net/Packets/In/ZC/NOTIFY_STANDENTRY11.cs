@@ -7,64 +7,67 @@
 
         public EntityData entityData;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             entityData = new EntityData();
 
-            var type = (EntityType)br.ReadUByte();
+            entityData.objecttype = (EntityType)br.ReadUByte();
 
-            var GID = br.ReadULong();
-            var AID = br.ReadULong();
+            entityData.AID = br.ReadULong();
+            entityData.GID = br.ReadULong();
 
-            var speed = br.ReadShort();
-            var opt1 = br.ReadShort();
-            var opt2 = br.ReadShort();
+            entityData.speed = br.ReadShort();
+            entityData.bodyState = br.ReadShort();
+            entityData.healthState = br.ReadShort();
 
-            var option = br.ReadLong();
+            entityData.effectState = br.ReadLong();
 
-            var job = br.ReadShort();
-            var hairStyle = br.ReadShort();
-            var weapon = br.ReadShort();
-            var shield = br.ReadShort();
+            entityData.job = br.ReadShort();
+
+            entityData.head = br.ReadUShort();
+
+            entityData.weapon = br.ReadULong();
+            entityData.shield = br.ReadULong();
 
             /**
              * might represent emblem/guild_id1/guild_id0
              * rA clif.cpp #1102
              */
-            var accessory = br.ReadShort();
-            var accessory2 = br.ReadShort();
-            var accessory3 = br.ReadShort();
+            entityData.accessory = br.ReadUShort();
+            entityData.accessory2 = br.ReadUShort();
+            entityData.accessory3 = br.ReadUShort();
 
-            var hairColor = br.ReadShort();
-            var clothColor = br.ReadShort();
-            var headDir = br.ReadShort();
-            var robe = br.ReadShort();
-            var GUID = br.ReadULong();
-            var guildEmblem = br.ReadShort();
-            var manner = br.ReadShort();
+            entityData.headpalette = br.ReadShort();
+            entityData.bodypalette = br.ReadShort();
+            entityData.headDir = br.ReadShort();
 
-            var opt3 = br.ReadLong();
+            entityData.robe = br.ReadUShort();
 
-            var karma = br.ReadUByte();
-            var sex = br.ReadUByte();
+            entityData.GUID = br.ReadULong();
 
-            var PosDir = br.ReadPos();
+            entityData.GEmblemVer = br.ReadShort();
+            entityData.honor = br.ReadShort();
 
-            var xSize = br.ReadUByte();
-            var ySize = br.ReadUByte();
-            var deadSit = br.ReadUByte();
+            entityData.virtue = br.ReadLong();
 
-            var level = br.ReadShort();
-            var font = br.ReadShort();
+            entityData.isPKModeON = br.ReadUByte();
+            entityData.sex = br.ReadUByte();
 
-            var maxhp = br.ReadLong();
-            var hp = br.ReadLong();
+            entityData.PosDir = br.ReadPos();
 
-            var isBoss = br.ReadUByte() == 1;
+            entityData.xSize = br.ReadUByte();
+            entityData.ySize = br.ReadUByte();
+            entityData.state = br.ReadUByte();
 
-            var body = br.ReadShort();
-            var name = br.ReadBinaryString(br.Length - br.Position);
+            entityData.clevel = br.ReadShort();
+            entityData.font = br.ReadShort();
 
-            return true;
+            entityData.maxHP = br.ReadLong();
+            entityData.HP = br.ReadLong();
+
+            entityData.isBoss = br.ReadUByte();
+
+            entityData.body = br.ReadUShort();
+            entityData.name = br.ReadBinaryString(24);
         }
     }
 }
