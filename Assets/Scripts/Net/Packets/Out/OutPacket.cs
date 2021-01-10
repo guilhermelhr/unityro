@@ -22,8 +22,7 @@ public abstract class OutPacket {
     public virtual void Send() {
         IEnumerable<byte> packet = BitConverter.GetBytes((ushort)Header);
         if (!IsFixed) {
-            Size = ComputeSize();
-            packet = packet.Concat(BitConverter.GetBytes((short)Size));
+            packet = packet.Concat(BitConverter.GetBytes((short)(buffer.Count() + 4)));
         }
         packet = packet.Concat(buffer);
 
@@ -55,6 +54,4 @@ public abstract class OutPacket {
         Write((byte)((x << 6) | ((y >> 4) & 0x3f)));
         Write((byte)((y << 4) | (dir & 0xf)));
     }
-
-    protected virtual short ComputeSize() { return 0; }
 }

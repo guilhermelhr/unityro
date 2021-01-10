@@ -15,7 +15,5 @@
 
             base.Send();
         }
-
-        protected override short ComputeSize() => (short)(4 + message.Length);
     }
 }
