@@ -29,7 +29,7 @@ public class EntityControl : MonoBehaviour {
         switch (target.Type) {
             case EntityType.NPC:
                 new CZ.CONTACTNPC() {
-                    NAID = target.GID,
+                    NAID = target.AID,
                     Type = 1
                 }.Send();
                 break;

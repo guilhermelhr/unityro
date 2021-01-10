@@ -167,7 +167,6 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Type = entity.Type;
 
         entityCache.Add(data.AID, entity);
-        entity.GID = data.GID;
         entity.SetReady(true);
 
         return entity;
@@ -201,8 +200,6 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Type = entity.Type;
 
         entityCache.Add(data.AID, entity);
-        entity.AID = data.AID;
-        entity.GID = data.GID;
         entity.SetReady(true);
 
         return entity;

@@ -60,6 +60,8 @@ public class Entity : MonoBehaviour {
         Hp = data.HP;
         MaxHp = data.maxHP;
         Direction = ((NpcDirection)data.PosDir[2]).ToDirection();
+        GID = data.GID;
+        AID = data.AID;
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
     }
