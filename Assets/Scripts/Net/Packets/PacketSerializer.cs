@@ -14,7 +14,7 @@ using UnityEngine;
 public class PacketSerializer {
 
     private const bool DUMP_REGISTERED_PACKETS = false;
-    private const bool DUMP_RECEIVED_PACKETS = true;
+    private const bool DUMP_RECEIVED_PACKETS = false;
 
     public struct PacketInfo {
         public int Size;

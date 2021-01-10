@@ -1,10 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using UnityEngine;
+﻿public partial class CZ {
 
-public partial class CZ {
     public class ENTER2 : OutPacket {
 
         public const PacketHeader HEADER = PacketHeader.CZ_ENTER2;
@@ -21,28 +16,14 @@ public partial class CZ {
             this.sex = sex;
         }
 
-        public override bool Send(BinaryWriter writer) {
-            var stream = Core.NetworkClient.CurrentConnection.Stream;
+        public override void Send() {
+            Write(AccountId);
+            Write(CharacterId);
+            Write(LoginId1);
+            Write(clienttime);
+            Write(sex);
 
-            var bytes = BitConverter.GetBytes((ushort)HEADER)
-                .Concat(BitConverter.GetBytes(AccountId))
-                .Concat(BitConverter.GetBytes(CharacterId))
-                .Concat(BitConverter.GetBytes(LoginId1))
-                .Concat(BitConverter.GetBytes(clienttime))
-                .Concat(BitConverter.GetBytes(sex));
-
-            stream.Write(bytes.ToArray(), 0, SIZE);
-            stream.Flush();
-
-            //base.Send(w);
-            //w.Write(AccountId);
-            //w.Write(CharacterId);
-            //w.Write(LoginId1);
-            //w.Write(clienttime);
-            //w.Write(sex);
-            //w.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

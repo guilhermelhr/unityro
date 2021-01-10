@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-public partial class CZ {
+﻿public partial class CZ {
 
     public class REQ_NEXT_SCRIPT : OutPacket {
 
@@ -12,13 +9,10 @@ public partial class CZ {
 
         public REQ_NEXT_SCRIPT() : base(HEADER, SIZE) { }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write(NAID);
 
-            writer.Write(NAID);
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

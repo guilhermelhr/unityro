@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿public partial class CZ {
 
-public partial class CZ {
     public class ITEM_PICKUP2 : OutPacket {
 
         public const PacketHeader HEADER = PacketHeader.CZ_ITEM_PICKUP2;
@@ -11,13 +9,10 @@ public partial class CZ {
 
         public ITEM_PICKUP2() : base(HEADER, SIZE) { }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write(ID);
 
-            writer.Write(ID);
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

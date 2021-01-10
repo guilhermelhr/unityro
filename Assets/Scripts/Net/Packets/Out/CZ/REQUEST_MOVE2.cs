@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-public partial class CZ {
+﻿public partial class CZ {
 
     public const PacketHeader HEADER = PacketHeader.CZ_REQUEST_MOVE2;
     public const int SIZE = 5;
@@ -19,14 +17,10 @@ public partial class CZ {
             this.dir = (byte)dir;
         }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            WritePos(x, y, dir);
 
-            writer.WritePos(x, y, dir);
-
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

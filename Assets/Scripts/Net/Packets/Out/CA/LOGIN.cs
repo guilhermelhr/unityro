@@ -1,10 +1,9 @@
-﻿using System.IO;
+﻿public partial class CA {
 
-public partial class CA {
     public class LOGIN : OutPacket {
         
         private const PacketHeader header = PacketHeader.CA_LOGIN;
-        private const int size = 2 + 4 + 24 + 24 + 1;
+        private const int size = 55;
 
         private string ID;
         private string Passwd;
@@ -18,16 +17,13 @@ public partial class CA {
             this.Version = Version;
         }
 
-        override public bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        override public void Send() {
+            Write(Version);
+            Write(ID, 24);
+            Write(Passwd, 24);
+            Write((byte)clienttype);
 
-            writer.Write((int)Version);
-            writer.WriteCString(ID, 24);
-            writer.WriteCString(Passwd, 24);
-            writer.Write((byte)clienttype);
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 

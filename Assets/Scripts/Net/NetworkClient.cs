@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net.Sockets;
 using UnityEngine;
 using static PacketSerializer;
 
@@ -48,9 +49,11 @@ public class NetworkClient : MonoBehaviour {
         if (!IsConnected) return;
         var ticks = Time.realtimeSinceStartup;
         if (ticks % 12 < 1f) {
-            new Ping((int)Time.realtimeSinceStartup).Send(CurrentConnection.GetBinaryWriter());
+            new Ping((int)Time.realtimeSinceStartup).Send();
         }
     }
 
     public BinaryWriter GetBinaryWriter() => CurrentConnection.GetBinaryWriter();
+
+    public NetworkStream GetStream() => CurrentConnection.GetStream();
 }

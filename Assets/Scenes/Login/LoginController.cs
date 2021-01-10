@@ -14,11 +14,6 @@ public class LoginController : MonoBehaviour {
         usernameField.text = "danilo3";
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
     public void OnLoginClicked() {
         var username = usernameField.text;
         var password = passwordField.text;

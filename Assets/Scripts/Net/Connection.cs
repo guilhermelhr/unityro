@@ -9,7 +9,7 @@ public class Connection {
     public static System.Action OnDisconnect;
 
     private TcpClient Client;
-    public NetworkStream Stream;
+    private NetworkStream Stream;
     private BinaryWriter BinaryWriter;
     private PacketSerializer PacketSerializer;
     private byte[] receiveBuffer;
@@ -43,6 +43,7 @@ public class Connection {
     public bool IsConnected() => Client.Connected;
 
     public BinaryWriter GetBinaryWriter() => BinaryWriter;
+    public NetworkStream GetStream() => Stream;
 
     private void ReadComplete(IAsyncResult ar) {
         int size = 0;

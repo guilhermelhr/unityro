@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-public partial class CZ {
+﻿public partial class CZ {
 
     public class CHOOSE_MENU : OutPacket {
 
@@ -13,14 +10,11 @@ public partial class CZ {
         public uint NAID;
         public byte Index;
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write(NAID);
+            Write(Index);
 
-            writer.Write(NAID);
-            writer.Write(Index);
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

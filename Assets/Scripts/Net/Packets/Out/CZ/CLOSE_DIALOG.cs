@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿public partial class CZ {
 
-public partial class CZ {
     public class CLOSE_DIALOG : OutPacket {
 
         public const PacketHeader HEADER = PacketHeader.CZ_CLOSE_DIALOG;
@@ -11,13 +9,10 @@ public partial class CZ {
 
         public CLOSE_DIALOG() : base(HEADER, SIZE) { }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write(NAID);
 
-            writer.Write(NAID);
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

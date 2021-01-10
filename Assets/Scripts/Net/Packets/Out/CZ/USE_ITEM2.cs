@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿public partial class CZ {
 
-public partial class CZ {
     public class USE_ITEM2 : OutPacket {
 
         public const PacketHeader HEADER = PacketHeader.CZ_USE_ITEM2;
@@ -17,14 +10,11 @@ public partial class CZ {
 
         public USE_ITEM2() : base(HEADER, SIZE) { }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write(index);
+            Write(AID);
 
-            writer.Write(index);
-            writer.Write(AID);
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

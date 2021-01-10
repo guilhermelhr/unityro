@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-public partial class CZ {
+﻿public partial class CZ {
 
     public class CONTACTNPC : OutPacket {
 
@@ -13,14 +10,11 @@ public partial class CZ {
 
         public CONTACTNPC() : base(HEADER, SIZE) { }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write(NAID);
+            Write(Type);
 
-            writer.Write(NAID);
-            writer.Write(Type);
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

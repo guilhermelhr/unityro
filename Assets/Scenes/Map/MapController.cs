@@ -122,9 +122,4 @@ public class MapController : MonoBehaviour {
     void Start() {
         new CZ.NOTIFY_ACTORINIT().Send();
     }
-
-    // Update is called once per frame
-    void Update() {
-        Core.NetworkClient.Ping();
-    }
 }

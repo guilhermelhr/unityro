@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-public partial class CZ {
+﻿public partial class CZ {
 
     public class REQUEST_ACT2 : OutPacket {
 
@@ -11,17 +8,13 @@ public partial class CZ {
         public uint TargetGID;
         public byte action;
 
-        public REQUEST_ACT2() : base(HEADER, SIZE) {
-        }
+        public REQUEST_ACT2() : base(HEADER, SIZE) { }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write(TargetGID);
+            Write(action);
 
-            writer.Write(TargetGID);
-            writer.Write(action);
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

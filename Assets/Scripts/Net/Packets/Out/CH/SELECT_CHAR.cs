@@ -1,10 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.Linq;
 
 public partial class CH {
+
     public class SELECT_CHAR : OutPacket {
 
         private const PacketHeader HEADER = PacketHeader.CH_SELECT_CHAR;
-        private const int SIZE = 2 + 1;
+        private const int SIZE = 3;
 
         private int charIndex;
 
@@ -12,13 +14,10 @@ public partial class CH {
             this.charIndex = num;
         }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write((byte)charIndex);
 
-            writer.Write((byte)charIndex);
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }
