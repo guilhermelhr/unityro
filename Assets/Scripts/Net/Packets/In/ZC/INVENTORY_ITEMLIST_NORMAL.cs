@@ -14,6 +14,7 @@ public partial class ZC {
 
         public List<ItemInfo> Inventory = new List<ItemInfo>();
 
+        //TODO UPDATE
         public void Read(BinaryReader br, int size) {
 
             var count = (br.Length - br.Position) / BLOCK_SIZE;

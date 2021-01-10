@@ -4,7 +4,7 @@
     public class SPRITE_CHANGE2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_SPRITE_CHANGE2;
-        public const int SIZE = 11;
+        public const int SIZE = 15;
 
         public void Read(BinaryReader br, int size) {
             var GID = br.ReadLong();
