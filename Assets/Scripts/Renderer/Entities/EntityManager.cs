@@ -19,7 +19,7 @@ public class EntityManager : MonoBehaviour {
                 npc?.gameObject.SetActive(true);
                 return npc ?? SpawnNPC(data);
             case EntityType.MOB:
-                entityCache.TryGetValue(data.GID, out var mob);
+                entityCache.TryGetValue(data.AID, out var mob);
                 mob?.gameObject.SetActive(true);
                 return mob ?? SpawnMOB(data);
             default:
@@ -200,7 +200,8 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.CurrentMotion = SpriteMotion.Idle;
         bodyViewer.Type = entity.Type;
 
-        entityCache.Add(data.GID, entity);
+        entityCache.Add(data.AID, entity);
+        entity.AID = data.AID;
         entity.GID = data.GID;
         entity.SetReady(true);
 

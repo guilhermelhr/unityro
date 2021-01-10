@@ -25,6 +25,7 @@ public class Entity : MonoBehaviour {
     public bool HasAuthority => GID == Core.Session?.Entity?.GID;
 
     [SerializeField] public uint GID;
+    [SerializeField] public uint AID;
     [SerializeField] public short Job;
     [SerializeField] public byte Sex;
     [SerializeField] public ushort Hair;

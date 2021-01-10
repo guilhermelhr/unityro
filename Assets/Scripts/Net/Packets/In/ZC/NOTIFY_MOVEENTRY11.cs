@@ -29,13 +29,14 @@ public partial class ZC {
             entityData.head = br.ReadUShort();
 
             entityData.weapon = br.ReadULong();
+            entityData.accessory = br.ReadUShort();
+            entityData.moveStartTime = br.ReadULong();
             entityData.shield = br.ReadULong();
 
             /**
              * might represent emblem/guild_id1/guild_id0
              * rA clif.cpp #1102
              */
-            entityData.accessory = br.ReadUShort();
             entityData.accessory2 = br.ReadUShort();
             entityData.accessory3 = br.ReadUShort();
 
@@ -55,7 +56,7 @@ public partial class ZC {
             entityData.isPKModeON = br.ReadUByte();
             entityData.sex = br.ReadUByte();
 
-            entityData.PosDir = br.ReadPos();
+            entityData.PosDir = br.ReadPos2();
 
             entityData.xSize = br.ReadUByte();
             entityData.ySize = br.ReadUByte();

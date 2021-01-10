@@ -121,5 +121,6 @@ public class EntityData {
 	public ushort body;
 	/* Might be earlier, this is when the named item bug began */
 	public string name;
+    public uint moveStartTime;
 }
 
