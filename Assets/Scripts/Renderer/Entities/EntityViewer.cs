@@ -123,6 +123,7 @@ public class EntityViewer : MonoBehaviour {
 
         // Are we looping or stopping?
         if (newFrame >= currentAction.frames.Length - 1) {
+            currentFrame = currentAction.frames.Length - 1;
             if (NextMotion != null) {
                 ChangeMotion(NextMotion.Value, null);
             } else if (CurrentMotion == SpriteMotion.Dead) {

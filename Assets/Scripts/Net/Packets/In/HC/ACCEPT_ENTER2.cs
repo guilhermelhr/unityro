@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices;
 
 public partial class HC {
 
@@ -6,13 +7,6 @@ public partial class HC {
     public class ACCEPT_ENTER2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.HC_ACCEPT_ENTER2;
-
-        public int MaxSlots { get; set; }
-        public int AvailableSlots { get; set; }
-        public int PremiumSlots { get; set; }
-        public CharacterData[] Chars { get; set; }
-
-        public PacketHeader GetHeader() => HEADER;
 
         public void Read(BinaryReader br, int Size) {
 

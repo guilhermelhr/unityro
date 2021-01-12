@@ -15,7 +15,7 @@ public partial class AC {
         public CharServerInfo[] Servers { get; set; }
 
         public void Read(BinaryReader br, int size) {
-
+            
             LoginID1 = br.ReadLong();
             AccountID = br.ReadLong();
             LoginID2 = br.ReadLong();

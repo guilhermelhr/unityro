@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ unsafe public struct packet_idle_unit {
 	public short PacketType;
 	public short PacketLength;
 
-	public EntityType objecttype;
+	public byte objecttype;
 
 	public uint AID;
 	public uint GID;
@@ -46,7 +47,7 @@ unsafe public struct packet_idle_unit {
 	public byte isPKModeON;
 	public byte sex;
 
-	public int[] PosDir;
+	public fixed byte PosDir[3];
 
 	public byte xSize;
 	public byte ySize;
@@ -62,7 +63,7 @@ unsafe public struct packet_idle_unit {
 
 	public ushort body;
 	/* Might be earlier, this is when the named item bug began */
-	public string name;
+	public fixed char name[24];
 }
 
 public class EntityData {

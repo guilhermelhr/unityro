@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-    public enum EntityActionType : byte {
+﻿    public enum EntityActionType : byte {
         ATTACK,
         PICKUP,
         SIT,
