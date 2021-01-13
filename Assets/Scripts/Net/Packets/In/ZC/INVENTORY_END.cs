@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-public partial class ZC {
+﻿public partial class ZC {
 
     [PacketHandler(HEADER, "ZC_INVENTORY_START", SIZE)]
     public class INVENTORY_END : InPacket {

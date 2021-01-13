@@ -45,7 +45,7 @@ public partial class ZC {
             };
             IsIdentified = br.ReadByte() == 1;
             itemInfo.IsDamaged = br.ReadByte() == 1;
-            itemInfo.refine = br.ReadByte();
+            itemInfo.refine = br.ReadUByte();
 
             itemInfo.slot = new ItemInfo.Slot() {
                 card1 = br.ReadUShort(),
@@ -58,14 +58,14 @@ public partial class ZC {
             itemInfo.itemType = br.ReadByte();
             result = br.ReadByte();
             itemInfo.expireTime = br.ReadLong();
-            itemInfo.bindOnEquip = br.ReadShort();
+            itemInfo.bindOnEquip = br.ReadUShort();
 
             itemInfo.options = new List<ItemInfo.Option>();
             for (int j = 0; j < 5; j++) {
                 itemInfo.options.Add(new ItemInfo.Option() {
                     optIndex = br.ReadShort(),
                     value = br.ReadShort(),
-                    param1 = br.ReadByte()
+                    param1 = br.ReadUByte()
                 });
             }
 
