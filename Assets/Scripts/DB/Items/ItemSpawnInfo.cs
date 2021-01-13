@@ -5,7 +5,7 @@ public class ItemSpawnInfo {
 
     public Vector3 Position;
     public int mapID;
-    public int GID;
+    public int AID;
     public bool IsIdentified;
     public int amount;
     public int showDropEffect;

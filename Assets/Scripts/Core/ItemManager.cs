@@ -100,7 +100,7 @@ public class ItemManager : MonoBehaviour {
         if (packet is ZC.ITEM_DISAPPEAR) {
             var pkt = packet as ZC.ITEM_DISAPPEAR;
 
-            Core.EntityManager.RemoveEntity(pkt.GID);
+            Core.EntityManager.RemoveEntity(pkt.AID);
         }
     }
 
@@ -144,7 +144,7 @@ public class ItemManager : MonoBehaviour {
             var y = Core.PathFinding.GetCellHeight((int)x, (int)z) + 5.0;
 
             Core.EntityManager.SpawnItem(new ItemSpawnInfo() {
-                GID = pkt.id,
+                AID = pkt.id,
                 mapID = pkt.mapID,
                 Position = new Vector3((float)x, (float)y, (float)z),
                 amount = pkt.amount,
@@ -159,7 +159,7 @@ public class ItemManager : MonoBehaviour {
             var y = Core.PathFinding.GetCellHeight((int)x, (int)z);
 
             Core.EntityManager.SpawnItem(new ItemSpawnInfo() {
-                GID = ITEM_ENTRY.id,
+                AID = ITEM_ENTRY.id,
                 mapID = ITEM_ENTRY.mapID,
                 Position = new Vector3((float)x, (float)y, (float)z),
                 amount = ITEM_ENTRY.amount,

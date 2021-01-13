@@ -79,7 +79,7 @@ public class MapController : MonoBehaviour {
     private void OnEntityVanish(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NOTIFY_VANISH) {
             var pkt = packet as ZC.NOTIFY_VANISH;
-            Core.EntityManager.VanishEntity(pkt.GID, pkt.Type);
+            Core.EntityManager.VanishEntity(pkt.AID, pkt.Type);
         }
     }
 

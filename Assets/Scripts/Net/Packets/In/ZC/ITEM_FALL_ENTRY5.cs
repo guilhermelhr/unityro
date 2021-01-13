@@ -10,12 +10,12 @@ public partial class ZC {
 
         public int id;
         public int mapID;
-        public short itemType;
-        public int identified;
+        public ushort itemType;
+        public byte identified;
         public short x;
         public short y;
-        public int subX;
-        public int subY;
+        public byte subX;
+        public byte subY;
         public short amount;
         public int showDropEffect;
         public short dropEffectMode;
@@ -23,12 +23,12 @@ public partial class ZC {
         public void Read(BinaryReader br, int size) {
             mapID = br.ReadLong();
             id = br.ReadShort();
-            itemType = br.ReadShort();
-            identified = br.ReadByte();
+            itemType = br.ReadUShort();
+            identified = br.ReadUByte();
             x = br.ReadShort();
             y = br.ReadShort();
-            subX = br.ReadByte();
-            subY = br.ReadByte();
+            subX = br.ReadUByte();
+            subY = br.ReadUByte();
             amount = br.ReadShort();
             showDropEffect = br.ReadByte();
             dropEffectMode = br.ReadShort();

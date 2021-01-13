@@ -87,7 +87,7 @@ public class Entity : MonoBehaviour {
 
     IEnumerator DestroyAfterSeconds() {
         yield return new WaitForSeconds(1f);
-        Core.EntityManager.RemoveEntity(GID);
+        Core.EntityManager.RemoveEntity(AID);
         yield return null;
     }
 

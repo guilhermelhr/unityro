@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 public abstract class OutPacket {
 
@@ -22,12 +23,15 @@ public abstract class OutPacket {
     public virtual void Send() {
         IEnumerable<byte> packet = BitConverter.GetBytes((ushort)Header);
         if (!IsFixed) {
-            packet = packet.Concat(BitConverter.GetBytes((short)(buffer.Count() + 4)));
+            Size = buffer.Count() + 4;
+            packet = packet.Concat(BitConverter.GetBytes((short)Size));
         }
         packet = packet.Concat(buffer);
 
+        Debug.Log($"<color='green'>Sent: {Header} \tSize:{Size}</color>");
         Stream.Write(packet.ToArray(), 0, packet.Count());
         Stream.Flush();
+        buffer = new List<byte>();
     }
 
     public void Write(int value) => buffer = buffer.Concat(BitConverter.GetBytes(value));
@@ -40,8 +44,8 @@ public abstract class OutPacket {
     public void Write(string value) => buffer = buffer.Concat(Encoding.ASCII.GetBytes(value));
     public void Write(string value, int size) {
         byte[] chunk = new byte[size];
-        for(int i = 0; i < size; i++) {
-            if(i < value.Length)
+        for (int i = 0; i < size; i++) {
+            if (i < value.Length)
                 chunk[i] = (byte)value[i];
             else
                 chunk[i] = 0;
