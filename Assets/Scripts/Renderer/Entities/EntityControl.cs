@@ -36,7 +36,7 @@ public class EntityControl : MonoBehaviour {
             case EntityType.ITEM:
                 Core.CursorRenderer.SetAction(CursorAction.PICK, false, 2);
 
-                OutPacket pickPacket = new CZ.ITEM_PICKUP2() { ID = (int)target.GID };
+                OutPacket pickPacket = new CZ.ITEM_PICKUP2() { ID = (int)target.AID };
                 if (Vector3.Distance(transform.position, target.transform.position) > 2) {
                     Entity.AfterMoveAction = pickPacket;
 

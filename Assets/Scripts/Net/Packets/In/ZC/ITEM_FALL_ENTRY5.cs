@@ -8,8 +8,8 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_ITEM_FALL_ENTRY5;
         public const int SIZE = 22;
 
-        public int id;
         public int mapID;
+        public int id;
         public ushort itemType;
         public byte identified;
         public short x;
@@ -21,8 +21,8 @@ public partial class ZC {
         public short dropEffectMode;
 
         public void Read(BinaryReader br, int size) {
-            mapID = br.ReadLong();
-            id = br.ReadShort();
+            mapID = (int)br.ReadULong();
+            id = (int)br.ReadULong();
             itemType = br.ReadUShort();
             identified = br.ReadUByte();
             x = br.ReadShort();

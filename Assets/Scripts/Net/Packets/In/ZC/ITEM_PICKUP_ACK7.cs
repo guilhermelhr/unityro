@@ -7,7 +7,7 @@ public partial class ZC {
     public class ITEM_PICKUP_ACK7 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ITEM_PICKUP_ACK_V7;
-        public const int SIZE = 59;
+        public const int SIZE = 69;
 
         public bool IsIdentified;
         public bool IsDamaged;
@@ -41,17 +41,17 @@ public partial class ZC {
             itemInfo = new ItemInfo {
                 index = br.ReadShort(),
                 amount = br.ReadShort(),
-                ItemID = br.ReadShort()
+                ItemID = (int)br.ReadULong()
             };
             IsIdentified = br.ReadByte() == 1;
             itemInfo.IsDamaged = br.ReadByte() == 1;
             itemInfo.refine = br.ReadUByte();
 
             itemInfo.slot = new ItemInfo.Slot() {
-                card1 = br.ReadUShort(),
-                card2 = br.ReadUShort(),
-                card3 = br.ReadUShort(),
-                card4 = br.ReadUShort()
+                card1 = (int)br.ReadULong(),
+                card2 = (int)br.ReadULong(),
+                card3 = (int)br.ReadULong(),
+                card4 = (int)br.ReadULong()
             };
 
             itemInfo.location = br.ReadLong();
