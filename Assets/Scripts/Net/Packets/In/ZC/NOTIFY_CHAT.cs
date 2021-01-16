@@ -8,12 +8,9 @@
         public uint GID;
         public string Message;
 
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             GID = br.ReadULong();
             Message = br.ReadBinaryString((int)(br.Length - br.Position));
-
-            return true;
         }
     }
 }

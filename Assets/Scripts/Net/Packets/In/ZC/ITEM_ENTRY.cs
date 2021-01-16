@@ -17,7 +17,7 @@ public partial class ZC {
         public short amount;
 
         /// 009d <id>.L <name id>.W <identified>.B <x>.W <y>.W <amount>.W <subX>.B <subY>.B
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             mapID = br.ReadLong();
             id = br.ReadShort();
             identified = br.ReadByte();
@@ -26,8 +26,6 @@ public partial class ZC {
             amount = br.ReadShort();
             subX = br.ReadByte();
             subY = br.ReadByte();
-
-            return true;
         }
     }
 }

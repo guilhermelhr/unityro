@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 public partial class ZC {
 
-    [PacketHandler(HEADER, "ZC_SHORTCUT_KEY_LIST_V3", SIZE)]
+    [PacketHandler(HEADER, "ZC_SHORTCUT_KEY_LIST_V4", SIZE)]
     public class SHORTCUT_KEY_LIST_V3 : InPacket {
 
-        public const PacketHeader HEADER = PacketHeader.ZC_SHORTCUT_KEY_LIST_V3;
-        public const int SIZE = 269;
+        public const PacketHeader HEADER = PacketHeader.ZC_SHORTCUT_KEY_LIST_V4;
+        public const int SIZE = 271;
 
-        public bool Read(BinaryReader br) {
-
-            return true;
+        public void Read(BinaryReader br, int size) {
         }
     }
 }

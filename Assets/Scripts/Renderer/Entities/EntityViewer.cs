@@ -62,7 +62,7 @@ public class EntityViewer : MonoBehaviour {
                     path = DBManager.GetHeadPath(Entity.Hair, Entity.Sex);
                     break;
                 case ViewerType.WEAPON:
-                    path = DBManager.GetWeaponPath(Entity.Weapon, Entity.Job, Entity.Sex);
+                    path = DBManager.GetWeaponPath((int)Entity.Weapon, Entity.Job, Entity.Sex);
                     break;
             }
 
@@ -123,6 +123,7 @@ public class EntityViewer : MonoBehaviour {
 
         // Are we looping or stopping?
         if (newFrame >= currentAction.frames.Length - 1) {
+            currentFrame = currentAction.frames.Length - 1;
             if (NextMotion != null) {
                 ChangeMotion(NextMotion.Value, null);
             } else if (CurrentMotion == SpriteMotion.Dead) {

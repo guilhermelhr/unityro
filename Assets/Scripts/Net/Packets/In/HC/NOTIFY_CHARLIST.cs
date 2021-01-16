@@ -6,9 +6,8 @@
         public const PacketHeader HEADER = PacketHeader.HC_NOTIFY_CHARLIST;
         public const int SIZE = 6;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             var totalCnt = br.ReadLong();
-            return true;
         }
     }
 }

@@ -11,10 +11,8 @@
 
         public uint NAID;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             NAID = br.ReadULong();
-
-            return true;
         }
     }
 }

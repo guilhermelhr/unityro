@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-
-public partial class CZ {
+﻿public partial class CZ {
 
     public class REQUEST_CHAT : OutPacket {
 
@@ -14,17 +10,10 @@ public partial class CZ {
             this.message = $"{Core.Session.Entity.name} : {message}";
         }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write(message, message.Length);
 
-            writer.WriteCString(message, message.Length);
-            writer.Flush();
-
-            return true;
-        }
-
-        protected override void ComputeSize() {
-            Size = 2 + 2 + message.Length;
+            base.Send();
         }
     }
 }

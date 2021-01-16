@@ -51,7 +51,7 @@
         /// <flee>.W <flee2>.W 
         /// <crit>.W 
         /// <aspd>.W <aspd2>.W
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             stpoint = br.ReadShort();
             str = br.ReadByte();
             needStr = br.ReadByte();
@@ -79,8 +79,6 @@
             crit = br.ReadShort();
             aspd = br.ReadShort();
             aspd2 = br.ReadShort();
-
-            return true;
         }
     }
 }

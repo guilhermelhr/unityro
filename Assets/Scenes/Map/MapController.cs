@@ -17,6 +17,9 @@ public class MapController : MonoBehaviour {
             Instance = this;
         }
 
+        UIController = FindObjectOfType<MapUiController>();
+        UIController.GetComponent<CanvasGroup>().alpha = 1;
+
         var mapInfo = Core.NetworkClient.State.MapLoginInfo;
         if (mapInfo == null) {
             throw new Exception("Map Login info cannot be null");
@@ -36,9 +39,9 @@ public class MapController : MonoBehaviour {
         Core.Instance.SetWorldLight(worldLight);
         Core.Instance.BeginMapLoading(mapInfo.mapname);
 
-        var entity = Core.EntityManager.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
-        Core.Session = new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID);
-        Core.Session.SetCurrentMap(mapInfo.mapname);
+        //var entity = Core.EntityManager.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
+        //Core.Session = new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID);
+        //Core.Session.SetCurrentMap(mapInfo.mapname);
         Core.Session.Entity.transform.position = new Vector3(mapInfo.PosX, Core.PathFinding.GetCellHeight(mapInfo.PosX, mapInfo.PosY), mapInfo.PosY);
 
         /**
@@ -76,7 +79,7 @@ public class MapController : MonoBehaviour {
     private void OnEntityVanish(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NOTIFY_VANISH) {
             var pkt = packet as ZC.NOTIFY_VANISH;
-            Core.EntityManager.VanishEntity(pkt.GID, pkt.Type);
+            Core.EntityManager.VanishEntity(pkt.AID, pkt.Type);
         }
     }
 
@@ -118,10 +121,5 @@ public class MapController : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         new CZ.NOTIFY_ACTORINIT().Send();
-    }
-
-    // Update is called once per frame
-    void Update() {
-        Core.NetworkClient.Ping();
     }
 }

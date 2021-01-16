@@ -12,8 +12,7 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_MSG_STATE_CHANGE;
         public const int SIZE = 9;
 
-        public bool Read(BinaryReader br) {
-            return true;
+        public void Read(BinaryReader br, int size) {
         }
     }
 }

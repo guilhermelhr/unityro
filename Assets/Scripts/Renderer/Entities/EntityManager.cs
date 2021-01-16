@@ -9,17 +9,17 @@ public class EntityManager : MonoBehaviour {
     private Dictionary<uint, Entity> entityCache = new Dictionary<uint, Entity>();
 
     public Entity Spawn(EntityData data) {
-        switch (data.type) {
+        switch (data.objecttype) {
             case EntityType.PC:
                 entityCache.TryGetValue(data.GID, out var pc);
                 pc?.gameObject.SetActive(true);
                 return pc ?? SpawnPC(data);
             case EntityType.NPC:
-                entityCache.TryGetValue(data.GID, out var npc);
+                entityCache.TryGetValue(data.AID, out var npc);
                 npc?.gameObject.SetActive(true);
                 return npc ?? SpawnNPC(data);
             case EntityType.MOB:
-                entityCache.TryGetValue(data.GID, out var mob);
+                entityCache.TryGetValue(data.AID, out var mob);
                 mob?.gameObject.SetActive(true);
                 return mob ?? SpawnMOB(data);
             default:
@@ -40,15 +40,15 @@ public class EntityManager : MonoBehaviour {
     }
 
     //TODO this needs checking
-    public void VanishEntity(uint GID, int type) {
-        entityCache.TryGetValue(GID, out Entity entity);
+    public void VanishEntity(uint AID, int type) {
+        entityCache.TryGetValue(AID, out Entity entity);
         entity?.Vanish(type);
     }
 
     public Entity SpawnItem(ItemSpawnInfo itemSpawnInfo) {
 
-        Item item = DBManager.GetItemInfo(itemSpawnInfo.GID);
-        string itemPath = DBManager.GetItemPath(itemSpawnInfo.GID, itemSpawnInfo.IsIdentified);
+        Item item = DBManager.GetItemInfo(itemSpawnInfo.AID);
+        string itemPath = DBManager.GetItemPath(itemSpawnInfo.AID, itemSpawnInfo.IsIdentified);
 
         ACT act = FileManager.Load(itemPath + ".act") as ACT;
         SPR spr = FileManager.Load(itemPath + ".spr") as SPR;
@@ -84,9 +84,9 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Type = entity.Type;
 
         entity.Init(spr, act);
-        entity.GID = (uint)itemSpawnInfo.mapID;
+        entity.AID = (uint)itemSpawnInfo.mapID;
+        entityCache.Add(entity.AID, entity);
         entity.SetReady(true);
-        entityCache.Add(entity.GID, entity);
 
         return entity;
     }
@@ -132,8 +132,7 @@ public class EntityManager : MonoBehaviour {
         headViewer.Type = entity.Type;
         headViewer.ViewerType = ViewerType.HEAD;
 
-        entityCache.Add(data.GID, entity);
-        entity.GID = data.GID;
+        entityCache.Add(data.AID, entity);
         entity.SetReady(true);
 
         return entity;
@@ -166,8 +165,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.CurrentMotion = SpriteMotion.Idle;
         bodyViewer.Type = entity.Type;
 
-        entityCache.Add(data.GID, entity);
-        entity.GID = data.GID;
+        entityCache.Add(data.AID, entity);
         entity.SetReady(true);
 
         return entity;
@@ -200,8 +198,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.CurrentMotion = SpriteMotion.Idle;
         bodyViewer.Type = entity.Type;
 
-        entityCache.Add(data.GID, entity);
-        entity.GID = data.GID;
+        entityCache.Add(data.AID, entity);
         entity.SetReady(true);
 
         return entity;

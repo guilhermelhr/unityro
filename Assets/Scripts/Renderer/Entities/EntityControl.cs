@@ -29,14 +29,14 @@ public class EntityControl : MonoBehaviour {
         switch (target.Type) {
             case EntityType.NPC:
                 new CZ.CONTACTNPC() {
-                    NAID = target.GID,
+                    NAID = target.AID,
                     Type = 1
                 }.Send();
                 break;
             case EntityType.ITEM:
                 Core.CursorRenderer.SetAction(CursorAction.PICK, false, 2);
 
-                OutPacket pickPacket = new CZ.ITEM_PICKUP2() { ID = (int)target.GID };
+                OutPacket pickPacket = new CZ.ITEM_PICKUP2() { ID = (int)target.AID };
                 if (Vector3.Distance(transform.position, target.transform.position) > 2) {
                     Entity.AfterMoveAction = pickPacket;
 
@@ -61,8 +61,8 @@ public class EntityControl : MonoBehaviour {
                 }
 
                 OutPacket packet = new CZ.REQUEST_ACT2() {
-                    TargetGID = target.GID,
-                    action = 7
+                    TargetID = target.AID,
+                    action = EntityActionType.CONTINUOUS_ATTACK
                 };
 
                 PathNode endNode;

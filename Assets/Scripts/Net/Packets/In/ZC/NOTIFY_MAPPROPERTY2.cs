@@ -6,12 +6,9 @@
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_MAPPROPERTY2;
         public const int SIZE = 8;
 
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             var type = br.ReadShort();
             var flag = br.ReadLong();
-
-            return true;
         }
     }
 }

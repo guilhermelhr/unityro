@@ -7,15 +7,15 @@ public class ItemInfo {
     public List<Option> options;
 
     public short index;
-    public short ItemID;
+    public int ItemID;
     public int itemType;
     public int location;
     public int wearState;
-    public int refine;
+    public byte refine;
     public int expireTime;
-    public short bindOnEquip;
-    public short look;
-    public int randomOptionCount;
+    public ushort bindOnEquip;
+    public ushort wItemSpriteNumber;
+    public byte randomOptionCount;
     public bool IsDamaged;
     public int flag;
     public int amount;
@@ -29,15 +29,15 @@ public class ItemInfo {
     public InventoryType tab;
 
     public class Slot {
-        public ushort card1;
-        public ushort card2;
-        public ushort card3;
-        public ushort card4;
+        public int card1;
+        public int card2;
+        public int card3;
+        public int card4;
     }
 
     public class Option {
         public short optIndex;
         public short value;
-        public int param1;
+        public byte param1;
     }
 }

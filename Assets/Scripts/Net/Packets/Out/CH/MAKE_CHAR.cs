@@ -1,5 +1,3 @@
-using System.IO;
-
 public partial class CH {
 
     public class MAKE_CHAR : OutPacket {
@@ -16,27 +14,23 @@ public partial class CH {
         public byte Luk = 0;
         public byte CharNum = 0;
         public ushort HeadPal = 0;
-        public ushort Head = 0;
+        public ushort Head = 1;
 
         public MAKE_CHAR() : base(HEADER, SIZE) { }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write(Name, 24);
+            Write(Str);
+            Write(Agi);
+            Write(Vit);
+            Write(Int);
+            Write(Dex);
+            Write(Luk);
+            Write(CharNum);
+            Write(HeadPal);
+            Write(Head);
 
-            writer.WriteCString(Name, 24);
-            writer.Write(Str);
-            writer.Write(Agi);
-            writer.Write(Vit);
-            writer.Write(Int);
-            writer.Write(Dex);
-            writer.Write(Luk);
-            writer.Write(CharNum);
-            writer.Write(HeadPal);
-            writer.Write(Head);
-
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

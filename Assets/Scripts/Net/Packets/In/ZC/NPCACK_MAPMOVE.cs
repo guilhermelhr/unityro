@@ -10,12 +10,10 @@
         public short PosX;
         public short PosY;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             MapName = br.ReadBinaryString(16);
             PosX = br.ReadShort();
             PosY = br.ReadShort();
-
-            return true;
         }
     }
 }

@@ -15,7 +15,7 @@ public partial class HC {
 
         public PacketHeader GetHeader() => HEADER;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
 
             int numChars = (int)((br.Length - 23) / 144);
 
@@ -86,8 +86,6 @@ public partial class HC {
 
                 Chars[i] = cd;
             }
-
-            return true;
         }
     }
 }

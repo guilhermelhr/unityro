@@ -8,13 +8,10 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_ITEM_DISAPPEAR;
         public const int SIZE = 6;
 
-        public uint GID;
+        public uint AID;
 
-        public bool Read(BinaryReader br) {
-
-            GID = br.ReadULong();
-
-            return true;
+        public void Read(BinaryReader br, int size) {
+            AID = br.ReadULong();
         }
     }
 }

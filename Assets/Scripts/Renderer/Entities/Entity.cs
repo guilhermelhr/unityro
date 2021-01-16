@@ -25,13 +25,14 @@ public class Entity : MonoBehaviour {
     public bool HasAuthority => GID == Core.Session?.Entity?.GID;
 
     [SerializeField] public uint GID;
+    [SerializeField] public uint AID;
     [SerializeField] public short Job;
     [SerializeField] public byte Sex;
-    [SerializeField] public short Hair;
+    [SerializeField] public ushort Hair;
     [SerializeField] public ushort AttackSpeed;
     [SerializeField] public short AttackRange = 0;
     [SerializeField] public short WalkSpeed = 150;
-    [SerializeField] public int Weapon;
+    [SerializeField] public uint Weapon;
     [SerializeField] public int Hp;
     [SerializeField] public int MaxHp;
 
@@ -52,19 +53,21 @@ public class Entity : MonoBehaviour {
     public void Init(EntityData data) {
         Job = data.job;
         Sex = data.sex;
-        Hair = data.hairStyle;
-        Type = data.type;
+        Hair = data.head;
+        Type = data.objecttype;
         WalkSpeed = data.speed;
         Weapon = data.weapon;
-        Hp = data.hp;
-        MaxHp = data.maxhp;
+        Hp = data.HP;
+        MaxHp = data.maxHP;
         Direction = ((NpcDirection)data.PosDir[2]).ToDirection();
+        GID = data.GID;
+        AID = data.AID;
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
     }
 
     public void Vanish(int type) {
-        switch(type) {
+        switch (type) {
             case 0: // Moved out of sight
                 // TODO start coroutine to fade-out entity
                 Core.EntityManager.RemoveEntity(GID);
@@ -72,7 +75,7 @@ public class Entity : MonoBehaviour {
             case 1: // Died
                 var isPC = Type == EntityType.PC;
                 ChangeMotion(SpriteMotion.Dead);
-                if(!isPC) {
+                if (!isPC) {
                     StartCoroutine(DestroyAfterSeconds());
                 }
                 break;
@@ -84,7 +87,7 @@ public class Entity : MonoBehaviour {
 
     IEnumerator DestroyAfterSeconds() {
         yield return new WaitForSeconds(1f);
-        Core.EntityManager.RemoveEntity(GID);
+        Core.EntityManager.RemoveEntity(AID);
         yield return null;
     }
 
@@ -96,10 +99,10 @@ public class Entity : MonoBehaviour {
     public void Init(CharacterData data) {
         Job = data.Job;
         Sex = (byte)data.Sex;
-        Hair = data.Hair;
+        Hair = (ushort)data.Hair;
         WalkSpeed = data.Speed;
         Type = EntityType.PC;
-        Weapon = data.Weapon;
+        Weapon = (uint)data.Weapon;
 
         Status.base_exp = (uint)data.Exp;
         Status.base_level = (uint)data.BaseLevel;
@@ -145,27 +148,14 @@ public class Entity : MonoBehaviour {
     }
 
     private void OnSkillListReceived(ushort cmd, int size, InPacket packet) {
-        if(packet is ZC.SKILLINFO_LIST SKILLINFO_LIST) {
-            foreach(var info in SKILLINFO_LIST.skills) {
-                SkillTable.Skills.TryGetValue(info.SkillID, out var data);
-                if(data != null) {
-                    info.data = data;
-                }
-
-                try {
-                    var texture = FileManager.Load($"{DBManager.INTERFACE_PATH}item/{info.SkillName.ToLower()}.bmp") as Texture2D;
-                    info.texture = texture;
-                } catch {
-
-                }
-            }
+        if (packet is ZC.SKILLINFO_LIST SKILLINFO_LIST) {
             SkillTree.Init(Job, SKILLINFO_LIST.skills);
         }
     }
 
     private void OnExpReceived(ushort cmd, int size, InPacket packet) {
-        if(packet is ZC.NOTIFY_EXP2 NOTIFY_EXP2) {
-            switch((EntityStatus)NOTIFY_EXP2.expType) {
+        if (packet is ZC.NOTIFY_EXP2 NOTIFY_EXP2) {
+            switch ((EntityStatus)NOTIFY_EXP2.expType) {
                 case EntityStatus.SP_JOBEXP:
                     Status.job_exp += NOTIFY_EXP2.exp;
                     break;
@@ -179,7 +169,7 @@ public class Entity : MonoBehaviour {
     }
 
     private void OnStatsWindowData(ushort cmd, int size, InPacket packet) {
-        if(packet is ZC.STATUS STATUS) {
+        if (packet is ZC.STATUS STATUS) {
             MapUiController.Instance.StatsWindow.UpdateData(STATUS);
         }
     }
@@ -189,26 +179,26 @@ public class Entity : MonoBehaviour {
         int value = 0;
         int plusValue = 0;
 
-        if(packet is ZC.PAR_CHANGE PAR_CHANGE) {
+        if (packet is ZC.PAR_CHANGE PAR_CHANGE) {
             status = PAR_CHANGE.varID;
             value = PAR_CHANGE.value;
-        } else if(packet is ZC.LONGPAR_CHANGE LONGPAR_CHANGE) {
+        } else if (packet is ZC.LONGPAR_CHANGE LONGPAR_CHANGE) {
             status = LONGPAR_CHANGE.varID;
             value = LONGPAR_CHANGE.value;
-        } else if(packet is ZC.LONGPAR_CHANGE2 LONGPAR_CHANGE2) {
+        } else if (packet is ZC.LONGPAR_CHANGE2 LONGPAR_CHANGE2) {
             status = LONGPAR_CHANGE2.varID;
             value = LONGPAR_CHANGE2.value;
-        } else if(packet is ZC.COUPLESTATUS COUPLESTATUS) {
+        } else if (packet is ZC.COUPLESTATUS COUPLESTATUS) {
             status = COUPLESTATUS.status;
             value = COUPLESTATUS.value;
             plusValue = COUPLESTATUS.plusValue;
         }
 
-        if(status == null) {
+        if (status == null) {
             return;
         }
 
-        switch(status) {
+        switch (status) {
             case EntityStatus.SP_BASEEXP:
                 Status.base_exp = (uint)value;
                 break;
@@ -258,33 +248,33 @@ public class Entity : MonoBehaviour {
     private void OnEntityAction(ushort cmd, int size, InPacket packet) {
         EntityActionRequest actionRequest;
 
-        if(packet is ZC.NOTIFY_ACT3) {
+        if (packet is ZC.NOTIFY_ACT3) {
             var p = packet as ZC.NOTIFY_ACT3;
             actionRequest = p.ActionRequest;
-        } else if(packet is ZC.NOTIFY_ACT) {
+        } else if (packet is ZC.NOTIFY_ACT) {
             var p = packet as ZC.NOTIFY_ACT;
             actionRequest = p.ActionRequest;
         } else {
             return;
         }
 
-        if(actionRequest == null) return;
+        if (actionRequest == null) return;
 
         var srcEntity = Core.EntityManager.GetEntity(actionRequest.GID);
         var dstEntity = Core.EntityManager.GetEntity(actionRequest.targetGID);
 
-        if(actionRequest.GID == Core.Session.Entity.GID || actionRequest.GID == Core.Session.AccountID) {
+        if (actionRequest.GID == Core.Session.Entity.GID || actionRequest.GID == Core.Session.AccountID) {
             srcEntity = Core.Session.Entity;
-        } else if(actionRequest.targetGID == Core.Session.Entity.GID || actionRequest.targetGID == Core.Session.AccountID) {
+        } else if (actionRequest.targetGID == Core.Session.Entity.GID || actionRequest.targetGID == Core.Session.AccountID) {
             dstEntity = Core.Session.Entity;
         }
 
         // entity out of screen
-        if(!srcEntity) {
+        if (!srcEntity) {
             return;
         }
 
-        switch(actionRequest.action) {
+        switch (actionRequest.action) {
             // Damage
             case 0:
             case 4:
@@ -311,25 +301,25 @@ public class Entity : MonoBehaviour {
 
     private static void OnEntityPickup(Entity srcEntity, Entity dstEntity) {
         srcEntity.ChangeMotion(SpriteMotion.PickUp, SpriteMotion.Idle);
-        if(dstEntity) {
+        if (dstEntity) {
             srcEntity.LookTo(dstEntity.transform.position);
         }
     }
 
     private static void OnEntityAttack(EntityActionRequest pkt, Entity srcEntity, Entity dstEntity) {
         Entity target;
-        if(dstEntity) {
+        if (dstEntity) {
             // only if damage and do not have endure
             // and damage isn't absorbed (healing)
-            if(pkt.damage > 0 && pkt.action != 9 && pkt.action != 4) {
+            if (pkt.damage > 0 && pkt.action != 9 && pkt.action != 4) {
                 dstEntity.ChangeMotion(SpriteMotion.Hit, SpriteMotion.Standby);
             }
 
             target = pkt.damage > 0 ? dstEntity : srcEntity;
 
             // Process damage
-            if(target) {
-                switch(pkt.action) {
+            if (target) {
+                switch (pkt.action) {
                     // regular damage (and endure)
                     case 9:
                     case 0:
@@ -339,7 +329,7 @@ public class Entity : MonoBehaviour {
                     // double attack
                     case 8:
                         // Display combo only if entity is mob and the attack don't miss
-                        if(dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
+                        if (dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
                             dstEntity.Damage(pkt.damage / 2, Core.Tick + pkt.sourceSpeed * 1, DamageType.COMBO);
                             dstEntity.Damage(pkt.damage, Core.Tick + pkt.sourceSpeed * 2, DamageType.COMBO | DamageType.COMBO_FINAL);
                         }
@@ -378,7 +368,7 @@ public class Entity : MonoBehaviour {
      */
     public void Damage(float amount, double tick, DamageType? damageType = null) {
         var DamagePrefab = (GameObject)Resources.Load("Prefabs/Damage");
-        if(!DamagePrefab)
+        if (!DamagePrefab)
             throw new Exception("Could not load damage prefab");
 
         var damageRenderer = Instantiate(DamagePrefab).GetComponent<DamageRenderer>();

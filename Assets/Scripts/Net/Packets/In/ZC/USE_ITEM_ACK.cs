@@ -10,13 +10,10 @@
         public short count;
         public byte result;
 
-        /// 01c8 <index>.W <name id>.W <id>.L <amount>.W <result>.B (ZC_USE_ITEM_ACK2)
-        public bool Read(BinaryReader fp) {
+        public void Read(BinaryReader fp, int size) {
             this.index = fp.ReadShort();
             this.count = fp.ReadShort();
             this.result = fp.ReadUByte();
-
-            return true;
         }
     }
 }

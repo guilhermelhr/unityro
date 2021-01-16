@@ -16,12 +16,10 @@ public partial class ZC {
         public byte objecttype;
         public uint value;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             this.GID = br.ReadULong();
             this.objecttype = br.ReadUByte();
             this.value = br.ReadULong();
-
-            return true;
         }
     }
 }

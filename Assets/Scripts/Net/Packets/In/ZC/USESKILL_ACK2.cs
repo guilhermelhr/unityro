@@ -16,8 +16,7 @@
 
         public ushort SKID { get; private set; }
 
-        public bool Read(BinaryReader fp) {
-
+        public void Read(BinaryReader fp, int size) {
             AID = fp.ReadULong();
             targetID = fp.ReadULong();
             xPos = fp.ReadShort();
@@ -26,8 +25,6 @@
             property = fp.ReadULong();
             delayTime = fp.ReadULong();
             isDisposable = fp.ReadUByte();
-
-            return true;
         }
     }
 }

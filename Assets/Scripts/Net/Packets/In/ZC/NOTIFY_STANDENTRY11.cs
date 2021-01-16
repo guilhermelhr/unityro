@@ -7,64 +7,67 @@
 
         public EntityData entityData;
 
-        public bool Read(BinaryReader br) {
-            entityData = new EntityData() {
-                type = (EntityType)br.ReadUByte(),
+        public void Read(BinaryReader br, int size) {
+            entityData = new EntityData();
 
-                GID = br.ReadULong(),
-                AID = br.ReadULong(),
+            entityData.objecttype = (EntityType)br.ReadUByte();
 
-                speed = br.ReadShort(),
-                opt1 = br.ReadShort(),
-                opt2 = br.ReadShort(),
+            entityData.AID = br.ReadULong();
+            entityData.GID = br.ReadULong();
 
-                option = br.ReadLong(),
+            entityData.speed = br.ReadShort();
+            entityData.bodyState = br.ReadShort();
+            entityData.healthState = br.ReadShort();
 
-                job = br.ReadShort(),
-                hairStyle = br.ReadShort(),
-                weapon = br.ReadShort(),
-                shield = br.ReadShort(),
+            entityData.effectState = br.ReadLong();
 
-                /**
-                 * might represent emblem/guild_id1/guild_id0
-                 * rA clif.cpp #1102
-                 */
-                headBottom = br.ReadShort(),
-                headTop = br.ReadShort(),
-                headMid = br.ReadShort(),
+            entityData.job = br.ReadShort();
 
-                hairColor = br.ReadShort(),
-                clothColor = br.ReadShort(),
-                headDir = br.ReadShort(),
-                robe = br.ReadShort(),
-                GUID = br.ReadULong(),
-                guildEmblem = br.ReadShort(),
-                manner = br.ReadShort(),
+            entityData.head = br.ReadUShort();
 
-                opt3 = br.ReadLong(),
+            entityData.weapon = br.ReadULong();
+            entityData.shield = br.ReadULong();
 
-                karma = br.ReadUByte(),
-                sex = br.ReadUByte(),
+            /**
+             * might represent emblem/guild_id1/guild_id0
+             * rA clif.cpp #1102
+             */
+            entityData.accessory = br.ReadUShort();
+            entityData.accessory2 = br.ReadUShort();
+            entityData.accessory3 = br.ReadUShort();
 
-                PosDir = br.ReadPos(),
+            entityData.headpalette = br.ReadShort();
+            entityData.bodypalette = br.ReadShort();
+            entityData.headDir = br.ReadShort();
 
-                xSize = br.ReadUByte(),
-                ySize = br.ReadUByte(),
-                deadSit = br.ReadUByte(),
+            entityData.robe = br.ReadUShort();
 
-                level = br.ReadShort(),
-                font = br.ReadShort(),
+            entityData.GUID = br.ReadULong();
 
-                maxhp = br.ReadLong(),
-                hp = br.ReadLong(),
+            entityData.GEmblemVer = br.ReadShort();
+            entityData.honor = br.ReadShort();
 
-                isBoss = br.ReadUByte() == 1,
+            entityData.virtue = br.ReadLong();
 
-                body = br.ReadShort(),
-                name = br.ReadBinaryString(br.Length - br.Position)
-            };
+            entityData.isPKModeON = br.ReadUByte();
+            entityData.sex = br.ReadUByte();
 
-            return true;
+            entityData.PosDir = br.ReadPos();
+
+            entityData.xSize = br.ReadUByte();
+            entityData.ySize = br.ReadUByte();
+            entityData.state = br.ReadUByte();
+
+            entityData.clevel = br.ReadShort();
+            entityData.font = br.ReadShort();
+
+            entityData.maxHP = br.ReadLong();
+            entityData.HP = br.ReadLong();
+
+            entityData.isBoss = br.ReadUByte();
+
+            entityData.body = br.ReadUShort();
+            entityData.name = br.ReadBinaryString(24);
         }
     }
 }

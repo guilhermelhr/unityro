@@ -1,6 +1,5 @@
-﻿using System.IO;
+﻿public partial class CH {
 
-public partial class CH {
     public class ENTER : OutPacket {
 
         private const PacketHeader HEADER = PacketHeader.CH_ENTER;
@@ -16,17 +15,14 @@ public partial class CH {
             this.sex = sex;
         }
 
-        public override bool Send(BinaryWriter writer) {
-            base.Send(writer);
+        public override void Send() {
+            Write(aid);
+            Write(lig1);
+            Write(lig2);
+            Write((short)0);
+            Write(sex);
 
-            writer.Write(aid);
-            writer.Write(lig1);
-            writer.Write(lig2);
-            writer.Write((short)0);
-            writer.Write(sex);
-            writer.Flush();
-
-            return true;
+            base.Send();
         }
     }
 }

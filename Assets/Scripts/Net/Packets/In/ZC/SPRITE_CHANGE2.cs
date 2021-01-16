@@ -4,17 +4,13 @@
     public class SPRITE_CHANGE2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_SPRITE_CHANGE2;
-        public const int SIZE = 11;
+        public const int SIZE = 15;
 
-        public PacketHeader GetHeader() => HEADER;
-
-        public bool Read(BinaryReader br) {
-
-            var GID = br.ReadULong();
-            var type = br.ReadUByte();
-            var value = br.ReadULong();
-
-            return true;
+        public void Read(BinaryReader br, int size) {
+            var GID = br.ReadLong();
+            var type = br.ReadByte();
+            var value = br.ReadShort();
+            var value2 = br.ReadShort();
         }
     }
 }

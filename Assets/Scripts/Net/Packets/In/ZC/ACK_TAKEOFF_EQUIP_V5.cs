@@ -11,13 +11,10 @@ public partial class ZC {
         public int equipLocation;
         public int result;
 
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             index = br.ReadShort();
             equipLocation = br.ReadLong();
             result = br.ReadByte();
-
-            return true;
         }
     }
 }

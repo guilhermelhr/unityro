@@ -12,9 +12,8 @@ public partial class ZC {
 
         public PacketHeader GetHeader() => HEADER;
 
-        public bool Read(BinaryReader br) {
-            Message = br.ReadBinaryString((int)(br.Length - br.Position));
-            return true;
+        public void Read(BinaryReader br, int size) {
+            Message = br.ReadBinaryString(size);
         }
     }
 }

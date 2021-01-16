@@ -10,14 +10,10 @@
         public int Hp;
         public int MaxHp;
 
-        public bool Read(BinaryReader fp) {
-
+        public void Read(BinaryReader fp, int size) {
             this.GID = fp.ReadULong();
             this.Hp = fp.ReadLong();
             this.MaxHp = fp.ReadLong();
-
-            return true;
         }
     }
-
 }

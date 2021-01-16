@@ -21,10 +21,6 @@ public class CharServerSelectionController : MonoBehaviour {
         BuildServerList();
     }
 
-    private void Update() {
-        Core.NetworkClient.Ping();
-    }
-
     private void OnEnterResponse(ushort cmd, int size, InPacket packet) {
         if(packet is HC.ACCEPT_ENTER) {
             Core.NetworkClient.State.CurrentCharactersInfo = packet as HC.ACCEPT_ENTER;

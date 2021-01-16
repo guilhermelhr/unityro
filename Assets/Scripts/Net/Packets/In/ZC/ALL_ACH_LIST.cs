@@ -5,9 +5,7 @@
 
         public const PacketHeader HEADER = PacketHeader.ZC_ALL_ACH_LIST;
 
-        public bool Read(BinaryReader br) {
-
-            return true;
+        public void Read(BinaryReader br, int size) {
         }
     }
 }

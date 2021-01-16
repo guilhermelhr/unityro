@@ -1,6 +1,5 @@
 ﻿
 using System.Collections.Generic;
-using System.IO;
 
 public partial class ZC {
 
@@ -10,43 +9,47 @@ public partial class ZC {
     [PacketHandler(HEADER, "ZC_INVENTORY_ITEMLIST_EQUIP")]
     public class INVENTORY_ITEMLIST_EQUIP : InPacket {
 
-        private const int BLOCK_SIZE = 57;
+        private const int BLOCK_SIZE = 67;
         public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_ITEMLIST_EQUIP;
 
         public List<ItemInfo> Inventory = new List<ItemInfo>();
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
+            byte invType = br.ReadUByte();
 
             var count = (br.Length - br.Position) / BLOCK_SIZE;
 
-            for(int i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++) {
                 var itemInfo = new ItemInfo {
                     index = br.ReadShort(),
-                    ItemID = br.ReadShort(),
-                    itemType = br.ReadByte(),
 
-                    location = br.ReadLong(),
-                    wearState = br.ReadLong(),
-                    refine = br.ReadByte(),
+                    ItemID = (int)br.ReadULong(),
+
+                    itemType = br.ReadUByte(),
+
+                    location = (int)br.ReadULong(),
+                    wearState = (int)br.ReadULong(),
+                    refine = br.ReadUByte(),
+
                     slot = new ItemInfo.Slot() {
-                        card1 = br.ReadUShort(),
-                        card2 = br.ReadUShort(),
-                        card3 = br.ReadUShort(),
-                        card4 = br.ReadUShort()
+                        card1 = (int)br.ReadULong(),
+                        card2 = (int)br.ReadULong(),
+                        card3 = (int)br.ReadULong(),
+                        card4 = (int)br.ReadULong()
                     },
 
                     expireTime = br.ReadLong(),
-                    bindOnEquip = br.ReadShort(),
-                    look = br.ReadShort(),
-                    randomOptionCount = br.ReadByte(),
+                    bindOnEquip = br.ReadUShort(),
+                    wItemSpriteNumber = br.ReadUShort(),
+                    randomOptionCount = br.ReadUByte(),
                     options = new List<ItemInfo.Option>()
                 };
 
-                for(int j = 0; j < 5; j++) {
+                for (int j = 0; j < 5; j++) {
                     itemInfo.options.Add(new ItemInfo.Option() {
                         optIndex = br.ReadShort(),
                         value = br.ReadShort(),
-                        param1 = br.ReadByte()
+                        param1 = br.ReadUByte()
                     });
                 }
 
@@ -54,7 +57,6 @@ public partial class ZC {
 
                 Inventory.Add(itemInfo);
             }
-            return true;
         }
     }
 }

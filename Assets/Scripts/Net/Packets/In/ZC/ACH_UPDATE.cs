@@ -6,8 +6,7 @@
         public const PacketHeader HEADER = PacketHeader.ZC_ACH_UPDATE;
         public const int SIZE = 66;
 
-        public bool Read(BinaryReader br) {
-            return true;
+        public void Read(BinaryReader br, int size) {
         }
     }
 }

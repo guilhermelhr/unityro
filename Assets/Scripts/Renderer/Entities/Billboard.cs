@@ -9,7 +9,7 @@ public class Billboard : MonoBehaviour {
         euler.x = 0;
         transform.localEulerAngles = euler;
 
-        var y = 1 / Mathf.Cos(ROCamera.Instance.Altitude * Mathf.Deg2Rad);
+        var y = 1 / Mathf.Cos((ROCamera.Instance?.Altitude ?? 0) * Mathf.Deg2Rad);
         transform.localScale = new Vector3(1, y, 1);
     }
 }

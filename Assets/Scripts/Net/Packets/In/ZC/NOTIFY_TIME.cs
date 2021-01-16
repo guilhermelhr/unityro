@@ -10,11 +10,8 @@ public partial class ZC {
 
         public ulong Time;
 
-        public bool Read(BinaryReader br) {
-
+        public void Read(BinaryReader br, int size) {
             Time = br.ReadULong();
-
-            return true;
         }
     }
 }

@@ -43,6 +43,7 @@ public class Connection {
     public bool IsConnected() => Client.Connected;
 
     public BinaryWriter GetBinaryWriter() => BinaryWriter;
+    public NetworkStream GetStream() => Stream;
 
     private void ReadComplete(IAsyncResult ar) {
         int size = 0;

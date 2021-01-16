@@ -8,6 +8,7 @@ public class CharSelectionController : MonoBehaviour {
 
     public GridLayoutGroup GridLayout;
     public GameObject charSelectionItem;
+    public GameObject MapUIPrefab;
 
     private HC.NOTIFY_ZONESVR2 currentMapInfo;
     private HC.ACCEPT_ENTER currentCharactersInfo;
@@ -31,6 +32,7 @@ public class CharSelectionController : MonoBehaviour {
                 Dir = pkt.Dir
             };
             Core.NetworkClient.State.MapLoginInfo = mapLoginInfo;
+            Core.Session.SetCurrentMap(mapLoginInfo.mapname);
 
             SceneManager.LoadScene("MapScene");
         }
@@ -45,8 +47,15 @@ public class CharSelectionController : MonoBehaviour {
             Core.NetworkClient.ChangeServer(currentMapInfo.IP.ToString(), currentMapInfo.Port);
             Core.NetworkClient.CurrentConnection.Start();
 
+            var entity = Core.EntityManager.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
+            Core.Session = new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID);
+            DontDestroyOnLoad(entity.gameObject);
+
+            var mapUI = Instantiate(MapUIPrefab);
+            DontDestroyOnLoad(mapUI);
+
             var loginInfo = Core.NetworkClient.State.LoginInfo;
-            new CZ.ENTER(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int)new System.DateTimeOffset(System.DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
+            new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int)new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
         }
     }
 

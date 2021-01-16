@@ -13,11 +13,9 @@ public partial class ZC {
         public EntityStatus varID;
         public int value;
 
-        public bool Read(BinaryReader br) {
+        public void Read(BinaryReader br, int size) {
             varID = (EntityStatus)br.ReadUShort();
             value = br.ReadLong();
-
-            return true;
         }
     }
 }
