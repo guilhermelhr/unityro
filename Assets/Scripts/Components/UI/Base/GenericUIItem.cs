@@ -10,22 +10,26 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     protected ItemInfo itemInfo;
 
     private void Update() {
-        if (isDragging) {
+        if(isDragging) {
             transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2);
-        } else if (InitialPosition != Vector3.zero) {
+        } else if(InitialPosition != Vector3.zero) {
             var dir = InitialPosition - transform.position;
             transform.position += dir * Time.deltaTime * 10;
         }
 
-        if (transform.position == InitialPosition) {
+        if(transform.position == InitialPosition) {
             InitialPosition = Vector3.zero;
         }
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        if (eventData.clickCount == 2) {
+        if (eventData.button == PointerEventData.InputButton.Right) {
+            MapUiController.Instance.DisplayItemDetails(itemInfo);
+        }
+
+        if(eventData.clickCount == 2) {
             MapController.Instance.UIController.HideTooltip();
-            switch ((ItemType)itemInfo.itemType) {
+            switch((ItemType)itemInfo.itemType) {
                 // Usable item
                 case ItemType.HEALING:
                 case ItemType.USABLE:
@@ -46,8 +50,8 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 case ItemType.EQUIP:
                 case ItemType.PETEQUIP:
                 case ItemType.AMMO:
-                    if (itemInfo.IsIdentified && !itemInfo.IsDamaged) {
-                        if (itemInfo.wearState <= 0) {//wear
+                    if(itemInfo.IsIdentified && !itemInfo.IsDamaged) {
+                        if(itemInfo.wearState <= 0) {//wear
                             Core.Session.Entity.Inventory.OnEquipItem(itemInfo.index, itemInfo.location);
                         } else {//takeoff
                             Core.Session.Entity.Inventory.OnTakeOffItem(itemInfo.index);
@@ -59,13 +63,13 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
-        if (itemInfo == null || isDragging) return;
+        if(itemInfo == null || isDragging) return;
         var rectTransform = (transform as RectTransform);
         var itemName = itemInfo.IsIdentified ? itemInfo.item.identifiedDisplayName : itemInfo.item.unidentifiedDisplayName;
         var extra = "";
-        if (itemInfo.tab == InventoryType.EQUIP) {
+        if(itemInfo.tab == InventoryType.EQUIP) {
             extra = $"[{itemInfo.item.slotCount}]";
-        } else if (itemInfo.amount > 0) {
+        } else if(itemInfo.amount > 0) {
             extra = $"- {itemInfo.amount} ea";
         }
 
@@ -75,7 +79,7 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     }
 
     public void OnPointerExit(PointerEventData eventData) {
-        if (itemInfo == null || isDragging) return;
+        if(itemInfo == null || isDragging) return;
 
         MapController.Instance.UIController.HideTooltip();
     }
@@ -85,7 +89,9 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     }
 
     public void OnPointerDown(PointerEventData eventData) {
-        isDragging = true;
-        InitialPosition = transform.position;
+        if(eventData.dragging) {
+            isDragging = true;
+            InitialPosition = transform.position;
+        }
     }
 }

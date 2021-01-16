@@ -15,7 +15,7 @@ public class UIItem : GenericUIItem {
         this.itemInfo = itemInfo;
         if (itemInfo != null) {
             itemImage.enabled = true;
-            itemImage.texture = itemInfo.texture;
+            itemImage.texture = itemInfo.res;
             amountLabel.enabled = itemInfo.amount > 0;
             amountLabel.text = "" + itemInfo.amount;
         } else {

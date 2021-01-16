@@ -47,9 +47,6 @@ public class Core : MonoBehaviour {
 
     private bool roCamEnabled;
 
-    [DllImport("ronet.dll", EntryPoint = "add")]
-    public static extern int Add(int a, int b);
-
     private void Awake() {
 
         if(Instance == null) {

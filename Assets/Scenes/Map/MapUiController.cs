@@ -9,6 +9,7 @@ public class MapUiController : MonoBehaviour {
     public static MapUiController Instance;
 
     [SerializeField] private Tooltip Tooltip;
+    [SerializeField] private ItemDetailsWindow ItemDetailsPrefab;
     [SerializeField] private NpcBoxController NpcBox;
     [SerializeField] private NpcBoxMenuController NpcMenu;
     [SerializeField] private PopupController PopupController;
@@ -31,6 +32,13 @@ public class MapUiController : MonoBehaviour {
         #endregion
 
         NpcMenu.OnNpcMenuSelected = OnNpcMenuSelected;
+    }
+
+    public void DisplayItemDetails(ItemInfo itemInfo) {
+        var details = Instantiate(ItemDetailsPrefab);
+        details.SetItem(itemInfo);
+        details.transform.position = Vector3.zero;
+        details.transform.SetParent(gameObject.transform);
     }
 
     private void OnGUI() {

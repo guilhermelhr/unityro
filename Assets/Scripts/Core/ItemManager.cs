@@ -64,10 +64,12 @@ public class ItemManager : MonoBehaviour {
         foreach (var itemInfo in list) {
             var item = DBManager.GetItemInfo(itemInfo.ItemID);
             if (item == null) continue;
-            var texture = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D;
+            var res = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D;
+            var collection = FileManager.Load(DBManager.GetItemCollectionPath(item, itemInfo.IsIdentified)) as Texture2D;
 
             itemInfo.item = item;
-            itemInfo.texture = texture;
+            itemInfo.res = res;
+            itemInfo.collection = collection;
             itemInfo.tab = FindItemTab(itemInfo);
             Core.Session.Entity.Inventory.AddItem(itemInfo);
         }
@@ -119,7 +121,7 @@ public class ItemManager : MonoBehaviour {
             itemInfo.item = item;
 
             Texture2D itemRes = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D;
-            itemInfo.texture = itemRes;
+            itemInfo.res = itemRes;
 
             itemInfo.tab = FindItemTab(itemInfo);
 
@@ -132,7 +134,7 @@ public class ItemManager : MonoBehaviour {
 
     private void DisplayPopup(ItemInfo itemInfo) {
         var label = $"{(itemInfo.IsIdentified ? itemInfo.item.identifiedDisplayName : itemInfo.item.unidentifiedDisplayName)} - {itemInfo.amount} obtained";
-        MapController.Instance.UIController.DisplayPopup(itemInfo.texture, label);
+        MapController.Instance.UIController.DisplayPopup(itemInfo.res, label);
     }
 
     private void OnItemSpamInGround(ushort cmd, int size, InPacket packet) {

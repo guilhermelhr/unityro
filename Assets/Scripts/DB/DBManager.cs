@@ -47,6 +47,10 @@ public class DBManager {
         return $"{INTERFACE_PATH}item/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.bmp";
     }
 
+    public static string GetItemCollectionPath(Item item, bool isIdentified) {
+        return $"{INTERFACE_PATH}collection/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.bmp";
+    }
+
     // TODO implement this
     public static int GetWeaponAction(Job job, int sex, int weapon) {
         var baseJob = JobHelper.GetBaseClass((ushort)job, sex);

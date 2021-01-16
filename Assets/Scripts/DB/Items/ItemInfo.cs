@@ -25,7 +25,8 @@ public class ItemInfo {
     public bool IsFavorite => (flag & 0x2) == 1;
 
     public Item item;
-    public Texture2D texture;
+    public Texture2D res;
+    public Texture2D collection;
     public InventoryType tab;
 
     public class Slot {

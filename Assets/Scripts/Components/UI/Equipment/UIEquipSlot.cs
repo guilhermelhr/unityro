@@ -12,7 +12,7 @@ public class UIEquipSlot : GenericUIItem {
         this.itemInfo = itemInfo;
         if (itemInfo != null) {
             icon.enabled = true;
-            icon.texture = itemInfo.texture;
+            icon.texture = itemInfo.res;
             itemName.text = itemInfo.item.identifiedDisplayName;
         } else {
             icon.enabled = false;
