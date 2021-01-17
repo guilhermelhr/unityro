@@ -18,31 +18,51 @@ public class CustomPanel : RawImage,
     private Texture2D pressedTexture;
 
     protected override void Start() {
+        LoadTextures();
+    }
+
+    private void LoadTextures() {
+        LoadIdleTexture();
+        LoadHoverTexture();
+        LoadPressedTexture();
+    }
+
+    private void LoadPressedTexture() {
         try {
-            if (backgroundImage != null && backgroundTexture == null) {
-                backgroundTexture = FileManager.Load(DBManager.INTERFACE_PATH + backgroundImage) as Texture2D;
+            if(pressedImage != null && pressedImage == null) {
+                pressedTexture = LoadImage(pressedImage);
+            }
+        } catch {
+            Debug.LogError("Failed to load pressed image from " + this);
+        }
+    }
+
+    private void LoadHoverTexture() {
+        try {
+            if(hoverImage != null && hoverImage == null) {
+                hoverTexture = LoadImage(hoverImage);
+            }
+        } catch {
+            Debug.LogError("Failed to load hover image from " + this);
+        }
+    }
+
+    private void LoadIdleTexture() {
+        try {
+            if(backgroundImage != null && backgroundTexture == null) {
+                backgroundTexture = LoadImage(backgroundImage);
                 texture = backgroundTexture;
-                if (overrideSize)
+                if(overrideSize)
                     GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundTexture.width, backgroundTexture.height);
             }
         } catch {
             Debug.LogError("Failed to load background image from " + this);
         }
+    }
 
-        try {
-            if (hoverImage != null && hoverImage == null) {
-                hoverTexture = FileManager.Load(DBManager.INTERFACE_PATH + hoverImage) as Texture2D;
-            }
-        } catch {
-            Debug.LogError("Failed to load hover image from " + this);
-        }
-
-        try {
-            if (pressedImage != null && pressedImage == null) {
-                pressedTexture = FileManager.Load(DBManager.INTERFACE_PATH + pressedImage) as Texture2D;
-            }
-        } catch {
-            Debug.LogError("Failed to load pressed image from " + this);
+    private void Update() {
+        if(texture == null) {
+            LoadTextures();
         }
     }
 
@@ -75,4 +95,6 @@ public class CustomPanel : RawImage,
             texture = hoverTexture;
         }
     }
+
+    private Texture2D LoadImage(string path) => FileManager.Load(DBManager.INTERFACE_PATH + path) as Texture2D;
 }
