@@ -32,9 +32,9 @@ public class EffectLoader
 
             //read texture filenames
             var textureCount = data.ReadLong();
-            layer.textures = new string[textureCount];
+            layer.textures = new Texture2D[textureCount];
             for(int j = 0; j < textureCount; j++) {
-                layer.textures[j] =  "data/texture/effect/" + data.ReadBinaryString(128);
+                layer.textures[j] =  FileManager.Load("data/texture/effect/" + data.ReadBinaryString(128)) as Texture2D;
             }
 
             //read animations

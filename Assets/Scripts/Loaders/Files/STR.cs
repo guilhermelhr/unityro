@@ -6,13 +6,13 @@ public class STR
 {
     public static string Header = "STRM";
     public ulong version;
-    public ulong fps;
-    public ulong maxKey;
+    public long fps;
+    public long maxKey; //frameCount
     public Layer[] layers;
 
     public class Layer
     {
-        public string[] textures;
+        public Texture2D[] textures;
         public Animation[] animations;
     }
 
