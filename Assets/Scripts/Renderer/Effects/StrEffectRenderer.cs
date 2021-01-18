@@ -18,7 +18,7 @@ public class StrEffectRenderer : MonoBehaviour {
         _effect = effect ?? throw new Exception("STR cannot be null");
         _startTick = Core.Tick;
 
-        for (int i = 0; i < _effect.layers.Length; i++) {
+        for(int i = 0; i < _effect.layers.Length; i++) {
             var layer = _effect.layers[i];
 
             var l = new GameObject($"Layer_{i}").AddComponent<StrLayerRenderer>();
@@ -29,7 +29,7 @@ public class StrEffectRenderer : MonoBehaviour {
     }
 
     private void LateUpdate() {
-        if (_effect == null) return;
+        if(_effect == null) return;
         Render();
     }
 
@@ -37,10 +37,10 @@ public class StrEffectRenderer : MonoBehaviour {
         long keyIndex = (long)((Core.Tick - _startTick) / 1000f * _effect.fps);
         var endedLayers = new List<StrLayerRenderer>();
 
-        foreach (var layer in layers) {
+        foreach(var layer in layers) {
             layer.UpdateLayer(keyIndex);
 
-            if (layer.GetMaxFrame() == keyIndex) {
+            if(layer.GetMaxFrame() == keyIndex) {
                 endedLayers.Add(layer);
             }
         }
@@ -50,9 +50,9 @@ public class StrEffectRenderer : MonoBehaviour {
             layers.Remove(t);
         });
 
-        if (keyIndex == _effect.maxKey) {
-            //Destroy(this.gameObject);
-            SetAnimation(_effect);
+        if(keyIndex == _effect.maxKey) {
+            Destroy(this.gameObject);
+            //SetAnimation(_effect);
         }
     }
 
@@ -78,7 +78,7 @@ public class StrEffectRenderer : MonoBehaviour {
         private void Start() {
             meshRenderer = gameObject.GetOrAddComponent<MeshRenderer>();
             meshFilter = gameObject.GetOrAddComponent<MeshFilter>();
-            material = (Material)Resources.Load("SpriteMaterial", typeof(Material));
+            material = (Material)Resources.Load("EffectMaterial", typeof(Material));
         }
 
         public void SetLayer(STR.Layer layer) {
@@ -86,9 +86,9 @@ public class StrEffectRenderer : MonoBehaviour {
         }
 
         public void UpdateLayer(long keyIndex) {
-            if (CalculateAnimation(_layer, keyIndex, out var animation)) {
+            if(CalculateAnimation(_layer, keyIndex, out var animation)) {
                 var texture = _layer.textures[animation.aniframe | 0];
-                if (texture != null) {
+                if(texture != null) {
                     RenderAnimation(texture, animation);
                 }
             }
@@ -98,44 +98,45 @@ public class StrEffectRenderer : MonoBehaviour {
             var mesh = new Mesh();
 
             var points = new Vector2[] {
-            new Vector3(animation.xy[0], animation.xy[4]),
-            new Vector3(animation.xy[1], animation.xy[5]),
-            new Vector3(animation.xy[3], animation.xy[7]),
-            new Vector3(animation.xy[2], animation.xy[6])
-        };
+                new Vector3(animation.xy[0], animation.xy[4]),
+                new Vector3(animation.xy[1], animation.xy[5]),
+                new Vector3(animation.xy[3], animation.xy[7]),
+                new Vector3(animation.xy[2], animation.xy[6])
+            };
 
             mesh.vertices = new Vector3[] { points[0], points[1], points[2], points[3] };
 
             mesh.triangles = new int[] {
-            0, 2, 1,
-            2, 3, 1
-        };
+                0, 2, 1,
+                2, 3, 1
+            };
 
             var u = animation.uv[0];
             var v = animation.uv[1];
             var us = animation.uv[2];
             var vs = animation.uv[3];
             mesh.uv = new Vector2[] {
-            new Vector2(u, v),
-            new Vector2(us, v),
-            new Vector2(u, vs),
-            new Vector2(us, vs)
-        };
+                new Vector2(u, v),
+                new Vector2(us, v),
+                new Vector2(u, vs),
+                new Vector2(us, vs)
+            };
 
             mesh.RecalculateNormals();
 
-            if (animation.angle != _lastAngle) {
+            if(animation.angle != _lastAngle) {
                 //rotate
                 var rotation = transform.localEulerAngles;
-                rotation.z = (float)(-animation.angle / 180 * Math.PI);
+                rotation.x = (float)(-animation.angle / 180 * Math.PI);
                 _lastAngle = animation.angle;
             }
 
             animation.pos.x -= 320;
-            animation.pos.y -= 320;
+            animation.pos.y -= 290;
+
             var position = transform.position;
-            position.x = animation.pos.x / SPR.PIXELS_PER_UNIT;
-            position.y = animation.pos.y / SPR.PIXELS_PER_UNIT + 0.5f;
+            position.x += animation.pos.x / SPR.PIXELS_PER_UNIT;
+            position.y -= animation.pos.y / SPR.PIXELS_PER_UNIT + 0.5f;
 
             transform.position = position;
 
@@ -169,25 +170,25 @@ public class StrEffectRenderer : MonoBehaviour {
                 xy = new float[8]
             };
 
-            for (int i = 0; i < layer.animations.Length; i++) {
-                if (animations[i].frame <= keyIndex) {
-                    if (animations[i].type == 0) fromId = i;
-                    if (animations[i].type == 1) toId = i;
+            for(int i = 0; i < layer.animations.Length; i++) {
+                if(animations[i].frame <= keyIndex) {
+                    if(animations[i].type == 0) fromId = i;
+                    if(animations[i].type == 1) toId = i;
                 }
                 lastFrame = Math.Max(lastFrame, animations[i].frame);
 
-                if (animations[i].type == 0) {
+                if(animations[i].type == 0) {
                     lastSource = Math.Max(lastSource, animations[i].frame);
                 }
             }
 
             // Nothing to render
-            if (fromId < 0 || (toId < 0 && lastFrame < keyIndex)) {
+            if(fromId < 0 || (toId < 0 && lastFrame < keyIndex)) {
                 return false;
             }
 
-            if (toId < 0) {
-                if (fromId < layer.animations.Length - 1) {
+            if(toId < 0) {
+                if(fromId < layer.animations.Length - 1) {
                     toId = fromId++;
                 } else {
                     return false;
@@ -201,9 +202,9 @@ public class StrEffectRenderer : MonoBehaviour {
             result.destalpha = (int)from.destAlpha;
 
             // Static frame (or frame that can't be updated)
-            if (toId != fromId + 1 || to.frame != from.frame) {
+            if(toId != fromId + 1 || to.frame != from.frame) {
                 // No other source
-                if (to != null && lastSource <= from.frame) {
+                if(to != null && lastSource <= from.frame) {
                     return false;
                 }
 
@@ -247,7 +248,7 @@ public class StrEffectRenderer : MonoBehaviour {
             result.pos.x = from.position.x + to.position.x * delta;
             result.pos.y = from.position.y + to.position.y * delta;
 
-            switch (to.animType) {
+            switch(to.animType) {
                 default:
                     result.aniframe = 0;
                     break;

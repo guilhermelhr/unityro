@@ -30,8 +30,7 @@ Shader "Unlit/CustomSpriteShader"
 			Cull Off
 			Lighting Off
 			ZWrite Off
-			Blend One OneMinusSrcAlpha
-
+			Blend One One
 
 			Pass {
 				ZWrite On
