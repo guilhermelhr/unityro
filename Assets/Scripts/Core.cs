@@ -104,9 +104,13 @@ public class Core : MonoBehaviour {
             //var npc = EntityManager.Spawn(new EntityData() { job = 1002, objecttype = EntityType.MOB, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
             //npc.transform.position = new Vector3(160, 0, 150);
 
-            var str = FileManager.Load("data/texture/effect/angelus.str") as STR;
+            var str = FileManager.Load("data/texture/effect/h_levelup.str") as STR;
             var renderer = new GameObject().AddComponent<StrEffectRenderer>();
             renderer.SetAnimation(str);
+
+            //var img = new GameObject().AddComponent<RawImage>();
+            //var texture = FileManager.Load("data/texture/effect/explosive_1_128.bmp") as Texture2D;
+            //img.texture = texture;
         }
     }
 

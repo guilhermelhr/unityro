@@ -23,7 +23,7 @@ public class StrEffectRenderer : MonoBehaviour {
 
             var l = new GameObject($"Layer_{i}").AddComponent<StrLayerRenderer>();
             l.transform.SetParent(gameObject.transform);
-            l.SetLayer(layer, material);
+            l.SetLayer(layer);
             layers.Add(l);
         }
     }
@@ -34,10 +34,24 @@ public class StrEffectRenderer : MonoBehaviour {
     }
 
     private void Render() {
-        var keyIndex = (Core.Tick - _startTick) / 1000f * _effect.fps;
-        Debug.Log(keyIndex);
+        long keyIndex = (long)((Core.Tick - _startTick) / 1000f * _effect.fps);
+        var endedLayers = new List<StrLayerRenderer>();
+
         foreach(var layer in layers) {
-            layer.UpdateLayer((long)keyIndex);
+            layer.UpdateLayer(keyIndex);
+
+            if(layer.GetMaxFrame() == keyIndex) {
+                endedLayers.Add(layer);
+            }
+        }
+
+        endedLayers.ForEach(t => {
+            Destroy(t.gameObject);
+            layers.Remove(t);
+        });
+
+        if (keyIndex == _effect.maxKey) {
+            Destroy(this.gameObject);
         }
     }
 
@@ -63,11 +77,11 @@ public class StrEffectRenderer : MonoBehaviour {
         private void Start() {
             meshRenderer = gameObject.GetOrAddComponent<MeshRenderer>();
             meshFilter = gameObject.GetOrAddComponent<MeshFilter>();
+            material = (Material)Resources.Load("SpriteMaterial", typeof(Material));
         }
 
-        public void SetLayer(STR.Layer layer, Material material) {
+        public void SetLayer(STR.Layer layer) {
             _layer = layer;
-            this.material = material;
         }
 
         public void UpdateLayer(long keyIndex) {
@@ -111,7 +125,8 @@ public class StrEffectRenderer : MonoBehaviour {
 
             if(animation.angle != _lastAngle) {
                 //rotate
-                //-animation.angle / 180 * Math.PI;
+                var rotation = transform.localEulerAngles;
+                rotation.z = (float)(-animation.angle / 180 * Math.PI);
                 _lastAngle = animation.angle;
             }
 
@@ -140,7 +155,7 @@ public class StrEffectRenderer : MonoBehaviour {
             result = new Anim() {
                 frame = 0,
                 type = 0,
-                aniframe = 0,
+                aniframe = -1,
                 anitype = 0,
                 srcalpha = 1,
                 destalpha = 1,
@@ -170,8 +185,12 @@ public class StrEffectRenderer : MonoBehaviour {
                 return false;
             }
 
-            if(toId < 0 && fromId < layer.animations.Length) {
-                toId = fromId++;
+            if(toId < 0) {
+                if(fromId < layer.animations.Length - 1) {
+                    toId = fromId++;
+                } else {
+                    return false;
+                }
             }
 
             from = animations[fromId];
@@ -194,7 +213,7 @@ public class StrEffectRenderer : MonoBehaviour {
                 result.pos = from.position;
                 result.uv = from.uv;
                 result.xy = from.xy;
-                result.color.a = result.destalpha;
+                result.color.a = result.destalpha / 100;
 
                 return true;
             }
@@ -251,5 +270,7 @@ public class StrEffectRenderer : MonoBehaviour {
 
             return true;
         }
+
+        public int GetMaxFrame() => _layer.animations.Length > 0 ? _layer.animations[_layer.animations.Length - 1].frame : 0;
     }
 }

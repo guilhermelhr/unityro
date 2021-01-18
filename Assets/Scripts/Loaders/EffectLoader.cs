@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class EffectLoader
 {
-    public static STR Load(BinaryReader data) {
+    public static STR Load(BinaryReader data, string path) {
         var header = data.ReadBinaryString(4);
 
         if(!header.Equals(STR.Header)) {
@@ -34,7 +34,7 @@ public class EffectLoader
             var textureCount = data.ReadLong();
             layer.textures = new Texture2D[textureCount];
             for(int j = 0; j < textureCount; j++) {
-                layer.textures[j] =  FileManager.Load("data/texture/effect/" + data.ReadBinaryString(128)) as Texture2D;
+                layer.textures[j] =  FileManager.Load(path + "/" + data.ReadBinaryString(128)) as Texture2D;
             }
 
             //read animations

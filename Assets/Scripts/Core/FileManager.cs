@@ -126,7 +126,7 @@ public class FileManager {
                         spr.filename = file;
                         return spr;
                     case "str":
-                        return EffectLoader.Load(br);
+                        return EffectLoader.Load(br, Path.GetDirectoryName(file).Replace("\\", "/"));
                     case "act":
                         return ActionLoader.Load(br);
 

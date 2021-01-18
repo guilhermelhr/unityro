@@ -50,10 +50,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-namespace B83.Image.BMP
-{
-    public enum BMPComressionMode : int
-    {
+namespace B83.Image.BMP {
+    public enum BMPComressionMode : int {
         BI_RGB = 0x00,
         BI_RLE8 = 0x01,
         BI_RLE4 = 0x02,
@@ -67,15 +65,13 @@ namespace B83.Image.BMP
         BI_CMYKRLE4 = 0x0D,
 
     }
-    public struct BMPFileHeader
-    {
+    public struct BMPFileHeader {
         public ushort magic; // "BM"
         public uint filesize;
         public uint reserved;
         public uint offset;
     }
-    public struct BitmapInfoHeader
-    {
+    public struct BitmapInfoHeader {
         public uint size;
         public int width;
         public int height;
@@ -93,8 +89,7 @@ namespace B83.Image.BMP
 
     }
 
-    public class BMPImage
-    {
+    public class BMPImage {
         public BMPFileHeader header;
         public BitmapInfoHeader info;
         public uint rMask = 0x00FF0000;
@@ -110,10 +105,18 @@ namespace B83.Image.BMP
             return tex;
         }*/
         public Texture2D ToTexture2D() {
+            Color32 transparentColor = imageData[0];
+            float threshold = 0.5f;
             for(int i = 0; i < imageData.Length; i++) {
                 Color32 color = imageData[i];
-                if(color.r >= 252 && color.g <= 4 && color.b >= 252) {
-                    color.a = color.r = color.g = color.b = 0;
+                //if(color.r >= 252 && color.g <= 4 && color.b >= 252) {
+                //    color.a = color.r = color.g = color.b = 0;
+                //}
+                bool r = color.r - transparentColor.r < threshold;
+                bool g = color.g - transparentColor.g < threshold;
+                bool b = color.b - transparentColor.b < threshold;
+                if (r && g && b && color.a > 0) {
+                    color = Color.clear;
                 }
 
                 imageData[i] = color;
@@ -122,13 +125,35 @@ namespace B83.Image.BMP
             var tex = new Texture2D(info.absWidth, info.absHeight);
             tex.SetPixels32(imageData);
             tex.Apply();
+
             return tex;
+        }
+
+        public void FloodFill(int x, int y, int width, int height, Color _colorHolder, Texture2D textureHolder) {
+            if(x < 0 || y < 0 || x >= textureHolder.width || y >= textureHolder.height) {
+                return;
+            }
+
+            Color color = textureHolder.GetPixel(x, y);
+            float threshold = 1f;
+            bool r = Mathf.Abs(color.r - _colorHolder.r) < threshold;
+            bool g = Mathf.Abs(color.g - _colorHolder.g) < threshold;
+            bool b = Mathf.Abs(color.b - _colorHolder.b) < threshold;
+
+            if(r && g && b && color.a > 0) {
+                color.a = 0;
+                textureHolder.SetPixel(x, y, color);
+
+                FloodFill(x - 1, y, width, height, _colorHolder, textureHolder);
+                FloodFill(x + 1, y, width, height, _colorHolder, textureHolder);
+                FloodFill(x, y - 1, width, height, _colorHolder, textureHolder);
+                FloodFill(x, y + 1, width, height, _colorHolder, textureHolder);
+            }
         }
     }
 
 
-    public class BMPLoader
-    {
+    public class BMPLoader {
         const ushort MAGIC = 0x4D42; // "BM" little endian
         public bool ReadPaletteAlpha = false;
         public bool ForceAlphaReadWhenPossible = false;
@@ -228,11 +253,11 @@ namespace B83.Image.BMP
             byte a = 255;
             for(int i = 0; i < data.Length; i++) {
                 uint v = aReader.ReadUInt32();
-                byte r = (byte) ((v & bmp.rMask) >> shiftR);
-                byte g = (byte) ((v & bmp.gMask) >> shiftG);
-                byte b = (byte) ((v & bmp.bMask) >> shiftB);
+                byte r = (byte)((v & bmp.rMask) >> shiftR);
+                byte g = (byte)((v & bmp.gMask) >> shiftG);
+                byte b = (byte)((v & bmp.bMask) >> shiftB);
                 if(bmp.bMask != 0)
-                    a = (byte) ((v & bmp.aMask) >> shiftA);
+                    a = (byte)((v & bmp.aMask) >> shiftA);
                 data[i] = new Color32(r, g, b, a);
             }
         }
@@ -254,10 +279,10 @@ namespace B83.Image.BMP
             int shiftB = GetShiftCount(bmp.bMask);
             for(int y = 0; y < h; y++) {
                 for(int x = 0; x < w; x++) {
-                    uint v = aReader.ReadByte() | ((uint) aReader.ReadByte() << 8) | ((uint) aReader.ReadByte() << 16);
-                    byte r = (byte) ((v & bmp.rMask) >> shiftR);
-                    byte g = (byte) ((v & bmp.gMask) >> shiftG);
-                    byte b = (byte) ((v & bmp.bMask) >> shiftB);
+                    uint v = aReader.ReadByte() | ((uint)aReader.ReadByte() << 8) | ((uint)aReader.ReadByte() << 16);
+                    byte r = (byte)((v & bmp.rMask) >> shiftR);
+                    byte g = (byte)((v & bmp.gMask) >> shiftG);
+                    byte b = (byte)((v & bmp.bMask) >> shiftB);
                     data[x + y * w] = new Color32(r, g, b, 255);
                 }
                 for(int i = 0; i < pad; i++)
@@ -283,12 +308,12 @@ namespace B83.Image.BMP
             byte a = 255;
             for(int y = 0; y < h; y++) {
                 for(int x = 0; x < w; x++) {
-                    uint v = aReader.ReadByte() | ((uint) aReader.ReadByte() << 8);
-                    byte r = (byte) ((v & bmp.rMask) >> shiftR);
-                    byte g = (byte) ((v & bmp.gMask) >> shiftG);
-                    byte b = (byte) ((v & bmp.bMask) >> shiftB);
+                    uint v = aReader.ReadByte() | ((uint)aReader.ReadByte() << 8);
+                    byte r = (byte)((v & bmp.rMask) >> shiftR);
+                    byte g = (byte)((v & bmp.gMask) >> shiftG);
+                    byte b = (byte)((v & bmp.bMask) >> shiftB);
                     if(bmp.aMask != 0)
-                        a = (byte) ((v & bmp.aMask) >> shiftA);
+                        a = (byte)((v & bmp.aMask) >> shiftA);
                     data[x + y * w] = new Color32(r, g, b, a);
                 }
                 for(int i = 0; i < pad; i++)
@@ -312,7 +337,7 @@ namespace B83.Image.BMP
             bool outOfPalette = false;
             for(int y = 0; y < h; y++) {
                 for(int x = 0; x < w; x++) {
-                    int v = (int) bitReader.ReadBits(bitCount);
+                    int v = (int)bitReader.ReadBits(bitCount);
                     if(v >= bmp.palette.Count) {
                         outOfPalette = true;
                         v = 0;
@@ -335,7 +360,7 @@ namespace B83.Image.BMP
             int y = 0;
             int yOffset = 0;
             while(aReader.BaseStream.Position < aReader.BaseStream.Length - 1) {
-                int count = (int) aReader.ReadByte();
+                int count = (int)aReader.ReadByte();
                 byte d = aReader.ReadByte();
                 if(count > 0) {
                     for(int i = (count / 2); i > 0; i--) {
@@ -380,7 +405,7 @@ namespace B83.Image.BMP
             int y = 0;
             int yOffset = 0;
             while(aReader.BaseStream.Position < aReader.BaseStream.Length - 1) {
-                int count = (int) aReader.ReadByte();
+                int count = (int)aReader.ReadByte();
                 byte d = aReader.ReadByte();
                 if(count > 0) {
                     for(int i = count; i > 0; i--) {
@@ -441,13 +466,13 @@ namespace B83.Image.BMP
             aHeader.height = aReader.ReadInt32();
             aHeader.nColorPlanes = aReader.ReadUInt16();
             aHeader.nBitsPerPixel = aReader.ReadUInt16();
-            aHeader.compressionMethod = (BMPComressionMode) aReader.ReadInt32();
+            aHeader.compressionMethod = (BMPComressionMode)aReader.ReadInt32();
             aHeader.rawImageSize = aReader.ReadUInt32();
             aHeader.xPPM = aReader.ReadInt32();
             aHeader.yPPM = aReader.ReadInt32();
             aHeader.nPaletteColors = aReader.ReadUInt32();
             aHeader.nImportantColors = aReader.ReadUInt32();
-            int pad = (int) aHeader.size - 40;
+            int pad = (int)aHeader.size - 40;
             if(pad > 0)
                 aReader.ReadBytes(pad);
             return true;
@@ -456,7 +481,7 @@ namespace B83.Image.BMP
             uint count = aBmp.info.nPaletteColors;
             if(count == 0u)
                 count = 1u << aBmp.info.nBitsPerPixel;
-            var palette = new List<Color32>((int) count);
+            var palette = new List<Color32>((int)count);
             for(int i = 0; i < count; i++) {
                 byte b = aReader.ReadByte();
                 byte g = aReader.ReadByte();
@@ -470,8 +495,7 @@ namespace B83.Image.BMP
         }
 
     }
-    public class BitStreamReader
-    {
+    public class BitStreamReader {
         System.IO.BinaryReader m_Reader;
         byte m_Data = 0;
         int m_Bits = 0;
@@ -486,7 +510,7 @@ namespace B83.Image.BMP
                 m_Data = m_Reader.ReadByte();
                 m_Bits = 8;
             }
-            return (byte) ((m_Data >> --m_Bits) & 1);
+            return (byte)((m_Data >> --m_Bits) & 1);
         }
 
         public ulong ReadBits(int aCount) {
@@ -494,7 +518,7 @@ namespace B83.Image.BMP
             if(aCount <= 0 || aCount > 32)
                 throw new System.ArgumentOutOfRangeException("aCount", "aCount must be between 1 and 32 inclusive");
             for(int i = aCount - 1; i >= 0; i--)
-                val |= ((ulong) ReadBit() << i);
+                val |= ((ulong)ReadBit() << i);
             return val;
         }
         public void Flush() {
