@@ -34,13 +34,13 @@ public class StrEffectRenderer : MonoBehaviour {
     }
 
     private void Render() {
-        long keyIndex = (long)((Core.Tick - _startTick) / 1000f * _effect.fps);
+        float keyIndex = (Core.Tick - _startTick) / 1000f * _effect.fps;
         var endedLayers = new List<StrLayerRenderer>();
 
         foreach(var layer in layers) {
             layer.UpdateLayer(keyIndex);
 
-            if(layer.GetMaxFrame() == keyIndex) {
+            if(layer.GetMaxFrame() == (int)keyIndex) {
                 endedLayers.Add(layer);
             }
         }
@@ -51,8 +51,8 @@ public class StrEffectRenderer : MonoBehaviour {
         });
 
         if(keyIndex == _effect.maxKey) {
-            Destroy(this.gameObject);
-            //SetAnimation(_effect);
+            //Destroy(this.gameObject);
+            SetAnimation(_effect);
         }
     }
 
@@ -69,7 +69,7 @@ public class StrEffectRenderer : MonoBehaviour {
 
         private STR.Layer _layer;
 
-        private float _lastAngle;
+        private float _lastAngle = -1;
 
         private Material material;
         private MeshRenderer meshRenderer;
@@ -85,7 +85,7 @@ public class StrEffectRenderer : MonoBehaviour {
             _layer = layer;
         }
 
-        public void UpdateLayer(long keyIndex) {
+        public void UpdateLayer(float keyIndex) {
             if(CalculateAnimation(_layer, keyIndex, out var animation)) {
                 var texture = _layer.textures[animation.aniframe | 0];
                 if(texture != null) {
@@ -127,18 +127,14 @@ public class StrEffectRenderer : MonoBehaviour {
             if(animation.angle != _lastAngle) {
                 //rotate
                 var rotation = transform.localEulerAngles;
-                rotation.x = (float)(-animation.angle / 180 * Math.PI);
+                rotation.z = (float)(-animation.angle / 180 * Math.PI);
                 _lastAngle = animation.angle;
             }
 
             animation.pos.x -= 320;
-            animation.pos.y -= 290;
+            animation.pos.y -= 320;
 
-            var position = transform.position;
-            position.x += animation.pos.x / SPR.PIXELS_PER_UNIT;
-            position.y -= animation.pos.y / SPR.PIXELS_PER_UNIT + 0.5f;
-
-            transform.position = position;
+            transform.position = new Vector3(animation.pos.x, -animation.pos.y + 0.5f);
 
             meshFilter.mesh = mesh;
             meshRenderer.material = material;
@@ -146,7 +142,7 @@ public class StrEffectRenderer : MonoBehaviour {
             meshRenderer.material.color = animation.color;
         }
 
-        private bool CalculateAnimation(STR.Layer layer, long keyIndex, out Anim result) {
+        private bool CalculateAnimation(STR.Layer layer, float keyIndex, out Anim result) {
             var animations = layer.animations;
             var lastFrame = 0;
             var lastSource = 0;
@@ -157,7 +153,7 @@ public class StrEffectRenderer : MonoBehaviour {
             result = new Anim() {
                 frame = 0,
                 type = 0,
-                aniframe = -1,
+                aniframe = 0,
                 anitype = 0,
                 srcalpha = 1,
                 destalpha = 1,
@@ -183,16 +179,8 @@ public class StrEffectRenderer : MonoBehaviour {
             }
 
             // Nothing to render
-            if(fromId < 0 || (toId < 0 && lastFrame < keyIndex)) {
+            if(fromId < 0 || (toId < 0 && lastFrame < keyIndex) || toId < 0) {
                 return false;
-            }
-
-            if(toId < 0) {
-                if(fromId < layer.animations.Length - 1) {
-                    toId = fromId++;
-                } else {
-                    return false;
-                }
             }
 
             from = animations[fromId];
@@ -215,7 +203,7 @@ public class StrEffectRenderer : MonoBehaviour {
                 result.pos = from.position;
                 result.uv = from.uv;
                 result.xy = from.xy;
-                result.color.a = result.destalpha / 100;
+                result.color.a = result.destalpha / 255;
 
                 return true;
             }

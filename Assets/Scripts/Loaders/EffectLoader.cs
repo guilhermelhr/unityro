@@ -56,7 +56,7 @@ public class EffectLoader
                     animFrame = data.ReadFloat(),
                     animType = data.ReadULong(),
                     delay = data.ReadFloat(),
-                    angle = data.ReadFloat() / (1024/360),
+                    angle = data.ReadFloat() / (1024/360f),
                     color = new Color(
                         data.ReadFloat() / 255, data.ReadFloat() / 255, 
                         data.ReadFloat() / 255, data.ReadFloat() / 255),
