@@ -98,24 +98,11 @@ namespace B83.Image.BMP {
         public uint aMask = 0x00000000;
         public List<Color32> palette;
         public Color32[] imageData;
-        /*public Texture2D ToTexture2D() {
-            var tex = new Texture2D(info.absWidth, info.absHeight);
-            tex.SetPixels32(imageData);
-            tex.Apply();
-            return tex;
-        }*/
+
         public Texture2D ToTexture2D() {
-            Color32 transparentColor = imageData[0];
-            float threshold = 0.5f;
-            for(int i = 0; i < imageData.Length; i++) {
+            for (int i = 0; i < imageData.Length; i++) {
                 Color32 color = imageData[i];
-                //if(color.r >= 252 && color.g <= 4 && color.b >= 252) {
-                //    color.a = color.r = color.g = color.b = 0;
-                //}
-                bool r = color.r - transparentColor.r < threshold;
-                bool g = color.g - transparentColor.g < threshold;
-                bool b = color.b - transparentColor.b < threshold;
-                if (r && g && b && color.a > 0) {
+                if (color.r >= 252 && color.g <= 4 && color.b >= 252) {
                     color = Color.clear;
                 }
 
@@ -130,7 +117,7 @@ namespace B83.Image.BMP {
         }
 
         public void FloodFill(int x, int y, int width, int height, Color _colorHolder, Texture2D textureHolder) {
-            if(x < 0 || y < 0 || x >= textureHolder.width || y >= textureHolder.height) {
+            if (x < 0 || y < 0 || x >= textureHolder.width || y >= textureHolder.height) {
                 return;
             }
 
@@ -140,7 +127,7 @@ namespace B83.Image.BMP {
             bool g = Mathf.Abs(color.g - _colorHolder.g) < threshold;
             bool b = Mathf.Abs(color.b - _colorHolder.b) < threshold;
 
-            if(r && g && b && color.a > 0) {
+            if (r && g && b && color.a > 0) {
                 color.a = 0;
                 textureHolder.SetPixel(x, y, color);
 
@@ -159,30 +146,30 @@ namespace B83.Image.BMP {
         public bool ForceAlphaReadWhenPossible = false;
 
         public BMPImage LoadBMP(string aFileName) {
-            using(var file = File.OpenRead(aFileName))
+            using (var file = File.OpenRead(aFileName))
                 return LoadBMP(file);
         }
         public BMPImage LoadBMP(byte[] aData) {
-            using(var stream = new MemoryStream(aData))
+            using (var stream = new MemoryStream(aData))
                 return LoadBMP(stream);
         }
 
         public BMPImage LoadBMP(Stream aData) {
-            using(var reader = new System.IO.BinaryReader(aData))
+            using (var reader = new System.IO.BinaryReader(aData))
                 return LoadBMP(reader);
 
         }
         public BMPImage LoadBMP(System.IO.BinaryReader aReader) {
             BMPImage bmp = new BMPImage();
-            if(!ReadFileHeader(aReader, ref bmp.header)) {
+            if (!ReadFileHeader(aReader, ref bmp.header)) {
                 Debug.LogError("Not a BMP file");
                 return null;
             }
-            if(!ReadInfoHeader(aReader, ref bmp.info)) {
+            if (!ReadInfoHeader(aReader, ref bmp.info)) {
                 Debug.LogError("Unsupported header format");
                 return null;
             }
-            if(bmp.info.compressionMethod != BMPComressionMode.BI_RGB
+            if (bmp.info.compressionMethod != BMPComressionMode.BI_RGB
                 && bmp.info.compressionMethod != BMPComressionMode.BI_BITFIELDS
                 && bmp.info.compressionMethod != BMPComressionMode.BI_ALPHABITFIELDS
                 && bmp.info.compressionMethod != BMPComressionMode.BI_RLE4
@@ -193,24 +180,24 @@ namespace B83.Image.BMP {
             }
             long offset = 14 + bmp.info.size;
             aReader.BaseStream.Seek(offset, SeekOrigin.Begin);
-            if(bmp.info.nBitsPerPixel < 24) {
+            if (bmp.info.nBitsPerPixel < 24) {
                 bmp.rMask = 0x00007C00;
                 bmp.gMask = 0x000003E0;
                 bmp.bMask = 0x0000001F;
             }
 
-            if(bmp.info.compressionMethod == BMPComressionMode.BI_BITFIELDS || bmp.info.compressionMethod == BMPComressionMode.BI_ALPHABITFIELDS) {
+            if (bmp.info.compressionMethod == BMPComressionMode.BI_BITFIELDS || bmp.info.compressionMethod == BMPComressionMode.BI_ALPHABITFIELDS) {
                 bmp.rMask = aReader.ReadUInt32();
                 bmp.gMask = aReader.ReadUInt32();
                 bmp.bMask = aReader.ReadUInt32();
             }
-            if(ForceAlphaReadWhenPossible)
+            if (ForceAlphaReadWhenPossible)
                 bmp.aMask = GetMask(bmp.info.nBitsPerPixel) ^ (bmp.rMask | bmp.gMask | bmp.bMask);
 
-            if(bmp.info.compressionMethod == BMPComressionMode.BI_ALPHABITFIELDS)
+            if (bmp.info.compressionMethod == BMPComressionMode.BI_ALPHABITFIELDS)
                 bmp.aMask = aReader.ReadUInt32();
 
-            if(bmp.info.nPaletteColors > 0 || bmp.info.nBitsPerPixel <= 8)
+            if (bmp.info.nPaletteColors > 0 || bmp.info.nBitsPerPixel <= 8)
                 bmp.palette = ReadPalette(aReader, bmp, ReadPaletteAlpha || ForceAlphaReadWhenPossible);
 
 
@@ -218,17 +205,17 @@ namespace B83.Image.BMP {
             bool uncompressed = bmp.info.compressionMethod == BMPComressionMode.BI_RGB ||
                 bmp.info.compressionMethod == BMPComressionMode.BI_BITFIELDS ||
                 bmp.info.compressionMethod == BMPComressionMode.BI_ALPHABITFIELDS;
-            if(bmp.info.nBitsPerPixel == 32 && uncompressed)
+            if (bmp.info.nBitsPerPixel == 32 && uncompressed)
                 Read32BitImage(aReader, bmp);
-            else if(bmp.info.nBitsPerPixel == 24 && uncompressed)
+            else if (bmp.info.nBitsPerPixel == 24 && uncompressed)
                 Read24BitImage(aReader, bmp);
-            else if(bmp.info.nBitsPerPixel == 16 && uncompressed)
+            else if (bmp.info.nBitsPerPixel == 16 && uncompressed)
                 Read16BitImage(aReader, bmp);
-            else if(bmp.info.compressionMethod == BMPComressionMode.BI_RLE4 && bmp.info.nBitsPerPixel == 4 && bmp.palette != null)
+            else if (bmp.info.compressionMethod == BMPComressionMode.BI_RLE4 && bmp.info.nBitsPerPixel == 4 && bmp.palette != null)
                 ReadIndexedImageRLE4(aReader, bmp);
-            else if(bmp.info.compressionMethod == BMPComressionMode.BI_RLE8 && bmp.info.nBitsPerPixel == 8 && bmp.palette != null)
+            else if (bmp.info.compressionMethod == BMPComressionMode.BI_RLE8 && bmp.info.nBitsPerPixel == 8 && bmp.palette != null)
                 ReadIndexedImageRLE8(aReader, bmp);
-            else if(uncompressed && bmp.info.nBitsPerPixel <= 8 && bmp.palette != null)
+            else if (uncompressed && bmp.info.nBitsPerPixel <= 8 && bmp.palette != null)
                 ReadIndexedImage(aReader, bmp);
             else {
                 Debug.LogError("Unsupported file format: " + bmp.info.compressionMethod + " BPP: " + bmp.info.nBitsPerPixel);
@@ -242,7 +229,7 @@ namespace B83.Image.BMP {
             int w = Mathf.Abs(bmp.info.width);
             int h = Mathf.Abs(bmp.info.height);
             Color32[] data = bmp.imageData = new Color32[w * h];
-            if(aReader.BaseStream.Position + w * h * 4 > aReader.BaseStream.Length) {
+            if (aReader.BaseStream.Position + w * h * 4 > aReader.BaseStream.Length) {
                 Debug.LogError("Unexpected end of file.");
                 return;
             }
@@ -251,12 +238,12 @@ namespace B83.Image.BMP {
             int shiftB = GetShiftCount(bmp.bMask);
             int shiftA = GetShiftCount(bmp.aMask);
             byte a = 255;
-            for(int i = 0; i < data.Length; i++) {
+            for (int i = 0; i < data.Length; i++) {
                 uint v = aReader.ReadUInt32();
                 byte r = (byte)((v & bmp.rMask) >> shiftR);
                 byte g = (byte)((v & bmp.gMask) >> shiftG);
                 byte b = (byte)((v & bmp.bMask) >> shiftB);
-                if(bmp.bMask != 0)
+                if (bmp.bMask != 0)
                     a = (byte)((v & bmp.aMask) >> shiftA);
                 data[i] = new Color32(r, g, b, a);
             }
@@ -270,22 +257,22 @@ namespace B83.Image.BMP {
             int count = rowLength * h;
             int pad = rowLength - w * 3;
             Color32[] data = bmp.imageData = new Color32[w * h];
-            if(aReader.BaseStream.Position + count > aReader.BaseStream.Length) {
+            if (aReader.BaseStream.Position + count > aReader.BaseStream.Length) {
                 Debug.LogError("Unexpected end of file. (Have " + (aReader.BaseStream.Position + count) + " bytes, expected " + aReader.BaseStream.Length + " bytes)");
                 return;
             }
             int shiftR = GetShiftCount(bmp.rMask);
             int shiftG = GetShiftCount(bmp.gMask);
             int shiftB = GetShiftCount(bmp.bMask);
-            for(int y = 0; y < h; y++) {
-                for(int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
                     uint v = aReader.ReadByte() | ((uint)aReader.ReadByte() << 8) | ((uint)aReader.ReadByte() << 16);
                     byte r = (byte)((v & bmp.rMask) >> shiftR);
                     byte g = (byte)((v & bmp.gMask) >> shiftG);
                     byte b = (byte)((v & bmp.bMask) >> shiftB);
                     data[x + y * w] = new Color32(r, g, b, 255);
                 }
-                for(int i = 0; i < pad; i++)
+                for (int i = 0; i < pad; i++)
                     aReader.ReadByte();
             }
         }
@@ -297,7 +284,7 @@ namespace B83.Image.BMP {
             int count = rowLength * h;
             int pad = rowLength - w * 2;
             Color32[] data = bmp.imageData = new Color32[w * h];
-            if(aReader.BaseStream.Position + count > aReader.BaseStream.Length) {
+            if (aReader.BaseStream.Position + count > aReader.BaseStream.Length) {
                 Debug.LogError("Unexpected end of file. (Have " + (aReader.BaseStream.Position + count) + " bytes, expected " + aReader.BaseStream.Length + " bytes)");
                 return;
             }
@@ -306,17 +293,17 @@ namespace B83.Image.BMP {
             int shiftB = GetShiftCount(bmp.bMask);
             int shiftA = GetShiftCount(bmp.aMask);
             byte a = 255;
-            for(int y = 0; y < h; y++) {
-                for(int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
                     uint v = aReader.ReadByte() | ((uint)aReader.ReadByte() << 8);
                     byte r = (byte)((v & bmp.rMask) >> shiftR);
                     byte g = (byte)((v & bmp.gMask) >> shiftG);
                     byte b = (byte)((v & bmp.bMask) >> shiftB);
-                    if(bmp.aMask != 0)
+                    if (bmp.aMask != 0)
                         a = (byte)((v & bmp.aMask) >> shiftA);
                     data[x + y * w] = new Color32(r, g, b, a);
                 }
-                for(int i = 0; i < pad; i++)
+                for (int i = 0; i < pad; i++)
                     aReader.ReadByte();
             }
         }
@@ -329,26 +316,26 @@ namespace B83.Image.BMP {
             int count = rowLength * h;
             int pad = rowLength - (w * bitCount + 7) / 8;
             Color32[] data = bmp.imageData = new Color32[w * h];
-            if(aReader.BaseStream.Position + count > aReader.BaseStream.Length) {
+            if (aReader.BaseStream.Position + count > aReader.BaseStream.Length) {
                 Debug.LogError("Unexpected end of file. (Have " + (aReader.BaseStream.Position + count) + " bytes, expected " + aReader.BaseStream.Length + " bytes)");
                 return;
             }
             BitStreamReader bitReader = new BitStreamReader(aReader);
             bool outOfPalette = false;
-            for(int y = 0; y < h; y++) {
-                for(int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
                     int v = (int)bitReader.ReadBits(bitCount);
-                    if(v >= bmp.palette.Count) {
+                    if (v >= bmp.palette.Count) {
                         outOfPalette = true;
                         v = 0;
                     }
                     data[x + y * w] = bmp.palette[v];
                 }
                 bitReader.Flush();
-                for(int i = 0; i < pad; i++)
+                for (int i = 0; i < pad; i++)
                     aReader.ReadByte();
             }
-            if(outOfPalette) {
+            if (outOfPalette) {
                 Debug.LogWarning("Indexed bitmap has indices greater than it's color palette");
             }
         }
@@ -359,38 +346,38 @@ namespace B83.Image.BMP {
             int x = 0;
             int y = 0;
             int yOffset = 0;
-            while(aReader.BaseStream.Position < aReader.BaseStream.Length - 1) {
+            while (aReader.BaseStream.Position < aReader.BaseStream.Length - 1) {
                 int count = (int)aReader.ReadByte();
                 byte d = aReader.ReadByte();
-                if(count > 0) {
-                    for(int i = (count / 2); i > 0; i--) {
+                if (count > 0) {
+                    for (int i = (count / 2); i > 0; i--) {
                         data[x++ + yOffset] = bmp.palette[(d >> 4) & 0x0F];
                         data[x++ + yOffset] = bmp.palette[d & 0x0F];
                     }
-                    if((count & 0x01) > 0) {
+                    if ((count & 0x01) > 0) {
                         data[x++ + yOffset] = bmp.palette[(d >> 4) & 0x0F];
                     }
                 } else {
-                    if(d == 0) {
+                    if (d == 0) {
                         x = 0;
                         y += 1;
                         yOffset = y * w;
-                    } else if(d == 1) {
+                    } else if (d == 1) {
                         break;
-                    } else if(d == 2) {
+                    } else if (d == 2) {
                         x += aReader.ReadByte();
                         y += aReader.ReadByte();
                         yOffset = y * w;
                     } else {
-                        for(int i = (d / 2); i > 0; i--) {
+                        for (int i = (d / 2); i > 0; i--) {
                             byte d2 = aReader.ReadByte();
                             data[x++ + yOffset] = bmp.palette[(d2 >> 4) & 0x0F];
                             data[x++ + yOffset] = bmp.palette[d2 & 0x0F];
                         }
-                        if((d & 0x01) > 0) {
+                        if ((d & 0x01) > 0) {
                             data[x++ + yOffset] = bmp.palette[(aReader.ReadByte() >> 4) & 0x0F];
                         }
-                        if((((d - 1) / 2) & 1) == 0) {
+                        if ((((d - 1) / 2) & 1) == 0) {
                             aReader.ReadByte(); // padding (word alignment)
                         }
                     }
@@ -404,29 +391,29 @@ namespace B83.Image.BMP {
             int x = 0;
             int y = 0;
             int yOffset = 0;
-            while(aReader.BaseStream.Position < aReader.BaseStream.Length - 1) {
+            while (aReader.BaseStream.Position < aReader.BaseStream.Length - 1) {
                 int count = (int)aReader.ReadByte();
                 byte d = aReader.ReadByte();
-                if(count > 0) {
-                    for(int i = count; i > 0; i--) {
+                if (count > 0) {
+                    for (int i = count; i > 0; i--) {
                         data[x++ + yOffset] = bmp.palette[d];
                     }
                 } else {
-                    if(d == 0) {
+                    if (d == 0) {
                         x = 0;
                         y += 1;
                         yOffset = y * w;
-                    } else if(d == 1) {
+                    } else if (d == 1) {
                         break;
-                    } else if(d == 2) {
+                    } else if (d == 2) {
                         x += aReader.ReadByte();
                         y += aReader.ReadByte();
                         yOffset = y * w;
                     } else {
-                        for(int i = d; i > 0; i--) {
+                        for (int i = d; i > 0; i--) {
                             data[x++ + yOffset] = bmp.palette[aReader.ReadByte()];
                         }
-                        if((d & 0x01) > 0) {
+                        if ((d & 0x01) > 0) {
                             aReader.ReadByte(); // padding (word alignment)
                         }
                     }
@@ -434,8 +421,8 @@ namespace B83.Image.BMP {
             }
         }
         private static int GetShiftCount(uint mask) {
-            for(int i = 0; i < 32; i++) {
-                if((mask & 0x01) > 0)
+            for (int i = 0; i < 32; i++) {
+                if ((mask & 0x01) > 0)
                     return i;
                 mask >>= 1;
             }
@@ -443,7 +430,7 @@ namespace B83.Image.BMP {
         }
         private static uint GetMask(int bitCount) {
             uint mask = 0;
-            for(int i = 0; i < bitCount; i++) {
+            for (int i = 0; i < bitCount; i++) {
                 mask <<= 1;
                 mask |= 0x01;
             }
@@ -451,7 +438,7 @@ namespace B83.Image.BMP {
         }
         private static bool ReadFileHeader(System.IO.BinaryReader aReader, ref BMPFileHeader aFileHeader) {
             aFileHeader.magic = aReader.ReadUInt16();
-            if(aFileHeader.magic != MAGIC)
+            if (aFileHeader.magic != MAGIC)
                 return false;
             aFileHeader.filesize = aReader.ReadUInt32();
             aFileHeader.reserved = aReader.ReadUInt32();
@@ -460,7 +447,7 @@ namespace B83.Image.BMP {
         }
         private static bool ReadInfoHeader(System.IO.BinaryReader aReader, ref BitmapInfoHeader aHeader) {
             aHeader.size = aReader.ReadUInt32();
-            if(aHeader.size < 40)
+            if (aHeader.size < 40)
                 return false;
             aHeader.width = aReader.ReadInt32();
             aHeader.height = aReader.ReadInt32();
@@ -473,21 +460,21 @@ namespace B83.Image.BMP {
             aHeader.nPaletteColors = aReader.ReadUInt32();
             aHeader.nImportantColors = aReader.ReadUInt32();
             int pad = (int)aHeader.size - 40;
-            if(pad > 0)
+            if (pad > 0)
                 aReader.ReadBytes(pad);
             return true;
         }
         public static List<Color32> ReadPalette(System.IO.BinaryReader aReader, BMPImage aBmp, bool aReadAlpha) {
             uint count = aBmp.info.nPaletteColors;
-            if(count == 0u)
+            if (count == 0u)
                 count = 1u << aBmp.info.nBitsPerPixel;
             var palette = new List<Color32>((int)count);
-            for(int i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++) {
                 byte b = aReader.ReadByte();
                 byte g = aReader.ReadByte();
                 byte r = aReader.ReadByte();
                 byte a = aReader.ReadByte();
-                if(!aReadAlpha)
+                if (!aReadAlpha)
                     a = 255;
                 palette.Add(new Color32(r, g, b, a));
             }
@@ -506,7 +493,7 @@ namespace B83.Image.BMP {
         public BitStreamReader(Stream aStream) : this(new System.IO.BinaryReader(aStream)) { }
 
         public byte ReadBit() {
-            if(m_Bits <= 0) {
+            if (m_Bits <= 0) {
                 m_Data = m_Reader.ReadByte();
                 m_Bits = 8;
             }
@@ -515,9 +502,9 @@ namespace B83.Image.BMP {
 
         public ulong ReadBits(int aCount) {
             ulong val = 0UL;
-            if(aCount <= 0 || aCount > 32)
+            if (aCount <= 0 || aCount > 32)
                 throw new System.ArgumentOutOfRangeException("aCount", "aCount must be between 1 and 32 inclusive");
-            for(int i = aCount - 1; i >= 0; i--)
+            for (int i = aCount - 1; i >= 0; i--)
                 val |= ((ulong)ReadBit() << i);
             return val;
         }

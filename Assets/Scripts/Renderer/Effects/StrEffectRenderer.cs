@@ -18,7 +18,7 @@ public class StrEffectRenderer : MonoBehaviour {
         _effect = effect ?? throw new Exception("STR cannot be null");
         _startTick = Core.Tick;
 
-        for(int i = 0; i < _effect.layers.Length; i++) {
+        for (int i = 0; i < _effect.layers.Length; i++) {
             var layer = _effect.layers[i];
 
             var l = new GameObject($"Layer_{i}").AddComponent<StrLayerRenderer>();
@@ -29,7 +29,7 @@ public class StrEffectRenderer : MonoBehaviour {
     }
 
     private void LateUpdate() {
-        if(_effect == null) return;
+        if (_effect == null) return;
         Render();
     }
 
@@ -37,10 +37,10 @@ public class StrEffectRenderer : MonoBehaviour {
         long keyIndex = (long)((Core.Tick - _startTick) / 1000f * _effect.fps);
         var endedLayers = new List<StrLayerRenderer>();
 
-        foreach(var layer in layers) {
+        foreach (var layer in layers) {
             layer.UpdateLayer(keyIndex);
 
-            if(layer.GetMaxFrame() == keyIndex) {
+            if (layer.GetMaxFrame() == keyIndex) {
                 endedLayers.Add(layer);
             }
         }
@@ -51,7 +51,8 @@ public class StrEffectRenderer : MonoBehaviour {
         });
 
         if (keyIndex == _effect.maxKey) {
-            Destroy(this.gameObject);
+            //Destroy(this.gameObject);
+            SetAnimation(_effect);
         }
     }
 
@@ -85,9 +86,9 @@ public class StrEffectRenderer : MonoBehaviour {
         }
 
         public void UpdateLayer(long keyIndex) {
-            if(CalculateAnimation(_layer, keyIndex, out var animation)) {
+            if (CalculateAnimation(_layer, keyIndex, out var animation)) {
                 var texture = _layer.textures[animation.aniframe | 0];
-                if(texture != null) {
+                if (texture != null) {
                     RenderAnimation(texture, animation);
                 }
             }
@@ -123,7 +124,7 @@ public class StrEffectRenderer : MonoBehaviour {
 
             mesh.RecalculateNormals();
 
-            if(animation.angle != _lastAngle) {
+            if (animation.angle != _lastAngle) {
                 //rotate
                 var rotation = transform.localEulerAngles;
                 rotation.z = (float)(-animation.angle / 180 * Math.PI);
@@ -168,25 +169,25 @@ public class StrEffectRenderer : MonoBehaviour {
                 xy = new float[8]
             };
 
-            for(int i = 0; i < layer.animations.Length; i++) {
-                if(animations[i].frame <= keyIndex) {
-                    if(animations[i].type == 0) fromId = i;
-                    if(animations[i].type == 1) toId = i;
+            for (int i = 0; i < layer.animations.Length; i++) {
+                if (animations[i].frame <= keyIndex) {
+                    if (animations[i].type == 0) fromId = i;
+                    if (animations[i].type == 1) toId = i;
                 }
                 lastFrame = Math.Max(lastFrame, animations[i].frame);
 
-                if(animations[i].type == 0) {
+                if (animations[i].type == 0) {
                     lastSource = Math.Max(lastSource, animations[i].frame);
                 }
             }
 
             // Nothing to render
-            if(fromId < 0 || (toId < 0 && lastFrame < keyIndex)) {
+            if (fromId < 0 || (toId < 0 && lastFrame < keyIndex)) {
                 return false;
             }
 
-            if(toId < 0) {
-                if(fromId < layer.animations.Length - 1) {
+            if (toId < 0) {
+                if (fromId < layer.animations.Length - 1) {
                     toId = fromId++;
                 } else {
                     return false;
@@ -200,9 +201,9 @@ public class StrEffectRenderer : MonoBehaviour {
             result.destalpha = (int)from.destAlpha;
 
             // Static frame (or frame that can't be updated)
-            if(toId != fromId + 1 || to.frame != from.frame) {
+            if (toId != fromId + 1 || to.frame != from.frame) {
                 // No other source
-                if(to != null && lastSource <= from.frame) {
+                if (to != null && lastSource <= from.frame) {
                     return false;
                 }
 
@@ -246,7 +247,7 @@ public class StrEffectRenderer : MonoBehaviour {
             result.pos.x = from.position.x + to.position.x * delta;
             result.pos.y = from.position.y + to.position.y * delta;
 
-            switch(to.animType) {
+            switch (to.animType) {
                 default:
                     result.aniframe = 0;
                     break;
