@@ -23,7 +23,7 @@ public class StrEffectRenderer : MonoBehaviour {
 
             var l = new GameObject($"Layer_{i}").AddComponent<StrLayerRenderer>();
             l.transform.SetParent(gameObject.transform);
-            l.SetLayer(layer);
+            l.SetLayer(layer, i);
             layers.Add(l);
         }
     }
@@ -40,7 +40,7 @@ public class StrEffectRenderer : MonoBehaviour {
         foreach(var layer in layers) {
             layer.UpdateLayer(keyIndex);
 
-            if(layer.GetMaxFrame() == (int)keyIndex) {
+            if (layer.GetMaxFrame() == (long)keyIndex) {
                 endedLayers.Add(layer);
             }
         }
@@ -50,7 +50,9 @@ public class StrEffectRenderer : MonoBehaviour {
             layers.Remove(t);
         });
 
-        if(keyIndex == _effect.maxKey) {
+        if((long)keyIndex == _effect.maxKey) {
+            layers.ForEach(l => Destroy(l.gameObject));
+            layers.Clear();
             //Destroy(this.gameObject);
             SetAnimation(_effect);
         }
@@ -68,6 +70,7 @@ public class StrEffectRenderer : MonoBehaviour {
     class StrLayerRenderer : MonoBehaviour {
 
         private STR.Layer _layer;
+        private int _layerNumber;
 
         private float _lastAngle = -1;
 
@@ -81,8 +84,9 @@ public class StrEffectRenderer : MonoBehaviour {
             material = (Material)Resources.Load("EffectMaterial", typeof(Material));
         }
 
-        public void SetLayer(STR.Layer layer) {
+        public void SetLayer(STR.Layer layer, int layerNumber) {
             _layer = layer;
+            _layerNumber = layerNumber;
         }
 
         public void UpdateLayer(float keyIndex) {
@@ -97,18 +101,16 @@ public class StrEffectRenderer : MonoBehaviour {
         private void RenderAnimation(Texture2D texture, Anim animation) {
             var mesh = new Mesh();
 
-            var points = new Vector2[] {
-                new Vector3(animation.xy[0], animation.xy[4]),
-                new Vector3(animation.xy[1], animation.xy[5]),
-                new Vector3(animation.xy[3], animation.xy[7]),
-                new Vector3(animation.xy[2], animation.xy[6])
+            mesh.vertices = new Vector3[] {
+                new Vector3(animation.xy[0], animation.xy[4], 0.02f * _layerNumber),
+                new Vector3(animation.xy[1], animation.xy[5], 0.02f * _layerNumber),
+                new Vector3(animation.xy[3], animation.xy[7], 0.02f * _layerNumber),
+                new Vector3(animation.xy[2], animation.xy[6], 0.02f * _layerNumber)
             };
 
-            mesh.vertices = new Vector3[] { points[0], points[1], points[2], points[3] };
-
             mesh.triangles = new int[] {
+                2, 3, 1,
                 0, 2, 1,
-                2, 3, 1
             };
 
             var u = animation.uv[0];
@@ -126,16 +128,16 @@ public class StrEffectRenderer : MonoBehaviour {
 
             if(animation.angle != _lastAngle) {
                 //rotate
-                var rotation = transform.localEulerAngles;
-                rotation.z = (float)(-animation.angle / 180 * Math.PI);
+                var rotation = transform.localRotation;
+                rotation.z = (-animation.angle / 2.8444f);
+                transform.localRotation = rotation;
                 _lastAngle = animation.angle;
             }
 
             animation.pos.x -= 320;
-            animation.pos.y -= 320;
+            animation.pos.y -= 290;
 
             transform.position = new Vector3(animation.pos.x, -animation.pos.y + 0.5f);
-
             meshFilter.mesh = mesh;
             meshRenderer.material = material;
             meshRenderer.material.mainTexture = texture;
@@ -186,8 +188,8 @@ public class StrEffectRenderer : MonoBehaviour {
             from = animations[fromId];
             to = animations[toId];
             var delta = keyIndex - from.frame;
-            result.srcalpha = (int)from.srcAlpha;
-            result.destalpha = (int)from.destAlpha;
+            result.srcalpha = from.srcAlpha;
+            result.destalpha = from.destAlpha;
 
             // Static frame (or frame that can't be updated)
             if(toId != fromId + 1 || to.frame != from.frame) {
@@ -203,7 +205,6 @@ public class StrEffectRenderer : MonoBehaviour {
                 result.pos = from.position;
                 result.uv = from.uv;
                 result.xy = from.xy;
-                result.color.a = result.destalpha / 255;
 
                 return true;
             }
@@ -232,7 +233,7 @@ public class StrEffectRenderer : MonoBehaviour {
             result.xy[6] = from.xy[6] + to.xy[6] * delta;
             result.xy[7] = from.xy[7] + to.xy[7] * delta;
 
-            result.angle = from.angle + to.angle * delta;
+            result.angle = from.angle + (to.angle / 2.8444f) * delta;
             result.pos.x = from.position.x + to.position.x * delta;
             result.pos.y = from.position.y + to.position.y * delta;
 

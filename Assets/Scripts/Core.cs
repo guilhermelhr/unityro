@@ -104,7 +104,7 @@ public class Core : MonoBehaviour {
             //var npc = EntityManager.Spawn(new EntityData() { job = 1002, objecttype = EntityType.MOB, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
             //npc.transform.position = new Vector3(160, 0, 150);
 
-            var str = FileManager.Load("data/texture/effect/joblvup.str") as STR;
+            var str = FileManager.Load("data/texture/effect/magnificat.str") as STR;
             var renderer = new GameObject().AddComponent<StrEffectRenderer>();
             renderer.SetAnimation(str);
 
