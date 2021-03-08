@@ -6,14 +6,18 @@ public class STR
 {
     public static string Header = "STRM";
     public ulong version;
-    public ulong fps;
-    public ulong maxKey;
+    public long fps;
+    public long maxKey; //frameCount
     public Layer[] layers;
+    public Texture2D Atlas;
+    public Rect[] AtlasRects;
+    public string name;
 
     public class Layer
     {
-        public string[] textures;
+        public Texture2D[] textures;
         public Animation[] animations;
+        public List<int> texturesIds;
     }
 
     public class Animation
@@ -21,8 +25,8 @@ public class STR
         public int frame;
         public ulong type;
         public Vector2 position;
-        public float[] uv;
-        public float[] xy;
+        public Vector2[] uv;
+        public Vector2[] xy;
         public float animFrame;
         public ulong animType;
         public float delay;

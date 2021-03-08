@@ -7,9 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SpriteMaterial
+  m_Name: EffectMaterial
   m_Shader: {fileID: 4800000, guid: 44668537274eb12498b47617c9729d07, type: 3}
-  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA _ZWRITE_ON
+  m_ShaderKeywords: _ZWRITE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -64,7 +64,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _InvFade: 1
+    - _InvFade: 0.01
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -72,8 +72,10 @@ Material:
     - _Parallax: 0.02
     - _Rotation: 0
     - _SmoothnessTextureChannel: 0
+    - _Softness: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _Threshold: 0.1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:

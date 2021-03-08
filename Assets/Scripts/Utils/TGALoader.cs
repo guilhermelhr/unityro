@@ -5,10 +5,8 @@ using System;
 using System.IO;
 using UnityEngine;
 
-public static class TGALoader
-{
-    public class TGAImage
-    {
+public static class TGALoader {
+    public class TGAImage {
         public Color32[] data;
         public short width, height;
 
@@ -22,6 +20,15 @@ public static class TGALoader
             var tex = new Texture2D(width, height);
             tex.SetPixels32(data);
             tex.Apply();
+
+            Color color = tex.GetPixel(0, 0);
+            //tex.FloodFill(0, 0, width, height, color);
+            //tex.FloodFill(0, height - 1, width, height, color);
+            //tex.FloodFill(width - 1, 0, width, height, color);
+            //tex.FloodFill(width - 1, height - 1, width, height, color);
+
+            tex.Apply();
+
             return tex;
         }
     }
