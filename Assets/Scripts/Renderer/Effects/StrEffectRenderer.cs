@@ -89,8 +89,6 @@ public class StrEffectRenderer : MonoBehaviour {
             var p = Rotate(pos[i], -angle * Mathf.Deg2Rad);
             tempPositions[i] = new Vector3(p.x, p.y, 0) / 35f;
 
-            //Debug.Log(tempPositions[i]);
-
             var uvx = uvs[i].x; //.Remap(0, 1, bounds.xMin, bounds.xMax);
             var uvy = uvs[i].y; //.Remap(0, 1, bounds.yMin, bounds.yMax);
 
@@ -109,9 +107,6 @@ public class StrEffectRenderer : MonoBehaviour {
         tempTris[3] = 1;
         tempTris[4] = 3;
         tempTris[5] = 2;
-        //tempTris[3] = 1;
-        //tempTris[4] = 3;
-        //tempTris[5] = 2;
 
         mesh.vertices = tempPositions;
         mesh.uv = tempUvs;
@@ -123,12 +118,6 @@ public class StrEffectRenderer : MonoBehaviour {
 
     private void UpdateLayerData(GameObject go, Material mat, Vector2 pos, Color color, int layerNum) {
         go.transform.localPosition = new Vector3((pos.x - 320f) / 35f, -(pos.y - 320f) / 35f, 0);
-        //if (!Mathf.Approximately(angle, angles[layerNum]))
-        //{
-        //    go.transform.rotation = Quaternion.Euler(0, 0, -angle);
-        //    angles[layerNum] = angle;
-        //}
-
         go.transform.localScale = new Vector3(1f, 1f, 1f);
         mat.SetColor("_Color", color);
     }
