@@ -101,12 +101,10 @@ public class StrEffectRenderer : MonoBehaviour {
         tempUvs[0] = new Vector2(bounds.xMin, bounds.yMax);
         tempUvs[1] = new Vector2(bounds.xMax, bounds.yMax);
 
-        tempTris[0] = 0;
-        tempTris[1] = 1;
-        tempTris[2] = 2;
-        tempTris[3] = 1;
-        tempTris[4] = 3;
-        tempTris[5] = 2;
+        tempTris = new int[] { 
+            0, 1, 2,
+            1, 3, 2
+        };
 
         mesh.vertices = tempPositions;
         mesh.uv = tempUvs;
@@ -116,7 +114,7 @@ public class StrEffectRenderer : MonoBehaviour {
         mf.sharedMesh = mesh;
     }
 
-    private void UpdateLayerData(GameObject go, Material mat, Vector2 pos, Color color, int layerNum) {
+    private void UpdateLayerData(GameObject go, Material mat, Vector2 pos, Color color) {
         go.transform.localPosition = new Vector3((pos.x - 320f) / 35f, -(pos.y - 320f) / 35f, 0);
         go.transform.localScale = new Vector3(1f, 1f, 1f);
         mat.SetColor("_Color", color);
@@ -169,7 +167,7 @@ public class StrEffectRenderer : MonoBehaviour {
 
             var fixedFrame = layer.texturesIds[(int)from.animFrame];
             UpdateMesh(mf, mesh, from.xy, from.uv, from.angle, fixedFrame);
-            UpdateLayerData(go, mat, from.position, from.color, layerNum);
+            UpdateLayerData(go, mat, from.position, from.color);
             return true;
         }
 
@@ -207,7 +205,7 @@ public class StrEffectRenderer : MonoBehaviour {
         var texIndex = layer.texturesIds[frameId];
 
         UpdateMesh(mf, mesh, tempPositions2, tempUvs2, angle, texIndex);
-        UpdateLayerData(go, mat, pos, color, layerNum);
+        UpdateLayerData(go, mat, pos, color);
 
         return true;
     }
