@@ -12,8 +12,8 @@ Shader "Custom/SpriteShader" {
 
 	SubShader{
 		Tags{ "RenderType" = "Transparent"  "Queue" = "Transparent" }
-		Blend One One
 		LOD 250
+
 		CGPROGRAM
 		#pragma surface surf Lambert alpha
 
