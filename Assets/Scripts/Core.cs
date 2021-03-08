@@ -106,7 +106,7 @@ public class Core : MonoBehaviour {
 
             var str = FileManager.Load("data/texture/effect/magnificat.str") as STR;
             var renderer = new GameObject().AddComponent<StrEffectRenderer>();
-            renderer.SetAnimation(str);
+            renderer.Initialize(str);
 
             //var img = new GameObject().AddComponent<RawImage>();
             //var texture = FileManager.Load("data/texture/effect/explosive_1_128.bmp") as Texture2D;

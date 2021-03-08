@@ -1,267 +1,271 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class StrEffectRenderer : MonoBehaviour {
 
-    private Material material;
-    private STR _effect;
-    private long _startTick;
+    private STR Anim;
 
-    private List<StrLayerRenderer> layers = new List<StrLayerRenderer>();
+    private bool isInit;
 
-    private void Start() {
-        material = (Material)Resources.Load("SpriteMaterial", typeof(Material));
+    private List<GameObject> layerObjects = new List<GameObject>();
+    private List<MeshRenderer> layerRenderers;
+    private List<MeshFilter> layerFilters;
+    private List<Mesh> layerMeshes;
+
+    private static Vector3[] tempPositions = new Vector3[4];
+    private static Vector2[] tempPositions2 = new Vector2[4];
+    private static Vector2[] tempUvs = new Vector2[4];
+    private static Vector2[] tempUvs2 = new Vector2[4];
+    private static Vector3[] tempNormals = new Vector3[4];
+    private static int[] tempTris = new int[6];
+    private float[] angles;
+
+    private Dictionary<string, Material> materials = new Dictionary<string, Material>(8);
+
+    private float time;
+    private int frame;
+
+    private Material GetEffectMaterial(int layer, int srcBlend, int destBlend) {
+        var hash = $"{Anim.name}-{layer}-{srcBlend.ToString()}-{destBlend.ToString()}";
+        if(materials.TryGetValue(hash, out var val))
+            return val;
+
+        var mat = new Material(Shader.Find("Ragnarok/EffectShader"));
+        mat.SetFloat("_SrcBlend", (float)BlendMode.One);
+        mat.SetFloat("_DstBlend", (float)BlendMode.One);
+        mat.SetFloat("_ZWrite", 0);
+        mat.SetFloat("_Cull", 0);
+
+        mat.SetTexture("_MainTex", Anim.Atlas);
+        mat.SetColor("_Color", Color.white);
+
+        return mat;
     }
 
-    public void SetAnimation(STR effect) {
-        _effect = effect ?? throw new Exception("STR cannot be null");
-        _startTick = Core.Tick;
+    public void Initialize(STR animation) {
+        Anim = animation;
 
-        for(int i = 0; i < _effect.layers.Length; i++) {
-            var layer = _effect.layers[i];
+        layerObjects = new List<GameObject>(Anim.layers.Length);
+        layerRenderers = new List<MeshRenderer>(Anim.layers.Length);
+        layerMeshes = new List<Mesh>(Anim.layers.Length);
+        layerFilters = new List<MeshFilter>(Anim.layers.Length);
+        angles = new float[Anim.layers.Length];
 
-            var l = new GameObject($"Layer_{i}").AddComponent<StrLayerRenderer>();
-            l.transform.SetParent(gameObject.transform);
-            l.SetLayer(layer, i);
-            layers.Add(l);
-        }
-    }
+        for(var i = 0; i < Anim.layers.Length; i++) {
+            var go = new GameObject("Layer " + i);
+            var mr = go.AddComponent<MeshRenderer>();
+            var mf = go.AddComponent<MeshFilter>();
+            go.transform.SetParent(transform, false);
 
-    private void LateUpdate() {
-        if(_effect == null) return;
-        Render();
-    }
-
-    private void Render() {
-        float keyIndex = (Core.Tick - _startTick) / 1000f * _effect.fps;
-        var endedLayers = new List<StrLayerRenderer>();
-
-        foreach(var layer in layers) {
-            layer.UpdateLayer(keyIndex);
-
-            if (layer.GetMaxFrame() == (long)keyIndex) {
-                endedLayers.Add(layer);
-            }
-        }
-
-        endedLayers.ForEach(t => {
-            Destroy(t.gameObject);
-            layers.Remove(t);
-        });
-
-        if((long)keyIndex == _effect.maxKey) {
-            layers.ForEach(l => Destroy(l.gameObject));
-            layers.Clear();
-            //Destroy(this.gameObject);
-            SetAnimation(_effect);
-        }
-    }
-
-    struct Anim {
-        public int aniframe;
-        public float frame, type, anitype, srcalpha, destalpha, mtpreset;
-        public float delay, angle;
-        public Color color;
-        public Vector2 pos;
-        public float[] uv, xy;
-    }
-
-    class StrLayerRenderer : MonoBehaviour {
-
-        private STR.Layer _layer;
-        private int _layerNumber;
-
-        private float _lastAngle = -1;
-
-        private Material material;
-        private MeshRenderer meshRenderer;
-        private MeshFilter meshFilter;
-
-        private void Start() {
-            meshRenderer = gameObject.GetOrAddComponent<MeshRenderer>();
-            meshFilter = gameObject.GetOrAddComponent<MeshFilter>();
-            material = (Material)Resources.Load("EffectMaterial", typeof(Material));
-        }
-
-        public void SetLayer(STR.Layer layer, int layerNumber) {
-            _layer = layer;
-            _layerNumber = layerNumber;
-        }
-
-        public void UpdateLayer(float keyIndex) {
-            if(CalculateAnimation(_layer, keyIndex, out var animation)) {
-                var texture = _layer.textures[animation.aniframe | 0];
-                if(texture != null) {
-                    RenderAnimation(texture, animation);
-                }
-            }
-        }
-
-        private void RenderAnimation(Texture2D texture, Anim animation) {
             var mesh = new Mesh();
 
-            mesh.vertices = new Vector3[] {
-                new Vector3(animation.xy[0], animation.xy[4], 0.02f * _layerNumber),
-                new Vector3(animation.xy[1], animation.xy[5], 0.02f * _layerNumber),
-                new Vector3(animation.xy[3], animation.xy[7], 0.02f * _layerNumber),
-                new Vector3(animation.xy[2], animation.xy[6], 0.02f * _layerNumber)
-            };
-
-            mesh.triangles = new int[] {
-                2, 3, 1,
-                0, 2, 1,
-            };
-
-            var u = animation.uv[0];
-            var v = animation.uv[1];
-            var us = animation.uv[2];
-            var vs = animation.uv[3];
-            mesh.uv = new Vector2[] {
-                new Vector2(u, v),
-                new Vector2(us, v),
-                new Vector2(u, vs),
-                new Vector2(us, vs)
-            };
-
-            mesh.RecalculateNormals();
-
-            if(animation.angle != _lastAngle) {
-                //rotate
-                var rotation = transform.localRotation;
-                rotation.z = (-animation.angle / 2.8444f);
-                transform.localRotation = rotation;
-                _lastAngle = animation.angle;
-            }
-
-            animation.pos.x -= 320;
-            animation.pos.y -= 290;
-
-            transform.position = new Vector3(animation.pos.x, -animation.pos.y + 0.5f);
-            meshFilter.mesh = mesh;
-            meshRenderer.material = material;
-            meshRenderer.material.mainTexture = texture;
-            meshRenderer.material.color = animation.color;
+            layerObjects.Add(go);
+            layerRenderers.Add(mr);
+            layerFilters.Add(mf);
+            layerMeshes.Add(mesh);
+            angles[i] = -1;
         }
 
-        private bool CalculateAnimation(STR.Layer layer, float keyIndex, out Anim result) {
-            var animations = layer.animations;
-            var lastFrame = 0;
-            var lastSource = 0;
-            var fromId = -1;
-            var toId = -1;
-            STR.Animation from, to;
+        time = 0;
+        frame = -1;
+        isInit = true;
+    }
 
-            result = new Anim() {
-                frame = 0,
-                type = 0,
-                aniframe = 0,
-                anitype = 0,
-                srcalpha = 1,
-                destalpha = 1,
-                mtpreset = 0,
-                delay = 0f,
-                angle = 0f,
-                color = new Color(),
-                pos = Vector2.zero,
-                uv = new float[8],
-                xy = new float[8]
-            };
+    // Use this for initialization
+    private void Awake() {
+        if(Anim != null)
+            Initialize(Anim);
+    }
 
-            for(int i = 0; i < layer.animations.Length; i++) {
-                if(animations[i].frame <= keyIndex) {
-                    if(animations[i].type == 0) fromId = i;
-                    if(animations[i].type == 1) toId = i;
-                }
-                lastFrame = Math.Max(lastFrame, animations[i].frame);
+    private void UpdateMesh(MeshFilter mf, Mesh mesh, Vector2[] pos, Vector2[] uvs, float angle, int imageId) {
+        if(pos.Length > 4 || uvs.Length > 4)
+            Debug.LogError("WHOA! Animation " + Anim.name + " has more than 4 verticies!");
 
-                if(animations[i].type == 0) {
-                    lastSource = Math.Max(lastSource, animations[i].frame);
-                }
+        var bounds = Anim.AtlasRects[imageId];
+
+        for(var i = 0; i < 4; i++) {
+            var p = Rotate(pos[i], -angle * Mathf.Deg2Rad);
+            tempPositions[i] = new Vector3(p.x, p.y, 0) / 35f;
+
+            //Debug.Log(tempPositions[i]);
+
+            var uvx = uvs[i].x; //.Remap(0, 1, bounds.xMin, bounds.xMax);
+            var uvy = uvs[i].y; //.Remap(0, 1, bounds.yMin, bounds.yMax);
+
+            tempUvs[i] = new Vector2(uvx, uvy);
+            tempNormals[i] = Vector3.back;
+        }
+
+        tempUvs[2] = new Vector2(bounds.xMin, bounds.yMin);
+        tempUvs[3] = new Vector2(bounds.xMax, bounds.yMin);
+        tempUvs[0] = new Vector2(bounds.xMin, bounds.yMax);
+        tempUvs[1] = new Vector2(bounds.xMax, bounds.yMax);
+
+        tempTris[0] = 0;
+        tempTris[1] = 1;
+        tempTris[2] = 2;
+        tempTris[3] = 1;
+        tempTris[4] = 3;
+        tempTris[5] = 2;
+        //tempTris[3] = 1;
+        //tempTris[4] = 3;
+        //tempTris[5] = 2;
+
+        mesh.vertices = tempPositions;
+        mesh.uv = tempUvs;
+        mesh.normals = tempNormals;
+        mesh.triangles = tempTris;
+
+        mf.sharedMesh = mesh;
+    }
+
+    private void UpdateLayerData(GameObject go, Material mat, Vector2 pos, Color color, int layerNum) {
+        go.transform.localPosition = new Vector3((pos.x - 320f) / 35f, -(pos.y - 320f) / 35f, 0);
+        //if (!Mathf.Approximately(angle, angles[layerNum]))
+        //{
+        //    go.transform.rotation = Quaternion.Euler(0, 0, -angle);
+        //    angles[layerNum] = angle;
+        //}
+
+        go.transform.localScale = new Vector3(1f, 1f, 1f);
+        mat.SetColor("_Color", color);
+    }
+
+    private bool UpdateAnimationLayer(int layerNum) {
+        var layer = Anim.layers[layerNum];
+
+        var lastFrame = 0;
+        var lastSource = 0;
+        var startAnim = -1;
+        var nextAnim = -1;
+
+        for(var i = 0; i < layer.animations.Length; i++) {
+            var a = layer.animations[i];
+            if(a.frame < frame) {
+                if(a.type == 0)
+                    startAnim = i;
+                if(a.type == 1)
+                    nextAnim = i;
             }
 
-            // Nothing to render
-            if(fromId < 0 || (toId < 0 && lastFrame < keyIndex) || toId < 0) {
+            lastFrame = Mathf.Max(lastFrame, a.frame);
+            if(a.type == 0)
+                lastSource = Mathf.Max(lastSource, a.frame);
+        }
+
+        if(startAnim < 0 || (nextAnim < 0 && lastFrame < frame))
+            return false;
+
+        var from = layer.animations[startAnim];
+        STR.Animation to = null;
+
+        if(nextAnim >= 0)
+            to = layer.animations[nextAnim];
+        var delta = frame - from.frame;
+        var blendSrc = (int)from.srcAlpha;
+        var blendDest = (int)from.destAlpha;
+
+        var mat = GetEffectMaterial(layerNum, blendSrc, blendDest);
+        var go = layerObjects[layerNum];
+        var mr = layerRenderers[layerNum];
+        var mf = layerFilters[layerNum];
+        var mesh = layerMeshes[layerNum];
+        mr.material = mat;
+
+        if(nextAnim != startAnim + 1 || to?.frame != from.frame) {
+            if(to != null && lastSource <= from.frame)
                 return false;
-            }
 
-            from = animations[fromId];
-            to = animations[toId];
-            var delta = keyIndex - from.frame;
-            result.srcalpha = from.srcAlpha;
-            result.destalpha = from.destAlpha;
-
-            // Static frame (or frame that can't be updated)
-            if(toId != fromId + 1 || to.frame != from.frame) {
-                // No other source
-                if(to != null && lastSource <= from.frame) {
-                    return false;
-                }
-
-                result.angle = from.angle;
-                result.aniframe = (int)from.animFrame;
-
-                result.color = from.color;
-                result.pos = from.position;
-                result.uv = from.uv;
-                result.xy = from.xy;
-
-                return true;
-            }
-
-            // Morph animation
-            result.color[0] = from.color[0] + to.color[0] * delta;
-            result.color[1] = from.color[1] + to.color[1] * delta;
-            result.color[2] = from.color[2] + to.color[2] * delta;
-            result.color[3] = from.color[3] + to.color[3] * delta;
-
-            result.uv[0] = from.uv[0] + to.uv[0] * delta;
-            result.uv[1] = from.uv[1] + to.uv[1] * delta;
-            result.uv[2] = from.uv[2] + to.uv[2] * delta;
-            result.uv[3] = from.uv[3] + to.uv[3] * delta;
-            result.uv[4] = from.uv[4] + to.uv[4] * delta;
-            result.uv[5] = from.uv[5] + to.uv[5] * delta;
-            result.uv[6] = from.uv[6] + to.uv[6] * delta;
-            result.uv[7] = from.uv[7] + to.uv[7] * delta;
-
-            result.xy[0] = from.xy[0] + to.xy[0] * delta;
-            result.xy[1] = from.xy[1] + to.xy[1] * delta;
-            result.xy[2] = from.xy[2] + to.xy[2] * delta;
-            result.xy[3] = from.xy[3] + to.xy[3] * delta;
-            result.xy[4] = from.xy[4] + to.xy[4] * delta;
-            result.xy[5] = from.xy[5] + to.xy[5] * delta;
-            result.xy[6] = from.xy[6] + to.xy[6] * delta;
-            result.xy[7] = from.xy[7] + to.xy[7] * delta;
-
-            result.angle = from.angle + (to.angle / 2.8444f) * delta;
-            result.pos.x = from.position.x + to.position.x * delta;
-            result.pos.y = from.position.y + to.position.y * delta;
-
-            switch(to.animType) {
-                default:
-                    result.aniframe = 0;
-                    break;
-
-                case 1: //normal
-                    result.aniframe = (int)(from.animFrame + to.animFrame * delta);
-                    break;
-
-                case 2: //stop at end
-                    result.aniframe = (int)Math.Min(from.animFrame + to.delay * delta, layer.textures.Length - 1);
-                    break;
-
-                case 3: //repeat
-                    result.aniframe = (int)((from.animFrame + to.delay * delta) % layer.textures.Length);
-                    break;
-
-                case 4: //play reverse infinity
-                    result.aniframe = (int)((from.animFrame - to.delay * delta) % layer.textures.Length);
-                    break;
-            }
-
+            var fixedFrame = layer.texturesIds[(int)from.animFrame];
+            UpdateMesh(mf, mesh, from.xy, from.uv, from.angle, fixedFrame);
+            UpdateLayerData(go, mat, from.position, from.color, layerNum);
             return true;
         }
 
-        public int GetMaxFrame() => _layer.animations.Length > 0 ? _layer.animations[_layer.animations.Length - 1].frame : 0;
+        var prog = Mathf.InverseLerp(from.frame, to.frame, frame);
+
+        for(var i = 0; i < 4; i++) {
+            tempPositions2[i] = from.xy[i] + to.xy[i] * delta;
+            tempUvs2[i] = from.uv[i] + to.uv[i] * delta;
+        }
+
+        //Debug.Log("from: " + from.Position + " to: " + to.Position + " delta:" + delta);
+        var pos = from.position + to.position * delta;
+        var angle = from.animFrame + to.angle * delta;
+        var color = from.color + to.color * delta;
+        //color.a *= 0.5f;
+        //Debug.Log(color);
+
+        var frameId = 0;
+
+        switch(to.animType) {
+            case 1:
+                frameId = Mathf.FloorToInt(from.animFrame + to.animFrame * delta);
+                break;
+            case 2:
+                frameId = Mathf.FloorToInt(Mathf.Min(from.animFrame + to.delay * delta, layer.textures.Length - 1));
+                break;
+            case 3:
+                frameId = Mathf.FloorToInt((from.animFrame + to.delay * delta) % layer.textures.Length);
+                break;
+            case 4:
+                frameId = Mathf.FloorToInt((from.animFrame - to.delay * delta) % layer.textures.Length);
+                break;
+        }
+
+        var texIndex = layer.texturesIds[frameId];
+
+        UpdateMesh(mf, mesh, tempPositions2, tempUvs2, angle, texIndex);
+        UpdateLayerData(go, mat, pos, color, layerNum);
+
+        return true;
+    }
+
+    private void UpdateAnimationFrame() {
+        for(var i = 0; i < Anim.layers.Length; i++) {
+            if(Anim.layers[i].animations.Length == 0)
+                continue;
+
+            var res = UpdateAnimationLayer(i);
+            layerObjects[i].SetActive(res);
+        }
+    }
+
+    // Update is called once per frame
+    private void Update() {
+        if(!isInit)
+            return;
+
+        time += Time.deltaTime;
+        var newFrame = Mathf.FloorToInt(time * Anim.fps);
+        if(newFrame == frame)
+            return;
+
+        //Debug.Log(frame);
+
+        frame = newFrame;
+
+        if(frame > Anim.maxKey) {
+            Destroy(gameObject);
+            return;
+        }
+
+        UpdateAnimationFrame();
+    }
+
+    void OnDestroy() {
+        if(!isInit)
+            return;
+        foreach(var m in layerMeshes)
+            Destroy(m);
+    }
+
+    public Vector2 Rotate(Vector2 v, float delta) {
+        return new Vector2(
+            v.x * Mathf.Cos(delta) - v.y * Mathf.Sin(delta),
+            v.x * Mathf.Sin(delta) + v.y * Mathf.Cos(delta)
+        );
     }
 }
