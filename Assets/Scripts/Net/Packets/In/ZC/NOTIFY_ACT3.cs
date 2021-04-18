@@ -24,7 +24,7 @@ public partial class ZC {
             br.Seek(1, SeekOrigin.Current);
 
             ActionRequest.count = br.ReadShort();
-            ActionRequest.action = br.ReadUByte();
+            ActionRequest.action = (ActionRequestType) br.ReadUByte();
             ActionRequest.leftDamage = br.ReadLong();
         }
     }
