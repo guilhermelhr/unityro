@@ -1,13 +1,16 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CharacterCellController : MonoBehaviour {
+public class CharacterCellController : MonoBehaviour, IPointerClickHandler {
 
     private CharacterData data;
 
     public Text characterName;
     public Image image;
+
+    public bool IsEmpty => data == null;
 
     public Action<CharacterData> OnCharacterSelected;
 
@@ -21,9 +24,8 @@ public class CharacterCellController : MonoBehaviour {
         image.sprite = sprite;
         image.preserveAspect = true;
     }
-
-    private void Update() {
-        if(Input.GetMouseButtonUp(0)) {
+    public void OnPointerClick(PointerEventData eventData) {
+        if (eventData.button == PointerEventData.InputButton.Left) {
             OnCharacterSelected?.Invoke(data);
         }
     }

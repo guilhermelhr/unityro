@@ -14,12 +14,22 @@ public class CharSelectionController : MonoBehaviour {
     private HC.ACCEPT_ENTER currentCharactersInfo;
     private CharacterData selectedCharacter;
 
+    private List<CharacterCellController> characterSlots;
+
     void Start() {
         currentCharactersInfo = Core.NetworkClient.State.CurrentCharactersInfo;
         Core.NetworkClient.HookPacket(HC.NOTIFY_ZONESVR2.HEADER, OnCharacterSelectionAccepted);
+        Core.NetworkClient.HookPacket(HC.ACCEPT_MAKECHAR.HEADER, OnMakeCharAccepted);
         Core.NetworkClient.HookPacket(ZC.ACCEPT_ENTER2.HEADER, OnMapServerLoginAccepted);
 
         PopulateUI();
+    }
+
+    private void OnMakeCharAccepted(ushort cmd, int size, InPacket packet) {
+        if (packet is HC.ACCEPT_MAKECHAR ACCEPT_MAKECHAR) {
+            currentCharactersInfo.Chars.Add(ACCEPT_MAKECHAR.characterData);
+            characterSlots.Find(it => it.IsEmpty).BindData(ACCEPT_MAKECHAR.characterData);
+        }
     }
 
     private void OnMapServerLoginAccepted(ushort cmd, int size, InPacket packet) {
@@ -60,15 +70,18 @@ public class CharSelectionController : MonoBehaviour {
     }
 
     private void PopulateUI() {
+        characterSlots = new List<CharacterCellController>();
         for (var i = 0; i < currentCharactersInfo.MaxSlots; i++) {
             var item = Instantiate(charSelectionItem);
             item.transform.SetParent(GridLayout.transform);
 
             var controller = item.GetComponent<CharacterCellController>();
-            if (i < currentCharactersInfo.Chars.Length) {
+            if (i < currentCharactersInfo.Chars.Count) {
                 controller.BindData(currentCharactersInfo.Chars[i]);
                 controller.OnCharacterSelected = OnCharacterSelected;
             }
+
+            characterSlots.Add(controller);
         }
     }
 
@@ -78,15 +91,16 @@ public class CharSelectionController : MonoBehaviour {
 
     public void OnEnterGameClicked() {
         if (selectedCharacter == null) return;
-        var charIndex = new List<CharacterData>(currentCharactersInfo.Chars).IndexOf(selectedCharacter);
+        var charIndex = currentCharactersInfo.Chars.IndexOf(selectedCharacter);
         if (charIndex < 0) return;
 
         new CH.SELECT_CHAR(charIndex).Send();
     }
 
     public void CreateChar() {
-        new CH.MAKE_CHAR() {
-            Name = Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8)
+        new CH.MAKE_CHAR2() {
+            Name = Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8),
+            CharNum = (byte)currentCharactersInfo.Chars.Count
         }.Send();
     }
 }

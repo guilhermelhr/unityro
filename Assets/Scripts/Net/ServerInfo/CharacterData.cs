@@ -1,4 +1,6 @@
-﻿public class CharacterData {
+﻿using System.IO;
+
+public class CharacterData {
     public int GID;
     public int Exp;
     public int Zeny;
@@ -42,4 +44,65 @@
     public int Moves;
     public int AddOns;
     public int Sex;
+
+    public static CharacterData parse(BinaryReader br) {
+        CharacterData cd = new CharacterData();
+
+        cd.GID = br.ReadLong();
+        cd.Exp = br.ReadLong();
+        br.Seek(4, SeekOrigin.Current);
+        cd.Zeny = br.ReadLong();
+        cd.JobExp = br.ReadLong();
+        br.Seek(4, SeekOrigin.Current);
+        cd.JobLevel = br.ReadLong();
+        cd.BodyState = br.ReadLong();
+        cd.HealthState = br.ReadLong();
+        cd.Option = br.ReadLong();
+        cd.Karma = br.ReadLong();
+        cd.Manner = br.ReadLong();
+
+        cd.StatusPoint = br.ReadShort();
+
+        cd.HP = br.ReadLong();
+        cd.MaxHP = br.ReadLong();
+
+        cd.SP = br.ReadShort();
+        cd.MaxSP = br.ReadShort();
+        cd.Speed = br.ReadShort();
+        cd.Job = br.ReadShort();
+        cd.Hair = br.ReadShort();
+        cd.Body = br.ReadShort();
+        cd.Weapon = br.ReadShort();
+        cd.BaseLevel = br.ReadShort();
+        cd.SkillPoint = br.ReadShort();
+        cd.Accessory = br.ReadShort();
+        cd.Shield = br.ReadShort();
+        cd.Accessory2 = br.ReadShort();
+        cd.Accessory3 = br.ReadShort();
+        cd.HairColor = br.ReadShort();
+        cd.ClothesColor = br.ReadShort();
+
+        cd.Name = br.ReadBinaryString(24);
+
+        cd.Str = br.ReadUByte();
+        cd.Agi = br.ReadUByte();
+        cd.Vit = br.ReadUByte();
+        cd.Int = br.ReadUByte();
+        cd.Dex = br.ReadUByte();
+        cd.Luk = br.ReadUByte();
+
+        cd.Slot = br.ReadShort();
+        cd.Rename = br.ReadShort();
+
+        cd.MapName = br.ReadBinaryString(16);
+
+        cd.DeleteDate = br.ReadLong();
+        cd.Robe = br.ReadLong();
+        cd.Moves = br.ReadLong();
+        cd.AddOns = br.ReadLong();
+
+        cd.Sex = br.ReadByte();
+
+        return cd;
+    }
 }

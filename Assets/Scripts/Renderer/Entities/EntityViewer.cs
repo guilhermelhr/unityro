@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 public class EntityViewer : MonoBehaviour {
-    private const float AVERAGE_ASPD = 432f;
+    public const float AVERAGE_ASPD = 432f;
 
     public Entity Entity;
     public EntityType Type;
@@ -36,7 +36,7 @@ public class EntityViewer : MonoBehaviour {
 
     private long _start;
     private ushort _time;
-    private ushort _factor;
+    private float _factor;
     private int _action = -1;
     private int _next = -1;
 
@@ -51,10 +51,10 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void Start() {
-        if (currentSPR == null) {
+        if(currentSPR == null) {
             string path = "";
 
-            switch (ViewerType) {
+            switch(ViewerType) {
                 case ViewerType.BODY:
                     path = DBManager.GetBodyPath((Job)Entity.Job, Entity.Sex);
                     break;
@@ -78,17 +78,17 @@ public class EntityViewer : MonoBehaviour {
         sprites = currentSPR.GetSprites();
         meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
 
-        if (currentAction == null) {
+        if(currentAction == null) {
             ChangeMotion(SpriteMotion.Idle);
         }
 
-        foreach (var child in Children) {
+        foreach(var child in Children) {
             child.Start();
         }
 
         InitShadow();
 
-        if (AudioSource == null && Parent == null) {
+        if(AudioSource == null && Parent == null) {
             AudioSource = gameObject.AddComponent<AudioSource>();
             AudioSource.spatialBlend = 0.7f;
             AudioSource.priority = 60;
@@ -101,15 +101,15 @@ public class EntityViewer : MonoBehaviour {
     }
 
     void Update() {
-        if (!Entity.IsReady || currentACT == null)
+        if(!Entity.IsReady || currentACT == null)
             return;
-        if (State == SpriteState.Dead) {
+        if(State == SpriteState.Dead) {
             return;
         }
 
-        long tm = Core.Tick - _start;
-        if (_time > 0 && tm > _time) {
-            if (NextMotion != null) {
+        long deltaTime = Core.Tick - _start;
+        if(_time > 0 && deltaTime > _time) {
+            if(NextMotion != null) {
                 ChangeMotion(NextMotion.Value, null);
             } else {
                 ChangeMotion(SpriteMotion.Idle, null);
@@ -119,14 +119,14 @@ public class EntityViewer : MonoBehaviour {
         currentActionIndex = _action + GetFacingDirection() % currentACT.actions.Length;
         currentAction = currentACT.actions[currentActionIndex];
 
-        var newFrame = GetCurrentFrame(tm);
+        var newFrame = GetCurrentFrame(deltaTime);
 
         // Are we looping or stopping?
-        if (newFrame >= currentAction.frames.Length - 1) {
+        if(newFrame >= currentAction.frames.Length - 1) {
             currentFrame = currentAction.frames.Length - 1;
-            if (NextMotion != null) {
+            if(NextMotion != null) {
                 ChangeMotion(NextMotion.Value, null);
-            } else if (CurrentMotion == SpriteMotion.Dead) {
+            } else if(CurrentMotion == SpriteMotion.Dead) {
                 State = SpriteState.Dead;
             }
         } else {
@@ -137,7 +137,7 @@ public class EntityViewer : MonoBehaviour {
 
         // We need this mesh collider in order to have the raycast to hit the sprite
         MeshCache.TryGetValue(frame, out Mesh mesh);
-        if (mesh == null) {
+        if(mesh == null) {
             mesh = SpriteMeshBuilder.BuildColliderMesh(frame, sprites);
             MeshCache.Add(frame, mesh);
         }
@@ -146,13 +146,13 @@ public class EntityViewer : MonoBehaviour {
         // If current frame doesn't have layers, cleanup layer cache
         Layers.Values.ToList().ForEach(Renderer => Renderer.sprite = null);
 
-        for (int i = 0; i < frame.layers.Length; i++) {
+        for(int i = 0; i < frame.layers.Length; i++) {
             var layer = frame.layers[i];
             var sprite = sprites[layer.index];
 
             Layers.TryGetValue(i, out var spriteRenderer);
 
-            if (spriteRenderer == null) {
+            if(spriteRenderer == null) {
                 var go = new GameObject($"Layer{i}");
                 spriteRenderer = go.AddComponent<SpriteRenderer>();
                 spriteRenderer.sortingOrder = SpriteOrder;
@@ -168,24 +168,24 @@ public class EntityViewer : MonoBehaviour {
             spriteRenderer.sprite = sprite;
             spriteRenderer.material.color = layer.color;
 
-            if (!Layers.ContainsKey(i)) {
+            if(!Layers.ContainsKey(i)) {
                 Layers.Add(i, spriteRenderer);
             }
         }
 
-        if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length) {
+        if(frame.soundId > -1 && frame.soundId < currentACT.sounds.Length) {
             var clipName = currentACT.sounds[frame.soundId];
-            if (clipName == "atk") return;
+            if(clipName == "atk") return;
 
             var clip = FileManager.Load($"data/wav/{clipName}") as AudioClip;
 
-            if (clip != null && AudioSource != null) {
+            if(clip != null && AudioSource != null) {
                 AudioSource.clip = clip;
                 AudioSource.Play();
             }
         }
 
-        if (Parent != null && ViewerType != ViewerType.WEAPON) {
+        if(Parent != null && ViewerType != ViewerType.WEAPON) {
             var parentAnchor = Parent.GetAnimationAnchor();
             var ourAnchor = GetAnimationAnchor();
 
@@ -195,27 +195,36 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    private int GetCurrentFrame(long tm) {
-        if (Entity.Type == EntityType.PC) {
-            return (Entity.HeadDir < 0 || _action > 0 ? GetFrameIndex(tm) : Entity.HeadDir) % currentAction.frames.Length;
+    private int GetCurrentFrame(long deltaTime) {
+        if(Entity.Type == EntityType.PC) {
+            return (Entity.HeadDir < 0 || _action > 0 ? GetFrameIndex(deltaTime) : Entity.HeadDir) % currentAction.frames.Length;
         } else {
-            return (Entity.HeadDir < 0 || _action >= 0 ? GetFrameIndex(tm) : Entity.HeadDir) % currentAction.frames.Length;
+            return (Entity.HeadDir < 0 || _action >= 0 ? GetFrameIndex(deltaTime) : Entity.HeadDir) % currentAction.frames.Length;
         }
     }
 
     private int GetFacingDirection() => ((int)ROCamera.Instance.Direction + (int)Entity.Direction + 8) % 8;
 
+    /**
+     * TODO: the correct formula needs to be found
+     * Aegis formula doesn't seem to work well here
+     */
     private int GetFrameIndex(long tm) {
-        if (_time > 0) {
-            var motion_speed = (currentAction.delay < 0 ? 4f : currentAction.delay) * (_time / AVERAGE_ASPD);
+        return (int)(tm / currentAction.delay);
+        //if(_time > 0) {
+        //    var motionspeed = (currentAction.delay < 0 ? 4f : currentAction.delay) * _factor;
+        //    return (int)(GetStateCnt() / motionspeed) % currentAction.frames.Length;
 
-            return (int)((tm * 0.37f * 4.0f) / motion_speed) % currentAction.frames.Length;
-        } else if (_factor > 0) {
-            return (int)(tm / (currentAction.delay * _factor / 100));
-        } else {
-            return (int)(tm / currentAction.delay);
-        }
+        //    var motion_speed = (currentAction.delay < 0 ? 4f : currentAction.delay) * (_time / AVERAGE_ASPD);
+        //    return (int)((tm * 0.37f * 4.0f) / motion_speed) % currentAction.frames.Length;
+        //} else if(_factor > 0) {
+        //    return (int)(tm / (currentAction.delay * _factor / 100));
+        //} else {
+        //    return (int)(tm / currentAction.delay);
+        //}
     }
+
+    private float GetStateCnt() { return Core.Tick - _start; }
 
     private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
         rotation = Quaternion.Euler(0, 0, -layer.angle);
@@ -226,15 +235,15 @@ public class EntityViewer : MonoBehaviour {
         newPos = new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / sprite.pixelsPerUnit;
     }
 
-    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0, ushort factor = 0) {
+    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0, float factor = 0) {
         State = SpriteState.Alive;
         var newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion);
         var nextAction = 0;
-        if (nextMotion != null) {
+        if(nextMotion != null) {
             nextAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, nextMotion.Value);
         }
 
-        if (newAction != _action) {
+        if(newAction != _action) {
             CurrentMotion = motion;
             NextMotion = nextMotion;
 
@@ -248,13 +257,13 @@ public class EntityViewer : MonoBehaviour {
         _time = speed;
         _factor = factor;
 
-        foreach (var child in Children) {
+        foreach(var child in Children) {
             child.ChangeMotion(motion, nextMotion);
         }
     }
 
     private void InitShadow() {
-        if (ViewerType != ViewerType.BODY) return;
+        if(ViewerType != ViewerType.BODY) return;
 
         var shadow = new GameObject("Shadow");
         shadow.layer = LayerMask.NameToLayer("Characters");
@@ -276,9 +285,9 @@ public class EntityViewer : MonoBehaviour {
 
     public Vector2 GetAnimationAnchor() {
         var frame = currentAction.frames[currentFrame];
-        if (frame.pos.Length > 0)
+        if(frame.pos.Length > 0)
             return frame.pos[0];
-        if (ViewerType == ViewerType.HEAD && (State == SpriteState.Idle || State == SpriteState.Sit))
+        if(ViewerType == ViewerType.HEAD && (State == SpriteState.Idle || State == SpriteState.Sit))
             return frame.pos[currentFrame];
         return Vector2.zero;
     }

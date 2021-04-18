@@ -20,6 +20,7 @@
     CH_ENTER2 = 0x275,
     CH_SELECT_CHAR = 0x66,
     CH_MAKE_CHAR = 0x67,
+    CH_MAKE_CHAR2 = 0x970,
     CH_DELETE_CHAR = 0x68,
     #endregion
 
@@ -188,6 +189,7 @@
     ZC_PC_PURCHASE_ITEMLIST_FROMMC2 = 0x800,
     ZC_OPEN_EDITDLG = 0x142,
     ZC_PARTY_CONFIG = 0x2c9,
+    ZC_NOTIFY_EFFECT2 = 0x1f3,
     #endregion
 
     //ZC_USER_COUNT = 0xc2,
@@ -483,7 +485,6 @@
     //ZC_STORE_NORMAL_ITEMLIST2 = 0x1f0,
     //AC_NOTIFY_ERROR = 0x1f1,
     //ZC_UPDATE_CHARSTAT2 = 0x1f2,
-    //ZC_NOTIFY_EFFECT2 = 0x1f3,
     //ZC_REQ_EXCHANGE_ITEM2 = 0x1f4,
     //ZC_ACK_EXCHANGE_ITEM2 = 0x1f5,
     //ZC_REQ_BABY = 0x1f6,

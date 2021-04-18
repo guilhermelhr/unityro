@@ -119,8 +119,8 @@ public class Entity : MonoBehaviour {
         HookPackets();
     }
 
-    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0) {
-        EntityViewer.ChangeMotion(motion, nextMotion, speed);
+    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0, float factor = 0) {
+        EntityViewer.ChangeMotion(motion, nextMotion, speed, factor);
     }
 
     public void UpdateHitPoints(int hp, int maxHp) {
@@ -276,25 +276,28 @@ public class Entity : MonoBehaviour {
 
         switch (actionRequest.action) {
             // Damage
-            case 0:
-            case 4:
-            case 8:
-            case 9:
-            case 10:
+            case ActionRequestType.ATTACK:
+            case ActionRequestType.ATTACK_NOMOTION:
+            case ActionRequestType.ATTACK_MULTIPLE:
+            case ActionRequestType.ATTACK_MULTIPLE_NOMOTION:
+            case ActionRequestType.ATTACK_CRITICAL:
                 OnEntityAttack(actionRequest, srcEntity, dstEntity);
                 break;
 
             // Pickup Item
-            case 1:
+            case ActionRequestType.ITEMPICKUP:
                 OnEntityPickup(srcEntity, dstEntity);
                 break;
 
             // Sit
-            case 2:
+            case ActionRequestType.SIT:
                 break;
 
             // Stand
-            case 3:
+            case ActionRequestType.STAND:
+                break;
+
+            default:
                 break;
         }
     }
@@ -311,7 +314,9 @@ public class Entity : MonoBehaviour {
         if (dstEntity) {
             // only if damage and do not have endure
             // and damage isn't absorbed (healing)
-            if (pkt.damage > 0 && pkt.action != 9 && pkt.action != 4) {
+            if (pkt.damage > 0 &&
+                pkt.action != ActionRequestType.ATTACK_MULTIPLE_NOMOTION &&
+                pkt.action != ActionRequestType.ATTACK_NOMOTION) {
                 dstEntity.ChangeMotion(SpriteMotion.Hit, SpriteMotion.Standby);
             }
 
@@ -321,13 +326,13 @@ public class Entity : MonoBehaviour {
             if (target) {
                 switch (pkt.action) {
                     // regular damage (and endure)
-                    case 9:
-                    case 0:
+                    case ActionRequestType.ATTACK_MULTIPLE_NOMOTION:
+                    case ActionRequestType.ATTACK:
                         target.Damage(pkt.damage, Core.Tick + pkt.sourceSpeed);
                         break;
 
                     // double attack
-                    case 8:
+                    case ActionRequestType.ATTACK_MULTIPLE:
                         // Display combo only if entity is mob and the attack don't miss
                         if (dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
                             dstEntity.Damage(pkt.damage / 2, Core.Tick + pkt.sourceSpeed * 1, DamageType.COMBO);
@@ -339,12 +344,12 @@ public class Entity : MonoBehaviour {
                         break;
 
                     // TODO: critical damage
-                    case 10:
+                    case ActionRequestType.ATTACK_CRITICAL:
                         target.Damage(pkt.damage, Core.Tick + pkt.sourceSpeed);
                         break;
 
                     // TODO: lucky miss
-                    case 11:
+                    case ActionRequestType.ATTACK_LUCKY:
                         target.Damage(0, Core.Tick + pkt.sourceSpeed);
                         break;
                 }
@@ -354,7 +359,7 @@ public class Entity : MonoBehaviour {
         }
 
         srcEntity.AttackSpeed = pkt.sourceSpeed;
-        srcEntity.ChangeMotion(SpriteMotion.Attack1, SpriteMotion.Standby, srcEntity.AttackSpeed);
+        srcEntity.ChangeMotion(SpriteMotion.Attack1, SpriteMotion.Standby, 3, ((float)pkt.sourceSpeed / (float) EntityViewer.AVERAGE_ASPD));
     }
 
     public void LookTo(Vector3 position) {

@@ -20,7 +20,7 @@ public partial class ZC {
                 targetSpeed = (ushort)fp.ReadLong(),
                 damage = fp.ReadShort(),
                 count = fp.ReadShort(),
-                action = fp.ReadUByte(),
+                action = (ActionRequestType) fp.ReadUByte(),
                 leftDamage = fp.ReadShort()
             };
         }
