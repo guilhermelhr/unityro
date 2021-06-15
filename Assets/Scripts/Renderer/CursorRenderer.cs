@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using ROIO.Models.FileTypes;
+using ROIO;
 
 public enum CursorAction {
     DEFAULT = 0,

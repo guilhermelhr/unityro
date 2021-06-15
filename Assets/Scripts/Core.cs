@@ -9,6 +9,9 @@ using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Runtime.InteropServices;
+using ROIO;
+using ROIO.Loaders;
+using ROIO.Models.FileTypes;
 
 public class Core : MonoBehaviour {
 
@@ -131,13 +134,11 @@ public class Core : MonoBehaviour {
         // if a map is pre loaded, do not display map selector on startup
         mapDropdown?.gameObject?.SetActive(!preLoadMap);
     }
-
+    
     private void LoadGrf() {
-        FileManager.loadGrf(Configs["grf"] as string);
-        var custom = Configs["rdata"] as string;
-        if (custom != null) {
-            FileManager.loadGrf(custom, true);
-        }
+        var a = Configs["grf"] as string;
+        var b = Configs["rdata"] as string;
+        FileManager.loadGrf(a, b);
         OnGrfLoaded?.Invoke();
     }
 

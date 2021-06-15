@@ -1,4 +1,6 @@
 ﻿using MoonSharp.Interpreter;
+using ROIO;
+using System.IO;
 
 public class LuaInterface {
 
@@ -17,18 +19,18 @@ public class LuaInterface {
     }
 
     private void LoadSkillInfoZ() {
-        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/jobinheritlist.lub"));
-        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillid.lub"));
-        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skilldescript.lub"));
-        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillinfolist.lub"));
-        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skilltreeview.lub"));
-        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillinfo_f.lub"));
+        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/jobinheritlist.lub") as MemoryStream);
+        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillid.lub") as MemoryStream);
+        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skilldescript.lub") as MemoryStream);
+        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillinfolist.lub") as MemoryStream);
+        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skilltreeview.lub") as MemoryStream);
+        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillinfo_f.lub") as MemoryStream);
     }
 
     private void LoadJobInfo() {
-        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/jobidentity.lub"));
-        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/npcidentity.lub"));
-        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/jobname.lub"));
+        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/jobidentity.lub") as MemoryStream);
+        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/npcidentity.lub") as MemoryStream);
+        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/jobname.lub") as MemoryStream);
         //environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/pcjobnamegender_f.lub"));
 
         /**
@@ -38,6 +40,6 @@ public class LuaInterface {
         var JTtbl = environment.Globals["JTtbl"] as Table;
         environment.Globals["pcJobTbl2"] = JTtbl;
 
-        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/pcjobnamegender.lub"));
+        environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/pcjobnamegender.lub") as MemoryStream);
     }
 }

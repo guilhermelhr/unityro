@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ROIO.Models.FileTypes;
+using UnityEngine;
 
 public partial class SPRRenderer : MonoBehaviour {
 
