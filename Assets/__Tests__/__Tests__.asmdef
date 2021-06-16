@@ -3,7 +3,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "UnityRO"
+        "UnityRO",
+        "UnityRO.io"
     ],
     "includePlatforms": [
         "Editor"
@@ -15,8 +16,7 @@
         "nunit.framework.dll",
         "NSubstitute.dll",
         "Castle.Core.dll",
-        "System.Threading.Tasks.Extensions.dll",
-        "Core.dll"
+        "System.Threading.Tasks.Extensions.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
