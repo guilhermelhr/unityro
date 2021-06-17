@@ -1,3 +1,6 @@
 [submodule "Assets/UnityRO.io"]
 	path = Assets/UnityRO.io
 	url = https://github.com/Danil0v3s/UnityRO.io.git
+[submodule "Assets/UnityRO.net"]
+	path = Assets/UnityRO.net
+	url = https://github.com/Danil0v3s/UnityRO.net.git
