@@ -8,7 +8,8 @@ public class CustomButton : Button,
     IPointerEnterHandler,
     IPointerExitHandler,
     IPointerDownHandler,
-    IPointerUpHandler {
+    IPointerUpHandler,
+    ISelectHandler {
 
     [SerializeField] public string backgroundImage;
     [SerializeField] public string hoverImage;
@@ -53,6 +54,14 @@ public class CustomButton : Button,
     //Detect when Cursor leaves the GameObject
     override public void OnPointerExit(PointerEventData pointerEventData) {
         //Output the following message with the GameObject's name
+        rawImage.texture = backgroundBMP;
+    }
+
+    override public void OnSelect(BaseEventData eventData) {
+		rawImage.texture = hoverBMP;
+	}
+
+    override public void OnDeselect(BaseEventData eventData) {
         rawImage.texture = backgroundBMP;
     }
 }
