@@ -1,9 +1,7 @@
-﻿using System;
+﻿using MoonSharp.Interpreter;
+using ROIO.Loaders;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Loaders;
 using UnityEngine;
 
 public enum EquipmentLocation : int {

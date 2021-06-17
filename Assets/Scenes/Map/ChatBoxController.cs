@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using ROIO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,7 +39,7 @@ public class ChatBoxController : MonoBehaviour {
 
             var prefab = Instantiate(TextLinePrefab);
             var uiText = prefab.GetComponentInChildren<TextMeshProUGUI>();
-            uiText.text = (string)DBManager.MsgStringTable[pkt.MessageID] ?? $"{pkt.MessageID}";
+            uiText.text = (string)Tables.MsgStringTable[pkt.MessageID] ?? $"{pkt.MessageID}";
             uiText.color = Color.white;
 
             prefab.transform.SetParent(LinearLayout.transform, false);

@@ -1,27 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
-using UnityEngine;
 
 public class DBManager {
 
     public const string INTERFACE_PATH = "data/texture/\xc0\xaf\xc0\xfa\xc0\xce\xc5\xcd\xc6\xe4\xc0\xcc\xbd\xba/";
 
-    private static Regex rcomments = new Regex(@"\n(\/\/[^\n]+)", RegexOptions.Multiline);
-    private struct MapTableStruct {
-        public string name;
-        public string mp3;
-        public object fog;
-    }
-    private struct ItemTableStruct {
-        public string illustResourcesName;
-        public string prefixNameTable;
-    }
-    private static Hashtable mapTable = new Hashtable();
-    private static Hashtable msgStringTable = new Hashtable();
-    private static Hashtable mapAlias = new Hashtable();
     private static Dictionary<int, string> bodyPathTable = BodyPathTable.BodyPath;
     private static Dictionary<int, string> monsterPathTable = MonsterTable.Table;
     private static string[] SexTable = new string[] { "\xbf\xa9", "\xb3\xb2" };
@@ -157,12 +140,6 @@ public class DBManager {
         return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/{baseClass}/{baseClass}_{SexTable[sex]}{weapon.KoreanTo1252() ?? $"_{ViewID}"}";
     }
 
-    public static Hashtable MapTable => mapTable;
-
-    public static Hashtable MsgStringTable => msgStringTable;
-
-    public static Hashtable MapAlias => mapAlias;
-
     public static Dictionary<int, string> BodyPath => bodyPathTable;
 
     public static Dictionary<int, string> MonsterPath => monsterPathTable;
@@ -173,71 +150,5 @@ public class DBManager {
 
     public static void init() {
         new LuaInterface();
-
-        try {
-            foreach (object[] args in LoadTable("data/msgstringtable.txt", 1)) {
-                msgStringTable[args[0]] = args[1];
-            }
-
-            foreach (object[] args in LoadTable("data/mp3nametable.txt", 2)) {
-                if (!mapTable.ContainsKey(args[1])) {
-                    mapTable.Add(args[1], new MapTableStruct());
-                }
-
-                MapTableStruct mts = (MapTableStruct)mapTable[args[1]];
-                mts.mp3 = Convert.ToString(args[2]);
-            }
-
-            foreach (object[] args in LoadTable("data/mapnametable.txt", 2)) {
-                if (!mapTable.ContainsKey(args[1])) {
-                    mapTable.Add(args[1], new MapTableStruct());
-                }
-
-                MapTableStruct mts = (MapTableStruct)mapTable[args[1]];
-                mts.name = Convert.ToString(args[2]);
-            }
-
-            foreach (object[] args in LoadTable("data/resnametable.txt", 2)) {
-                mapAlias[args[1]] = args[2];
-            }
-
-
-
-            //TODO load these tables
-            //LoadTable("data/num2cardillustnametable.txt", 2);
-            //LoadTable("data/cardprefixnametable.txt", 2);
-            //LoadTable("data/fogparametertable.txt", 5);
-        } catch {
-
-        }
-
-    }
-
-    /// <summary>
-    /// load txt table
-    /// </summary>
-    /// <param name="filename">file to load</param>
-    /// <param name="size">size of each group</param>
-    public static IEnumerable<object> LoadTable(string filename, int size) {
-        Debug.Log("Loading table " + filename);
-
-        string data = FileManager.Load(filename) as string;
-        //remove comments
-        string content = rcomments.Replace(("\n" + data), "");
-        string[] elements = content.Split('#');
-        object[] args = new string[size + 1];
-
-        for (int i = 0; i < elements.Length; i++) {
-            if (i % size == 0) {
-                if (i != 0) {
-                    yield return args;
-                }
-                args[i % size] = i;
-            }
-
-            args[(i % size) + 1] = elements[i].Trim();
-        }
-
-        //DIFF ending callback
     }
 }
