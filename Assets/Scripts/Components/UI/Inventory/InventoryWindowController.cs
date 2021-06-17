@@ -4,11 +4,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-public enum InventoryType : int {
-    ITEM, EQUIP, ETC, FAV
-}
-
 public class InventoryWindowController : MonoBehaviour {
 
     [SerializeField]
