@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class Entity : MonoBehaviour {
+public class Entity : MonoBehaviour, NetworkEntity {
 
     public Action OnParameterUpdated;
 
@@ -21,19 +21,10 @@ public class Entity : MonoBehaviour {
     public int HeadDir;
 
     public bool IsReady = false;
-    public bool HasAuthority => GID == Core.Session?.Entity?.GID;
+    public bool HasAuthority => GID == Core.Session?.Entity?.GetEntityGID();
 
     [SerializeField] public uint GID;
     [SerializeField] public uint AID;
-    [SerializeField] public short Job;
-    [SerializeField] public byte Sex;
-    [SerializeField] public ushort Hair;
-    [SerializeField] public ushort AttackSpeed;
-    [SerializeField] public short AttackRange = 0;
-    [SerializeField] public short WalkSpeed = 150;
-    [SerializeField] public uint Weapon;
-    [SerializeField] public int Hp;
-    [SerializeField] public int MaxHp;
 
     public EntityBaseStatus Status = new EntityBaseStatus();
 
@@ -50,17 +41,21 @@ public class Entity : MonoBehaviour {
     }
 
     public void Init(EntityData data) {
-        Job = data.job;
-        Sex = data.sex;
-        Hair = data.head;
         Type = data.objecttype;
-        WalkSpeed = data.speed;
-        Weapon = data.weapon;
-        Hp = data.HP;
-        MaxHp = data.maxHP;
         Direction = ((NpcDirection)data.PosDir[2]).ToDirection();
+        
         GID = data.GID;
         AID = data.AID;
+
+        Status.jobId = data.job;
+        Status.sex = data.sex;
+        Status.hair = (short)data.head;
+        Status.walkSpeed = data.speed;
+        Status.weapon = (short)data.weapon;
+        Status.hp = data.HP;
+        Status.max_hp = data.maxHP;
+        Status.char_id = GID;
+        Status.account_id = AID;
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
     }
@@ -96,20 +91,18 @@ public class Entity : MonoBehaviour {
 
     // TODO refactor to use only Status class
     public void Init(CharacterData data) {
-        Job = data.Job;
-        Sex = (byte)data.Sex;
-        Hair = (ushort)data.Hair;
-        WalkSpeed = data.Speed;
         Type = EntityType.PC;
-        Weapon = (uint)data.Weapon;
 
+        Status.walkSpeed = data.Speed;
+        Status.weapon = data.Weapon;
+        Status.hair = data.Hair;
         Status.base_exp = (uint)data.Exp;
         Status.base_level = (uint)data.BaseLevel;
         Status.job_exp = (uint)data.JobExp;
         Status.job_level = (uint)data.JobLevel;
         Status.sp = data.SP;
         Status.max_sp = data.MaxSP;
-        Status.class_ = data.Job;
+        Status.jobId = data.Job;
         Status.sex = (byte)data.Sex;
         Status.hp = data.HP;
         Status.max_hp = data.MaxHP;
@@ -123,8 +116,6 @@ public class Entity : MonoBehaviour {
     }
 
     public void UpdateHitPoints(int hp, int maxHp) {
-        this.Hp = hp;
-        this.MaxHp = maxHp;
         Status.hp = hp;
         Status.max_hp = maxHp;
         Debug.Log($"{hp}/{maxHp}");
@@ -148,7 +139,7 @@ public class Entity : MonoBehaviour {
 
     private void OnSkillListReceived(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.SKILLINFO_LIST SKILLINFO_LIST) {
-            SkillTree.Init(Job, SKILLINFO_LIST.skills);
+            SkillTree.Init(Status.jobId, SKILLINFO_LIST.skills);
         }
     }
 
@@ -262,10 +253,10 @@ public class Entity : MonoBehaviour {
         var srcEntity = Core.EntityManager.GetEntity(actionRequest.GID);
         var dstEntity = Core.EntityManager.GetEntity(actionRequest.targetGID);
 
-        if (actionRequest.GID == Core.Session.Entity.GID || actionRequest.GID == Core.Session.AccountID) {
-            srcEntity = Core.Session.Entity;
-        } else if (actionRequest.targetGID == Core.Session.Entity.GID || actionRequest.targetGID == Core.Session.AccountID) {
-            dstEntity = Core.Session.Entity;
+        if (actionRequest.GID == Core.Session.Entity.GetEntityGID() || actionRequest.GID == Core.Session.AccountID) {
+            srcEntity = Core.Session.Entity as Entity;
+        } else if (actionRequest.targetGID == Core.Session.Entity.GetEntityGID() || actionRequest.targetGID == Core.Session.AccountID) {
+            dstEntity = Core.Session.Entity as Entity;
         }
 
         // entity out of screen
@@ -357,7 +348,7 @@ public class Entity : MonoBehaviour {
             srcEntity.LookTo(dstEntity.transform.position);
         }
 
-        srcEntity.AttackSpeed = pkt.sourceSpeed;
+        srcEntity.SetAttackSpeed(pkt.sourceSpeed);
         srcEntity.ChangeMotion(SpriteMotion.Attack1, SpriteMotion.Standby, 3, ((float)pkt.sourceSpeed / (float) EntityViewer.AVERAGE_ASPD));
     }
 
@@ -377,5 +368,25 @@ public class Entity : MonoBehaviour {
 
         var damageRenderer = Instantiate(DamagePrefab).GetComponent<DamageRenderer>();
         damageRenderer.Display(amount, tick, damageType, this);
+    }
+
+    public EntityType GetEntityType()
+    {
+        return Type;
+    }
+
+    public uint GetEntityGID()
+    {
+        return GID;
+    }
+
+    public void SetAttackSpeed(ushort speed)
+    {
+        Status.attackSpeed = speed;
+    }
+
+    public EntityBaseStatus GetBaseStatus()
+    {
+        return Status;
     }
 }

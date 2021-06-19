@@ -58,7 +58,7 @@ public class CharSelectionController : MonoBehaviour {
             Core.NetworkClient.CurrentConnection.Start();
 
             var entity = Core.EntityManager.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
-            Core.Session = new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID);
+            Session.StartSession(new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID));
             DontDestroyOnLoad(entity.gameObject);
 
             var mapUI = Instantiate(MapUIPrefab);
