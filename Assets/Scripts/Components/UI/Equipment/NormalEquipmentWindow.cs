@@ -8,7 +8,7 @@ public class NormalEquipmentWindow : MonoBehaviour {
     public List<UIEquipSlot> slots;
 
     public void UpdateEquipment() {
-        var inventory = Core.Session.Entity.Inventory;
+        var inventory = (Session.CurrentSession.Entity as Entity).Inventory;
         if (inventory == null || inventory.IsEmpty) return;
 
         Dictionary<int, UIEquipSlot> slotDictionary = slots.ToDictionary(it => (int)it.location);

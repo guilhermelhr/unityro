@@ -38,13 +38,13 @@ public class SkillWindowController : MonoBehaviour {
     public void UpdateSkills() {
         InitGrid();
         ResetGrid();
-        var skillTree = Core.Session.Entity.SkillTree;
+        var skillTree = (Session.CurrentSession.Entity as Entity).SkillTree;
         foreach(var job in skillTree.ClassTree) {
             var tab = Instantiate(tabPrefab);
             tab.onValueChanged.AddListener(delegate {
                 OnTabChanged(tab, job);
             });
-            tab.GetComponent<Tab>().SetLabel(JobHelper.GetJobName(job.Key, Core.Session.Entity.Sex));
+            tab.GetComponent<Tab>().SetLabel(JobHelper.GetJobName(job.Key, Session.CurrentSession.Entity.GetBaseStatus().sex));
             tab.group = tabLayout;
             tab.transform.SetParent(tabLayout.transform);
             tabLayout.RegisterToggle(tab);

@@ -33,7 +33,6 @@ public class Core : MonoBehaviour {
     public static ItemManager ItemManager;
     public static MapLoader MapLoader => mapLoader;
     public static MapRenderer MapRenderer => mapRenderer;
-    public static Session Session;
     public static CursorRenderer CursorRenderer;
 
     public static PathFindingManager PathFinding => pathFinding;

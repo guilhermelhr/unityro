@@ -38,7 +38,7 @@ public class EntityManager : MonoBehaviour {
     }
     public Entity GetEntity(uint GID) {
         entityCache.TryGetValue(GID, out var entity);
-        return Core.Session.Entity ?? entity;
+        return Session.CurrentSession.Entity as Entity ?? entity;
     }
 
     //TODO this needs checking

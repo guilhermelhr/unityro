@@ -1,7 +1,5 @@
 ﻿using ROIO;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class ItemManager : MonoBehaviour {
@@ -21,7 +19,7 @@ public class ItemManager : MonoBehaviour {
     private void OnItemTakeOffAnswer(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.ACK_TAKEOFF_EQUIP_V5 ACK_TAKEOFF_EQUIP_V5) {
             if (ACK_TAKEOFF_EQUIP_V5.result == 0) {
-                Core.Session.Entity.Inventory.TakeOffItem(ACK_TAKEOFF_EQUIP_V5.index, ACK_TAKEOFF_EQUIP_V5.equipLocation);
+                (Session.CurrentSession.Entity as Entity).Inventory.TakeOffItem(ACK_TAKEOFF_EQUIP_V5.index, ACK_TAKEOFF_EQUIP_V5.equipLocation);
                 MapUiController.Instance.UpdateEquipment();
             } else {
                 //TODO display error message
@@ -32,7 +30,7 @@ public class ItemManager : MonoBehaviour {
     private void OnItemEquipAnswer(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.ACK_WEAR_EQUIP_V5 ACK_WEAR_EQUIP_V5) {
             if (ACK_WEAR_EQUIP_V5.result == 0) {
-                Core.Session.Entity.Inventory.EquipItem(ACK_WEAR_EQUIP_V5.index, ACK_WEAR_EQUIP_V5.equipLocation);
+                (Session.CurrentSession.Entity as Entity).Inventory.EquipItem(ACK_WEAR_EQUIP_V5.index, ACK_WEAR_EQUIP_V5.equipLocation);
                 MapUiController.Instance.UpdateEquipment();
             } else {
                 //TODO display error message
@@ -42,8 +40,8 @@ public class ItemManager : MonoBehaviour {
 
     private void OnUseItemAnswer(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.USE_ITEM_ACK2 USE_ITEM_ACK2) {
-            if (USE_ITEM_ACK2.AID == Core.Session.AccountID && USE_ITEM_ACK2.result > 0) {
-                Core.Session.Entity.Inventory.UpdateItem(USE_ITEM_ACK2.index, USE_ITEM_ACK2.count);
+            if (USE_ITEM_ACK2.AID == Session.CurrentSession.AccountID && USE_ITEM_ACK2.result > 0) {
+                (Session.CurrentSession.Entity as Entity).Inventory.UpdateItem(USE_ITEM_ACK2.index, USE_ITEM_ACK2.count);
             }
         }
     }
@@ -72,7 +70,7 @@ public class ItemManager : MonoBehaviour {
             itemInfo.res = res;
             itemInfo.collection = collection;
             itemInfo.tab = FindItemTab(itemInfo);
-            Core.Session.Entity.Inventory.AddItem(itemInfo);
+            (Session.CurrentSession.Entity as Entity).Inventory.AddItem(itemInfo);
         }
         MapController.Instance.UIController.UpdateEquipment();
     }
@@ -126,7 +124,7 @@ public class ItemManager : MonoBehaviour {
 
             itemInfo.tab = FindItemTab(itemInfo);
 
-            Core.Session.Entity.Inventory.AddItem(itemInfo);
+            (Session.CurrentSession.Entity as Entity).Inventory.AddItem(itemInfo);
             MapController.Instance.UIController.UpdateEquipment();
 
             DisplayPopup(itemInfo);

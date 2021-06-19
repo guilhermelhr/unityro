@@ -34,7 +34,7 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 case ItemType.HEALING:
                 case ItemType.USABLE:
                 case ItemType.USABLE_UNK:
-                    Core.Session.Entity.Inventory.OnUseItem(itemInfo.index);
+                    (Session.CurrentSession.Entity as Entity).Inventory.OnUseItem(itemInfo.index);
                     break;
 
                 // Use card
@@ -52,9 +52,9 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 case ItemType.AMMO:
                     if(itemInfo.IsIdentified && !itemInfo.IsDamaged) {
                         if(itemInfo.wearState <= 0) {//wear
-                            Core.Session.Entity.Inventory.OnEquipItem(itemInfo.index, itemInfo.location);
+                            (Session.CurrentSession.Entity as Entity).Inventory.OnEquipItem(itemInfo.index, itemInfo.location);
                         } else {//takeoff
-                            Core.Session.Entity.Inventory.OnTakeOffItem(itemInfo.index);
+                            (Session.CurrentSession.Entity as Entity).Inventory.OnTakeOffItem(itemInfo.index);
                         }
                     }
                     break;

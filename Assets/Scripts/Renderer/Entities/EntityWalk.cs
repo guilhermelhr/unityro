@@ -42,7 +42,7 @@ public class EntityWalk : MonoBehaviour {
                 }
                 var next = nodes[nodeIndex + 1];
                 var isDiagonal = PathFindingManager.IsDiagonal(next, current);
-                lastSpeed = (ushort)(isDiagonal ? Entity.WalkSpeed * 14 / 10 : Entity.WalkSpeed); //Diagonal walking is slower
+                lastSpeed = (ushort)(isDiagonal ? Entity.GetBaseStatus().walkSpeed * 14 / 10 : Entity.GetBaseStatus().walkSpeed); //Diagonal walking is slower
                 _tick += lastSpeed;
                 nodeIndex++;
             }

@@ -15,7 +15,7 @@ public class Altitude {
     public GAT gat { get; private set; }
     private List<PathNode> nodes;
 
-    public Altitude(MemoryStreamReader stream) {
+    public Altitude(ROIO.Utils.MemoryStreamReader stream) {
         gat = AltitudeLoader.Load(stream);
 
         init(gat);
