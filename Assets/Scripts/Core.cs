@@ -93,26 +93,19 @@ public class Core : MonoBehaviour {
         if (!Offline) {
             NetworkClient.Start();
         } else {
-            //var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 0, Name = "Player", GID = 20001, Weapon = 1, Speed = 150 });
-            //entity.transform.position = new Vector3(150, 0, 150);
-            //entity.AttackSpeed = 135;
-            //Core.Session = new Session(entity, 0);
+            var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 0, Name = "Player", GID = 20001, Weapon = 1, Speed = 150 });
+            entity.transform.position = new Vector3(150, 0, 150);
+            entity.SetAttackSpeed(135);
+            Session.StartSession(new Session(entity, 0));
 
-            //Core.MainCamera.GetComponent<ROCamera>().SetTarget(Core.Session.Entity.EntityViewer.transform);
-            //Core.MainCamera.transform.SetParent(Core.Session.Entity.transform);
+            MainCamera.GetComponent<ROCamera>().SetTarget(entity.EntityViewer.transform);
+            MainCamera.transform.SetParent(entity.transform);
 
-            //Core.Session.Entity.SetReady(true);
-
-            //var npc = EntityManager.Spawn(new EntityData() { job = 1002, objecttype = EntityType.MOB, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
-            //npc.transform.position = new Vector3(160, 0, 150);
+            entity.SetReady(true);
 
             var str = FileManager.Load("data/texture/effect/magnificat.str") as STR;
             var renderer = new GameObject().AddComponent<StrEffectRenderer>();
             renderer.Initialize(str);
-
-            //var img = new GameObject().AddComponent<RawImage>();
-            //var texture = FileManager.Load("data/texture/effect/explosive_1_128.bmp") as Texture2D;
-            //img.texture = texture;
         }
     }
 

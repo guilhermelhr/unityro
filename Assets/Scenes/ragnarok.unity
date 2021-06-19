@@ -354,7 +354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Offline: 1
-  mapname: 
+  mapname: prontera
   soundsMixerGroup: {fileID: 243063458056754506, guid: 80607cd4d5abb9d49824975c92ad1afc, type: 2}
   worldLight: {fileID: 1425244937}
   mapDropdown: {fileID: 0}

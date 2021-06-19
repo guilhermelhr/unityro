@@ -111,8 +111,8 @@ public class Entity : MonoBehaviour, NetworkEntity {
         HookPackets();
     }
 
-    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0, float factor = 0) {
-        EntityViewer.ChangeMotion(motion, nextMotion, speed, factor);
+    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 1) {
+        EntityViewer.ChangeMotion(motion, nextMotion, speed);
     }
 
     public void UpdateHitPoints(int hp, int maxHp) {
@@ -349,7 +349,7 @@ public class Entity : MonoBehaviour, NetworkEntity {
         }
 
         srcEntity.SetAttackSpeed(pkt.sourceSpeed);
-        srcEntity.ChangeMotion(SpriteMotion.Attack1, SpriteMotion.Standby, 3, ((float)pkt.sourceSpeed / (float) EntityViewer.AVERAGE_ASPD));
+        srcEntity.ChangeMotion(SpriteMotion.Attack1, SpriteMotion.Standby, pkt.sourceSpeed);
     }
 
     public void LookTo(Vector3 position) {
