@@ -15,12 +15,23 @@ public class NetworkClient : MonoBehaviour {
 
     public static int CLIENT_ID = new System.Random().Next();
 
+    public static NetworkClient Instance { get; private set; }
     public Connection CurrentConnection;
     public NetworkClientState State;
+
+    private void Awake() {
+        if (Instance == null) {
+            Instance = this;
+        }
+    }
 
     public void Start() {
         CurrentConnection = new Connection();
         State = new NetworkClientState();
+    }
+
+    private void OnDestroy() {
+        Instance = null;
     }
 
     private void OnApplicationQuit() {
@@ -43,14 +54,6 @@ public class NetworkClient : MonoBehaviour {
 
     public void SkipBytes(int bytesToSkip) {
         CurrentConnection.SkipBytes(bytesToSkip);
-    }
-
-    public void Ping() {
-        if (!IsConnected) return;
-        var ticks = Time.realtimeSinceStartup;
-        if (ticks % 12 < 1f) {
-            new Ping((int)Time.realtimeSinceStartup).Send();
-        }
     }
 
     public BinaryWriter GetBinaryWriter() => CurrentConnection.GetBinaryWriter();

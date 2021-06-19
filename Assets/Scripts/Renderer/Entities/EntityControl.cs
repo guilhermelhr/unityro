@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 
 public class EntityControl : MonoBehaviour {
 
@@ -54,7 +52,7 @@ public class EntityControl : MonoBehaviour {
                 break;
             case EntityType.MOB:
                 // TODO render lock arrow
-                var path = Core.PathFinding.GetPath(Entity.transform.position, target.transform.position, Entity.AttackRange + 1);
+                var path = Core.PathFinding.GetPath(Entity.transform.position, target.transform.position, Entity.GetBaseStatus().attackRange + 1);
 
                 if (path.Count == 0) {
                     return;

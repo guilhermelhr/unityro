@@ -49,7 +49,7 @@ public class InventoryWindowController : MonoBehaviour {
             InitGrid();
         }
 
-        var inventory = Core.Session.Entity.Inventory;
+        var inventory = (Session.CurrentSession.Entity as Entity).Inventory;
         if (inventory == null || inventory.IsEmpty) return;
 
         var filteredInventory = inventory.ItemList.Where(it => it.wearState <= 0 && it.tab == CurrentTab).ToList();

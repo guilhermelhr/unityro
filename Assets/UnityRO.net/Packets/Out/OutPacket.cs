@@ -17,7 +17,7 @@ public abstract class OutPacket {
     public OutPacket(PacketHeader header, int size) {
         Header = header;
         Size = size;
-        Stream = Core.NetworkClient.GetStream();
+        Stream = NetworkClient.Instance.GetStream();
     }
 
     public virtual void Send() {

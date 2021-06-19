@@ -65,7 +65,7 @@ public class Inventory {
 
     public void OnUseItem(short index) {
         new CZ.USE_ITEM2() {
-            AID = Core.Session.AccountID,
+            AID = Session.CurrentSession.AccountID,
             index = index
         }.Send();
     }

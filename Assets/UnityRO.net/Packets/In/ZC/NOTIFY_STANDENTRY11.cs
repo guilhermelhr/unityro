@@ -51,14 +51,14 @@ public partial class ZC {
 
             entityData.virtue = br.ReadInt();
 
-            entityData.isPKModeON = br.ReadByte();
-            entityData.sex = br.ReadByte();
+            entityData.isPKModeON = (byte)br.ReadByte();
+            entityData.sex = (byte)br.ReadByte();
 
             entityData.PosDir = br.ReadPos();
 
-            entityData.xSize = br.ReadByte();
-            entityData.ySize = br.ReadByte();
-            entityData.state = br.ReadByte();
+            entityData.xSize = (byte)br.ReadByte();
+            entityData.ySize = (byte)br.ReadByte();
+            entityData.state = (byte)br.ReadByte();
 
             entityData.clevel = br.ReadShort();
             entityData.font = br.ReadShort();
@@ -66,7 +66,7 @@ public partial class ZC {
             entityData.maxHP = br.ReadInt();
             entityData.HP = br.ReadInt();
 
-            entityData.isBoss = br.ReadByte();
+            entityData.isBoss = (byte)br.ReadByte();
 
             entityData.body = br.ReadUShort();
             entityData.name = br.ReadBinaryString(24);

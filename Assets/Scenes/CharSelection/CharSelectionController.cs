@@ -42,7 +42,7 @@ public class CharSelectionController : MonoBehaviour {
                 Dir = pkt.Dir
             };
             Core.NetworkClient.State.MapLoginInfo = mapLoginInfo;
-            Core.Session.SetCurrentMap(mapLoginInfo.mapname);
+            Session.CurrentSession.SetCurrentMap(mapLoginInfo.mapname);
 
             SceneManager.LoadScene("MapScene");
         }

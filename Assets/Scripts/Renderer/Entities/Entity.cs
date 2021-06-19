@@ -21,7 +21,7 @@ public class Entity : MonoBehaviour, NetworkEntity {
     public int HeadDir;
 
     public bool IsReady = false;
-    public bool HasAuthority => GID == Core.Session?.Entity?.GetEntityGID();
+    public bool HasAuthority => GID == Session.CurrentSession.Entity?.GetEntityGID();
 
     [SerializeField] public uint GID;
     [SerializeField] public uint AID;
@@ -253,10 +253,10 @@ public class Entity : MonoBehaviour, NetworkEntity {
         var srcEntity = Core.EntityManager.GetEntity(actionRequest.GID);
         var dstEntity = Core.EntityManager.GetEntity(actionRequest.targetGID);
 
-        if (actionRequest.GID == Core.Session.Entity.GetEntityGID() || actionRequest.GID == Core.Session.AccountID) {
-            srcEntity = Core.Session.Entity as Entity;
-        } else if (actionRequest.targetGID == Core.Session.Entity.GetEntityGID() || actionRequest.targetGID == Core.Session.AccountID) {
-            dstEntity = Core.Session.Entity as Entity;
+        if (actionRequest.GID == Session.CurrentSession.Entity.GetEntityGID() || actionRequest.GID == Session.CurrentSession.AccountID) {
+            srcEntity = Session.CurrentSession.Entity as Entity;
+        } else if (actionRequest.targetGID == Session.CurrentSession.Entity.GetEntityGID() || actionRequest.targetGID == Session.CurrentSession.AccountID) {
+            dstEntity = Session.CurrentSession.Entity as Entity;
         }
 
         // entity out of screen
