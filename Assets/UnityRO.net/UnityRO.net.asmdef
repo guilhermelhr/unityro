@@ -1,0 +1,15 @@
+{
+    "name": "UnityRO.net",
+    "references": [
+        "GUID:8da2ed8a849f0c84e8e2fbf59ed26887"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
