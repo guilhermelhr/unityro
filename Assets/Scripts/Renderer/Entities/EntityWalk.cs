@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class EntityWalk : MonoBehaviour {
 
@@ -25,13 +24,6 @@ public class EntityWalk : MonoBehaviour {
     }
 
     private void Update() {
-        if(Input.GetMouseButtonDown(0) && Entity.HasAuthority && !EventSystem.current.IsPointerOverGameObject()) {
-            var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray, out var hit, 150)) {
-                RequestMove(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z), 0);
-            }
-        }
-
         if(isWalking && !nodes.IsEmpty()) {
             bool isEnd = false;
             while(_tick <= Core.Tick) {
@@ -71,7 +63,6 @@ public class EntityWalk : MonoBehaviour {
         if(!Entity) return;
         if(packet is ZC.NOTIFY_PLAYERMOVE) {
             var pkt = packet as ZC.NOTIFY_PLAYERMOVE;
-            Entity.ChangeMotion(SpriteMotion.Walk);
 
             StartMoving(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
         }
@@ -81,7 +72,12 @@ public class EntityWalk : MonoBehaviour {
         _tick = Core.Tick;
         nodeIndex = 0;
         nodes = Core.PathFinding.GetPath(startX, startY, endX, endY).Select(node => new Vector3(node.x, (float)node.y, node.z)).ToList();
-        isWalking = true;
+        
+        if (!nodes.IsEmpty()) {
+            Entity.ChangeMotion(SpriteMotion.Walk);
+            isWalking = true;
+        }
+
         lastPosition = transform.position;
     }
 

@@ -7,7 +7,7 @@ public class Entity : MonoBehaviour, NetworkEntity {
 
     public Action OnParameterUpdated;
 
-    private EntityWalk _EntityWalk;
+    private EntityWalk EntityWalk;
     public OutPacket AfterMoveAction;
 
     // Picking Priority
@@ -33,11 +33,15 @@ public class Entity : MonoBehaviour, NetworkEntity {
 
     public void SetReady(bool ready) {
         IsReady = ready;
-        _EntityWalk = gameObject.AddComponent<EntityWalk>();
+        EntityWalk = gameObject.AddComponent<EntityWalk>();
+    }
+
+    internal void RequestMove(int x, int y, int dir) {
+        EntityWalk.RequestMove(x, y, dir);
     }
 
     public void StartMoving(int startX, int startY, int endX, int endY) {
-        _EntityWalk.StartMoving(startX, startY, endX, endY);
+        EntityWalk.StartMoving(startX, startY, endX, endY);
     }
 
     public void Init(EntityData data) {
@@ -122,7 +126,7 @@ public class Entity : MonoBehaviour, NetworkEntity {
     }
 
     public void StopMoving() {
-        _EntityWalk.StopMoving();
+        EntityWalk.StopMoving();
     }
 
     private void HookPackets() {

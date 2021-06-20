@@ -221,7 +221,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0, ushort factor = 0) {
-        Debug.Log($"Chage Motion: {motion} -> {nextMotion}");
+        Debug.Log($"Change Motion: {CurrentMotion} -> {motion} -> {nextMotion}");
         State = SpriteState.Alive;
         var newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion);
         var nextAction = 0;
