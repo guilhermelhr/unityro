@@ -34,6 +34,7 @@ public class MapController : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.HP_INFO.HEADER, OnEntityHpChanged);
         Core.NetworkClient.HookPacket(ZC.STOPMOVE.HEADER, OnEntityMovement);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_EFFECT2.HEADER, OnEffect);
+        Core.NetworkClient.HookPacket(ZC.RESURRECTION.HEADER, OnEntityResurrected);
 
         Core.Instance.InitManagers();
         Core.Instance.InitCamera();
@@ -53,6 +54,13 @@ public class MapController : MonoBehaviour {
         Core.MainCamera.transform.SetParent(entity.transform);
 
         entity.SetReady(true);
+    }
+
+    private void OnEntityResurrected(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.RESURRECTION RESURRECTION) {
+            var entity = Core.EntityManager.GetEntity(RESURRECTION.GID);
+            entity.ChangeMotion(SpriteMotion.Idle);
+        }
     }
 
     private void OnEffect(ushort cmd, int size, InPacket packet) {

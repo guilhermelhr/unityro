@@ -110,7 +110,6 @@ public class MapRenderer {
 #endif
 
             lightComponent.color = new Color(light.color[0], light.color[1], light.color[2]);
-            Debug.Log("color: " + lightComponent.color);
             lightComponent.range = light.range;
             Vector3 position = new Vector3(light.pos[0] + width, -light.pos[1], light.pos[2] + height);
             lightObj.transform.position = position;

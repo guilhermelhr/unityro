@@ -96,12 +96,13 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    void Update() {
+    void FixedUpdate() {
         if (!Entity.IsReady || currentACT == null)
             return;
-        if (State == SpriteState.Dead) {
-            return;
-        }
+
+        //if (State == SpriteState.Dead) {
+        //    return;
+        //}
 
         var tm = Core.Tick - _start;
 

@@ -37,14 +37,19 @@ public class EntityManager : MonoBehaviour {
         }
     }
     public Entity GetEntity(uint GID) {
-        entityCache.TryGetValue(GID, out var entity);
-        return Session.CurrentSession.Entity as Entity ?? entity;
+        var hasFound = entityCache.TryGetValue(GID, out var entity);
+        if (hasFound) {
+            return entity;
+        } else if (Session.CurrentSession.Entity.GetEntityGID() == GID || Session.CurrentSession.AccountID == GID) {
+            return Session.CurrentSession.Entity as Entity;
+        } else {
+            throw new ArgumentException($"No Entity found for given ID: {GID}");
+        }
     }
 
     //TODO this needs checking
-    public void VanishEntity(uint AID, int type) {
-        entityCache.TryGetValue(AID, out Entity entity);
-        entity?.Vanish(type);
+    public void VanishEntity(uint GID, int type) {
+        GetEntity(GID)?.Vanish(type);
     }
 
     public Entity SpawnItem(ItemSpawnInfo itemSpawnInfo) {
