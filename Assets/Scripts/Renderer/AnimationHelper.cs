@@ -132,9 +132,10 @@ public static class AnimationHelper {
             case SpriteMotion.Casting:
             case SpriteMotion.Freeze1:
             case SpriteMotion.Freeze2:
-            case SpriteMotion.Dead:
-                return true;
+            case SpriteMotion.Standby:
             case SpriteMotion.Idle:
+                return true;
+            case SpriteMotion.Dead:
             case SpriteMotion.Sit:
             case SpriteMotion.Attack1:
             case SpriteMotion.Attack2:

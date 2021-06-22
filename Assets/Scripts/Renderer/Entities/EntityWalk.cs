@@ -99,7 +99,6 @@ public class EntityWalk : MonoBehaviour {
          * Validate things such as if entity is sit, whatever
          */
         if(Core.Instance.Offline) {
-            Entity.ChangeMotion(SpriteMotion.Walk);
             StartMoving((int)transform.position.x, (int)transform.position.z, x, y);
         } else {
             new CZ.REQUEST_MOVE2(x, y, dir).Send();

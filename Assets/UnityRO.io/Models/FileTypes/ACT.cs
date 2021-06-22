@@ -25,6 +25,7 @@ namespace ROIO.Models.FileTypes
         {
             public Frame[] frames;
             public float delay;
+            public int FrameCount => frames.Length;
         }
 
         public class Frame

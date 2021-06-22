@@ -21,9 +21,9 @@ public class EntityViewer : MonoBehaviour {
     public int SpriteOrder;
     public SpriteState State = SpriteState.Idle;
 
-    public List<EntityViewer> Children = new List<EntityViewer>();
-    private Dictionary<int, SpriteRenderer> Layers = new Dictionary<int, SpriteRenderer>();
-    private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
+    public List<EntityViewer> Children = new();
+    private Dictionary<int, SpriteRenderer> Layers = new();
+    private Dictionary<ACT.Frame, Mesh> MeshCache = new();
     private AudioSource AudioSource;
 
     private Sprite[] sprites;
@@ -33,17 +33,10 @@ public class EntityViewer : MonoBehaviour {
     private int currentActionIndex;
 
     private int currentFrame = 0;
-
-    private long _start;
-    private ushort _speed;
-    private ushort _factor;
-    private int _action = -1;
-    private int _nextAction = -1;
-
-    private bool isPaused;
+    private long AnimationStart;
+    private int ActionId = -1;
 
     private MeshCollider meshCollider;
-    private Material material;
 
     public void Init(SPR spr, ACT act) {
         currentSPR = spr;
@@ -100,38 +93,43 @@ public class EntityViewer : MonoBehaviour {
         if (!Entity.IsReady || currentACT == null)
             return;
 
-        //if (State == SpriteState.Dead) {
-        //    return;
-        //}
-
-        var tm = Core.Tick - _start;
-
-        currentActionIndex = _action + GetFacingDirection() % currentACT.actions.Length;
+        currentActionIndex = ActionId + GetFacingDirection() % currentACT.actions.Length;
         currentAction = currentACT.actions[currentActionIndex];
-
-        var newFrame = GetCurrentFrame(tm);
-
-        // Are we looping or stopping?
-        if (newFrame >= currentAction.frames.Length - 1) {
-            if (NextMotion != null) {
-                ChangeMotion(NextMotion.Value, null);
-            } else if (CurrentMotion == SpriteMotion.Dead) {
-                State = SpriteState.Dead;
-            }
-        } else {
-            currentFrame = newFrame;
-        }
-
+        currentFrame = GetCurrentFrame(Core.Tick - AnimationStart);
         var frame = currentAction.frames[currentFrame];
 
-        // We need this mesh collider in order to have the raycast to hit the sprite
-        MeshCache.TryGetValue(frame, out Mesh mesh);
-        if (mesh == null) {
-            mesh = SpriteMeshBuilder.BuildColliderMesh(frame, sprites);
-            MeshCache.Add(frame, mesh);
-        }
-        meshCollider.sharedMesh = mesh;
+        UpdateMesh(frame);
+        RenderLayers(frame);
+        PlaySound(frame);
+        UpdateAnchorPoints();
+    }
 
+    private void UpdateAnchorPoints() {
+        if (Parent != null && ViewerType != ViewerType.WEAPON) {
+            var parentAnchor = Parent.GetAnimationAnchor();
+            var ourAnchor = GetAnimationAnchor();
+
+            var diff = parentAnchor - ourAnchor;
+
+            transform.localPosition = new Vector3(diff.x, -diff.y, 0f) / SPR.PIXELS_PER_UNIT;
+        }
+    }
+
+    private void PlaySound(ACT.Frame frame) {
+        if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length) {
+            var clipName = currentACT.sounds[frame.soundId];
+            if (clipName == "atk") return;
+
+            var clip = FileManager.Load($"data/wav/{clipName}") as AudioClip;
+
+            if (clip != null && AudioSource != null) {
+                AudioSource.clip = clip;
+                AudioSource.Play();
+            }
+        }
+    }
+
+    private void RenderLayers(ACT.Frame frame) {
         // If current frame doesn't have layers, cleanup layer cache
         Layers.Values.ToList().ForEach(Renderer => Renderer.sprite = null);
 
@@ -161,44 +159,70 @@ public class EntityViewer : MonoBehaviour {
                 Layers.Add(i, spriteRenderer);
             }
         }
+    }
 
-        if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length) {
-            var clipName = currentACT.sounds[frame.soundId];
-            if (clipName == "atk") return;
-
-            var clip = FileManager.Load($"data/wav/{clipName}") as AudioClip;
-
-            if (clip != null && AudioSource != null) {
-                AudioSource.clip = clip;
-                AudioSource.Play();
-            }
+    private void UpdateMesh(ACT.Frame frame) {
+        // We need this mesh collider in order to have the raycast to hit the sprite
+        MeshCache.TryGetValue(frame, out Mesh mesh);
+        if (mesh == null) {
+            mesh = SpriteMeshBuilder.BuildColliderMesh(frame, sprites);
+            MeshCache.Add(frame, mesh);
         }
-
-        if (Parent != null && ViewerType != ViewerType.WEAPON) {
-            var parentAnchor = Parent.GetAnimationAnchor();
-            var ourAnchor = GetAnimationAnchor();
-
-            var diff = parentAnchor - ourAnchor;
-
-            transform.localPosition = new Vector3(diff.x, -diff.y, 0f) / SPR.PIXELS_PER_UNIT;
-        }
+        meshCollider.sharedMesh = mesh;
     }
 
     private int GetCurrentFrame(long tm) {
-        var timeNeededForOneFrame = currentAction.delay * (1.0 / _speed);
+        var isIdle = CurrentMotion == SpriteMotion.Idle || CurrentMotion == SpriteMotion.Sit;
+        double animCount = currentAction.frames.Length;
+        long delay = GetDelay();
+        var headDir = 0;
+        double frame;
 
-        // this forcedDuration logic from the midgarts client
-        // if forcedDuration > 0 {timeNeededForOneFrame = forcedDuration / frameCount}
-
-        timeNeededForOneFrame = Math.Max(timeNeededForOneFrame, 100);
-        var realIndex = tm / timeNeededForOneFrame;
-        var frameIndex = realIndex % currentAction.frames.Length;
-
-        if (currentAction.frames.Length == 3) {
-            frameIndex = 0;
+        if (ViewerType == ViewerType.BODY && Type == EntityType.PC && isIdle) {
+            return Entity.HeadDir;
         }
 
-        return (int)frameIndex;
+        if (ViewerType == ViewerType.HEAD && isIdle) {
+            animCount = Math.Floor(animCount / 3);
+            headDir = Entity.HeadDir;
+        }
+
+        if (AnimationHelper.IsLoopingMotion(CurrentMotion)) {
+            frame = Math.Floor((double)(tm / delay));
+
+            frame %= animCount;
+
+            frame += animCount * headDir;
+
+            frame %= animCount;
+
+            return (int)frame;
+        }
+
+        frame = Math.Min(tm / delay | 0, animCount) + (animCount * headDir) + 0;
+        if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
+            frame = animCount - 1;
+            if (NextMotion.HasValue) {
+                ChangeMotion(NextMotion.Value);
+            }
+        }
+
+        return (int)Math.Min(frame, animCount - 1);
+    }
+
+    private int GetDelay() {
+        if (ViewerType == ViewerType.BODY && CurrentMotion == SpriteMotion.Walk) {
+            return (int)(currentAction.delay / 150 * Entity.Status.walkSpeed);
+        }
+
+        if (CurrentMotion == SpriteMotion.Attack ||
+            CurrentMotion == SpriteMotion.Attack1 ||
+            CurrentMotion == SpriteMotion.Attack2 ||
+            CurrentMotion == SpriteMotion.Attack3) {
+            return Entity.Status.attackSpeed / currentAction.frames.Length;
+        }
+
+        return (int)currentAction.delay;
     }
 
     private int GetFacingDirection() {
@@ -222,27 +246,16 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0, ushort factor = 0) {
-        Debug.Log($"Change Motion: {CurrentMotion} -> {motion} -> {nextMotion}");
         State = SpriteState.Alive;
         var newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion);
-        var nextAction = 0;
-        if (nextMotion != null) {
-            nextAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, nextMotion.Value);
-        }
 
-        if (newAction != _action) {
-            CurrentMotion = motion;
-            NextMotion = nextMotion;
+        CurrentMotion = motion;
+        NextMotion = nextMotion;
 
-            Entity.Action = newAction;
+        Entity.Action = newAction;
 
-            _action = newAction;
-            _start = Core.Tick;
-        }
-
-        _nextAction = nextAction;
-        _speed = (ushort)(speed > 0 ? speed : 1);
-        _factor = factor;
+        ActionId = newAction;
+        AnimationStart = Core.Tick;
 
         foreach (var child in Children) {
             child.ChangeMotion(motion, nextMotion);

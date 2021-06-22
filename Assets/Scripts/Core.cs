@@ -98,14 +98,18 @@ public class Core : MonoBehaviour {
             entity.SetAttackSpeed(135);
             Session.StartSession(new Session(entity, 0));
 
+            //var mob = EntityManager.Spawn(new EntityData() { job = 1002, name = "Poring", GID = 20001, speed = 697, PosDir = new int[] { 0, 0, 0 }, objecttype = EntityType.MOB });
+            //mob.transform.position = new Vector3(150, 0, 155);
+
             MainCamera.GetComponent<ROCamera>().SetTarget(entity.EntityViewer.transform);
             MainCamera.transform.SetParent(entity.transform);
 
             entity.SetReady(true);
+            //mob.SetReady(true);
 
-            var str = FileManager.Load("data/texture/effect/magnificat.str") as STR;
-            var renderer = new GameObject().AddComponent<StrEffectRenderer>();
-            renderer.Initialize(str);
+            //var str = FileManager.Load("data/texture/effect/magnificat.str") as STR;
+            //var renderer = new GameObject().AddComponent<StrEffectRenderer>();
+            //renderer.Initialize(str);
         }
     }
 
@@ -126,7 +130,7 @@ public class Core : MonoBehaviour {
         // if a map is pre loaded, do not display map selector on startup
         mapDropdown?.gameObject?.SetActive(!preLoadMap);
     }
-    
+
     private void LoadGrf() {
         var a = Configs["grf"] as string;
         var b = Configs["rdata"] as string;
