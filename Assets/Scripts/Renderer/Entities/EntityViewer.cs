@@ -21,9 +21,9 @@ public class EntityViewer : MonoBehaviour {
     public int SpriteOrder;
     public SpriteState State = SpriteState.Idle;
 
-    public List<EntityViewer> Children = new();
-    private Dictionary<int, SpriteRenderer> Layers = new();
-    private Dictionary<ACT.Frame, Mesh> MeshCache = new();
+    public List<EntityViewer> Children = new List<EntityViewer>();
+    private Dictionary<int, SpriteRenderer> Layers = new Dictionary<int, SpriteRenderer>();
+    private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
     private AudioSource AudioSource;
 
     private Sprite[] sprites;
