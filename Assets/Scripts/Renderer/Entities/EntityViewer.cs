@@ -1,6 +1,7 @@
 ﻿using ROIO;
 using ROIO.Models.FileTypes;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,8 +14,8 @@ public class EntityViewer : MonoBehaviour {
     public EntityViewer Parent;
     public ViewerType ViewerType;
 
-    public SpriteMotion CurrentMotion;
-    public SpriteMotion? NextMotion;
+    public MotionRequest CurrentMotion;
+    public MotionRequest? NextMotion;
 
     public float SpriteOffset;
     public int HeadDirection;
@@ -35,6 +36,7 @@ public class EntityViewer : MonoBehaviour {
     private int currentFrame = 0;
     private long AnimationStart;
     private int ActionId = -1;
+    private double previousFrame = 0;
 
     private MeshCollider meshCollider;
 
@@ -68,7 +70,7 @@ public class EntityViewer : MonoBehaviour {
         meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
 
         if (currentAction == null) {
-            ChangeMotion(SpriteMotion.Idle);
+            ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
         }
 
         foreach (var child in Children) {
@@ -172,7 +174,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private int GetCurrentFrame(long tm) {
-        var isIdle = CurrentMotion == SpriteMotion.Idle || CurrentMotion == SpriteMotion.Sit;
+        var isIdle = CurrentMotion.Motion == SpriteMotion.Idle || CurrentMotion.Motion == SpriteMotion.Sit;
         double animCount = currentAction.frames.Length;
         long delay = GetDelay();
         var headDir = 0;
@@ -187,38 +189,52 @@ public class EntityViewer : MonoBehaviour {
             headDir = Entity.HeadDir;
         }
 
-        if (AnimationHelper.IsLoopingMotion(CurrentMotion)) {
+        if (AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
             frame = Math.Floor((double)(tm / delay));
-
             frame %= animCount;
-
             frame += animCount * headDir;
-
+            frame += previousFrame;
             frame %= animCount;
 
             return (int)frame;
         }
 
-        frame = Math.Min(tm / delay | 0, animCount) + (animCount * headDir) + 0;
+        frame = Math.Min(tm / delay | 0, animCount);
+        frame += (animCount * headDir);
+        frame += previousFrame;
+
         if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
-            frame = animCount - 1;
-            if (NextMotion.HasValue) {
-                ChangeMotion(NextMotion.Value);
+            previousFrame = frame = animCount - 1;
+
+            if (CurrentMotion.delay > 0 && Core.Tick < CurrentMotion.delay) {
+                if (NextMotion.HasValue) {
+                    StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float)(CurrentMotion.delay - Core.Tick) / 1000f));
+                }
+            } else {
+                if (NextMotion.HasValue) {
+                    ChangeMotion(NextMotion.Value);
+                }
             }
         }
 
         return (int)Math.Min(frame, animCount - 1);
     }
 
+    private IEnumerator ChangeMotionAfter(MotionRequest motion, float time) {
+        yield return new WaitForSeconds(time);
+
+        ChangeMotion(motion);
+    }
+
     private int GetDelay() {
-        if (ViewerType == ViewerType.BODY && CurrentMotion == SpriteMotion.Walk) {
+        if (ViewerType == ViewerType.BODY && CurrentMotion.Motion == SpriteMotion.Walk) {
             return (int)(currentAction.delay / 150 * Entity.Status.walkSpeed);
         }
 
-        if (CurrentMotion == SpriteMotion.Attack ||
-            CurrentMotion == SpriteMotion.Attack1 ||
-            CurrentMotion == SpriteMotion.Attack2 ||
-            CurrentMotion == SpriteMotion.Attack3) {
+        if (CurrentMotion.Motion == SpriteMotion.Attack ||
+            CurrentMotion.Motion == SpriteMotion.Attack1 ||
+            CurrentMotion.Motion == SpriteMotion.Attack2 ||
+            CurrentMotion.Motion == SpriteMotion.Attack3) {
             return Entity.Status.attackSpeed / currentAction.frames.Length;
         }
 
@@ -227,7 +243,7 @@ public class EntityViewer : MonoBehaviour {
 
     private int GetFacingDirection() {
         int angle;
-        if (AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion)) {
+        if (AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion.Motion)) {
             angle = AnimationHelper.GetFourDirectionSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
         } else {
             angle = AnimationHelper.GetSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
@@ -245,17 +261,16 @@ public class EntityViewer : MonoBehaviour {
         newPos = new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / sprite.pixelsPerUnit;
     }
 
-    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 0, ushort factor = 0) {
+    public void ChangeMotion(MotionRequest motion, MotionRequest? nextMotion = null) {
         State = SpriteState.Alive;
-        var newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion);
 
+        var newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
         CurrentMotion = motion;
         NextMotion = nextMotion;
-
         Entity.Action = newAction;
-
         ActionId = newAction;
         AnimationStart = Core.Tick;
+        previousFrame = 0;
 
         foreach (var child in Children) {
             child.ChangeMotion(motion, nextMotion);
@@ -290,5 +305,10 @@ public class EntityViewer : MonoBehaviour {
         if (ViewerType == ViewerType.HEAD && (State == SpriteState.Idle || State == SpriteState.Sit))
             return frame.pos[currentFrame];
         return Vector2.zero;
+    }
+
+    public struct MotionRequest {
+        public SpriteMotion Motion;
+        public double delay;
     }
 }

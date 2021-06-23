@@ -47,7 +47,7 @@ public class Entity : MonoBehaviour, NetworkEntity {
     public void Init(EntityData data) {
         Type = data.objecttype;
         Direction = ((NpcDirection)data.PosDir[2]).ToDirection();
-        
+
         GID = data.GID;
         AID = data.AID;
 
@@ -72,7 +72,7 @@ public class Entity : MonoBehaviour, NetworkEntity {
                 break;
             case 1: // Died
                 var isPC = Type == EntityType.PC;
-                ChangeMotion(SpriteMotion.Dead);
+                ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Dead });
                 if (!isPC) {
                     StartCoroutine(DestroyAfterSeconds());
                 }
@@ -115,8 +115,8 @@ public class Entity : MonoBehaviour, NetworkEntity {
         HookPackets();
     }
 
-    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, ushort speed = 1) {
-        EntityViewer.ChangeMotion(motion, nextMotion, speed);
+    public void ChangeMotion(EntityViewer.MotionRequest motion, EntityViewer.MotionRequest? nextMotion = null) {
+        EntityViewer.ChangeMotion(motion, nextMotion);
     }
 
     public void UpdateHitPoints(int hp, int maxHp) {
@@ -297,7 +297,7 @@ public class Entity : MonoBehaviour, NetworkEntity {
     }
 
     private static void OnEntityPickup(Entity srcEntity, Entity dstEntity) {
-        srcEntity.ChangeMotion(SpriteMotion.PickUp, SpriteMotion.Idle);
+        srcEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.PickUp }, new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
         if (dstEntity) {
             srcEntity.LookTo(dstEntity.transform.position);
         }
@@ -311,7 +311,10 @@ public class Entity : MonoBehaviour, NetworkEntity {
             if (pkt.damage > 0 &&
                 pkt.action != ActionRequestType.ATTACK_MULTIPLE_NOMOTION &&
                 pkt.action != ActionRequestType.ATTACK_NOMOTION) {
-                dstEntity.ChangeMotion(SpriteMotion.Hit, SpriteMotion.Standby);
+                dstEntity.ChangeMotion(
+                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Hit, delay = Core.Tick + pkt.sourceSpeed },
+                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = Core.Tick + pkt.sourceSpeed * 2 }
+                    );
             }
 
             target = pkt.damage > 0 ? dstEntity : srcEntity;
@@ -353,7 +356,10 @@ public class Entity : MonoBehaviour, NetworkEntity {
         }
 
         srcEntity.SetAttackSpeed(pkt.sourceSpeed);
-        srcEntity.ChangeMotion(SpriteMotion.Attack1, SpriteMotion.Standby, pkt.sourceSpeed);
+        srcEntity.ChangeMotion(
+            new EntityViewer.MotionRequest { Motion = SpriteMotion.Attack1 },
+            new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = Core.Tick + pkt.sourceSpeed }
+        );
     }
 
     public void LookTo(Vector3 position) {
@@ -374,23 +380,19 @@ public class Entity : MonoBehaviour, NetworkEntity {
         damageRenderer.Display(amount, tick, damageType, this);
     }
 
-    public EntityType GetEntityType()
-    {
+    public EntityType GetEntityType() {
         return Type;
     }
 
-    public uint GetEntityGID()
-    {
+    public uint GetEntityGID() {
         return GID;
     }
 
-    public void SetAttackSpeed(ushort speed)
-    {
+    public void SetAttackSpeed(ushort speed) {
         Status.attackSpeed = speed;
     }
 
-    public EntityBaseStatus GetBaseStatus()
-    {
+    public EntityBaseStatus GetBaseStatus() {
         return Status;
     }
 }

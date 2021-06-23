@@ -13,7 +13,10 @@ public class EntityViewerEditor : Editor {
 
         foreach (var motion in Enum.GetValues(typeof(SpriteMotion))) {
             if (GUILayout.Button(((SpriteMotion)motion).ToString())) {
-                component.ChangeMotion((SpriteMotion)motion);
+                component.ChangeMotion(
+                    new EntityViewer.MotionRequest { Motion = (SpriteMotion)motion },
+                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle }
+                );
             }
         }
     }

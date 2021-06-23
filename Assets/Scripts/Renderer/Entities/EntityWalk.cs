@@ -74,7 +74,7 @@ public class EntityWalk : MonoBehaviour {
         nodes = Core.PathFinding.GetPath(startX, startY, endX, endY).Select(node => new Vector3(node.x, (float)node.y, node.z)).ToList();
         
         if (!nodes.IsEmpty()) {
-            Entity.ChangeMotion(SpriteMotion.Walk);
+            Entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
             isWalking = true;
         }
 
@@ -82,11 +82,11 @@ public class EntityWalk : MonoBehaviour {
     }
 
     public void StopMoving() {
-        Entity.ChangeMotion(SpriteMotion.Idle);
+        Entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
     }
 
     private IEnumerator OnWalkEnd() {
-        Entity.ChangeMotion(SpriteMotion.Idle);
+        StopMoving();
         yield return new WaitForEndOfFrame();
         Entity.AfterMoveAction?.Send();
         Entity.AfterMoveAction = null;

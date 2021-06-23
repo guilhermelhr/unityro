@@ -87,7 +87,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
-        bodyViewer.CurrentMotion = SpriteMotion.Idle;
+        bodyViewer.CurrentMotion = new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle };
         bodyViewer.Type = entity.Type;
 
         entity.Init(spr, act);
@@ -129,7 +129,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
-        bodyViewer.CurrentMotion = SpriteMotion.Idle;
+        bodyViewer.CurrentMotion = new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle };
         bodyViewer.Type = entity.Type;
         bodyViewer.Children.Add(headViewer);
 
@@ -169,7 +169,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
-        bodyViewer.CurrentMotion = SpriteMotion.Idle;
+        bodyViewer.CurrentMotion = new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle };
         bodyViewer.Type = entity.Type;
 
         entityCache.Add(data.AID, entity);
@@ -202,7 +202,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
-        bodyViewer.CurrentMotion = SpriteMotion.Idle;
+        bodyViewer.CurrentMotion = new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle };
         bodyViewer.Type = entity.Type;
 
         entityCache.Add(data.AID, entity);
@@ -242,7 +242,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Entity = entity;
         bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
-        bodyViewer.CurrentMotion = SpriteMotion.Idle;
+        bodyViewer.CurrentMotion = new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle };
         bodyViewer.Type = entity.Type;
         bodyViewer.Children.Add(headViewer);
 
