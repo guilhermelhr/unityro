@@ -9,6 +9,9 @@ using UnityEngine.Rendering;
 
 public class EntityViewer : MonoBehaviour {
 
+    private const int AVERAGE_ATTACK_SPEED = 432;
+    private const int AVERAGE_ATTACKED_SPEED = 288;
+
     public Entity Entity;
     public EntityType Type;
     public EntityViewer Parent;
@@ -177,6 +180,10 @@ public class EntityViewer : MonoBehaviour {
         var isIdle = CurrentMotion.Motion == SpriteMotion.Idle || CurrentMotion.Motion == SpriteMotion.Sit;
         double animCount = currentAction.frames.Length;
         long delay = GetDelay();
+        if (delay <= 0)
+        {
+            delay = (int)currentAction.delay;
+        }
         var headDir = 0;
         double frame;
 
@@ -235,7 +242,7 @@ public class EntityViewer : MonoBehaviour {
             CurrentMotion.Motion == SpriteMotion.Attack1 ||
             CurrentMotion.Motion == SpriteMotion.Attack2 ||
             CurrentMotion.Motion == SpriteMotion.Attack3) {
-            return Entity.Status.attackSpeed / currentAction.frames.Length;
+            return (int)(currentAction.delay * (Entity.Status.attackSpeed / AVERAGE_ATTACK_SPEED));
         }
 
         return (int)currentAction.delay;
