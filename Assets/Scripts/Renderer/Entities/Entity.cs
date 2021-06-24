@@ -89,6 +89,19 @@ public class Entity : MonoBehaviour, NetworkEntity {
         yield return null;
     }
 
+    internal void OnSpriteChange(int type, short value, short value2) {
+        switch (type) {
+            case 0:
+                Status.jobId = value;
+                // update info window
+                break;
+            default:
+                break;
+        }
+
+        EntityViewer.Init(reloadSprites: true);
+    }
+
     public void Init(SPR spr, ACT act) {
         EntityViewer.Init(spr, act);
     }
@@ -122,7 +135,6 @@ public class Entity : MonoBehaviour, NetworkEntity {
     public void UpdateHitPoints(int hp, int maxHp) {
         Status.hp = hp;
         Status.max_hp = maxHp;
-        Debug.Log($"{hp}/{maxHp}");
     }
 
     public void StopMoving() {
@@ -139,6 +151,13 @@ public class Entity : MonoBehaviour, NetworkEntity {
         Core.NetworkClient.HookPacket(ZC.STATUS.HEADER, OnStatsWindowData);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_EXP2.HEADER, OnExpReceived);
         Core.NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillListReceived);
+        Core.NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
+    }
+
+    private void OnAttackRangeReceived(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.ATTACK_RANGE ATTACK_RANGE && HasAuthority) {
+            Status.attackRange = ATTACK_RANGE.Range;
+        }
     }
 
     private void OnSkillListReceived(ushort cmd, int size, InPacket packet) {
@@ -296,14 +315,14 @@ public class Entity : MonoBehaviour, NetworkEntity {
         }
     }
 
-    private static void OnEntityPickup(Entity srcEntity, Entity dstEntity) {
+    private void OnEntityPickup(Entity srcEntity, Entity dstEntity) {
         srcEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.PickUp }, new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
         if (dstEntity) {
             srcEntity.LookTo(dstEntity.transform.position);
         }
     }
 
-    private static void OnEntityAttack(EntityActionRequest pkt, Entity srcEntity, Entity dstEntity) {
+    private void OnEntityAttack(EntityActionRequest pkt, Entity srcEntity, Entity dstEntity) {
         Entity target;
         if (dstEntity) {
             // only if damage and do not have endure
@@ -357,7 +376,7 @@ public class Entity : MonoBehaviour, NetworkEntity {
 
         srcEntity.SetAttackSpeed(pkt.sourceSpeed);
         srcEntity.ChangeMotion(
-            new EntityViewer.MotionRequest { Motion = SpriteMotion.Attack1 },
+            new EntityViewer.MotionRequest { Motion = SpriteMotion.Attack },
             new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = Core.Tick + pkt.sourceSpeed }
         );
     }

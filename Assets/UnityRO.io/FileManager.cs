@@ -1,4 +1,5 @@
 ﻿using B83.Image.BMP;
+using Newtonsoft.Json.Linq;
 using ROIO.GRF;
 using ROIO.Loaders;
 using ROIO.Models.FileTypes;
@@ -184,6 +185,8 @@ namespace ROIO
                         case "mp3":
                         case "ogg":
                             break;
+                        case "json":
+                            return JObject.Parse(Encoding.UTF8.GetString(br.ToArray()));
                         default:
                             throw new Exception($"Unsuported file format: {ext} for file {file}");
                     }

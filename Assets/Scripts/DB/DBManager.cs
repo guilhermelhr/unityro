@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using ROIO;
+using System.Collections.Generic;
 using System.Text;
 
 public class DBManager {
@@ -8,6 +10,7 @@ public class DBManager {
     private static Dictionary<int, string> bodyPathTable = BodyPathTable.BodyPath;
     private static Dictionary<int, string> monsterPathTable = MonsterTable.Table;
     private static string[] SexTable = new string[] { "\xbf\xa9", "\xb3\xb2" };
+    private static JObject WeaponActions;
 
     public static Item GetItemInfo(int gID) {
         ItemDB.TryGetValue(gID, out Item item);
@@ -36,16 +39,29 @@ public class DBManager {
 
     // TODO implement this
     public static int GetWeaponAction(Job job, int sex, int weapon) {
-        var baseJob = JobHelper.GetBaseClass((ushort)job, sex);
+        var jobValue = $"{(ushort)job}";
+        var weaponViewId = $"{GetItemViewID(weapon)}";
 
-        ItemDB.TryGetValue(weapon, out Item item);
-        return 1;
+        try {
+            var jobActionValue = WeaponActions[jobValue];
+            if (jobActionValue.Type == JTokenType.Array) {
+                return jobActionValue[$"{sex}"][weaponViewId].ToObject<int>();
+            } else {
+                return jobActionValue[weaponViewId].ToObject<int>();
+            }
+        } catch {
+            return 0;
+        }
     }
 
     public static int GetItemViewID(int itemId) {
+        // Already a ViewID
+        if (itemId < (int)WeaponType.MAX) {
+            return itemId;
+        }
         ItemDB.TryGetValue(itemId, out Item item);
 
-        return item?.ClassNum ?? -1;
+        return item?.ClassNum ?? 0;
     }
 
     public static string GetBodyPath(Job job, int sex) {
@@ -150,5 +166,6 @@ public class DBManager {
 
     public static void init() {
         new LuaInterface();
+        WeaponActions = FileManager.Load("WeaponActions.json") as JObject;
     }
 }

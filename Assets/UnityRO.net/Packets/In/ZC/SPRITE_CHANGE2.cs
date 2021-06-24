@@ -8,11 +8,16 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_SPRITE_CHANGE2;
         public const int SIZE = 15;
 
+        public uint GID;
+        public int type;
+        public short value;
+        public short value2;
+
         public void Read(MemoryStreamReader br, int size) {
-            var GID = br.ReadInt();
-            var type = br.ReadByte();
-            var value = br.ReadShort();
-            var value2 = br.ReadShort();
+            GID = br.ReadUInt();
+            type = br.ReadByte();
+            value = br.ReadShort();
+            value2 = br.ReadShort();
         }
     }
 }

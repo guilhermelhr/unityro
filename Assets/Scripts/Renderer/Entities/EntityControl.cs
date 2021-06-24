@@ -68,7 +68,7 @@ public class EntityControl : MonoBehaviour {
 
                 OutPacket packet = new CZ.REQUEST_ACT2() {
                     TargetID = target.AID,
-                    action = EntityActionType.ATTACK
+                    action = EntityActionType.CONTINUOUS_ATTACK
                 };
 
                 PathNode endNode;

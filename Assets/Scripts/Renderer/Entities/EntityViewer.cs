@@ -49,7 +49,24 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void Start() {
-        if (currentSPR == null) {
+        Init();
+
+        InitShadow();
+
+        if (AudioSource == null && Parent == null) {
+            AudioSource = gameObject.AddComponent<AudioSource>();
+            AudioSource.spatialBlend = 0.7f;
+            AudioSource.priority = 60;
+            AudioSource.maxDistance = 40;
+            AudioSource.rolloffMode = AudioRolloffMode.Linear;
+            AudioSource.volume = 1f;
+            AudioSource.dopplerLevel = 0;
+            AudioSource.outputAudioMixerGroup = MapRenderer.SoundsMixerGroup;
+        }
+    }
+
+    public void Init(bool reloadSprites = false) {
+        if (currentSPR == null || reloadSprites) {
             string path = "";
 
             switch (ViewerType) {
@@ -78,19 +95,6 @@ public class EntityViewer : MonoBehaviour {
 
         foreach (var child in Children) {
             child.Start();
-        }
-
-        InitShadow();
-
-        if (AudioSource == null && Parent == null) {
-            AudioSource = gameObject.AddComponent<AudioSource>();
-            AudioSource.spatialBlend = 0.7f;
-            AudioSource.priority = 60;
-            AudioSource.maxDistance = 40;
-            AudioSource.rolloffMode = AudioRolloffMode.Linear;
-            AudioSource.volume = 1f;
-            AudioSource.dopplerLevel = 0;
-            AudioSource.outputAudioMixerGroup = MapRenderer.SoundsMixerGroup;
         }
     }
 
@@ -180,8 +184,7 @@ public class EntityViewer : MonoBehaviour {
         var isIdle = CurrentMotion.Motion == SpriteMotion.Idle || CurrentMotion.Motion == SpriteMotion.Sit;
         double animCount = currentAction.frames.Length;
         long delay = GetDelay();
-        if (delay <= 0)
-        {
+        if (delay <= 0) {
             delay = (int)currentAction.delay;
         }
         var headDir = 0;
@@ -271,7 +274,15 @@ public class EntityViewer : MonoBehaviour {
     public void ChangeMotion(MotionRequest motion, MotionRequest? nextMotion = null) {
         State = SpriteState.Alive;
 
-        var newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
+        int newAction;
+        if (motion.Motion == SpriteMotion.Attack) {
+            var attackActions = new SpriteMotion[] { SpriteMotion.Attack1, SpriteMotion.Attack2, SpriteMotion.Attack3 };
+            var action = DBManager.GetWeaponAction((Job)Entity.Status.jobId, Entity.Status.sex, Entity.Status.weapon);
+            newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, attackActions[action]);
+        } else {
+            newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
+        }
+
         CurrentMotion = motion;
         NextMotion = nextMotion;
         Entity.Action = newAction;

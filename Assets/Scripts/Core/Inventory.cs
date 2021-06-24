@@ -56,9 +56,15 @@ public class Inventory {
         item.wearState = 0;
     }
 
-    public void EquipItem(short index, int equipLocation) {
+    public void EquipItem(short index, int equipLocation, short viewID) {
         Items.TryGetValue(index, out ItemInfo item);
         if (item == null) return;
+
+        //if ((equipLocation & (int)EquipLocation.HEAD_TOP) > 0) Session.Cu.Entity.accessory2 = pkt.viewid;
+        //if ((equipLocation & (int)EquipLocation.HEAD_MID) > 0) Session.Entity.accessory3 = pkt.viewid;
+        //if ((equipLocation & (int)EquipLocation.HEAD_BOTTOM) > 0) Session.Entity.accessory = pkt.viewid;
+        if ((equipLocation & (int)EquipLocation.WEAPON) > 0) Session.CurrentSession.Entity.GetBaseStatus().weapon = viewID;
+        if ((equipLocation & (int)EquipLocation.SHIELD) > 0) Session.CurrentSession.Entity.GetBaseStatus().shield = viewID;
 
         item.wearState = equipLocation;
     }

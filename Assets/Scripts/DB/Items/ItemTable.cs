@@ -135,7 +135,8 @@ public enum WeaponType : int {
     WEAPONTYPE_FOXTAIL_BROWN = 99,
     WEAPONTYPE_FOXTAIL_GREEN = 100,
     WEAPONTYPE_CandyCaneRod = 101,
-    WEAPONTYPE_FOXTAIL_METAL = 102
+    WEAPONTYPE_FOXTAIL_METAL = 102,
+    MAX = 103
 }
 
 public class ItemTable {
