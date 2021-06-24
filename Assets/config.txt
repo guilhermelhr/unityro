@@ -1,3 +1,0 @@
-grf=C:/PATH/TO/YOUR/GRF/data.grf
-rdata=C:/PATH/TO/YOUR/GRF/rdata.grf
-itemInfo=C:/PATH/TO/YOUR/GRF/itemInfo.lua
