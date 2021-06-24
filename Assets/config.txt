@@ -1,0 +1,3 @@
+grf=<Path to your>/data.grf
+rdata=<Path to your>/rdata.grf
+itemInfo=<Path to your>/itemInfo.lua
