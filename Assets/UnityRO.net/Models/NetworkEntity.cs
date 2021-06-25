@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-public interface NetworkEntity
+﻿public interface INetworkEntity
 {
     EntityType GetEntityType();
     uint GetEntityGID();
-
     EntityBaseStatus GetBaseStatus();
+    void UpdateSprites();
 }

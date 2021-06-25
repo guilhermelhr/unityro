@@ -36,6 +36,7 @@ public class MapController : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_EFFECT2.HEADER, OnEffect);
         Core.NetworkClient.HookPacket(ZC.RESURRECTION.HEADER, OnEntityResurrected);
         Core.NetworkClient.HookPacket(ZC.SPRITE_CHANGE2.HEADER, OnSpriteChanged);
+        Core.NetworkClient.HookPacket(ZC.ACTION_FAILURE.HEADER, OnActionFailure);
 
         Core.Instance.InitManagers();
         Core.Instance.InitCamera();
@@ -55,6 +56,30 @@ public class MapController : MonoBehaviour {
         Core.MainCamera.transform.SetParent(entity.transform);
 
         entity.SetReady(true);
+    }
+
+    private void OnActionFailure(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.ACTION_FAILURE ACTION_FAILURE) {
+            (Session.CurrentSession.Entity as Entity).StopMoving();
+            switch (ACTION_FAILURE.ErrorCode) {
+                case 0: // Please equip the proper amnution first
+                    UIController.ChatBox.DisplayMessage(242, 0);
+                    break;
+
+                case 1:  // You can't Attack or use Skills because your Weight Limit has been exceeded.
+                    UIController.ChatBox.DisplayMessage(243, 0);
+                    break;
+
+                case 2: // You can't use Skills because Weight Limit has been exceeded.
+                    UIController.ChatBox.DisplayMessage(244, 0);
+                    break;
+
+                case 3: // Ammunition has been equipped.
+                        // TODO: check the class - assassin: 1040 | gunslinger: 1175 | default: 245
+                    UIController.ChatBox.DisplayMessage(245, 0);
+                    break;
+            }
+        }
     }
 
     private void OnSpriteChanged(ushort cmd, int size, InPacket packet) {

@@ -50,7 +50,7 @@ public class DBManager {
                 return jobActionValue[weaponViewId].ToObject<int>();
             }
         } catch {
-            return 0;
+            return 1;
         }
     }
 

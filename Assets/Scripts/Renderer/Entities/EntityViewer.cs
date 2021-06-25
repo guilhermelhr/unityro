@@ -80,13 +80,20 @@ public class EntityViewer : MonoBehaviour {
                     path = DBManager.GetWeaponPath(Entity.Status.weapon, Entity.Status.jobId, Entity.Status.sex);
                     break;
             }
+            try {
+                currentSPR = FileManager.Load(path + ".spr") as SPR;
+                currentACT = FileManager.Load(path + ".act") as ACT;
 
-            currentSPR = FileManager.Load(path + ".spr") as SPR;
-            currentACT = FileManager.Load(path + ".act") as ACT;
+                currentSPR.SwitchToRGBA();
+                sprites = currentSPR.GetSprites();
+            } catch {
+                Debug.LogError($"Could not load sprites for: {path}");
+                currentACT = null;
+                currentSPR = null;
+            }
         }
 
-        currentSPR.SwitchToRGBA();
-        sprites = currentSPR.GetSprites();
+
         meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
 
         if (currentAction == null) {
@@ -94,6 +101,7 @@ public class EntityViewer : MonoBehaviour {
         }
 
         foreach (var child in Children) {
+            child.Init(reloadSprites);
             child.Start();
         }
     }
@@ -245,7 +253,9 @@ public class EntityViewer : MonoBehaviour {
             CurrentMotion.Motion == SpriteMotion.Attack1 ||
             CurrentMotion.Motion == SpriteMotion.Attack2 ||
             CurrentMotion.Motion == SpriteMotion.Attack3) {
-            return (int)(currentAction.delay * (Entity.Status.attackSpeed / AVERAGE_ATTACK_SPEED));
+            var delay = (int)(currentAction.delay * (Entity.Status.attackSpeed / AVERAGE_ATTACK_SPEED));
+
+            return (delay > 0) ? delay : Entity.Status.attackSpeed / currentAction.FrameCount;
         }
 
         return (int)currentAction.delay;

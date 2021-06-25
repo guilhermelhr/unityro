@@ -15,11 +15,22 @@ public class ItemManager : MonoBehaviour {
         Core.NetworkClient.HookPacket(ZC.ACK_WEAR_EQUIP_V5.HEADER, OnItemEquipAnswer);
         Core.NetworkClient.HookPacket(ZC.ACK_TAKEOFF_EQUIP_V5.HEADER, OnItemTakeOffAnswer);
         Core.NetworkClient.HookPacket(ZC.DELETE_ITEM_FROM_BODY.HEADER, OnInventoryRemoveItem);
+        Core.NetworkClient.HookPacket(ZC.EQUIP_ARROW.HEADER, OnEquipAmmo);
+    }
+
+    private void OnEquipAmmo(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.EQUIP_ARROW EQUIP_ARROW) {
+            (Session.CurrentSession.Entity as Entity).Inventory.EquipItem(EQUIP_ARROW.Index, (int)EquipLocation.AMMO, 0);
+        }
     }
 
     private void OnInventoryRemoveItem(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.DELETE_ITEM_FROM_BODY DELETE_ITEM_FROM_BODY) {
-
+            var item = (Session.CurrentSession.Entity as Entity).Inventory.RemoveItem((short)DELETE_ITEM_FROM_BODY.Index, (short)DELETE_ITEM_FROM_BODY.Count);
+            if (item.amount <= 1) {
+                MapUiController.Instance.EquipmentWindow.UnequipAmmo();
+            }
+            MapUiController.Instance.UpdateEquipment();
         }
     }
 
@@ -40,7 +51,7 @@ public class ItemManager : MonoBehaviour {
                 (Session.CurrentSession.Entity as Entity).Inventory.EquipItem(ACK_WEAR_EQUIP_V5.index, ACK_WEAR_EQUIP_V5.equipLocation, ACK_WEAR_EQUIP_V5.ViewID);
                 MapUiController.Instance.UpdateEquipment();
             } else {
-                //TODO display error message
+                MapController.Instance.UIController.ChatBox.DisplayMessage(372,0);
             }
         }
     }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class MapUiController : MonoBehaviour {
 
@@ -17,6 +13,7 @@ public class MapUiController : MonoBehaviour {
     [SerializeField] public InventoryWindowController InventoryWindow;
     [SerializeField] public StatsWindowController StatsWindow;
     [SerializeField] public SkillWindowController SkillWindow;
+    [SerializeField] public ChatBoxController ChatBox;
 
     void Awake() {
         if (Instance == null) {

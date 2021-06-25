@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public class Inventory {
 
@@ -37,6 +34,23 @@ public class Inventory {
         return null;
     }
 
+    public ItemInfo RemoveItem(int index, int count) {
+        Items.TryGetValue(index, out var it);
+
+        if (it != null) {
+            
+            if (it.amount > 1) {
+                it.amount -= count;
+            } else {
+                RemoveItem(it);
+            }
+
+            return it;
+        }
+
+        return null;
+    }
+
     public void UpdateItem(short index, short count) {
         Items.TryGetValue(index, out ItemInfo item);
         if (item == null) return;
@@ -60,13 +74,20 @@ public class Inventory {
         Items.TryGetValue(index, out ItemInfo item);
         if (item == null) return;
 
-        //if ((equipLocation & (int)EquipLocation.HEAD_TOP) > 0) Session.Cu.Entity.accessory2 = pkt.viewid;
-        //if ((equipLocation & (int)EquipLocation.HEAD_MID) > 0) Session.Entity.accessory3 = pkt.viewid;
-        //if ((equipLocation & (int)EquipLocation.HEAD_BOTTOM) > 0) Session.Entity.accessory = pkt.viewid;
+        if ((equipLocation & (int)EquipLocation.HEAD_TOP) > 0) Session.CurrentSession.Entity.GetBaseStatus().head_top = viewID;
+        if ((equipLocation & (int)EquipLocation.HEAD_MID) > 0) Session.CurrentSession.Entity.GetBaseStatus().head_mid = viewID;
+        if ((equipLocation & (int)EquipLocation.HEAD_BOTTOM) > 0) Session.CurrentSession.Entity.GetBaseStatus().head_bottom = viewID;
         if ((equipLocation & (int)EquipLocation.WEAPON) > 0) Session.CurrentSession.Entity.GetBaseStatus().weapon = viewID;
         if ((equipLocation & (int)EquipLocation.SHIELD) > 0) Session.CurrentSession.Entity.GetBaseStatus().shield = viewID;
 
         item.wearState = equipLocation;
+        Session.CurrentSession.Entity.UpdateSprites();
+
+        if (item.itemType == (int)ItemType.AMMO) {
+            MapUiController.Instance.EquipmentWindow.EquipAmmo(item);
+        } else {
+            MapUiController.Instance.UpdateEquipment();
+        }
     }
 
     public void OnUseItem(short index) {

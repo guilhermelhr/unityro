@@ -6,10 +6,10 @@ public class Session
     public static Session CurrentSession { get; private set; }
 
     public int AccountID;
-    public NetworkEntity Entity { get; private set; }
+    public INetworkEntity Entity { get; private set; }
     public string CurrentMap { get; private set; }
 
-    public Session(NetworkEntity entity, int accountID)
+    public Session(INetworkEntity entity, int accountID)
     {
         if (entity.GetEntityType() != EntityType.PC)
         {

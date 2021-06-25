@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class Entity : MonoBehaviour, NetworkEntity {
+public class Entity : MonoBehaviour, INetworkEntity {
 
     public Action OnParameterUpdated;
 
@@ -413,5 +413,9 @@ public class Entity : MonoBehaviour, NetworkEntity {
 
     public EntityBaseStatus GetBaseStatus() {
         return Status;
+    }
+
+    public void UpdateSprites() {
+        EntityViewer.Init(reloadSprites: true);
     }
 }

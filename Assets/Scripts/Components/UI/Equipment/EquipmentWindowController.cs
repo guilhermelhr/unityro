@@ -20,4 +20,12 @@ public class EquipmentWindowController : MonoBehaviour {
     public void UpdateEquipment() {
         NormalWindow.UpdateEquipment();
     }
+
+    public void EquipAmmo(ItemInfo item) {
+        NormalWindow.EquipAmmo(item);
+    }
+
+    internal void UnequipAmmo() {
+        NormalWindow.UnequipAmmo();
+    }
 }

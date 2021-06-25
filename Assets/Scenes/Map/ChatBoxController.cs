@@ -54,6 +54,15 @@ public class ChatBoxController : MonoBehaviour {
         MessageInput.text = "";
     }
 
+    public void DisplayMessage(int messageID, int messageType) {
+        var prefab = Instantiate(TextLinePrefab);
+        var uiText = prefab.GetComponentInChildren<TextMeshProUGUI>();
+        uiText.text = (string)Tables.MsgStringTable[$"{messageID}"] ?? $"{messageID}";
+        uiText.color = Color.white;
+
+        prefab.transform.SetParent(LinearLayout.transform, false);
+    }
+
     // Start is called before the first frame update
     void Start() {
 

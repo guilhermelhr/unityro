@@ -51,7 +51,7 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 case ItemType.PETEQUIP:
                 case ItemType.AMMO:
                     if(itemInfo.IsIdentified && !itemInfo.IsDamaged) {
-                        if(itemInfo.wearState <= 0) {//wear
+                        if(itemInfo.wearState <= 0 || itemInfo.itemType == (int)ItemType.AMMO) {//wear
                             (Session.CurrentSession.Entity as Entity).Inventory.OnEquipItem(itemInfo.index, itemInfo.location);
                         } else {//takeoff
                             (Session.CurrentSession.Entity as Entity).Inventory.OnTakeOffItem(itemInfo.index);
