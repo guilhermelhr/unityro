@@ -38,7 +38,7 @@ public class Inventory {
         Items.TryGetValue(index, out var it);
 
         if (it != null) {
-            
+
             if (it.amount > 1) {
                 it.amount -= count;
             } else {
@@ -70,22 +70,29 @@ public class Inventory {
         item.wearState = 0;
     }
 
-    public void EquipItem(short index, int equipLocation, short viewID) {
+    public void EquipItem(short index, int equipLocation) {
         Items.TryGetValue(index, out ItemInfo item);
         if (item == null) return;
+        var viewID = (short)item.item.ClassNum;
+        var entity = Session.CurrentSession.Entity as Entity;
 
-        if ((equipLocation & (int)EquipLocation.HEAD_TOP) > 0) Session.CurrentSession.Entity.GetBaseStatus().head_top = viewID;
-        if ((equipLocation & (int)EquipLocation.HEAD_MID) > 0) Session.CurrentSession.Entity.GetBaseStatus().head_mid = viewID;
-        if ((equipLocation & (int)EquipLocation.HEAD_BOTTOM) > 0) Session.CurrentSession.Entity.GetBaseStatus().head_bottom = viewID;
-        if ((equipLocation & (int)EquipLocation.WEAPON) > 0) Session.CurrentSession.Entity.GetBaseStatus().weapon = viewID;
-        if ((equipLocation & (int)EquipLocation.SHIELD) > 0) Session.CurrentSession.Entity.GetBaseStatus().shield = viewID;
+        if ((equipLocation & (int)EquipLocation.HEAD_TOP) > 0) entity.EquipInfo.HeadTop = viewID;
+        if ((equipLocation & (int)EquipLocation.HEAD_MID) > 0) entity.EquipInfo.HeadMid = viewID;
+        if ((equipLocation & (int)EquipLocation.HEAD_BOTTOM) > 0) entity.EquipInfo.HeadBottom = viewID;
+        if ((equipLocation & (int)EquipLocation.GARMENT) > 0) entity.EquipInfo.Robe = viewID;
+
+        if ((equipLocation & (int)EquipLocation.WEAPON) > 0) {
+            entity.EquipInfo.Weapon = viewID;
+        } else if ((equipLocation & (int)EquipLocation.SHIELD) > 0) {
+            entity.EquipInfo.Shield = viewID;
+        }
 
         item.wearState = equipLocation;
-        Session.CurrentSession.Entity.UpdateSprites();
 
         if (item.itemType == (int)ItemType.AMMO) {
             MapUiController.Instance.EquipmentWindow.EquipAmmo(item);
         } else {
+            Session.CurrentSession.Entity.UpdateSprites();
             MapUiController.Instance.UpdateEquipment();
         }
     }

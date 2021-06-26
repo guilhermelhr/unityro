@@ -29,11 +29,6 @@ public class EntityBaseStatus {
 	public int spear_faith, spear_calls;
 	public int sword_faith, sword_calls;
 
-	public short weapon; // enum weapon_type
-	public short shield; // view-id
-	public short head_top, head_mid, head_bottom;
-	public short robe;
-
 	public string name;
 	public uint base_level, job_level;
 	public ushort str, agi, vit, int_, dex, luk;

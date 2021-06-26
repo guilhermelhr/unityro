@@ -7,10 +7,10 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_NEWENTRY11;
 
-        public EntityData entityData;
+        public EntitySpawnData entityData;
 
         public void Read(MemoryStreamReader br, int size) {
-            entityData = new EntityData();
+            entityData = new EntitySpawnData();
 
             entityData.objecttype = (EntityType)br.ReadByte();
 
@@ -27,22 +27,22 @@ public partial class ZC {
 
             entityData.head = br.ReadUShort();
 
-            entityData.weapon = br.ReadUInt();
-            entityData.shield = br.ReadUInt();
+            entityData.Weapon = br.ReadUInt();
+            entityData.Shield = br.ReadUInt();
 
             /**
              * might represent emblem/guild_id1/guild_id0
              * rA clif.cpp #1102
              */
-            entityData.accessory = br.ReadUShort();
-            entityData.accessory2 = br.ReadUShort();
-            entityData.accessory3 = br.ReadUShort();
+            entityData.Accessory = br.ReadUShort();
+            entityData.Accessory2 = br.ReadUShort();
+            entityData.Accessory3 = br.ReadUShort();
 
-            entityData.headpalette = br.ReadShort();
-            entityData.bodypalette = br.ReadShort();
+            entityData.HairColor = br.ReadShort();
+            entityData.ClothesColor = br.ReadShort();
             entityData.headDir = br.ReadShort();
 
-            entityData.robe = br.ReadUShort();
+            entityData.Robe = br.ReadUShort();
 
             entityData.GUID = br.ReadUInt();
 
@@ -63,7 +63,7 @@ public partial class ZC {
             entityData.clevel = br.ReadShort();
             entityData.font = br.ReadShort();
 
-            entityData.maxHP = br.ReadInt();
+            entityData.MaxHP = br.ReadInt();
             entityData.HP = br.ReadInt();
 
             entityData.isBoss = (byte)br.ReadByte();

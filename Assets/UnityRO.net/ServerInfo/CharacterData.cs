@@ -13,6 +13,7 @@ public class CharacterData {
     public int Karma;
     public int Manner;
     public short StatusPoint;
+
     public int HP;
     public int MaxHP;
     public short SP;
@@ -20,15 +21,19 @@ public class CharacterData {
     public short Speed;
     public short Job;
     public short Hair;
-    public short Weapon;
     public short BaseLevel;
     public short SkillPoint;
-    public short Accessory;
+
+    public short Weapon;
     public short Shield;
+    public short Accessory;
     public short Accessory2;
     public short Accessory3;
+    public int Robe;
+
     public short HairColor;
     public short ClothesColor;
+
     public string Name;
     public byte Str;
     public byte Agi;
@@ -36,11 +41,12 @@ public class CharacterData {
     public byte Int;
     public byte Dex;
     public byte Luk;
+
     public short Slot;
     public short Rename;
     public string MapName;
     public int DeleteDate;
-    public int Robe;
+
     public int Body;
     public int Moves;
     public int AddOns;

@@ -85,6 +85,7 @@ public class MapController : MonoBehaviour {
     private void OnSpriteChanged(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.SPRITE_CHANGE2 SPRITE_CHANGE) {
             var entity = Core.EntityManager.GetEntity(SPRITE_CHANGE.GID);
+            if (entity == null) return;
             entity.OnSpriteChange(SPRITE_CHANGE.type, SPRITE_CHANGE.value, SPRITE_CHANGE.value2);
         }
     }

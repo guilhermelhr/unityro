@@ -20,7 +20,7 @@ public class ItemManager : MonoBehaviour {
 
     private void OnEquipAmmo(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.EQUIP_ARROW EQUIP_ARROW) {
-            (Session.CurrentSession.Entity as Entity).Inventory.EquipItem(EQUIP_ARROW.Index, (int)EquipLocation.AMMO, 0);
+            (Session.CurrentSession.Entity as Entity).Inventory.EquipItem(EQUIP_ARROW.Index, (int)EquipLocation.AMMO);
         }
     }
 
@@ -48,7 +48,7 @@ public class ItemManager : MonoBehaviour {
     private void OnItemEquipAnswer(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.ACK_WEAR_EQUIP_V5 ACK_WEAR_EQUIP_V5) {
             if (ACK_WEAR_EQUIP_V5.result == 0) {
-                (Session.CurrentSession.Entity as Entity).Inventory.EquipItem(ACK_WEAR_EQUIP_V5.index, ACK_WEAR_EQUIP_V5.equipLocation, ACK_WEAR_EQUIP_V5.ViewID);
+                (Session.CurrentSession.Entity as Entity).Inventory.EquipItem(ACK_WEAR_EQUIP_V5.index, ACK_WEAR_EQUIP_V5.equipLocation);
                 MapUiController.Instance.UpdateEquipment();
             } else {
                 MapController.Instance.UIController.ChatBox.DisplayMessage(372,0);

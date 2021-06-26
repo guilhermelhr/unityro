@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Entity : MonoBehaviour, INetworkEntity {
 
@@ -27,9 +28,76 @@ public class Entity : MonoBehaviour, INetworkEntity {
     [SerializeField] public uint AID;
 
     public EntityBaseStatus Status = new EntityBaseStatus();
+    public EntityEquipInfo EquipInfo;
 
     public Inventory Inventory = new Inventory();
     public SkillTree SkillTree = new SkillTree();
+
+    public void Init(SPR spr, ACT act) {
+        EntityViewer.Init(spr, act);
+    }
+
+    public void Init(EntitySpawnData data, int rendererLayer) {
+        Type = data.objecttype;
+        Direction = ((NpcDirection)data.PosDir[2]).ToDirection();
+
+        GID = data.GID;
+        AID = data.AID;
+
+        Status.jobId = data.job;
+        Status.sex = data.sex;
+        Status.hair = (short)data.head;
+        Status.walkSpeed = data.speed;
+        Status.hp = data.HP;
+        Status.max_hp = data.MaxHP;
+        Status.char_id = GID;
+        Status.account_id = AID;
+
+        EquipInfo = new EntityEquipInfo {
+            Weapon = (short)data.Weapon,
+            Shield = (short)data.Shield,
+            HeadTop = (short)data.Accessory2,
+            HeadBottom = (short)data.Accessory,
+            HeadMid = (short)data.Accessory3,
+            Robe = (short)data.Robe
+        };
+
+        gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
+
+        SetupViewer(EquipInfo, rendererLayer);
+    }
+
+    public void Init(CharacterData data, int rendererLayer) {
+        Type = EntityType.PC;
+        GID = (uint)data.GID;
+
+        Status.walkSpeed = data.Speed;
+        Status.hair = data.Hair;
+        Status.base_exp = (uint)data.Exp;
+        Status.base_level = (uint)data.BaseLevel;
+        Status.job_exp = (uint)data.JobExp;
+        Status.job_level = (uint)data.JobLevel;
+        Status.sp = data.SP;
+        Status.max_sp = data.MaxSP;
+        Status.jobId = data.Job;
+        Status.sex = (byte)data.Sex;
+        Status.hp = data.HP;
+        Status.max_hp = data.MaxHP;
+        Status.name = data.Name;
+
+        EquipInfo = new EntityEquipInfo {
+            Weapon = data.Weapon,
+            Shield = data.Shield,
+            HeadTop = data.Accessory2,
+            HeadBottom = data.Accessory,
+            HeadMid = data.Accessory3,
+            Robe = (short)data.Robe
+        };
+
+        SetupViewer(EquipInfo, rendererLayer);
+
+        HookPackets();
+    }
 
     public void SetReady(bool ready) {
         IsReady = ready;
@@ -44,24 +112,87 @@ public class Entity : MonoBehaviour, INetworkEntity {
         EntityWalk.StartMoving(startX, startY, endX, endY);
     }
 
-    public void Init(EntityData data) {
-        Type = data.objecttype;
-        Direction = ((NpcDirection)data.PosDir[2]).ToDirection();
+    private void SetupViewer(EntityEquipInfo data, int rendererLayer) {
+        var body = new GameObject("Body");
+        body.layer = rendererLayer;
+        body.transform.SetParent(gameObject.transform, false);
+        body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
+        body.AddComponent<Billboard>();
+        body.AddComponent<SortingGroup>();
 
-        GID = data.GID;
-        AID = data.AID;
+        var bodyViewer = body.AddComponent<EntityViewer>();
+        bodyViewer.ViewerType = ViewerType.BODY;
+        bodyViewer.Entity = this;
+        bodyViewer.SpriteOffset = 0.5f;
+        bodyViewer.HeadDirection = 0;
+        bodyViewer.CurrentMotion = new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle };
 
-        Status.jobId = data.job;
-        Status.sex = data.sex;
-        Status.hair = (short)data.head;
-        Status.walkSpeed = data.speed;
-        Status.weapon = (short)data.weapon;
-        Status.hp = data.HP;
-        Status.max_hp = data.maxHP;
-        Status.char_id = GID;
-        Status.account_id = AID;
+        EntityViewer = bodyViewer;
+        ShadowSize = 1f;
+        // Add more options such as sex etc
 
-        gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
+        // Any other than PC has Head etc
+        if (Type != EntityType.PC) {
+            return;
+        }
+
+        InitHead(rendererLayer, bodyViewer);
+        MaybeInitWeapon(data, rendererLayer, bodyViewer);
+        MaybeInitShield(data, rendererLayer, bodyViewer);
+    }
+
+    private void InitHead(int rendererLayer, EntityViewer bodyViewer) {
+        var head = new GameObject("Head");
+        head.layer = rendererLayer;
+        head.transform.SetParent(bodyViewer.transform, false);
+        head.transform.localPosition = Vector3.zero;
+        var headViewer = head.AddComponent<EntityViewer>();
+
+        headViewer.Parent = bodyViewer;
+        headViewer.Entity = this;
+        headViewer.SpriteOrder = 1;
+        headViewer.ViewerType = ViewerType.HEAD;
+        bodyViewer.Children.Add(headViewer);
+    }
+
+    private void MaybeInitShield(EntityEquipInfo data, int rendererLayer, EntityViewer bodyViewer) {
+        var viewer = bodyViewer.Children.Find(it => it.ViewerType == ViewerType.SHIELD);
+        if (data.Shield != 0 && viewer == null) {
+            var weapon = new GameObject("Shield");
+            weapon.layer = rendererLayer;
+            weapon.transform.SetParent(bodyViewer.transform, false);
+            weapon.transform.localPosition = Vector3.zero;
+
+            var weaponViewer = weapon.AddComponent<EntityViewer>();
+            weaponViewer.Parent = bodyViewer;
+            weaponViewer.SpriteOrder = 2;
+            weaponViewer.Entity = this;
+            weaponViewer.ViewerType = ViewerType.SHIELD;
+
+            bodyViewer.Children.Add(weaponViewer);
+        } else if (data.Shield == 0) {
+            viewer?.gameObject.SetActive(false);
+        }
+    }
+
+    private void MaybeInitWeapon(EntityEquipInfo data, int rendererLayer, EntityViewer bodyViewer) {
+        var viewer = bodyViewer.Children.Find(it => it.ViewerType == ViewerType.WEAPON);
+        if (data.Weapon != 0 && viewer == null) {
+            var weapon = new GameObject("Weapon");
+            weapon.layer = rendererLayer;
+            weapon.transform.SetParent(bodyViewer.transform, false);
+            weapon.transform.localPosition = Vector3.zero;
+
+            var weaponViewer = weapon.AddComponent<EntityViewer>();
+            weaponViewer.Parent = bodyViewer;
+            weaponViewer.SpriteOrder = 2;
+            weaponViewer.Entity = this;
+            weaponViewer.ViewerType = ViewerType.WEAPON;
+
+            bodyViewer.Children.Add(weaponViewer);
+        } else if (data.Weapon == 0) {
+            viewer?.gameObject.SetActive(false);
+        }
     }
 
     public void Vanish(int type) {
@@ -83,7 +214,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
     }
 
-    IEnumerator DestroyAfterSeconds() {
+    private IEnumerator DestroyAfterSeconds() {
         yield return new WaitForSeconds(1f);
         Core.EntityManager.RemoveEntity(AID);
         yield return null;
@@ -100,32 +231,6 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
 
         EntityViewer.Init(reloadSprites: true);
-    }
-
-    public void Init(SPR spr, ACT act) {
-        EntityViewer.Init(spr, act);
-    }
-
-    // TODO refactor to use only Status class
-    public void Init(CharacterData data) {
-        Type = EntityType.PC;
-
-        Status.walkSpeed = data.Speed;
-        Status.weapon = data.Weapon;
-        Status.hair = data.Hair;
-        Status.base_exp = (uint)data.Exp;
-        Status.base_level = (uint)data.BaseLevel;
-        Status.job_exp = (uint)data.JobExp;
-        Status.job_level = (uint)data.JobLevel;
-        Status.sp = data.SP;
-        Status.max_sp = data.MaxSP;
-        Status.jobId = data.Job;
-        Status.sex = (byte)data.Sex;
-        Status.hp = data.HP;
-        Status.max_hp = data.MaxHP;
-        Status.name = data.Name;
-
-        HookPackets();
     }
 
     public void ChangeMotion(EntityViewer.MotionRequest motion, EntityViewer.MotionRequest? nextMotion = null) {
@@ -416,6 +521,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     public void UpdateSprites() {
+        MaybeInitWeapon(EquipInfo, gameObject.layer, EntityViewer);
+        MaybeInitShield(EquipInfo, gameObject.layer, EntityViewer);
         EntityViewer.Init(reloadSprites: true);
     }
 }

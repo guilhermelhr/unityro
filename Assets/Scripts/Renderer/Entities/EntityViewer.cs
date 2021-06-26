@@ -13,7 +13,6 @@ public class EntityViewer : MonoBehaviour {
     private const int AVERAGE_ATTACKED_SPEED = 288;
 
     public Entity Entity;
-    public EntityType Type;
     public EntityViewer Parent;
     public ViewerType ViewerType;
 
@@ -36,6 +35,8 @@ public class EntityViewer : MonoBehaviour {
     private ACT.Action currentAction;
     private int currentActionIndex;
 
+    [SerializeField]
+    private int currentViewID;
     private int currentFrame = 0;
     private long AnimationStart;
     private int ActionId = -1;
@@ -46,6 +47,9 @@ public class EntityViewer : MonoBehaviour {
     public void Init(SPR spr, ACT act) {
         currentSPR = spr;
         currentACT = act;
+
+        currentSPR.SwitchToRGBA();
+        sprites = currentSPR.GetSprites();
     }
 
     public void Start() {
@@ -77,7 +81,12 @@ public class EntityViewer : MonoBehaviour {
                     path = DBManager.GetHeadPath(Entity.Status.hair, Entity.Status.sex);
                     break;
                 case ViewerType.WEAPON:
-                    path = DBManager.GetWeaponPath(Entity.Status.weapon, Entity.Status.jobId, Entity.Status.sex);
+                    currentViewID = Entity.EquipInfo.Weapon;
+                    path = DBManager.GetWeaponPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
+                    break;
+                case ViewerType.SHIELD:
+                    currentViewID = Entity.EquipInfo.Weapon;
+                    path = DBManager.GetShieldPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
                     break;
             }
             try {
@@ -92,7 +101,6 @@ public class EntityViewer : MonoBehaviour {
                 currentSPR = null;
             }
         }
-
 
         meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
 
@@ -110,6 +118,15 @@ public class EntityViewer : MonoBehaviour {
         if (!Entity.IsReady || currentACT == null)
             return;
 
+        if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD) {
+            var updatedViewID = FindCurrentViewID();
+            if (updatedViewID != currentViewID) {
+                Init(reloadSprites: true);
+
+                return;
+            }
+        }
+
         currentActionIndex =
             (ActionId + // action
             (ROCamera.Instance.Angle + (int)Entity.Direction + 8) % 8 // direction
@@ -122,6 +139,17 @@ public class EntityViewer : MonoBehaviour {
         RenderLayers(frame);
         PlaySound(frame);
         UpdateAnchorPoints();
+    }
+
+    private int FindCurrentViewID() {
+        switch (ViewerType) {
+            case ViewerType.WEAPON:
+                return Entity.EquipInfo.Weapon;
+            case ViewerType.SHIELD:
+                return Entity.EquipInfo.Shield;
+            default:
+                return -1;
+        }
     }
 
     private void UpdateAnchorPoints() {
@@ -201,7 +229,7 @@ public class EntityViewer : MonoBehaviour {
         var headDir = 0;
         double frame;
 
-        if (ViewerType == ViewerType.BODY && Type == EntityType.PC && isIdle) {
+        if (ViewerType == ViewerType.BODY && Entity.Type == EntityType.PC && isIdle) {
             return Entity.HeadDir;
         }
 
@@ -225,8 +253,7 @@ public class EntityViewer : MonoBehaviour {
         frame += previousFrame;
 
         if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
-            previousFrame = 0;
-            frame = animCount - 1;
+            previousFrame = frame = animCount - 1;
 
             if (CurrentMotion.delay > 0 && Core.Tick < CurrentMotion.delay) {
                 if (NextMotion.HasValue) {
@@ -280,7 +307,7 @@ public class EntityViewer : MonoBehaviour {
         int newAction;
         if (motion.Motion == SpriteMotion.Attack) {
             var attackActions = new SpriteMotion[] { SpriteMotion.Attack1, SpriteMotion.Attack2, SpriteMotion.Attack3 };
-            var action = DBManager.GetWeaponAction((Job)Entity.Status.jobId, Entity.Status.sex, Entity.Status.weapon);
+            var action = DBManager.GetWeaponAction((Job)Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.Weapon);
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, attackActions[action]);
         } else {
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
