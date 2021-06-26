@@ -95,7 +95,7 @@ public static class AnimationHelper {
                 case SpriteMotion.Sit: return 2 * 8;
                 case SpriteMotion.PickUp: return 3 * 8;
                 case SpriteMotion.Standby: return 4 * 8;
-                case SpriteMotion.Attack1: return 11 * 8;
+                case SpriteMotion.Attack1: return 5 * 8;
                 case SpriteMotion.Hit: return 6 * 8;
                 case SpriteMotion.Freeze1: return 7 * 8;
                 case SpriteMotion.Dead: return 8 * 8;

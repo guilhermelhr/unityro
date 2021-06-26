@@ -110,7 +110,10 @@ public class EntityViewer : MonoBehaviour {
         if (!Entity.IsReady || currentACT == null)
             return;
 
-        currentActionIndex = ActionId + GetFacingDirection() % currentACT.actions.Length;
+        currentActionIndex =
+            (ActionId + // action
+            (ROCamera.Instance.Angle + (int)Entity.Direction + 8) % 8 // direction
+            ) % currentACT.actions.Length; // avoid overflow
         currentAction = currentACT.actions[currentActionIndex];
         currentFrame = GetCurrentFrame(Core.Tick - AnimationStart);
         var frame = currentAction.frames[currentFrame];
@@ -222,7 +225,8 @@ public class EntityViewer : MonoBehaviour {
         frame += previousFrame;
 
         if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
-            previousFrame = frame = animCount - 1;
+            previousFrame = 0;
+            frame = animCount - 1;
 
             if (CurrentMotion.delay > 0 && Core.Tick < CurrentMotion.delay) {
                 if (NextMotion.HasValue) {
@@ -259,17 +263,6 @@ public class EntityViewer : MonoBehaviour {
         }
 
         return (int)currentAction.delay;
-    }
-
-    private int GetFacingDirection() {
-        int angle;
-        if (AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion.Motion)) {
-            angle = AnimationHelper.GetFourDirectionSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
-        } else {
-            angle = AnimationHelper.GetSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
-        }
-
-        return angle < 0 ? 0 : angle;
     }
 
     private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {

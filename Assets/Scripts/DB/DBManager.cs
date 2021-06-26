@@ -11,6 +11,8 @@ public class DBManager {
     private static Dictionary<int, string> monsterPathTable = MonsterTable.Table;
     private static string[] SexTable = new string[] { "\xbf\xa9", "\xb3\xb2" };
     private static JObject WeaponActions;
+    private static JObject WeaponJobTable;
+    private static JObject ClassTable;
 
     public static Item GetItemInfo(int gID) {
         ItemDB.TryGetValue(gID, out Item item);
@@ -69,8 +71,7 @@ public class DBManager {
 
         // PC
         if (id < 45) {
-            var path = BodyPath[id] == null ? BodyPath[0] : BodyPath[id];
-            var jobPath = Encoding.GetEncoding(1252).GetString(Encoding.GetEncoding(949).GetBytes(path));
+            var jobPath = ClassTable[$"{id}"] == null ? ClassTable["0"] : ClassTable[$"{id}"];
 
             return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/\xb8\xf6\xc5\xeb/{SexTable[sex]}/{jobPath}_{SexTable[sex]}";
         }
@@ -97,8 +98,8 @@ public class DBManager {
 
         // PC
         if (id < 6000) {
-            var path = BodyPath[id] == null ? BodyPath[0] : BodyPath[id];
-            var jobPath = Encoding.GetEncoding(1252).GetString(Encoding.GetEncoding(949).GetBytes(path));
+            var jobPath = ClassTable[$"{id}"] == null ? ClassTable["0"] : ClassTable[$"{id}"];
+
             return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/\xb8\xf6\xc5\xeb/{SexTable[sex]}/{jobPath}_{SexTable[sex]}";
         }
 
@@ -122,9 +123,7 @@ public class DBManager {
             return GetWeaponPath(id, job, sex);
         }
 
-        var baseJob = (int)JobHelper.GetBaseClass((ushort)job, sex);
-        var path = BodyPath[baseJob] == null ? BodyPath[0] : BodyPath[baseJob];
-        var baseClass = path.KoreanTo1252();
+        var baseClass = WeaponJobTable[$"{job}"] == null ? WeaponJobTable["0"] : WeaponJobTable[$"{job}"];
 
         // ItemID to View Id
         var ViewID = id;
@@ -141,9 +140,7 @@ public class DBManager {
             return null;
         }
 
-        var baseJob = (int)JobHelper.GetBaseClass((ushort)job, sex);
-        var path = BodyPath[baseJob] == null ? BodyPath[0] : BodyPath[baseJob];
-        var baseClass = path.KoreanTo1252();
+        var baseClass = WeaponJobTable[$"{job}"] == null ? WeaponJobTable["0"] : WeaponJobTable[$"{job}"];
 
         // ItemID to View Id
         var ViewID = id;
@@ -156,8 +153,6 @@ public class DBManager {
         return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/{baseClass}/{baseClass}_{SexTable[sex]}{weapon.KoreanTo1252() ?? $"_{ViewID}"}";
     }
 
-    public static Dictionary<int, string> BodyPath => bodyPathTable;
-
     public static Dictionary<int, string> MonsterPath => monsterPathTable;
 
     public static Dictionary<int, Item> ItemDB => ItemTable.Items;
@@ -167,5 +162,7 @@ public class DBManager {
     public static void init() {
         new LuaInterface();
         WeaponActions = FileManager.Load("WeaponActions.json") as JObject;
+        WeaponJobTable = FileManager.Load("WeaponJobTable.json") as JObject;
+        ClassTable = FileManager.Load("ClassTable.json") as JObject;
     }
 }
