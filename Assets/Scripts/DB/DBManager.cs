@@ -5,14 +5,20 @@ using System.Text;
 
 public class DBManager {
 
-    public const string INTERFACE_PATH = "data/texture/\xc0\xaf\xc0\xfa\xc0\xce\xc5\xcd\xc6\xe4\xc0\xcc\xbd\xba/";
+    public const string INTERFACE_PATH = "data/texture/À¯ÀúÀÎÅÍÆäÀÌ½º/";
 
-    private static Dictionary<int, string> bodyPathTable = BodyPathTable.BodyPath;
     private static Dictionary<int, string> monsterPathTable = MonsterTable.Table;
-    private static string[] SexTable = new string[] { "\xbf\xa9", "\xb3\xb2" };
+    private static string[] SexTable = new string[] { "¿©", "³²" };
     private static JObject WeaponActions;
     private static JObject WeaponJobTable;
     private static JObject ClassTable;
+
+    public static void Init() {
+        new LuaInterface();
+        WeaponActions = FileManager.Load("WeaponActions.json") as JObject;
+        WeaponJobTable = FileManager.Load("WeaponJobTable.json") as JObject;
+        ClassTable = FileManager.Load("ClassTable.json") as JObject;
+    }
 
     public static Item GetItemInfo(int gID) {
         ItemDB.TryGetValue(gID, out Item item);
@@ -23,7 +29,7 @@ public class DBManager {
     public static string GetItemPath(int gID, bool isIdentified) {
         var it = GetItemInfo(gID);
         var resName = isIdentified ? it.identifiedResourceName : it.unidentifiedResourceName;
-        return $"data/sprite/\xbe\xc6\xc0\xcc\xc5\xdb/{resName}";
+        return $"data/sprite/¾ÆÀÌÅÛ/{resName}";
     }
 
     public static string GetItemResPath(int itemID, bool isIdentified) {
@@ -39,7 +45,6 @@ public class DBManager {
         return $"{INTERFACE_PATH}collection/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.bmp";
     }
 
-    // TODO implement this
     public static int GetWeaponAction(Job job, int sex, int weapon) {
         var jobValue = $"{(ushort)job}";
         var weaponViewId = $"{GetItemViewID(weapon)}";
@@ -73,7 +78,7 @@ public class DBManager {
         if (id < 45) {
             var jobPath = ClassTable[$"{id}"] == null ? ClassTable["0"] : ClassTable[$"{id}"];
 
-            return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/\xb8\xf6\xc5\xeb/{SexTable[sex]}/{jobPath}_{SexTable[sex]}";
+            return $"data/sprite/ÀÎ°£Á·/¸öÅë/{SexTable[sex]}/{jobPath}_{SexTable[sex]}";
         }
 
         // TODO: Warp STR file
@@ -93,14 +98,14 @@ public class DBManager {
 
         // Monsters
         if (id < 4000) {
-            return "data/sprite/\xb8\xf3\xbd\xba\xc5\xcd/" + (MonsterPath[id] ?? MonsterPath[1001]).ToLower();
+            return "data/sprite/¸ó½ºÅÍ/" + (MonsterPath[id] ?? MonsterPath[1001]).ToLower();
         }
 
         // PC
         if (id < 6000) {
             var jobPath = ClassTable[$"{id}"] == null ? ClassTable["0"] : ClassTable[$"{id}"];
 
-            return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/\xb8\xf6\xc5\xeb/{SexTable[sex]}/{jobPath}_{SexTable[sex]}";
+            return $"data/sprite/ÀÎ°£Á·/¸öÅë/{SexTable[sex]}/{jobPath}_{SexTable[sex]}";
         }
 
         // Homunculus
@@ -110,7 +115,7 @@ public class DBManager {
     }
 
     public static string GetHeadPath(int headId, int sex) {
-        return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/\xb8\xd3\xb8\xae\xc5\xeb/{SexTable[sex]}/{HairIndexPath[sex][headId]}_{SexTable[sex]}";
+        return $"data/sprite/ÀÎ°£Á·/¸Ó¸®Åë/{SexTable[sex]}/{HairIndexPath[sex][headId]}_{SexTable[sex]}";
     }
 
     public static string GetShieldPath(int id, int job, int sex) {
@@ -118,21 +123,11 @@ public class DBManager {
             return null;
         }
 
-        // Dual weapon (based on range id)
-        if (id > 500 && (id < 2100 || id > 2200)) {
-            return GetWeaponPath(id, job, sex);
-        }
-
-        var baseClass = WeaponJobTable[$"{job}"] == null ? WeaponJobTable["0"] : WeaponJobTable[$"{job}"];
-
-        // ItemID to View Id
-        var ViewID = id;
-        if ((ItemDB.ContainsKey(id)) && (ItemDB[id].ClassNum >= 0)) {
-            ViewID = ItemDB[id].ClassNum;
-        }
+        var baseClass = GetBaseClass(job);
+        var ViewID = GetItemViewID(id);
 
         ItemTable.Shields.TryGetValue(ViewID, out var shield);
-        return $"data/sprite/\xb9\xe6\xc6\xd0/{baseClass}/{baseClass}_{SexTable[sex]}_{shield ?? ItemTable.Shields[1]}";
+        return $"data/sprite/¹æÆÐ/{baseClass}/{baseClass}_{SexTable[sex]}_{shield ?? ItemTable.Shields[1]}";
     }
 
     public static string GetWeaponPath(int id, int job, int sex) {
@@ -140,17 +135,17 @@ public class DBManager {
             return null;
         }
 
-        var baseClass = WeaponJobTable[$"{job}"] == null ? WeaponJobTable["0"] : WeaponJobTable[$"{job}"];
-
-        // ItemID to View Id
-        var ViewID = id;
-        if ((ItemDB.ContainsKey(id)) && (ItemDB[id].ClassNum >= 0)) {
-            ViewID = ItemDB[id].ClassNum;
-        }
+        var baseClass = GetBaseClass(job);
+        var ViewID = GetItemViewID(id);
 
         ItemTable.Weapons.TryGetValue((WeaponType)ViewID, out var weapon);
+        return $"data/sprite/ÀÎ°£Á·/{baseClass}/{baseClass}_{SexTable[sex]}{weapon.KoreanTo1252() ?? $"_{ViewID}"}";
+    }
 
-        return $"data/sprite/\xc0\xce\xb0\xa3\xc1\xb7/{baseClass}/{baseClass}_{SexTable[sex]}{weapon.KoreanTo1252() ?? $"_{ViewID}"}";
+    public static string GetHatPath(int id, int sex) {
+        var hatPath = ItemTable.GetAccessoryResName(id);
+
+        return $"data/sprite/¾Ç¼¼»ç¸®/{SexTable[sex]}/{SexTable[sex]}{hatPath}";
     }
 
     public static Dictionary<int, string> MonsterPath => monsterPathTable;
@@ -159,10 +154,7 @@ public class DBManager {
 
     public static int[][] HairIndexPath => HairIndexTable.table;
 
-    public static void init() {
-        new LuaInterface();
-        WeaponActions = FileManager.Load("WeaponActions.json") as JObject;
-        WeaponJobTable = FileManager.Load("WeaponJobTable.json") as JObject;
-        ClassTable = FileManager.Load("ClassTable.json") as JObject;
+    private static string GetBaseClass(int job) {
+        return (WeaponJobTable[$"{job}"] ?? WeaponJobTable["0"]).ToObject<string>();
     }
 }

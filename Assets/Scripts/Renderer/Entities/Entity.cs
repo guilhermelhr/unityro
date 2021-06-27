@@ -104,14 +104,6 @@ public class Entity : MonoBehaviour, INetworkEntity {
         EntityWalk = gameObject.AddComponent<EntityWalk>();
     }
 
-    internal void RequestMove(int x, int y, int dir) {
-        EntityWalk.RequestMove(x, y, dir);
-    }
-
-    public void StartMoving(int startX, int startY, int endX, int endY) {
-        EntityWalk.StartMoving(startX, startY, endX, endY);
-    }
-
     private void SetupViewer(EntityEquipInfo data, int rendererLayer) {
         var body = new GameObject("Body");
         body.layer = rendererLayer;
@@ -139,6 +131,9 @@ public class Entity : MonoBehaviour, INetworkEntity {
         InitHead(rendererLayer, bodyViewer);
         MaybeInitWeapon(data, rendererLayer, bodyViewer);
         MaybeInitShield(data, rendererLayer, bodyViewer);
+        MaybeInitHeadTop(data, rendererLayer, bodyViewer);
+        MaybeInitHeadMid(data, rendererLayer, bodyViewer);
+        MaybeInitHeadBottom(data, rendererLayer, bodyViewer);
     }
 
     private void InitHead(int rendererLayer, EntityViewer bodyViewer) {
@@ -190,6 +185,66 @@ public class Entity : MonoBehaviour, INetworkEntity {
             weaponViewer.ViewerType = ViewerType.WEAPON;
 
             bodyViewer.Children.Add(weaponViewer);
+        } else if (data.Weapon == 0) {
+            viewer?.gameObject.SetActive(false);
+        }
+    }
+
+    private void MaybeInitHeadTop(EntityEquipInfo data, int rendererLayer, EntityViewer bodyViewer) {
+        var viewer = bodyViewer.Children.Find(it => it.ViewerType == ViewerType.HEAD_TOP);
+        if (data.HeadTop != 0 && viewer == null) {
+            var layer = new GameObject("Headgear_TOP");
+            layer.layer = rendererLayer;
+            layer.transform.SetParent(bodyViewer.transform, false);
+            layer.transform.localPosition = Vector3.zero;
+
+            var layerViewer = layer.AddComponent<EntityViewer>();
+            layerViewer.Parent = bodyViewer;
+            layerViewer.SpriteOrder = 2;
+            layerViewer.Entity = this;
+            layerViewer.ViewerType = ViewerType.HEAD_TOP;
+
+            bodyViewer.Children.Add(layerViewer);
+        } else if (data.Weapon == 0) {
+            viewer?.gameObject.SetActive(false);
+        }
+    }
+
+    private void MaybeInitHeadMid(EntityEquipInfo data, int rendererLayer, EntityViewer bodyViewer) {
+        var viewer = bodyViewer.Children.Find(it => it.ViewerType == ViewerType.HEAD_MID);
+        if (data.HeadTop != 0 && viewer == null) {
+            var layer = new GameObject("Headgear_MID");
+            layer.layer = rendererLayer;
+            layer.transform.SetParent(bodyViewer.transform, false);
+            layer.transform.localPosition = Vector3.zero;
+
+            var layerViewer = layer.AddComponent<EntityViewer>();
+            layerViewer.Parent = bodyViewer;
+            layerViewer.SpriteOrder = 2;
+            layerViewer.Entity = this;
+            layerViewer.ViewerType = ViewerType.HEAD_MID;
+
+            bodyViewer.Children.Add(layerViewer);
+        } else if (data.Weapon == 0) {
+            viewer?.gameObject.SetActive(false);
+        }
+    }
+
+    private void MaybeInitHeadBottom(EntityEquipInfo data, int rendererLayer, EntityViewer bodyViewer) {
+        var viewer = bodyViewer.Children.Find(it => it.ViewerType == ViewerType.HEAD_BOTTOM);
+        if (data.HeadTop != 0 && viewer == null) {
+            var layer = new GameObject("Headgear_BOTTOM");
+            layer.layer = rendererLayer;
+            layer.transform.SetParent(bodyViewer.transform, false);
+            layer.transform.localPosition = Vector3.zero;
+
+            var layerViewer = layer.AddComponent<EntityViewer>();
+            layerViewer.Parent = bodyViewer;
+            layerViewer.SpriteOrder = 2;
+            layerViewer.Entity = this;
+            layerViewer.ViewerType = ViewerType.HEAD_BOTTOM;
+
+            bodyViewer.Children.Add(layerViewer);
         } else if (data.Weapon == 0) {
             viewer?.gameObject.SetActive(false);
         }
@@ -504,6 +559,14 @@ public class Entity : MonoBehaviour, INetworkEntity {
         damageRenderer.Display(amount, tick, damageType, this);
     }
 
+    internal void RequestMove(int x, int y, int dir) {
+        EntityWalk.RequestMove(x, y, dir);
+    }
+
+    public void StartMoving(int startX, int startY, int endX, int endY) {
+        EntityWalk.StartMoving(startX, startY, endX, endY);
+    }
+
     public EntityType GetEntityType() {
         return Type;
     }
@@ -523,6 +586,9 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public void UpdateSprites() {
         MaybeInitWeapon(EquipInfo, gameObject.layer, EntityViewer);
         MaybeInitShield(EquipInfo, gameObject.layer, EntityViewer);
+        MaybeInitHeadTop(EquipInfo, gameObject.layer, EntityViewer);
+        MaybeInitHeadMid(EquipInfo, gameObject.layer, EntityViewer);
+        MaybeInitHeadBottom(EquipInfo, gameObject.layer, EntityViewer);
         EntityViewer.Init(reloadSprites: true);
     }
 }

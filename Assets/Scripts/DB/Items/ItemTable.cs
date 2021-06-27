@@ -369,4 +369,8 @@ public class ItemTable {
             }
         }
     }
+
+    public static string GetAccessoryResName(int accessoryId) {
+        return LuaInterface.GetTable("AccNameTable")[accessoryId].ToString();
+    }
 }

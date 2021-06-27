@@ -88,6 +88,18 @@ public class EntityViewer : MonoBehaviour {
                     currentViewID = Entity.EquipInfo.Weapon;
                     path = DBManager.GetShieldPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
                     break;
+                case ViewerType.HEAD_TOP:
+                    currentViewID = Entity.EquipInfo.HeadTop;
+                    path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
+                    break;
+                case ViewerType.HEAD_MID:
+                    currentViewID = Entity.EquipInfo.HeadMid;
+                    path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
+                    break;
+                case ViewerType.HEAD_BOTTOM:
+                    currentViewID = Entity.EquipInfo.HeadBottom;
+                    path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
+                    break;
             }
             try {
                 currentSPR = FileManager.Load(path + ".spr") as SPR;
@@ -147,6 +159,12 @@ public class EntityViewer : MonoBehaviour {
                 return Entity.EquipInfo.Weapon;
             case ViewerType.SHIELD:
                 return Entity.EquipInfo.Shield;
+            case ViewerType.HEAD_TOP:
+                return Entity.EquipInfo.HeadTop;
+            case ViewerType.HEAD_MID:
+                return Entity.EquipInfo.HeadMid;
+            case ViewerType.HEAD_BOTTOM:
+                return Entity.EquipInfo.HeadBottom;
             default:
                 return -1;
         }
@@ -233,7 +251,10 @@ public class EntityViewer : MonoBehaviour {
             return Entity.HeadDir;
         }
 
-        if (ViewerType == ViewerType.HEAD && isIdle) {
+        if ((ViewerType == ViewerType.HEAD ||
+            ViewerType == ViewerType.HEAD_TOP ||
+            ViewerType == ViewerType.HEAD_MID ||
+            ViewerType == ViewerType.HEAD_BOTTOM) && isIdle) {
             animCount = Math.Floor(animCount / 3);
             headDir = Entity.HeadDir;
         }

@@ -275,6 +275,44 @@ namespace ROIO
             }
         }
 
+        public static StreamReader ReadSync(string path, Encoding encoding) {
+            //try custom grf first
+            //try grf first
+            if (CustomGrf != null) {
+                GrfFile file = CustomGrf.GetDescriptor(path);
+                if (file != null) {
+                    byte[] data = CustomGrf.GetData(file);
+
+                    if (data != null) {
+                        return new StreamReader(new MemoryStreamReader(data), encoding);
+                    }
+                }
+            }
+            //try grf first
+            if (Grf != null) {
+                GrfFile file = Grf.GetDescriptor(path);
+                if (file != null) {
+                    byte[] data = Grf.GetData(file);
+
+                    if (data != null) {
+                        return new StreamReader(new MemoryStreamReader(data), encoding);
+                    } else {
+                        Debug.Log("Could not read grf data for " + path);
+                    }
+                } else {
+                    Debug.Log("File not found on GRF: " + path);
+                }
+            }
+
+            //try filesystem
+            if (File.Exists(Application.dataPath + "/" + path)) {
+                byte[] buffer = File.ReadAllBytes(Application.dataPath + "/" + path);
+                return new StreamReader(new MemoryStreamReader(buffer), encoding);
+            } else {
+                return null;
+            }
+        }
+
         /// <summary>
         /// Asyncronously read a file
         /// </summary>

@@ -80,7 +80,7 @@ public class Core : MonoBehaviour {
 
         LoadGrf();
         BuildMapSelector();
-        DBManager.init();
+        DBManager.Init();
 
         if (CursorRenderer == null) {
             CursorRenderer = gameObject.AddComponent<CursorRenderer>();
