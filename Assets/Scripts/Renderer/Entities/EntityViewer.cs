@@ -101,6 +101,19 @@ public class EntityViewer : MonoBehaviour {
                     path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
             }
+
+            if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD && currentViewID <= 0) {
+                currentACT = null;
+                currentSPR = null;
+                Layers.Values.ToList().ForEach(Renderer => {
+                    Destroy(Renderer.gameObject);
+                });               
+                Layers.Clear();
+                MeshCache.Clear();
+
+                return;
+            }
+
             try {
                 currentSPR = FileManager.Load(path + ".spr") as SPR;
                 currentACT = FileManager.Load(path + ".act") as ACT;

@@ -33,6 +33,19 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public Inventory Inventory = new Inventory();
     public SkillTree SkillTree = new SkillTree();
 
+    private void HookPackets() {
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT.HEADER, OnEntityAction);
+        Core.NetworkClient.HookPacket(ZC.PAR_CHANGE.HEADER, OnParameterChange);
+        Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE.HEADER, OnParameterChange);
+        Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE2.HEADER, OnParameterChange);
+        Core.NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
+        Core.NetworkClient.HookPacket(ZC.STATUS.HEADER, OnStatsWindowData);
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_EXP2.HEADER, OnExpReceived);
+        Core.NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillListReceived);
+        Core.NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
+    }
+
     public void Init(SPR spr, ACT act) {
         EntityViewer.Init(spr, act);
     }
@@ -299,19 +312,6 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void StopMoving() {
         EntityWalk.StopMoving();
-    }
-
-    private void HookPackets() {
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT.HEADER, OnEntityAction);
-        Core.NetworkClient.HookPacket(ZC.PAR_CHANGE.HEADER, OnParameterChange);
-        Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE.HEADER, OnParameterChange);
-        Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE2.HEADER, OnParameterChange);
-        Core.NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
-        Core.NetworkClient.HookPacket(ZC.STATUS.HEADER, OnStatsWindowData);
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_EXP2.HEADER, OnExpReceived);
-        Core.NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillListReceived);
-        Core.NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
     }
 
     private void OnAttackRangeReceived(ushort cmd, int size, InPacket packet) {

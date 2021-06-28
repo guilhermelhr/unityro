@@ -11,20 +11,22 @@ public class NormalEquipmentWindow : MonoBehaviour {
         if (inventory == null || inventory.IsEmpty) return;
 
         Dictionary<EquipLocation, UIEquipSlot> slotDictionary = slots.ToDictionary(it => it.location);
-        Dictionary<int, ItemInfo> equippedItems = inventory.ItemList.Where(it => it.wearState > 0 && it.itemType != (int)ItemType.AMMO).ToDictionary(it => it.location);
+        Dictionary<int, ItemInfo> equippedItems = inventory.ItemList.Where(IsItemEquipped).ToDictionary(it => it.location);
 
-        foreach (var key in equippedItems.Keys) {
-            if ((key & (int)EquipLocation.HEAD_BOTTOM) > 0) { slotDictionary[EquipLocation.HEAD_BOTTOM].SetItem(equippedItems[key]); }
-            if ((key & (int)EquipLocation.WEAPON) > 0) { slotDictionary[EquipLocation.WEAPON].SetItem(equippedItems[key]); }
-            if ((key & (int)EquipLocation.GARMENT) > 0) { slotDictionary[EquipLocation.GARMENT].SetItem(equippedItems[key]); }
-            if ((key & (int)EquipLocation.ACCESSORY1) > 0) { slotDictionary[EquipLocation.ACCESSORY1].SetItem(equippedItems[key]); }
-            if ((key & (int)EquipLocation.ARMOR) > 0) { slotDictionary[EquipLocation.ARMOR].SetItem(equippedItems[key]); }
-            if ((key & (int)EquipLocation.SHIELD) > 0) { slotDictionary[EquipLocation.SHIELD].SetItem(equippedItems[key]); }
-            if ((key & (int)EquipLocation.SHOES) > 0) { slotDictionary[EquipLocation.SHOES].SetItem(equippedItems[key]); }
-            if ((key & (int)EquipLocation.ACCESSORY2) > 0) { slotDictionary[EquipLocation.ACCESSORY2].SetItem(equippedItems[key]); }
-            if ((key & (int)EquipLocation.HEAD_TOP) > 0) { slotDictionary[EquipLocation.HEAD_TOP].SetItem(equippedItems[key]); }
-            if ((key & (int)EquipLocation.HEAD_MID) > 0) { slotDictionary[EquipLocation.HEAD_MID].SetItem(equippedItems[key]); }
+        slotDictionary.Values.ToList().ForEach(slot => slot.SetItem(null));
+        foreach (var itemKey in equippedItems.Keys) {
+            foreach(var slotKey in slotDictionary.Keys) {
+                if ((itemKey & (int)slotKey) > 0) { 
+                    slotDictionary[slotKey].SetItem(equippedItems[itemKey]);
+                }
+            }
         }
+    }
+
+    private bool IsItemEquipped(ItemInfo it) {
+        return it.wearState > 0 &&
+            it.itemType != (int)ItemType.AMMO &&
+            it.itemType != (int)ItemType.CARD;
     }
 
     internal void UnequipAmmo() {

@@ -66,8 +66,16 @@ public class Inventory {
     public void TakeOffItem(int index, int equipLocation) {
         Items.TryGetValue(index, out ItemInfo item);
         if (item == null) return;
+        var entity = Session.CurrentSession.Entity as Entity;
 
         item.wearState = 0;
+
+        if ((equipLocation & (int)EquipLocation.HEAD_TOP) > 0) entity.EquipInfo.HeadTop = 0;
+        if ((equipLocation & (int)EquipLocation.HEAD_MID) > 0) entity.EquipInfo.HeadMid = 0;
+        if ((equipLocation & (int)EquipLocation.HEAD_BOTTOM) > 0) entity.EquipInfo.HeadBottom = 0;
+        if ((equipLocation & (int)EquipLocation.GARMENT) > 0) entity.EquipInfo.Robe = 0;
+        if ((equipLocation & (int)EquipLocation.WEAPON) > 0) entity.EquipInfo.Weapon = 0;
+        if ((equipLocation & (int)EquipLocation.SHIELD) > 0) entity.EquipInfo.Shield = 0;
     }
 
     public void EquipItem(short index, int equipLocation) {

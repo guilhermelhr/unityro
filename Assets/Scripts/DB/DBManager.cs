@@ -143,6 +143,10 @@ public class DBManager {
     }
 
     public static string GetHatPath(int id, int sex) {
+        if (id == 0) {
+            return null;
+        }
+
         var hatPath = ItemTable.GetAccessoryResName(id);
 
         return $"data/sprite/¾Ç¼¼»ç¸®/{SexTable[sex]}/{SexTable[sex]}{hatPath}";
