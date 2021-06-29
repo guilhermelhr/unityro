@@ -142,11 +142,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
 
         InitHead(rendererLayer, bodyViewer);
-        MaybeInitWeapon(data, rendererLayer, bodyViewer);
-        MaybeInitShield(data, rendererLayer, bodyViewer);
-        MaybeInitHeadTop(data, rendererLayer, bodyViewer);
-        MaybeInitHeadMid(data, rendererLayer, bodyViewer);
-        MaybeInitHeadBottom(data, rendererLayer, bodyViewer);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.Weapon, ViewerType.WEAPON);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.Shield, ViewerType.SHIELD);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadTop, ViewerType.HEAD_TOP);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadMid, ViewerType.HEAD_MID);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadBottom, ViewerType.HEAD_BOTTOM);
     }
 
     private void InitHead(int rendererLayer, EntityViewer bodyViewer) {
@@ -163,102 +163,28 @@ public class Entity : MonoBehaviour, INetworkEntity {
         bodyViewer.Children.Add(headViewer);
     }
 
-    private void MaybeInitShield(EntityEquipInfo data, int rendererLayer, EntityViewer bodyViewer) {
-        var viewer = bodyViewer.Children.Find(it => it.ViewerType == ViewerType.SHIELD);
-        if (data.Shield != 0 && viewer == null) {
-            var weapon = new GameObject("Shield");
-            weapon.layer = rendererLayer;
-            weapon.transform.SetParent(bodyViewer.transform, false);
-            weapon.transform.localPosition = Vector3.zero;
+    private void MaybeInitLayer(
+        int rendererLayer,
+        EntityViewer bodyViewer,
+        int viewId,
+        ViewerType viewerType,
+        int spriteOrder = 2
+    ) {
+        var viewer = bodyViewer.Children.Find(it => it.ViewerType == viewerType);
+        if (viewId != 0 && viewer == null) {
+            var layerObject = new GameObject($"{viewerType}");
+            layerObject.layer = rendererLayer;
+            layerObject.transform.SetParent(bodyViewer.transform, false);
+            layerObject.transform.localPosition = Vector3.zero;
 
-            var weaponViewer = weapon.AddComponent<EntityViewer>();
-            weaponViewer.Parent = bodyViewer;
-            weaponViewer.SpriteOrder = 2;
-            weaponViewer.Entity = this;
-            weaponViewer.ViewerType = ViewerType.SHIELD;
-
-            bodyViewer.Children.Add(weaponViewer);
-        } else if (data.Shield == 0) {
-            viewer?.gameObject.SetActive(false);
-        }
-    }
-
-    private void MaybeInitWeapon(EntityEquipInfo data, int rendererLayer, EntityViewer bodyViewer) {
-        var viewer = bodyViewer.Children.Find(it => it.ViewerType == ViewerType.WEAPON);
-        if (data.Weapon != 0 && viewer == null) {
-            var weapon = new GameObject("Weapon");
-            weapon.layer = rendererLayer;
-            weapon.transform.SetParent(bodyViewer.transform, false);
-            weapon.transform.localPosition = Vector3.zero;
-
-            var weaponViewer = weapon.AddComponent<EntityViewer>();
-            weaponViewer.Parent = bodyViewer;
-            weaponViewer.SpriteOrder = 2;
-            weaponViewer.Entity = this;
-            weaponViewer.ViewerType = ViewerType.WEAPON;
-
-            bodyViewer.Children.Add(weaponViewer);
-        } else if (data.Weapon == 0) {
-            viewer?.gameObject.SetActive(false);
-        }
-    }
-
-    private void MaybeInitHeadTop(EntityEquipInfo data, int rendererLayer, EntityViewer bodyViewer) {
-        var viewer = bodyViewer.Children.Find(it => it.ViewerType == ViewerType.HEAD_TOP);
-        if (data.HeadTop != 0 && viewer == null) {
-            var layer = new GameObject("Headgear_TOP");
-            layer.layer = rendererLayer;
-            layer.transform.SetParent(bodyViewer.transform, false);
-            layer.transform.localPosition = Vector3.zero;
-
-            var layerViewer = layer.AddComponent<EntityViewer>();
+            var layerViewer = layerObject.AddComponent<EntityViewer>();
             layerViewer.Parent = bodyViewer;
-            layerViewer.SpriteOrder = 2;
+            layerViewer.SpriteOrder = spriteOrder;
             layerViewer.Entity = this;
-            layerViewer.ViewerType = ViewerType.HEAD_TOP;
+            layerViewer.ViewerType = viewerType;
 
             bodyViewer.Children.Add(layerViewer);
-        } else if (data.Weapon == 0) {
-            viewer?.gameObject.SetActive(false);
-        }
-    }
-
-    private void MaybeInitHeadMid(EntityEquipInfo data, int rendererLayer, EntityViewer bodyViewer) {
-        var viewer = bodyViewer.Children.Find(it => it.ViewerType == ViewerType.HEAD_MID);
-        if (data.HeadTop != 0 && viewer == null) {
-            var layer = new GameObject("Headgear_MID");
-            layer.layer = rendererLayer;
-            layer.transform.SetParent(bodyViewer.transform, false);
-            layer.transform.localPosition = Vector3.zero;
-
-            var layerViewer = layer.AddComponent<EntityViewer>();
-            layerViewer.Parent = bodyViewer;
-            layerViewer.SpriteOrder = 2;
-            layerViewer.Entity = this;
-            layerViewer.ViewerType = ViewerType.HEAD_MID;
-
-            bodyViewer.Children.Add(layerViewer);
-        } else if (data.Weapon == 0) {
-            viewer?.gameObject.SetActive(false);
-        }
-    }
-
-    private void MaybeInitHeadBottom(EntityEquipInfo data, int rendererLayer, EntityViewer bodyViewer) {
-        var viewer = bodyViewer.Children.Find(it => it.ViewerType == ViewerType.HEAD_BOTTOM);
-        if (data.HeadTop != 0 && viewer == null) {
-            var layer = new GameObject("Headgear_BOTTOM");
-            layer.layer = rendererLayer;
-            layer.transform.SetParent(bodyViewer.transform, false);
-            layer.transform.localPosition = Vector3.zero;
-
-            var layerViewer = layer.AddComponent<EntityViewer>();
-            layerViewer.Parent = bodyViewer;
-            layerViewer.SpriteOrder = 2;
-            layerViewer.Entity = this;
-            layerViewer.ViewerType = ViewerType.HEAD_BOTTOM;
-
-            bodyViewer.Children.Add(layerViewer);
-        } else if (data.Weapon == 0) {
+        } else if (viewId == 0) {
             viewer?.gameObject.SetActive(false);
         }
     }
@@ -584,11 +510,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     public void UpdateSprites() {
-        MaybeInitWeapon(EquipInfo, gameObject.layer, EntityViewer);
-        MaybeInitShield(EquipInfo, gameObject.layer, EntityViewer);
-        MaybeInitHeadTop(EquipInfo, gameObject.layer, EntityViewer);
-        MaybeInitHeadMid(EquipInfo, gameObject.layer, EntityViewer);
-        MaybeInitHeadBottom(EquipInfo, gameObject.layer, EntityViewer);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Weapon, ViewerType.WEAPON);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Shield, ViewerType.SHIELD);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadTop, ViewerType.HEAD_TOP);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadMid, ViewerType.HEAD_MID);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadBottom, ViewerType.HEAD_BOTTOM);
         EntityViewer.Init(reloadSprites: true);
     }
 }
