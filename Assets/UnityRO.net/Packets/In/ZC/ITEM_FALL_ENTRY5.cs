@@ -7,7 +7,7 @@ public partial class ZC {
     public class ITEM_FALL_ENTRY5 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ITEM_FALL_ENTRY5;
-        public const int SIZE = 22;
+        public const int SIZE = 24;
 
         public int mapID;
         public int id;

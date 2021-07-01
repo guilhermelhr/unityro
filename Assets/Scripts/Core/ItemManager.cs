@@ -158,12 +158,12 @@ public class ItemManager : MonoBehaviour {
         if (packet is ZC.ITEM_FALL_ENTRY5) {
             var pkt = packet as ZC.ITEM_FALL_ENTRY5;
 
-            var x = pkt.x - 0.5 + pkt.subX / 12;
-            var z = pkt.y - 0.5 + pkt.subY / 12;
+            var x = pkt.xPos - 0.5 + pkt.subX / 12;
+            var z = pkt.yPos - 0.5 + pkt.subY / 12;
             var y = Core.PathFinding.GetCellHeight((int)x, (int)z) + 5.0;
 
             Core.EntityManager.SpawnItem(new ItemSpawnInfo() {
-                AID = pkt.id,
+                AID = pkt.itemID,
                 mapID = pkt.mapID,
                 Position = new Vector3((float)x, (float)y, (float)z),
                 amount = pkt.amount,
