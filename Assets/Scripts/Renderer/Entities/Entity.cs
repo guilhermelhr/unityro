@@ -190,27 +190,28 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     public void Vanish(int type) {
+        var id = GID > 0 ? GID : AID;
         switch (type) {
             case 0: // Moved out of sight
                 // TODO start coroutine to fade-out entity
-                Core.EntityManager.RemoveEntity(GID);
+                Core.EntityManager.RemoveEntity(id);
                 break;
             case 1: // Died
                 var isPC = Type == EntityType.PC;
                 ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Dead });
                 if (!isPC) {
-                    StartCoroutine(DestroyAfterSeconds());
+                    StartCoroutine(DestroyAfterSeconds(id));
                 }
                 break;
             default:
-                Core.EntityManager.RemoveEntity(GID);
+                Core.EntityManager.RemoveEntity(id);
                 break;
         }
     }
 
-    private IEnumerator DestroyAfterSeconds() {
+    private IEnumerator DestroyAfterSeconds(uint id) {
         yield return new WaitForSeconds(1f);
-        Core.EntityManager.RemoveEntity(AID);
+        Core.EntityManager.RemoveEntity(id);
         yield return null;
     }
 

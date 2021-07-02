@@ -1,17 +1,13 @@
-﻿using System;
+﻿using ROIO;
+using ROIO.Loaders;
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.Runtime.InteropServices;
-using ROIO;
-using ROIO.Loaders;
-using ROIO.Models.FileTypes;
 
 public class Core : MonoBehaviour {
 

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 using System.Net.Sockets;
 using UnityEngine;
 using static PacketSerializer;
@@ -42,6 +43,10 @@ public class NetworkClient : MonoBehaviour {
         CurrentConnection.Connect(ip, port);
     }
 
+    public void StartHeatBeat() {
+        StartCoroutine(ServerHeartBeat());
+    }
+
     public void Disconnect() {
         CurrentConnection.Disconnect();
     }
@@ -59,4 +64,12 @@ public class NetworkClient : MonoBehaviour {
     public BinaryWriter GetBinaryWriter() => CurrentConnection.GetBinaryWriter();
 
     public NetworkStream GetStream() => CurrentConnection.GetStream();
+
+    private IEnumerator ServerHeartBeat() {
+        for(; ;) {
+            // TODO check if connection is still alive. If not, disconnect client
+            new CZ.REQUEST_TIME2().Send();
+            yield return new WaitForSeconds(10f);
+        }
+    }
 }

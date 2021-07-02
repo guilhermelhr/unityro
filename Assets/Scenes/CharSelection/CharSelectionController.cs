@@ -17,10 +17,10 @@ public class CharSelectionController : MonoBehaviour {
     private List<CharacterCellController> characterSlots;
 
     void Start() {
-        currentCharactersInfo = Core.NetworkClient.State.CurrentCharactersInfo;
-        Core.NetworkClient.HookPacket(HC.NOTIFY_ZONESVR2.HEADER, OnCharacterSelectionAccepted);
-        Core.NetworkClient.HookPacket(HC.ACCEPT_MAKECHAR.HEADER, OnMakeCharAccepted);
-        Core.NetworkClient.HookPacket(ZC.ACCEPT_ENTER2.HEADER, OnMapServerLoginAccepted);
+        currentCharactersInfo = NetworkClient.Instance.State.CurrentCharactersInfo;
+        NetworkClient.Instance.HookPacket(HC.NOTIFY_ZONESVR2.HEADER, OnCharacterSelectionAccepted);
+        NetworkClient.Instance.HookPacket(HC.ACCEPT_MAKECHAR.HEADER, OnMakeCharAccepted);
+        NetworkClient.Instance.HookPacket(ZC.ACCEPT_ENTER2.HEADER, OnMapServerLoginAccepted);
 
         PopulateUI();
     }
@@ -41,8 +41,9 @@ public class CharSelectionController : MonoBehaviour {
                 PosY = pkt.PosY,
                 Dir = pkt.Dir
             };
-            Core.NetworkClient.State.MapLoginInfo = mapLoginInfo;
+            NetworkClient.Instance.State.MapLoginInfo = mapLoginInfo;
             Session.CurrentSession.SetCurrentMap(mapLoginInfo.mapname);
+            NetworkClient.Instance.StartHeatBeat();
 
             SceneManager.LoadScene("MapScene");
         }
@@ -50,12 +51,12 @@ public class CharSelectionController : MonoBehaviour {
 
     private void OnCharacterSelectionAccepted(ushort cmd, int size, InPacket packet) {
         if (packet is HC.NOTIFY_ZONESVR2) {
-            Core.NetworkClient.Disconnect();
+            NetworkClient.Instance.Disconnect();
 
             currentMapInfo = packet as HC.NOTIFY_ZONESVR2;
-            Core.NetworkClient.State.SelectedCharacter = selectedCharacter;
-            Core.NetworkClient.ChangeServer(currentMapInfo.IP.ToString(), currentMapInfo.Port);
-            Core.NetworkClient.CurrentConnection.Start();
+            NetworkClient.Instance.State.SelectedCharacter = selectedCharacter;
+            NetworkClient.Instance.ChangeServer(currentMapInfo.IP.ToString(), currentMapInfo.Port);
+            NetworkClient.Instance.CurrentConnection.Start();
 
             var entity = Core.EntityManager.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
             Session.StartSession(new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID));
@@ -64,7 +65,7 @@ public class CharSelectionController : MonoBehaviour {
             var mapUI = Instantiate(MapUIPrefab);
             DontDestroyOnLoad(mapUI);
 
-            var loginInfo = Core.NetworkClient.State.LoginInfo;
+            var loginInfo = NetworkClient.Instance.State.LoginInfo;
             new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int)new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
         }
     }
