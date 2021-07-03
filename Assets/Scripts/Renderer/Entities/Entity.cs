@@ -57,6 +57,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         GID = data.GID;
         AID = data.AID;
 
+        Status.name = data.name;
         Status.jobId = data.job;
         Status.sex = data.sex;
         Status.hair = (short)data.head;
