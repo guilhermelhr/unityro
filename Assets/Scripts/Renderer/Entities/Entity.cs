@@ -123,7 +123,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         body.transform.SetParent(gameObject.transform, false);
         body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
         body.AddComponent<Billboard>();
-        body.AddComponent<SortingGroup>();
+        var sortingGroup = body.AddComponent<SortingGroup>();
+        sortingGroup.sortingOrder = 2;
 
         var bodyViewer = body.AddComponent<EntityViewer>();
         bodyViewer.ViewerType = ViewerType.BODY;
@@ -143,7 +144,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
         InitHead(rendererLayer, bodyViewer);
         MaybeInitLayer(rendererLayer, bodyViewer, data.Weapon, ViewerType.WEAPON);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.Shield, ViewerType.SHIELD);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.Shield, ViewerType.SHIELD, 1);
         MaybeInitLayer(rendererLayer, bodyViewer, data.HeadTop, ViewerType.HEAD_TOP);
         MaybeInitLayer(rendererLayer, bodyViewer, data.HeadMid, ViewerType.HEAD_MID);
         MaybeInitLayer(rendererLayer, bodyViewer, data.HeadBottom, ViewerType.HEAD_BOTTOM);
@@ -155,10 +156,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
         head.transform.SetParent(bodyViewer.transform, false);
         head.transform.localPosition = Vector3.zero;
         var headViewer = head.AddComponent<EntityViewer>();
+        var sortingGroup = head.AddComponent<SortingGroup>();
+        sortingGroup.sortingOrder = 1;
 
         headViewer.Parent = bodyViewer;
         headViewer.Entity = this;
-        headViewer.SpriteOrder = 1;
         headViewer.ViewerType = ViewerType.HEAD;
         bodyViewer.Children.Add(headViewer);
     }
@@ -178,8 +180,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
             layerObject.transform.localPosition = Vector3.zero;
 
             var layerViewer = layerObject.AddComponent<EntityViewer>();
+            var sortingGroup = layerObject.AddComponent<SortingGroup>();
+            sortingGroup.sortingOrder = spriteOrder;
+
             layerViewer.Parent = bodyViewer;
-            layerViewer.SpriteOrder = spriteOrder;
             layerViewer.Entity = this;
             layerViewer.ViewerType = viewerType;
 

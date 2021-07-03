@@ -6,7 +6,7 @@ public partial class ZC {
     public class ITEM_ENTRY : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ITEM_ENTRY;
-        public const int SIZE = 17;
+        public const int SIZE = 19;
 
         public int id;
         public int mapID;
@@ -19,8 +19,8 @@ public partial class ZC {
 
         /// 009d <id>.L <name id>.W <identified>.B <x>.W <y>.W <amount>.W <subX>.B <subY>.B
         public void Read(MemoryStreamReader br, int size) {
-            mapID = br.ReadInt();
-            id = br.ReadShort();
+            mapID = (int)br.ReadUInt();
+            id = (int)br.ReadUInt();
             identified = br.ReadByte();
             x = br.ReadShort();
             y = br.ReadShort();

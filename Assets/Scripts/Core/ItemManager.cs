@@ -175,7 +175,7 @@ public class ItemManager : MonoBehaviour {
         } else if (packet is ZC.ITEM_ENTRY ITEM_ENTRY) {
             var x = ITEM_ENTRY.x - 0.5 + ITEM_ENTRY.subX / 12;
             var z = ITEM_ENTRY.y - 0.5 + ITEM_ENTRY.subY / 12;
-            var y = Core.PathFinding.GetCellHeight((int)x, (int)z);
+            var y = Core.PathFinding.GetCellHeight((int)x, (int)z) + 1.0;
 
             Core.EntityManager.SpawnItem(new ItemSpawnInfo() {
                 AID = ITEM_ENTRY.id,

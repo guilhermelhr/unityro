@@ -21,7 +21,6 @@ public class EntityViewer : MonoBehaviour {
 
     public float SpriteOffset;
     public int HeadDirection;
-    public int SpriteOrder;
     public SpriteState State = SpriteState.Idle;
 
     public List<EntityViewer> Children = new List<EntityViewer>();
@@ -221,7 +220,6 @@ public class EntityViewer : MonoBehaviour {
             if (spriteRenderer == null) {
                 var go = new GameObject($"Layer{i}");
                 spriteRenderer = go.AddComponent<SpriteRenderer>();
-                spriteRenderer.sortingOrder = SpriteOrder;
                 spriteRenderer.transform.SetParent(gameObject.transform, false);
             }
 
