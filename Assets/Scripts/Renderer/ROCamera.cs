@@ -31,32 +31,32 @@ public class ROCamera : MonoBehaviour {
     }
 
     void LateUpdate() {
-        float scrollDelta = Input.mouseScrollDelta.y;
-        if (Input.GetMouseButton(1)) {
-            this.TargetRotation += Input.GetAxis("Mouse X");
-            HandleYawPitch();
-        } else if (Input.GetKey(KeyCode.LeftShift)) {
-            this.Altitude = Mathf.Clamp(this.Altitude + scrollDelta, ALTITUDE_MIN, ALTITUDE_MAX);
-            HandleYawPitch();
-        } else if (scrollDelta != 0) {
-            zoom += scrollDelta;
-            HandleZoom();
-        }
+        //float scrollDelta = Input.mouseScrollDelta.y;
+        //if (Input.GetMouseButton(1)) {
+        //    this.TargetRotation += Input.GetAxis("Mouse X");
+        //    HandleYawPitch();
+        //} else if (Input.GetKey(KeyCode.LeftShift)) {
+        //    this.Altitude = Mathf.Clamp(this.Altitude + scrollDelta, ALTITUDE_MIN, ALTITUDE_MAX);
+        //    HandleYawPitch();
+        //} else if (scrollDelta != 0) {
+        //    zoom += scrollDelta;
+        //    HandleZoom();
+        //}
 
-        if (TargetRotation > 360)
-            TargetRotation -= 360;
-        if (TargetRotation < 0)
-            TargetRotation += 360;
+        //if (TargetRotation > 360)
+        //    TargetRotation -= 360;
+        //if (TargetRotation < 0)
+        //    TargetRotation += 360;
 
-        if (Rotation > 360)
-            Rotation -= 360;
-        if (Rotation < 0)
-            Rotation += 360;
+        //if (Rotation > 360)
+        //    Rotation -= 360;
+        //if (Rotation < 0)
+        //    Rotation += 360;
 
-        Rotation = Mathf.LerpAngle(Rotation, TargetRotation, 7.5f * Time.deltaTime);
+        //Rotation = Mathf.LerpAngle(Rotation, TargetRotation, 7.5f * Time.deltaTime);
 
-        Angle = GetAngleDirection();
-        Direction = (Direction)Angle;
+        //Angle = GetAngleDirection();
+        //Direction = (Direction)Angle;
     }
 
     private int GetAngleDirection() {
@@ -66,8 +66,8 @@ public class ROCamera : MonoBehaviour {
     private void HandleYawPitch() {
         var direction = new Vector3(0, 0, -distance);
         var rotation = Quaternion.Euler(this.Altitude, this.TargetRotation, 0);
-        transform.position = _target.position + rotation * direction;
-        transform.LookAt(_target.position);
+        //transform.position = _target.position + rotation * direction;
+        //transform.LookAt(_target.position);
     }
 
     private void Update() {
@@ -75,42 +75,42 @@ public class ROCamera : MonoBehaviour {
     }
 
     private void HandleZoom() {
-        var direction = _target.position - transform.position;
-        distance = direction.magnitude;
+        //var direction = _target.position - transform.position;
+        //distance = direction.magnitude;
 
-        if (zoom > 0.0f) {
-            if (distance <= ZOOM_MIN) {
-                zoom = 0;
-                return;
-            }
+        //if (zoom > 0.0f) {
+        //    if (distance <= ZOOM_MIN) {
+        //        zoom = 0;
+        //        return;
+        //    }
 
-            zoom -= zoom / 5f;
+        //    zoom -= zoom / 5f;
 
-            if (zoom <= 0f) {
-                zoom = 0f;
-            } else {
-                direction /= distance;
-                direction *= zoom;
+        //    if (zoom <= 0f) {
+        //        zoom = 0f;
+        //    } else {
+        //        direction /= distance;
+        //        direction *= zoom;
 
-                transform.position += direction;
-            }
-        } else if (zoom < 0f) {
-            if (distance >= ZOOM_MAX) {
-                zoom = 0;
-                return;
-            }
+        //        transform.position += direction;
+        //    }
+        //} else if (zoom < 0f) {
+        //    if (distance >= ZOOM_MAX) {
+        //        zoom = 0;
+        //        return;
+        //    }
 
-            zoom -= zoom / 5f;
+        //    zoom -= zoom / 5f;
 
-            if (zoom >= 0f) {
-                zoom = 0f;
-            } else {
-                direction /= distance;
-                direction *= zoom;
+        //    if (zoom >= 0f) {
+        //        zoom = 0f;
+        //    } else {
+        //        direction /= distance;
+        //        direction *= zoom;
 
-                transform.position += direction;
-            }
-        }
+        //        transform.position += direction;
+        //    }
+        //}
     }
 
     public void SetTarget(Transform target) {
