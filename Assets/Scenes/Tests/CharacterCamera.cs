@@ -8,6 +8,7 @@ public class CharacterCamera : MonoBehaviour
     [Header(":: User Parameters")]
     public Vector2 MouseSensitivity = Vector2.one;
     [Header(":: Settings")]
+    public float LerpTime = 0.5f;
     public float Distance = 30f;
     public Vector2 PitchConstraint;
 
@@ -17,6 +18,9 @@ public class CharacterCamera : MonoBehaviour
     public Direction Direction;
     public Vector3 HorizontalDirection { get; private set; }
 
+    // lerp
+    private float m_LerpClock;
+    private float m_LastVelocity;
     // cache
     private Vector2 m_PitchConstraintRad;
     private float m_Yaw;
@@ -33,11 +37,13 @@ public class CharacterCamera : MonoBehaviour
     private void Update()
     {
         float dt = Time.deltaTime;
+        bool isShiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
         if ( Input.GetMouseButton(1))
         {
+            m_LerpClock = 0f;
             float hX = Input.GetAxis("Mouse X");
             float hY = Input.GetAxis("Mouse Y");
-            bool isShiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
             if ( isShiftDown  )
             {
@@ -47,14 +53,42 @@ public class CharacterCamera : MonoBehaviour
                     RecomputeCameraAngle();
                 }
             }
-            else if ( hX != 0f )
+            else 
             {
-                m_Yaw -= hX * dt * MouseSensitivity.x;
+                if (hX != 0f)
+                {
+                    m_LastVelocity = hX * MouseSensitivity.x;
+                    m_Yaw -= m_LastVelocity * dt;
+                    if (m_Yaw <= 0f)
+                        m_Yaw += Mathf.PI * 2f;
 
-                if (m_Yaw <= 0f)
-                    m_Yaw += Mathf.PI * 2f;
+                    RecomputeHorizontalDirection();
+                }
+                else
+                {
+                    m_LastVelocity = 0f;
+                }
+            }
+        }
+        else if ( Input.GetMouseButtonUp(1) && !isShiftDown)
+        {
+            if (Mathf.Abs(m_LastVelocity) >= 0.2f)
+            {
+                m_LerpClock = LerpTime;
+            }
+        }
 
-                RecomputeHorizontalDirection();
+        if(m_LerpClock > 0f )
+        {
+            m_LerpClock -= dt;
+            float r = 1f - Mathf.Clamp01(m_LerpClock / LerpTime);
+
+            m_Yaw -= Mathf.Lerp(m_LastVelocity, 0f, r) * dt;
+            RecomputeHorizontalDirection();
+
+            if ( m_LerpClock <= 0f )
+            {
+                m_LerpClock = 0f;
             }
         }
     }
