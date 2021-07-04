@@ -75,6 +75,8 @@ public class CharSelectionController : MonoBehaviour {
         for (var i = 0; i < currentCharactersInfo.MaxSlots; i++) {
             var item = Instantiate(charSelectionItem);
             item.transform.SetParent(GridLayout.transform);
+            item.transform.localScale = Vector3.one;
+            item.transform.localPosition = Vector3.zero;
 
             var controller = item.GetComponent<CharacterCellController>();
             if (i < currentCharactersInfo.Chars.Count) {
