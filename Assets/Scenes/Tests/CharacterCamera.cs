@@ -7,9 +7,15 @@ public class CharacterCamera : MonoBehaviour
     public Camera GameCamera;
     [Header(":: User Parameters")]
     public Vector2 MouseSensitivity = Vector2.one;
+    public float ScrollPitchSensitivity = 1f;
+    public float ScrollZoomSensitivity = 1f;
     [Header(":: Settings")]
+    public CameraControlProfile YawControl;
+    public CameraControlProfile ZoomControl;
+
     public float LerpTime = 0.5f;
     public float Distance = 30f;
+    public Vector2 ZoomConstraint;
     public Vector2 PitchConstraint;
 
     [SerializeField] 
@@ -18,15 +24,13 @@ public class CharacterCamera : MonoBehaviour
     public Direction Direction;
     public Vector3 HorizontalDirection { get; private set; }
 
-    // lerp
-    private float m_LerpClock;
-    private float m_LastVelocity;
-    // cache
-    private Vector2 m_PitchConstraintRad;
     private float m_Yaw;
     private float m_Pitch;
     private float m_Altitude;
     private float m_SphereSliceRadius;
+    // cache
+    private readonly float s_PI2 = Mathf.PI * 2f;
+    private Vector2 m_PitchConstraintRad;
 
     private void Awake()
     {
@@ -37,59 +41,53 @@ public class CharacterCamera : MonoBehaviour
     private void Update()
     {
         float dt = Time.deltaTime;
-        bool isShiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        bool shiftModifier = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        float mouseScroll = Input.mouseScrollDelta.y;
 
         if ( Input.GetMouseButton(1))
         {
-            m_LerpClock = 0f;
             float hX = Input.GetAxis("Mouse X");
             float hY = Input.GetAxis("Mouse Y");
 
-            if ( isShiftDown  )
+            if ( shiftModifier  )
             {
-                if ( hY != 0f )
+                float vScroll =  hY * MouseSensitivity.y + mouseScroll * ScrollPitchSensitivity;
+                if (vScroll != 0f )
                 {
-                    m_Pitch -= hY * dt * MouseSensitivity.y;
+                    m_Pitch -= vScroll * dt;
                     RecomputeCameraAngle();
                 }
             }
             else 
             {
-                if (hX != 0f)
-                {
-                    m_LastVelocity = hX * MouseSensitivity.x;
-                    m_Yaw -= m_LastVelocity * dt;
-                    if (m_Yaw <= 0f)
-                        m_Yaw += Mathf.PI * 2f;
-
-                    RecomputeHorizontalDirection();
-                }
-                else
-                {
-                    m_LastVelocity = 0f;
-                }
+                YawControl.SetInertia(hX * MouseSensitivity.x);
             }
         }
-        else if ( Input.GetMouseButtonUp(1) && !isShiftDown)
+        else if ( Input.GetMouseButtonUp(1))
         {
-            if (Mathf.Abs(m_LastVelocity) >= 0.2f)
+            if ( !shiftModifier )
             {
-                m_LerpClock = LerpTime;
+                YawControl.Release();
             }
         }
 
-        if(m_LerpClock > 0f )
+        if ( !shiftModifier && mouseScroll != 0f )
         {
-            m_LerpClock -= dt;
-            float r = 1f - Mathf.Clamp01(m_LerpClock / LerpTime);
+            ZoomControl.SetInertia(mouseScroll * ScrollZoomSensitivity);
+            ZoomControl.Release();
+        }
 
-            m_Yaw -= Mathf.Lerp(m_LastVelocity, 0f, r) * dt;
+        if ( YawControl.Update(dt) )
+        {
+            m_Yaw -= YawControl.Velocity * dt;
+            if (m_Yaw < 0f)
+                m_Yaw += s_PI2;
             RecomputeHorizontalDirection();
-
-            if ( m_LerpClock <= 0f )
-            {
-                m_LerpClock = 0f;
-            }
+        }
+        if (ZoomControl.Update(dt))
+        {
+            float zoomVel = ZoomControl.Velocity * dt;
+            Distance = Mathf.Clamp(Distance + zoomVel, ZoomConstraint.x, ZoomConstraint.y);
         }
     }
 
