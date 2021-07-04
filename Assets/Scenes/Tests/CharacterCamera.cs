@@ -1,31 +1,61 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class CharacterCamera : MonoBehaviour
 {
     [Header(":: Refs")]
     public Camera GameCamera;
     [Header(":: User Parameters")]
-    public float MouseSensitivity = 10f;
+    public Vector2 MouseSensitivity = Vector2.one;
     [Header(":: Settings")]
     public float Distance = 30f;
-    public float Altitude = 35f;
+    public Vector2 PitchConstraint;
 
     [SerializeField] 
     private Transform m_Target;
 
     public Direction Direction;
-    // Tests
-    private float m_CurrentAngle;
+    public Vector3 HorizontalDirection { get; private set; }
+
+    // cache
+    private Vector2 m_PitchConstraintRad;
+    private float m_Yaw;
+    private float m_Pitch;
+    private float m_Altitude;
+    private float m_SphereSliceRadius;
+
+    private void Awake()
+    {
+        m_PitchConstraintRad = new Vector2(PitchConstraint.x, PitchConstraint.y) * Mathf.Deg2Rad;
+        RecomputeCameraAngle();
+    }
 
     private void Update()
     {
+        float dt = Time.deltaTime;
         if ( Input.GetMouseButton(1))
         {
-            float yaw = Input.GetAxis("Mouse X");
-            m_CurrentAngle -= yaw * Time.deltaTime * MouseSensitivity;
+            float hX = Input.GetAxis("Mouse X");
+            float hY = Input.GetAxis("Mouse Y");
+            bool isShiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
-            if (m_CurrentAngle <= 0f)
-                m_CurrentAngle += Mathf.PI * 2f;
+            if ( isShiftDown  )
+            {
+                if ( hY != 0f )
+                {
+                    m_Pitch -= hY * dt * MouseSensitivity.y;
+                    RecomputeCameraAngle();
+                }
+            }
+            else if ( hX != 0f )
+            {
+                m_Yaw -= hX * dt * MouseSensitivity.x;
+
+                if (m_Yaw <= 0f)
+                    m_Yaw += Mathf.PI * 2f;
+
+                RecomputeHorizontalDirection();
+            }
         }
     }
 
@@ -38,26 +68,36 @@ public class CharacterCamera : MonoBehaviour
     private void UpdateCameraPosition() 
     {
         Vector3 pos = Vector3.zero;
+        Vector3 hDir = HorizontalDirection;
 
-        float x = Mathf.Cos(m_CurrentAngle);
-        float z = Mathf.Sin(m_CurrentAngle);
-
-        Vector3 hDir = new Vector3(x, 0f, z);
-
-        if ( m_Target != null )
+        if (m_Target != null)
         {
             pos = m_Target.transform.position;
         }
 
-        // offset by distance
+        hDir.y = -m_Altitude;
         pos -= hDir * Distance;
-        pos.y += Altitude;
-
         GameCamera.transform.localPosition = pos;
     }
 
     private void UpdateCameraAngle()
     {
-        GameCamera.transform.LookAt(m_Target);
+        if ( m_Target != null)
+        {
+            GameCamera.transform.LookAt(m_Target);
+        }
+    }
+
+    private void RecomputeHorizontalDirection()
+    {
+        HorizontalDirection = new Vector3(Mathf.Cos(m_Yaw) * m_SphereSliceRadius, 0f, Mathf.Sin(m_Yaw) * m_SphereSliceRadius);
+    }
+
+    private void RecomputeCameraAngle()
+    {
+        m_Pitch = Mathf.Clamp(m_Pitch, m_PitchConstraintRad.x, m_PitchConstraintRad.y);
+        m_Altitude = Mathf.Sin(m_Pitch);
+        m_SphereSliceRadius = Mathf.Cos(m_Pitch);
+        RecomputeHorizontalDirection();
     }
 }
