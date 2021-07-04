@@ -332,8 +332,8 @@ Camera:
   m_GameObject: {fileID: 837428467}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -506,14 +506,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameCamera: {fileID: 837428469}
+  MouseSensitivity: {x: 20, y: 20}
+  ScrollPitchSensitivity: 10
+  ScrollZoomSensitivity: 10
+  YawControl:
+    LerpTime: 0.5
+    LerpThreshold: 0.1
+  ZoomControl:
+    LerpTime: 0.2
+    LerpThreshold: 0
+  LerpTime: 0.5
+  Distance: 10
+  ZoomConstraint: {x: 5, y: 20}
+  PitchConstraint: {x: 50, y: 85}
   m_Target: {fileID: 643010539}
-  m_Zoom: 0
-  m_Distance: 30
-  m_TargetRotation: 0
-  Direction: 0
-  Altitude: 35
-  Rotation: 0
-  Angle: 0
+  Direction: 1
 --- !u!4 &1544397215
 Transform:
   m_ObjectHideFlags: 0
