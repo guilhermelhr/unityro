@@ -1,3 +1,0 @@
-grf=C:/Users/danil/Desktop/Projetos/ragnarok/data.grf
-rdata=C:/Users/danil/Desktop/Projetos/ragnarok/rdata.grf
-itemInfo=C:/Users/danil/Desktop/Projetos/ragnarok/itemInfo.lua

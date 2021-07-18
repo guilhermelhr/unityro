@@ -55,8 +55,6 @@ public class MapController : MonoBehaviour {
         */
         CharacterCamera charCam = GameObject.FindObjectOfType<CharacterCamera>();
         charCam.SetTarget(entity.EntityViewer.transform);
-        Core.MainCamera.GetComponent<ROCamera>().SetTarget(entity.EntityViewer.transform);
-        //Core.MainCamera.transform.SetParent(entity.transform);
 
         entity.SetReady(true);
     }
