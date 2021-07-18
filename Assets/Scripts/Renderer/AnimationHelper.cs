@@ -95,7 +95,7 @@ public static class AnimationHelper {
                 case SpriteMotion.Sit: return 2 * 8;
                 case SpriteMotion.PickUp: return 3 * 8;
                 case SpriteMotion.Standby: return 4 * 8;
-                case SpriteMotion.Attack1: return 11 * 8;
+                case SpriteMotion.Attack1: return 5 * 8;
                 case SpriteMotion.Hit: return 6 * 8;
                 case SpriteMotion.Freeze1: return 7 * 8;
                 case SpriteMotion.Dead: return 8 * 8;
@@ -107,7 +107,7 @@ public static class AnimationHelper {
         }
 
 
-        return -1;
+        return 0;
     }
 
     public static SpriteState GetStateForMotion(SpriteMotion motion) {
@@ -132,9 +132,10 @@ public static class AnimationHelper {
             case SpriteMotion.Casting:
             case SpriteMotion.Freeze1:
             case SpriteMotion.Freeze2:
-            case SpriteMotion.Dead:
-                return true;
+            case SpriteMotion.Standby:
             case SpriteMotion.Idle:
+                return true;
+            case SpriteMotion.Dead:
             case SpriteMotion.Sit:
             case SpriteMotion.Attack1:
             case SpriteMotion.Attack2:

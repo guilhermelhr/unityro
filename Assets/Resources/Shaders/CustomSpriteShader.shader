@@ -52,9 +52,9 @@ Shader "Unlit/CustomSpriteShader"
 				{
 					v2f o;
 
-					o.pos = UnityObjectToClipPos(v.vertex);
+					//o.pos = UnityObjectToClipPos(v.vertex);
 
-					//o.pos = Billboard2(v.vertex, 0);
+					o.pos = Billboard2(v.vertex, 0);
 					o.texcoord = v.texcoord;
 					return o;
 				}

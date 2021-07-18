@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading;
+﻿using ROIO;
+using ROIO.Loaders;
+using System;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -29,7 +26,6 @@ public class Core : MonoBehaviour {
     public static ItemManager ItemManager;
     public static MapLoader MapLoader => mapLoader;
     public static MapRenderer MapRenderer => mapRenderer;
-    public static Session Session;
     public static CursorRenderer CursorRenderer;
 
     public static PathFindingManager PathFinding => pathFinding;
@@ -39,14 +35,15 @@ public class Core : MonoBehaviour {
 
     public static Core Instance;
     public static Camera MainCamera;
-    public static long Tick = 0;
+    public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
 
-    public static Hashtable Configs = new Hashtable();
+    public static Configuration Configs;
     private static string CFG_NAME = "config.txt";
 
     private bool roCamEnabled;
 
     private void Awake() {
+
         if (Instance == null) {
             Instance = this;
         }
@@ -68,16 +65,14 @@ public class Core : MonoBehaviour {
     }
 
     void Start() {
-        Tick = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
         MapRenderer.SoundsMixerGroup = soundsMixerGroup;
         MapRenderer.WorldLight = worldLight;
-        roCamEnabled = MainCamera.GetComponent<ROCamera>()?.enabled ?? false;
+        roCamEnabled = true;
 
-        LoadConfigs();
+        Configs = ConfigurationLoader.Init();
 
         LoadGrf();
-        BuildMapSelector();
-        DBManager.init();
+        DBManager.Init();
 
         if (CursorRenderer == null) {
             CursorRenderer = gameObject.AddComponent<CursorRenderer>();
@@ -90,69 +85,29 @@ public class Core : MonoBehaviour {
         if (!Offline) {
             NetworkClient.Start();
         } else {
-            var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 0, Name = "Player", GID = 20001, Weapon = 1 });
+            var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 0, Name = "Player", GID = 20001, Weapon = 1, Speed = 150 });
             entity.transform.position = new Vector3(150, 0, 150);
-            Core.Session = new Session(entity, 0);
+            entity.SetAttackSpeed(135);
+            Session.StartSession(new Session(entity, 0));
 
-            Core.MainCamera.GetComponent<ROCamera>().SetTarget(Core.Session.Entity.EntityViewer.transform);
-            Core.MainCamera.transform.SetParent(Core.Session.Entity.transform);
+            //var mob = EntityManager.Spawn(new EntityData() { job = 1002, name = "Poring", GID = 20001, speed = 697, PosDir = new int[] { 0, 0, 0 }, objecttype = EntityType.MOB });
+            //mob.transform.position = new Vector3(150, 0, 155);
 
-            Core.Session.Entity.SetReady(true);
+            //MainCamera.GetComponent<ROCamera>().SetTarget(entity.EntityViewer.transform);
+            //MainCamera.transform.SetParent(entity.transform);
 
-            //var npc = EntityManager.Spawn(new EntityData() { job = 909, type = EntityType.NPC, PosDir = new int[] { 0, 0, 0 }, name = "NPC" });
-            //npc.transform.position = new Vector3(160, 0, 150);
+            entity.SetReady(true);
+            //mob.SetReady(true);
+
+            //var str = FileManager.Load("data/texture/effect/magnificat.str") as STR;
+            //var renderer = new GameObject().AddComponent<StrEffectRenderer>();
+            //renderer.Initialize(str);
         }
-    }
-
-    private void BuildMapSelector() {
-        Debug.Log("Building map list...");
-        MapSelector selector = new MapSelector(FileManager.Grf);
-        selector.buildDropdown(mapDropdown);
-        Debug.Log($"Map list has {selector.GetMapList().Count} entries.");
-
-        // do we have a map to load on startup
-        var preLoadMap = !string.IsNullOrEmpty(mapname);
-
-        // there is a map to load on startup: load it
-        if (preLoadMap) {
-            selector.ChangeMap(mapname);
-        }
-
-        // if a map is pre loaded, do not display map selector on startup
-        mapDropdown?.gameObject?.SetActive(!preLoadMap);
     }
 
     private void LoadGrf() {
-        Debug.Log($"Loading GRF at {Configs["grf"]} ...");
-        FileManager.loadGrf(Configs["grf"] as string);
-        Debug.Log($"GRF loaded, filetable contains {FileManager.Grf.files.Count} files.");
+        FileManager.LoadGRF(Configs.root, Configs.grf);
         OnGrfLoaded?.Invoke();
-    }
-
-    private void LoadConfigs() {
-
-        string cfgTxt = null;
-        if (Application.isMobilePlatform) {
-            cfgTxt = "grf=" + Application.streamingAssetsPath + "/data.grf";
-        } else {
-            cfgTxt = FileManager.Load("config.txt") as string;
-
-            if (cfgTxt == null) {
-                FileStream stream = File.Open(Application.dataPath + "/" + CFG_NAME, FileMode.Create);
-
-                string defaultCfg = "grf=" + Application.dataPath + "/data.grf";
-                stream.Write(Encoding.UTF8.GetBytes(defaultCfg), 0, defaultCfg.Length);
-                stream.Close();
-                cfgTxt = defaultCfg;
-            }
-        }
-
-        foreach (string s in cfgTxt.Split('\n')) {
-            string[] properties = s.Split('=');
-            if (properties.Length == 2) {
-                Configs.Add(properties[0], properties[1]);
-            }
-        }
     }
 
     void FixedUpdate() {
@@ -162,7 +117,6 @@ public class Core : MonoBehaviour {
     }
 
     void Update() {
-        Tick = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
         if (mapRenderer.Ready) {
             mapRenderer.Render();
         }
@@ -182,7 +136,6 @@ public class Core : MonoBehaviour {
             mapDropdown.gameObject.SetActive(mapSelectorEnabled);
 
             // disable cameras when map selector is visible
-            MainCamera.GetComponent<ROCamera>().enabled = !mapSelectorEnabled && roCamEnabled;
             MainCamera.GetComponent<FreeflyCam>().enabled = !mapSelectorEnabled && !roCamEnabled;
 
             // disable entity when map selector is visible
@@ -194,18 +147,11 @@ public class Core : MonoBehaviour {
 
             // switch cameras
             roCamEnabled = !roCamEnabled;
-            MainCamera.GetComponent<ROCamera>().enabled = roCamEnabled;
             MainCamera.GetComponent<FreeflyCam>().enabled = !roCamEnabled;
 
             // handle cursor
             Cursor.lockState = roCamEnabled ? CursorLockMode.None : Cursor.lockState;
             Cursor.visible = roCamEnabled;
-
-            // switched to ROCamera: updated it so we go from wherever
-            // freefly is to where ROCam should be
-            if (roCamEnabled) {
-                MainCamera.GetComponent<ROCamera>().Start();
-            }
         }
     }
 

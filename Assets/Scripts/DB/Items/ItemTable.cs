@@ -1,23 +1,8 @@
-﻿using System;
+﻿using MoonSharp.Interpreter;
+using ROIO.Loaders;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Loaders;
 using UnityEngine;
-
-public class Item {
-    public int id;
-    public string unidentifiedDisplayName = "";
-    public string unidentifiedResourceName = "";
-    public string unidentifiedDescriptionName = "";
-    public string identifiedDisplayName = "";
-    public string identifiedResourceName = "";
-    public string identifiedDescriptionName = "";
-    public int slotCount = 0;
-    public int ClassNum = 0;
-    public bool costume = false;
-}
 
 public enum EquipmentLocation : int {
     HEAD_BOTTOM = 1 << 0,
@@ -150,7 +135,8 @@ public enum WeaponType : int {
     WEAPONTYPE_FOXTAIL_BROWN = 99,
     WEAPONTYPE_FOXTAIL_GREEN = 100,
     WEAPONTYPE_CandyCaneRod = 101,
-    WEAPONTYPE_FOXTAIL_METAL = 102
+    WEAPONTYPE_FOXTAIL_METAL = 102,
+    MAX = 103
 }
 
 public class ItemTable {
@@ -189,7 +175,7 @@ public class ItemTable {
         { WeaponType.WPCLASS_GUN_GRANADE, "_샷건" },
         { WeaponType.WPCLASS_SYURIKEN, "_수리검" },
         { WeaponType.WPCLASS_TWOHANDROD, "_롯드" },
-        { WeaponType.WEAPONTYPE_SHORTSWORD_SHORTSWORD, "_단검_단검" },
+        { WeaponType.WEAPONTYPE_SHORTSWORD_SHORTSWORD, "_단검" },
         { WeaponType.WEAPONTYPE_SWORD_SWORD, "_검_검" },
         { WeaponType.WEAPONTYPE_AXE_AXE, "_도끼_도끼" },
         { WeaponType.WEAPONTYPE_SHORTSWORD_SWORD, "_단검_검" },
@@ -347,7 +333,7 @@ public class ItemTable {
     public static void LoadItemDb() {
         Script script = new Script();
         script.Options.ScriptLoader = new CustomScriptLoader();
-        script.DoFile(Core.Configs["itemInfo"] as string);
+        script.DoFile($"{Core.Configs.root}{Core.Configs.system}itemInfo.lua");
         Table table = (Table)script.Globals["tbl"];
 
         foreach (var key in table.Keys) {
@@ -382,5 +368,9 @@ public class ItemTable {
                 Debug.LogError($"Could not load item {key} - {e}");
             }
         }
+    }
+
+    public static string GetAccessoryResName(int accessoryId) {
+        return LuaInterface.GetTable("AccNameTable")[accessoryId].ToString();
     }
 }

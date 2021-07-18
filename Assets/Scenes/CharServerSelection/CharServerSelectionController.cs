@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class CharServerSelectionController : MonoBehaviour {
 
@@ -21,10 +22,6 @@ public class CharServerSelectionController : MonoBehaviour {
         BuildServerList();
     }
 
-    private void Update() {
-        Core.NetworkClient.Ping();
-    }
-
     private void OnEnterResponse(ushort cmd, int size, InPacket packet) {
         if(packet is HC.ACCEPT_ENTER) {
             Core.NetworkClient.State.CurrentCharactersInfo = packet as HC.ACCEPT_ENTER;
@@ -41,9 +38,13 @@ public class CharServerSelectionController : MonoBehaviour {
         foreach(var server in charServers.Where(t => t.Name.Length > 0)) {
             var serverItem = Instantiate(CharServerListItem) as GameObject;
             var controller = serverItem.GetComponent<CharServerListItemController>();
+            var toggle = serverItem.GetComponent<Toggle>();
+            toggle.group = LinearLayout.GetComponent<ToggleGroup>();
             controller.BindData(server);
             controller.OnCharServerSelected = OnCharServerSelected;
+            toggle.onValueChanged.AddListener(delegate {controller.OnValueChanged();});
 
+            toggle.isOn = true;
             serverItem.transform.SetParent(LinearLayout.transform);
             serverItem.transform.localScale = Vector3.one;
         }

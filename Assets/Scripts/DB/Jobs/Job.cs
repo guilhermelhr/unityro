@@ -1,4 +1,6 @@
-﻿public static class JobHelper {
+﻿using System.Linq;
+
+public static class JobHelper {
     //The following system marks a different job ID system used by the map server,
     //which makes a lot more sense than the normal one. [Skotlex]
     //
@@ -17,7 +19,7 @@
     public const ulong MAPID_THIRDMASK = (JOBL_THIRD | MAPID_UPPERMASK);
 
     public static Job ServerIdToJobId(ushort class_, int sex) {
-        switch ((ServerJob)class_) {
+        switch((ServerJob)class_) {
             //Novice And 1-1 Jobs
             case ServerJob.MAPID_NOVICE: return Job.JOB_NOVICE;
             case ServerJob.MAPID_SWORDMAN: return Job.JOB_SWORDMAN;
@@ -166,7 +168,7 @@
     }
 
     public static ServerJob JobIdToServerId(ushort class_) {
-        switch ((Job)class_) {
+        switch((Job)class_) {
             case Job.JOB_NOVICE: return ServerJob.MAPID_NOVICE;
             case Job.JOB_SWORDMAN: return ServerJob.MAPID_SWORDMAN;
             case Job.JOB_MAGE: return ServerJob.MAPID_MAGE;
@@ -325,6 +327,11 @@
         var serverJob = (ulong)JobIdToServerId(job);
 
         return ServerIdToJobId((ushort)(serverJob & MAPID_BASEMASK), sex);
+    }
+
+    public static string GetJobName(int job, int sex) {
+        var table = LuaInterface.GetTable(sex == 1 ? "PCJobNameTableMan" : "PCJobNameTableWoman");
+        return table.Keys.ToDictionary(t => int.Parse(t.ToString()), t => table[t].ToString().Replace("\"", ""))[job];
     }
 }
 

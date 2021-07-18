@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using ROIO;
+using ROIO.Models.FileTypes;
 using System.Collections;
 using System.Collections.Generic;
-using System;
+using UnityEngine;
 
 public enum CursorAction {
     DEFAULT = 0,
@@ -52,31 +53,6 @@ public class CursorRenderer : MonoBehaviour {
     void Update() {
         if (Input.GetKey(KeyCode.Mouse1)) {
             SetAction(CursorAction.ROTATE, false);
-        } else {
-            // TODO remove this raycast and move to entity control
-            var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 150, LayerMask.GetMask("NPC", "Ground", "Monsters", "Items"))) {
-                hit.collider.gameObject.TryGetComponent<EntityViewer>(out var target);
-
-                if (target != null) {
-                    switch (target.Entity.Type) {
-                        case EntityType.NPC:
-                            SetAction(CursorAction.TALK, false);
-                            break;
-                        case EntityType.ITEM:
-                            SetAction(CursorAction.PICK, true);
-                            break;
-                        case EntityType.MOB:
-                            SetAction(CursorAction.ATTACK, false);
-                            break;
-                        case EntityType.WARP:
-                            SetAction(CursorAction.WARP, false);
-                            break;
-                    }
-                } else {
-                    SetAction(CursorAction.DEFAULT, true);
-                }
-            }
         }
     }
 
@@ -117,7 +93,7 @@ public class CursorRenderer : MonoBehaviour {
         this.tick = Core.Tick;
         this.repeat = repeat;
 
-        this.currentAction = animation ?? (int)type;
+        this.currentAction = animation ?? (int) type;
         this.currentFrame = 0;
 
         var action = act.actions[currentAction];

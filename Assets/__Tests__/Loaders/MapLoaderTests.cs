@@ -1,5 +1,7 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
+using ROIO;
+using ROIO.Loaders;
 using System;
 using System.IO;
 using UnityEngine;
@@ -14,8 +16,8 @@ namespace Tests {
 
         [OneTimeSetUp]
         public void SetUp() {
-            FileManager.loadGrf("D:/Ragnarok/kro_data.grf");
-            mapSelector = new MapSelector(FileManager.Grf);
+            FileManager.LoadGRF("D:/Ragnarok/kro_data.grf", null);
+            //mapSelector = new MapSelector(FileManager.Grf);
         }
         // A Test behaves as an ordinary method
 

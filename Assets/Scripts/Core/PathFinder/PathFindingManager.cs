@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ROIO.Models.FileTypes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -57,10 +58,14 @@ public class PathFindingManager {
         return (float)Altitude.GetCellHeight(x, y);
     }
 
-    public List<PathNode> GetPath(int x0, int y0, int x1, int y1, int range = 0) {
+    public List<PathNode> GetPath(int startX, int startY, int endX, int endY, int range = 0) {
+        if (startX == endX && startY == endY) {
+            return new List<PathNode>();
+        }
+
         var newRequest = new PathRequest() {
-            from = new Vector2Int(x0, y0),
-            to = new Vector2Int(x1, y1)
+            from = new Vector2Int(startX, startY),
+            to = new Vector2Int(endX, endY)
         };
 
         List<PathNode> path = FindPath(newRequest, range);
@@ -231,6 +236,10 @@ public class PathFindingManager {
         return false;
     }
 
+    public static Direction GetDirectionForOffset(Vector3 v1, Vector3 v2) {
+        return GetDirectionForOffset(new Vector2Int((int)v1.x, (int)v1.z) - new Vector2Int((int)v2.x, (int)v2.z));
+    }
+
     public static Direction GetDirectionForOffset(Vector2Int offset) {
 
         if (offset.x == -1 && offset.y == -1) return Direction.SouthWest;
@@ -243,6 +252,10 @@ public class PathFindingManager {
         if (offset.x == 0 && offset.y == -1) return Direction.South;
 
         return Direction.South;
+    }
+
+    public static bool IsDiagonal(Vector3 v1, Vector3 v2) {
+        return IsDiagonal(GetDirectionForOffset(v1, v2));
     }
 
     public static bool IsDiagonal(Direction dir) {

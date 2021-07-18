@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ROIO;
+using ROIO.Models.FileTypes;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -19,6 +21,7 @@ public class MapRenderer {
     public static Light WorldLight;
     public static uint width, height;
 
+    private Altitude altitude;
     private RSW world;
     private Water water;
     private Models models;
@@ -55,7 +58,7 @@ public class MapRenderer {
                 OnWorldComplete(data as RSW);
                 break;
             case "MAP_ALTITUDE":
-                OnAltitudeComplete(data as Altitude);
+                OnAltitudeComplete(data as GAT);
                 break;
             case "MAP_GROUND":
                 OnGroundComplete(data as GND.Mesh);
@@ -74,7 +77,7 @@ public class MapRenderer {
 
     private void OnMapComplete(string mapname) {
         //everything needed was loaded, no need to keep the current cache
-        FileCache.Report();
+        //FileCache.Report();
         FileCache.ClearAll();
 
         //add sounds to playlist (and cache)
@@ -102,9 +105,11 @@ public class MapRenderer {
             var lightObj = new GameObject(light.name);
             lightObj.transform.SetParent(lightsParent.transform);
             Light lightComponent = lightObj.AddComponent<Light>();
+#if UNITY_EDITOR
             lightComponent.lightmapBakeType = LightmapBakeType.Baked;
+#endif
+
             lightComponent.color = new Color(light.color[0], light.color[1], light.color[2]);
-            Debug.Log("color: " + lightComponent.color);
             lightComponent.range = light.range;
             Vector3 position = new Vector3(light.pos[0] + width, -light.pos[1], light.pos[2] + height);
             lightObj.transform.position = position;
@@ -141,9 +146,10 @@ public class MapRenderer {
     /// <summary>
     /// receive parsed gat
     /// </summary>
-    /// <param name="altitude"></param>
-    private void OnAltitudeComplete(Altitude altitude) {
+    /// <param name="gat"></param>
+    private void OnAltitudeComplete(GAT gat) {
         altitudeCompleted = true;
+        altitude = new Altitude(gat);
     }
 
     private void OnGroundComplete(GND.Mesh mesh) {

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ROIO.Loaders;
+using ROIO.Models.FileTypes;
+using ROIO.Utils;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
@@ -12,7 +15,7 @@ public class Altitude {
     public GAT gat { get; private set; }
     private List<PathNode> nodes;
 
-    public Altitude(BinaryReader stream) {
+    public Altitude(ROIO.Utils.MemoryStreamReader stream) {
         gat = AltitudeLoader.Load(stream);
 
         init(gat);

@@ -1,242 +1,244 @@
-﻿using System;
+﻿using ROIO;
+using ROIO.Models.FileTypes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityRO.GameCamera;
 
 public class EntityViewer : MonoBehaviour {
 
+    private const int AVERAGE_ATTACK_SPEED = 432;
+    private const int AVERAGE_ATTACKED_SPEED = 288;
+
     public Entity Entity;
-    public EntityType Type;
     public EntityViewer Parent;
     public ViewerType ViewerType;
 
-    public SpriteMotion CurrentMotion;
-    public SpriteMotion? NextMotion;
+    public MotionRequest CurrentMotion;
+    public MotionRequest? NextMotion;
 
     public float SpriteOffset;
     public int HeadDirection;
-    public int SpriteOrder;
-    public float AnimSpeed = 1f;
     public SpriteState State = SpriteState.Idle;
 
     public List<EntityViewer> Children = new List<EntityViewer>();
     private Dictionary<int, SpriteRenderer> Layers = new Dictionary<int, SpriteRenderer>();
     private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
+    private AudioSource AudioSource;
 
     private Sprite[] sprites;
     private ACT currentACT;
     private SPR currentSPR;
     private ACT.Action currentAction;
     private int currentActionIndex;
-    private int currentAngleIndex;
 
+    [SerializeField]
+    private int currentViewID;
     private int currentFrame = 0;
-    private float currentFrameTime = 0;
-    private int maxFrame = 0;
-
-    private bool isLooping;
-    private bool isPaused;
-    private bool isDirty;
+    private long AnimationStart;
+    private int ActionId = -1;
+    private double previousFrame = 0;
 
     private MeshCollider meshCollider;
 
     public void Init(SPR spr, ACT act) {
         currentSPR = spr;
         currentACT = act;
+
+        currentSPR.SwitchToRGBA();
+        sprites = currentSPR.GetSprites();
     }
 
     public void Start() {
-        if (currentSPR == null) {
+        Init();
+
+        InitShadow();
+
+        if (AudioSource == null && Parent == null) {
+            AudioSource = gameObject.AddComponent<AudioSource>();
+            AudioSource.spatialBlend = 0.7f;
+            AudioSource.priority = 60;
+            AudioSource.maxDistance = 40;
+            AudioSource.rolloffMode = AudioRolloffMode.Linear;
+            AudioSource.volume = 1f;
+            AudioSource.dopplerLevel = 0;
+            AudioSource.outputAudioMixerGroup = MapRenderer.SoundsMixerGroup;
+        }
+    }
+
+    public void Init(bool reloadSprites = false) {
+        if (currentSPR == null || reloadSprites) {
             string path = "";
 
             switch (ViewerType) {
                 case ViewerType.BODY:
-                    path = DBManager.GetBodyPath((Job)Entity.Job, Entity.Sex);
+                    path = DBManager.GetBodyPath((Job) Entity.Status.jobId, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD:
-                    path = DBManager.GetHeadPath(Entity.Hair, Entity.Sex);
+                    path = DBManager.GetHeadPath(Entity.Status.hair, Entity.Status.sex);
                     break;
                 case ViewerType.WEAPON:
-                    path = DBManager.GetWeaponPath(Entity.Weapon, Entity.Job, Entity.Sex);
+                    currentViewID = Entity.EquipInfo.Weapon;
+                    path = DBManager.GetWeaponPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
+                    break;
+                case ViewerType.SHIELD:
+                    currentViewID = Entity.EquipInfo.Weapon;
+                    path = DBManager.GetShieldPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
+                    break;
+                case ViewerType.HEAD_TOP:
+                    currentViewID = Entity.EquipInfo.HeadTop;
+                    path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
+                    break;
+                case ViewerType.HEAD_MID:
+                    currentViewID = Entity.EquipInfo.HeadMid;
+                    path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
+                    break;
+                case ViewerType.HEAD_BOTTOM:
+                    currentViewID = Entity.EquipInfo.HeadBottom;
+                    path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
             }
 
-            currentSPR = FileManager.Load(path + ".spr") as SPR;
-            currentACT = FileManager.Load(path + ".act") as ACT;
+            if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD && currentViewID <= 0) {
+                currentACT = null;
+                currentSPR = null;
+                Layers.Values.ToList().ForEach(Renderer => {
+                    Destroy(Renderer.gameObject);
+                });
+                Layers.Clear();
+                MeshCache.Clear();
+
+                return;
+            }
+
+            try {
+                currentSPR = FileManager.Load(path + ".spr") as SPR;
+                currentACT = FileManager.Load(path + ".act") as ACT;
+
+                currentSPR.SwitchToRGBA();
+                sprites = currentSPR.GetSprites();
+            } catch {
+                Debug.LogError($"Could not load sprites for: {path}");
+                currentACT = null;
+                currentSPR = null;
+            }
         }
-        currentSPR.SwitchToRGBA();
-        sprites = currentSPR.GetSprites();
+
         meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
 
-        if (currentAction == null)
-            ChangeAction(0);
-
-        foreach (var child in Children) {
-            child.Start();
+        if (currentAction == null) {
+            ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
         }
 
-        InitShadow();
+        foreach (var child in Children) {
+            child.Init(reloadSprites);
+            child.Start();
+        }
     }
 
-    void Update() {
+    void FixedUpdate() {
         if (!Entity.IsReady || currentACT == null)
             return;
 
-        if (currentAction == null)
-            ChangeAction(0);
+        if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD) {
+            var updatedViewID = FindCurrentViewID();
+            if (updatedViewID != currentViewID) {
+                Init(reloadSprites: true);
 
-        bool is4dir = AnimationHelper.IsFourDirectionAnimation(Type, CurrentMotion);
-        int angleIndex;
-        if (is4dir) {
-            angleIndex = AnimationHelper.GetFourDirectionSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
-        } else {
-            angleIndex = AnimationHelper.GetSpriteIndexForAngle(Entity.Direction, 360 - ROCamera.Instance.Rotation);
-        }
-
-        if (currentAngleIndex != angleIndex) {
-            ChangeAngle(angleIndex);
-        }
-
-        if (currentActionIndex != Entity.Action) {
-            ChangeAction(Entity.Action);
-        }
-
-        if (Parent == null)
-            currentFrameTime -= Time.deltaTime;
-
-        if (currentFrameTime < 0 || currentFrame > maxFrame) {
-            AdvanceFrame();
-        }
-
-        if (isDirty) {
-            UpdateSpriteFrame();
-
-            foreach (var child in Children) {
-                child.ChildSetFrameData(currentActionIndex, currentAngleIndex, currentFrame);
-            }
-
-            isDirty = false;
-        }
-    }
-
-    private void AdvanceFrame() {
-        if (!isPaused)
-            currentFrame++;
-        if (currentFrame > maxFrame) {
-            //var nextMotion = AnimationHelper.GetMotionForState(State);
-            if (NextMotion != null) {
-                ChangeMotion(NextMotion.Value, null);
-            } else {
-                if (State != SpriteState.Dead)
-                    currentFrame = 0;
-                else {
-                    currentFrame = maxFrame;
-                    isPaused = true;
-                }
-            }
-            //if (nextMotion != CurrentMotion)
-            //    ChangeMotion(nextMotion);
-            //else {
-            //    if (State != SpriteState.Dead)
-            //        currentFrame = 0;
-            //    else {
-            //        currentFrame = maxFrame;
-            //        isPaused = true;
-            //    }
-            //}
-        }
-
-        if (currentFrameTime < 0)
-            currentFrameTime += currentAction.delay / 1000f * AnimSpeed;
-
-        if (!isPaused)
-            isDirty = true;
-    }
-
-    private void ChangeAngle(int newAngleIndex) {
-        if (currentACT == null && !Entity.gameObject.activeSelf) return;
-        currentAngleIndex = newAngleIndex;
-        //if (!isInitialized) return;
-        currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
-        maxFrame = currentAction.frames.Length - 1;
-        isDirty = true;
-    }
-
-    private void ChangeAction(int newActionIndex) {
-        if (currentACT == null || !Entity.gameObject.activeSelf) return;
-
-        Entity.Action = newActionIndex;
-        currentActionIndex = newActionIndex;
-
-        //if (!isInitialized) return;
-
-        currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
-        maxFrame = currentAction.frames.Length - 1;
-
-        currentFrameTime = currentAction.delay / 1000f * AnimSpeed; //reset current frame time
-        isDirty = true;
-
-        RenderLayers();
-    }
-
-    /** 
-     * TODO 
-     * Figure out a way of cleaning the layers not used by the
-     * current animation.
-     */
-    private void RenderLayers() {
-        /**
-         * Some animations have more than one layer (think of npcs)
-         * so this is needed to render each layer of the animation
-         * since we cannot have more than one SpriteRenderer attached
-         * to a single game object
-         */
-        foreach (var frame in currentAction.frames) {
-            for (int i = 0; i < frame.layers.Length; i++) {
-                var layer = frame.layers[i];
-                var sprite = sprites[layer.index];
-
-                Layers.TryGetValue(i, out var spriteRenderer);
-
-                if (spriteRenderer == null) {
-                    var go = new GameObject($"Layer{i}");
-                    spriteRenderer = go.AddComponent<SpriteRenderer>();
-                    //spriteRenderer.flipY = true;
-                    spriteRenderer.sortingOrder = SpriteOrder;
-
-                    spriteRenderer.transform.SetParent(gameObject.transform, false);
-                }
-
-                CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
-
-                spriteRenderer.transform.localRotation = rotation;
-                spriteRenderer.transform.localPosition = newPos;
-                spriteRenderer.transform.localScale = scale;
-
-                if (!Layers.ContainsKey(i)) {
-                    Layers.Add(i, spriteRenderer);
-                }
-            }
-        }
-    }
-
-    public void UpdateSpriteFrame() {
-        if (currentFrame >= currentAction.frames.Length) {
-            if (AnimationHelper.IsLoopingMotion(CurrentMotion)) {
-                currentFrame = 0;
-                currentFrameTime = currentAction.delay / 1000f * AnimSpeed;
-            } else {
                 return;
             }
         }
+        var cameraDirection = (int) (CharacterCamera.ROCamera?.Direction ?? 0);
+        var entityDirection = (int) Entity.Direction + 8;
+        currentActionIndex = (ActionId + (cameraDirection + entityDirection) % 8) % currentACT.actions.Length;
+        currentAction = currentACT.actions[currentActionIndex];
+        currentFrame = GetCurrentFrame(Core.Tick - AnimationStart);
         var frame = currentAction.frames[currentFrame];
 
-        if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length && !isPaused) {
-            // TODO sounds
-        }
+        UpdateMesh(frame);
+        RenderLayers(frame);
+        PlaySound(frame);
+        UpdateAnchorPoints();
+    }
 
+    private int FindCurrentViewID() {
+        switch (ViewerType) {
+            case ViewerType.WEAPON:
+                return Entity.EquipInfo.Weapon;
+            case ViewerType.SHIELD:
+                return Entity.EquipInfo.Shield;
+            case ViewerType.HEAD_TOP:
+                return Entity.EquipInfo.HeadTop;
+            case ViewerType.HEAD_MID:
+                return Entity.EquipInfo.HeadMid;
+            case ViewerType.HEAD_BOTTOM:
+                return Entity.EquipInfo.HeadBottom;
+            default:
+                return -1;
+        }
+    }
+
+    private void UpdateAnchorPoints() {
+        if (Parent != null && ViewerType != ViewerType.WEAPON) {
+            var parentAnchor = Parent.GetAnimationAnchor();
+            var ourAnchor = GetAnimationAnchor();
+
+            var diff = parentAnchor - ourAnchor;
+
+            transform.localPosition = new Vector3(diff.x, -diff.y, 0f) / SPR.PIXELS_PER_UNIT;
+        }
+    }
+
+    private void PlaySound(ACT.Frame frame) {
+        if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length) {
+            var clipName = currentACT.sounds[frame.soundId];
+            if (clipName == "atk")
+                return;
+
+            var clip = FileManager.Load($"data/wav/{clipName}") as AudioClip;
+
+            if (clip != null && AudioSource != null) {
+                AudioSource.clip = clip;
+                AudioSource.Play();
+            }
+        }
+    }
+
+    private void RenderLayers(ACT.Frame frame) {
+        // If current frame doesn't have layers, cleanup layer cache
+        Layers.Values.ToList().ForEach(Renderer => Renderer.sprite = null);
+
+        for (int i = 0; i < frame.layers.Length; i++) {
+            var layer = frame.layers[i];
+            var sprite = sprites[layer.index];
+
+            Layers.TryGetValue(i, out var spriteRenderer);
+
+            if (spriteRenderer == null) {
+                var go = new GameObject($"Layer{i}");
+                spriteRenderer = go.AddComponent<SpriteRenderer>();
+                spriteRenderer.transform.SetParent(gameObject.transform, false);
+            }
+
+            CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
+
+            spriteRenderer.transform.localRotation = rotation;
+            spriteRenderer.transform.localPosition = newPos;
+            spriteRenderer.transform.localScale = scale;
+
+            spriteRenderer.sprite = sprite;
+            spriteRenderer.material.color = layer.color;
+
+            if (!Layers.ContainsKey(i)) {
+                Layers.Add(i, spriteRenderer);
+            }
+        }
+    }
+
+    private void UpdateMesh(ACT.Frame frame) {
         // We need this mesh collider in order to have the raycast to hit the sprite
         MeshCache.TryGetValue(frame, out Mesh mesh);
         if (mesh == null) {
@@ -244,26 +246,82 @@ public class EntityViewer : MonoBehaviour {
             MeshCache.Add(frame, mesh);
         }
         meshCollider.sharedMesh = mesh;
+    }
 
-        // If current frame doesn't have layers, cleanup layer cache
-        Layers.Values.ToList().ForEach(Renderer => Renderer.sprite = null);
+    private int GetCurrentFrame(long tm) {
+        var isIdle = CurrentMotion.Motion == SpriteMotion.Idle || CurrentMotion.Motion == SpriteMotion.Sit;
+        double animCount = currentAction.frames.Length;
+        long delay = GetDelay();
+        if (delay <= 0) {
+            delay = (int) currentAction.delay;
+        }
+        var headDir = 0;
+        double frame;
 
-        // Iterate each frame layer and do positioning magic
-        for (int i = 0; i < frame.layers.Length; i++) {
-            Layers.TryGetValue(i, out var spriteRenderer);
+        if (ViewerType == ViewerType.BODY && Entity.Type == EntityType.PC && isIdle) {
+            return Entity.HeadDir;
+        }
 
-            if (spriteRenderer) {
-                var layer = frame.layers[i];
-                var sprite = sprites[layer.index];
+        if ((ViewerType == ViewerType.HEAD ||
+            ViewerType == ViewerType.HEAD_TOP ||
+            ViewerType == ViewerType.HEAD_MID ||
+            ViewerType == ViewerType.HEAD_BOTTOM) && isIdle) {
+            animCount = Math.Floor(animCount / 3);
+            headDir = Entity.HeadDir;
+        }
 
-                spriteRenderer.sprite = sprite;
+        if (AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
+            frame = Math.Floor((double) (tm / delay));
+            frame %= animCount;
+            frame += animCount * headDir;
+            frame += previousFrame;
+            frame %= animCount;
 
-                CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
-                spriteRenderer.transform.localRotation = rotation;
-                spriteRenderer.transform.localPosition = newPos;
-                spriteRenderer.transform.localScale = scale;
+            return (int) frame;
+        }
+
+        frame = Math.Min(tm / delay | 0, animCount);
+        frame += (animCount * headDir);
+        frame += previousFrame;
+
+        if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
+            previousFrame = frame = animCount - 1;
+
+            if (CurrentMotion.delay > 0 && Core.Tick < CurrentMotion.delay) {
+                if (NextMotion.HasValue) {
+                    StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float) (CurrentMotion.delay - Core.Tick) / 1000f));
+                }
+            } else {
+                if (NextMotion.HasValue) {
+                    ChangeMotion(NextMotion.Value);
+                }
             }
         }
+
+        return (int) Math.Min(frame, animCount - 1);
+    }
+
+    private IEnumerator ChangeMotionAfter(MotionRequest motion, float time) {
+        yield return new WaitForSeconds(time);
+
+        ChangeMotion(motion);
+    }
+
+    private int GetDelay() {
+        if (ViewerType == ViewerType.BODY && CurrentMotion.Motion == SpriteMotion.Walk) {
+            return (int) (currentAction.delay / 150 * Entity.Status.walkSpeed);
+        }
+
+        if (CurrentMotion.Motion == SpriteMotion.Attack ||
+            CurrentMotion.Motion == SpriteMotion.Attack1 ||
+            CurrentMotion.Motion == SpriteMotion.Attack2 ||
+            CurrentMotion.Motion == SpriteMotion.Attack3) {
+            var delay = (int) (currentAction.delay * (Entity.Status.attackSpeed / AVERAGE_ATTACK_SPEED));
+
+            return (delay > 0) ? delay : Entity.Status.attackSpeed / currentAction.FrameCount;
+        }
+
+        return (int) currentAction.delay;
     }
 
     private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
@@ -275,75 +333,33 @@ public class EntityViewer : MonoBehaviour {
         newPos = new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / sprite.pixelsPerUnit;
     }
 
-    public void ChangeMotion(SpriteMotion motion, SpriteMotion? nextMotion = null, bool forceUpdate = false) {
-        if (CurrentMotion == motion && !forceUpdate)
-            return;
+    public void ChangeMotion(MotionRequest motion, MotionRequest? nextMotion = null) {
+        State = SpriteState.Alive;
+
+        int newAction;
+        if (motion.Motion == SpriteMotion.Attack) {
+            var attackActions = new SpriteMotion[] { SpriteMotion.Attack1, SpriteMotion.Attack2, SpriteMotion.Attack3 };
+            var action = DBManager.GetWeaponAction((Job) Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.Weapon);
+            newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, attackActions[action]);
+        } else {
+            newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
+        }
 
         CurrentMotion = motion;
         NextMotion = nextMotion;
-        State = AnimationHelper.GetStateForMotion(CurrentMotion);
-        currentFrame = 0;
-
-        if (!Entity.IsReady)
-            return;
+        Entity.Action = newAction;
+        ActionId = newAction;
+        AnimationStart = Core.Tick;
+        previousFrame = 0;
 
         foreach (var child in Children) {
             child.ChangeMotion(motion, nextMotion);
         }
-
-
-        var action = AnimationHelper.GetMotionIdForSprite(Type, motion);
-        if (motion == SpriteMotion.Attack) {
-            var attackAction = DBManager.GetWeaponAction((Job)Entity.Job, Entity.Sex, Entity.Weapon);
-        }
-        if (action < 0 || action > currentACT.actions.Length) {
-            action = 0;
-        }
-
-        ChangeAction(action);
-        isPaused = false;
-        isDirty = true;
-
-        if (Type == EntityType.PC) {
-            if (CurrentMotion == SpriteMotion.Idle || CurrentMotion == SpriteMotion.Sit) {
-                //currentFrame = (int) HeadF
-                UpdateSpriteFrame();
-                isPaused = true;
-            } else {
-                //HeadFacing 
-            }
-        }
-    }
-
-    public void ChildSetFrameData(int actionIndex, int angleIndex, int newCurrentFrame) {
-        if (currentACT == null) {
-            Debug.LogError($"Current ACT is null from {Entity}");
-            return;
-        }
-        currentActionIndex = actionIndex;
-        currentAngleIndex = angleIndex;
-
-        //if(!isInitialized)
-        //    return;
-
-        currentAction = currentACT.actions[currentActionIndex + currentAngleIndex];
-        currentFrame = newCurrentFrame;
-        UpdateSpriteFrame();
-        ChildUpdate();
-    }
-
-    public void ChildUpdate() {
-        var parentAnchor = Parent.GetAnimationAnchor();
-        var ourAnchor = GetAnimationAnchor();
-
-        var diff = parentAnchor - ourAnchor;
-
-        if (ViewerType != ViewerType.WEAPON)
-            transform.localPosition = new Vector3(diff.x, -diff.y, 0f) / SPR.PIXELS_PER_UNIT;
     }
 
     private void InitShadow() {
-        if (ViewerType != ViewerType.BODY) return;
+        if (ViewerType != ViewerType.BODY)
+            return;
 
         var shadow = new GameObject("Shadow");
         shadow.layer = LayerMask.NameToLayer("Characters");
@@ -359,14 +375,8 @@ public class EntityViewer : MonoBehaviour {
 
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite.GetSprites()[0];
-
-        var shader = Shader.Find("Unlit/CustomSpriteShader");
-        var mat = new Material(shader);
-        mat.color = new Color(1f, 1f, 1f, 0.5f);
-        mat.mainTexture = spriteRenderer.sprite.texture;
-
-        spriteRenderer.material = mat;
         spriteRenderer.sortingOrder = -1;
+        spriteRenderer.material.color = new Color(1, 1, 1, 0.4f);
     }
 
     public Vector2 GetAnimationAnchor() {
@@ -376,5 +386,10 @@ public class EntityViewer : MonoBehaviour {
         if (ViewerType == ViewerType.HEAD && (State == SpriteState.Idle || State == SpriteState.Sit))
             return frame.pos[currentFrame];
         return Vector2.zero;
+    }
+
+    public struct MotionRequest {
+        public SpriteMotion Motion;
+        public double delay;
     }
 }
