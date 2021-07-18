@@ -28,9 +28,9 @@ namespace UnityRO.GameCamera
 
         public Direction Direction;
         public Vector3 HorizontalDirection { get; private set; }
+        public float Pitch { get; private set; }
 
         private float m_Yaw;
-        private float m_Pitch;
         private float m_Altitude;
         private float m_SphereSliceRadius;
         // cache
@@ -72,7 +72,7 @@ namespace UnityRO.GameCamera
                     float vScroll =  hY * MouseSensitivity.y + mouseScroll * ScrollPitchSensitivity;
                     if (vScroll != 0f )
                     {
-                        m_Pitch -= vScroll * dt;
+                        Pitch -= vScroll * dt;
                         RecomputeCameraAngle();
                     }
                 }
@@ -132,8 +132,6 @@ namespace UnityRO.GameCamera
             GameCamera.transform.localPosition = pos;
         }
 
-        public float YawInDegree;
-        public float dt =(float) Math.PI / 8f;
         private void UpdateCameraLookAt()
         {
             if ( m_Target != null)
@@ -141,9 +139,8 @@ namespace UnityRO.GameCamera
                 GameCamera.transform.LookAt(m_Target);
             }
 
-            YawInDegree = Mathf.Rad2Deg * m_Yaw;
-
             float angle =(float)( (m_Yaw + Math.PI / 8f) / (2f * Math.PI));
+
             if (angle < 0f)
                 angle += 1f;
 
@@ -159,9 +156,9 @@ namespace UnityRO.GameCamera
 
         private void RecomputeCameraAngle()
         {
-            m_Pitch = Mathf.Clamp(m_Pitch, m_PitchConstraintRad.x, m_PitchConstraintRad.y);
-            m_Altitude = Mathf.Sin(m_Pitch);
-            m_SphereSliceRadius = Mathf.Cos(m_Pitch);
+            Pitch = Mathf.Clamp(Pitch, m_PitchConstraintRad.x, m_PitchConstraintRad.y);
+            m_Altitude = Mathf.Sin(Pitch);
+            m_SphereSliceRadius = Mathf.Cos(Pitch);
             RecomputeHorizontalDirection();
         }
     }
