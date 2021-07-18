@@ -38,6 +38,11 @@ namespace UnityRO.GameCamera
         private Vector2 m_PitchConstraintRad;
 
         //@TODO: Double right tap to reset cam
+        //@TODO: Remove static / create entityviewer factories
+        /// <summary>
+        /// Don't use
+        /// </summary>
+        public static CharacterCamera ROCamera { get; private set; }
 
         public void SetTarget(Transform tr)
         {
@@ -46,6 +51,7 @@ namespace UnityRO.GameCamera
 
         private void Awake()
         {
+            ROCamera = this; // 
             m_PitchConstraintRad = new Vector2(PitchConstraint.x, PitchConstraint.y) * Mathf.Deg2Rad;
             RecomputeCameraAngle();
         }
@@ -108,7 +114,7 @@ namespace UnityRO.GameCamera
         private void LateUpdate() 
         {
             UpdateCameraPosition();
-            UpdateCameraAngle();
+            UpdateCameraLookAt();
         }
 
         private void UpdateCameraPosition() 
@@ -126,12 +132,24 @@ namespace UnityRO.GameCamera
             GameCamera.transform.localPosition = pos;
         }
 
-        private void UpdateCameraAngle()
+        public float YawInDegree;
+        public float dt =(float) Math.PI / 8f;
+        private void UpdateCameraLookAt()
         {
             if ( m_Target != null)
             {
                 GameCamera.transform.LookAt(m_Target);
             }
+
+            YawInDegree = Mathf.Rad2Deg * m_Yaw;
+
+            float angle =(float)( (m_Yaw + Math.PI / 8f) / (2f * Math.PI));
+            if (angle < 0f)
+                angle += 1f;
+
+            float orientedAngle = angle - 1f / 4f;
+            int direction = (int)(orientedAngle * 8) % 8;
+            Direction = (Direction)direction;
         }
 
         private void RecomputeHorizontalDirection()
