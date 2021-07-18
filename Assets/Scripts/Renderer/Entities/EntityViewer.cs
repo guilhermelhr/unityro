@@ -75,7 +75,7 @@ public class EntityViewer : MonoBehaviour {
 
             switch (ViewerType) {
                 case ViewerType.BODY:
-                    path = DBManager.GetBodyPath((Job)Entity.Status.jobId, Entity.Status.sex);
+                    path = DBManager.GetBodyPath((Job) Entity.Status.jobId, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD:
                     path = DBManager.GetHeadPath(Entity.Status.hair, Entity.Status.sex);
@@ -107,7 +107,7 @@ public class EntityViewer : MonoBehaviour {
                 currentSPR = null;
                 Layers.Values.ToList().ForEach(Renderer => {
                     Destroy(Renderer.gameObject);
-                });               
+                });
                 Layers.Clear();
                 MeshCache.Clear();
 
@@ -151,11 +151,9 @@ public class EntityViewer : MonoBehaviour {
                 return;
             }
         }
-
-        currentActionIndex =
-            (ActionId + // action
-            ((int) CharacterCamera.ROCamera.Direction + (int)Entity.Direction + 8) % 8 // direction
-            ) % currentACT.actions.Length; // avoid overflow
+        var cameraDirection = (int) (CharacterCamera.ROCamera?.Direction ?? 0);
+        var entityDirection = (int) Entity.Direction + 8;
+        currentActionIndex = (ActionId + (cameraDirection + entityDirection) % 8) % currentACT.actions.Length;
         currentAction = currentACT.actions[currentActionIndex];
         currentFrame = GetCurrentFrame(Core.Tick - AnimationStart);
         var frame = currentAction.frames[currentFrame];
@@ -197,7 +195,8 @@ public class EntityViewer : MonoBehaviour {
     private void PlaySound(ACT.Frame frame) {
         if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length) {
             var clipName = currentACT.sounds[frame.soundId];
-            if (clipName == "atk") return;
+            if (clipName == "atk")
+                return;
 
             var clip = FileManager.Load($"data/wav/{clipName}") as AudioClip;
 
@@ -254,7 +253,7 @@ public class EntityViewer : MonoBehaviour {
         double animCount = currentAction.frames.Length;
         long delay = GetDelay();
         if (delay <= 0) {
-            delay = (int)currentAction.delay;
+            delay = (int) currentAction.delay;
         }
         var headDir = 0;
         double frame;
@@ -272,13 +271,13 @@ public class EntityViewer : MonoBehaviour {
         }
 
         if (AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
-            frame = Math.Floor((double)(tm / delay));
+            frame = Math.Floor((double) (tm / delay));
             frame %= animCount;
             frame += animCount * headDir;
             frame += previousFrame;
             frame %= animCount;
 
-            return (int)frame;
+            return (int) frame;
         }
 
         frame = Math.Min(tm / delay | 0, animCount);
@@ -290,7 +289,7 @@ public class EntityViewer : MonoBehaviour {
 
             if (CurrentMotion.delay > 0 && Core.Tick < CurrentMotion.delay) {
                 if (NextMotion.HasValue) {
-                    StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float)(CurrentMotion.delay - Core.Tick) / 1000f));
+                    StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float) (CurrentMotion.delay - Core.Tick) / 1000f));
                 }
             } else {
                 if (NextMotion.HasValue) {
@@ -299,7 +298,7 @@ public class EntityViewer : MonoBehaviour {
             }
         }
 
-        return (int)Math.Min(frame, animCount - 1);
+        return (int) Math.Min(frame, animCount - 1);
     }
 
     private IEnumerator ChangeMotionAfter(MotionRequest motion, float time) {
@@ -310,19 +309,19 @@ public class EntityViewer : MonoBehaviour {
 
     private int GetDelay() {
         if (ViewerType == ViewerType.BODY && CurrentMotion.Motion == SpriteMotion.Walk) {
-            return (int)(currentAction.delay / 150 * Entity.Status.walkSpeed);
+            return (int) (currentAction.delay / 150 * Entity.Status.walkSpeed);
         }
 
         if (CurrentMotion.Motion == SpriteMotion.Attack ||
             CurrentMotion.Motion == SpriteMotion.Attack1 ||
             CurrentMotion.Motion == SpriteMotion.Attack2 ||
             CurrentMotion.Motion == SpriteMotion.Attack3) {
-            var delay = (int)(currentAction.delay * (Entity.Status.attackSpeed / AVERAGE_ATTACK_SPEED));
+            var delay = (int) (currentAction.delay * (Entity.Status.attackSpeed / AVERAGE_ATTACK_SPEED));
 
             return (delay > 0) ? delay : Entity.Status.attackSpeed / currentAction.FrameCount;
         }
 
-        return (int)currentAction.delay;
+        return (int) currentAction.delay;
     }
 
     private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
@@ -340,7 +339,7 @@ public class EntityViewer : MonoBehaviour {
         int newAction;
         if (motion.Motion == SpriteMotion.Attack) {
             var attackActions = new SpriteMotion[] { SpriteMotion.Attack1, SpriteMotion.Attack2, SpriteMotion.Attack3 };
-            var action = DBManager.GetWeaponAction((Job)Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.Weapon);
+            var action = DBManager.GetWeaponAction((Job) Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.Weapon);
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, attackActions[action]);
         } else {
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
@@ -359,7 +358,8 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private void InitShadow() {
-        if (ViewerType != ViewerType.BODY) return;
+        if (ViewerType != ViewerType.BODY)
+            return;
 
         var shadow = new GameObject("Shadow");
         shadow.layer = LayerMask.NameToLayer("Characters");
