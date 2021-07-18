@@ -71,7 +71,7 @@ We're creating a few pieces of documentation, feel free to check them at [Wiki](
 ## How to use
 
 Download executable or Unity package [here](https://github.com/guilhermelhr/unityro/releases/).
-Edit config.txt to point to your GRF file.
+Edit config.json to point to your correct files location.
 
 ## License
 
