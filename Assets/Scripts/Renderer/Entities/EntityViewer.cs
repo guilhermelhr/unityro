@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityRO.GameCamera;
 
 public class EntityViewer : MonoBehaviour {
 
@@ -153,7 +154,7 @@ public class EntityViewer : MonoBehaviour {
 
         currentActionIndex =
             (ActionId + // action
-            ((ROCamera.Instance?.Angle ?? 0) + (int)Entity.Direction + 8) % 8 // direction
+            ((int) CharacterCamera.ROCamera.Direction + (int)Entity.Direction + 8) % 8 // direction
             ) % currentACT.actions.Length; // avoid overflow
         currentAction = currentACT.actions[currentActionIndex];
         currentFrame = GetCurrentFrame(Core.Tick - AnimationStart);

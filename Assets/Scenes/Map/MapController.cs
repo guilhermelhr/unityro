@@ -2,6 +2,7 @@
 using ROIO.Models.FileTypes;
 using System;
 using UnityEngine;
+using UnityRO.GameCamera;
 
 public class MapController : MonoBehaviour {
 
@@ -52,8 +53,10 @@ public class MapController : MonoBehaviour {
         /**
         * Hack
         */
+        CharacterCamera charCam = GameObject.FindObjectOfType<CharacterCamera>();
+        charCam.SetTarget(entity.EntityViewer.transform);
         Core.MainCamera.GetComponent<ROCamera>().SetTarget(entity.EntityViewer.transform);
-        Core.MainCamera.transform.SetParent(entity.transform);
+        //Core.MainCamera.transform.SetParent(entity.transform);
 
         entity.SetReady(true);
     }
