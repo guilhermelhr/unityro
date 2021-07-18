@@ -29,7 +29,6 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public EntityBaseStatus Status = new EntityBaseStatus();
     public EntityEquipInfo EquipInfo;
-
     public Inventory Inventory = new Inventory();
     public SkillTree SkillTree = new SkillTree();
 
@@ -52,7 +51,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void Init(EntitySpawnData data, int rendererLayer) {
         Type = data.objecttype;
-        Direction = ((NpcDirection)data.PosDir[2]).ToDirection();
+        Direction = ((NpcDirection) data.PosDir[2]).ToDirection();
 
         GID = data.GID;
         AID = data.AID;
@@ -60,7 +59,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.name = data.name;
         Status.jobId = data.job;
         Status.sex = data.sex;
-        Status.hair = (short)data.head;
+        Status.hair = (short) data.head;
         Status.walkSpeed = data.speed;
         Status.hp = data.HP;
         Status.max_hp = data.MaxHP;
@@ -68,12 +67,12 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.account_id = AID;
 
         EquipInfo = new EntityEquipInfo {
-            Weapon = (short)data.Weapon,
-            Shield = (short)data.Shield,
-            HeadTop = (short)data.Accessory2,
-            HeadBottom = (short)data.Accessory,
-            HeadMid = (short)data.Accessory3,
-            Robe = (short)data.Robe
+            Weapon = (short) data.Weapon,
+            Shield = (short) data.Shield,
+            HeadTop = (short) data.Accessory2,
+            HeadBottom = (short) data.Accessory,
+            HeadMid = (short) data.Accessory3,
+            Robe = (short) data.Robe
         };
 
         gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
@@ -81,20 +80,20 @@ public class Entity : MonoBehaviour, INetworkEntity {
         SetupViewer(EquipInfo, rendererLayer);
     }
 
-    public void Init(CharacterData data, int rendererLayer) {
+    public void Init(CharacterData data, int rendererLayer, bool isFromCharacterSelection = false) {
         Type = EntityType.PC;
-        GID = (uint)data.GID;
+        GID = (uint) data.GID;
 
         Status.walkSpeed = data.Speed;
         Status.hair = data.Hair;
-        Status.base_exp = (uint)data.Exp;
-        Status.base_level = (uint)data.BaseLevel;
-        Status.job_exp = (uint)data.JobExp;
-        Status.job_level = (uint)data.JobLevel;
+        Status.base_exp = (uint) data.Exp;
+        Status.base_level = (uint) data.BaseLevel;
+        Status.job_exp = (uint) data.JobExp;
+        Status.job_level = (uint) data.JobLevel;
         Status.sp = data.SP;
         Status.max_sp = data.MaxSP;
         Status.jobId = data.Job;
-        Status.sex = (byte)data.Sex;
+        Status.sex = (byte) data.Sex;
         Status.hp = data.HP;
         Status.max_hp = data.MaxHP;
         Status.name = data.Name;
@@ -105,16 +104,23 @@ public class Entity : MonoBehaviour, INetworkEntity {
             HeadTop = data.Accessory2,
             HeadBottom = data.Accessory,
             HeadMid = data.Accessory3,
-            Robe = (short)data.Robe
+            Robe = (short) data.Robe
         };
 
         SetupViewer(EquipInfo, rendererLayer);
 
+        if (isFromCharacterSelection)
+            return;
+
         HookPackets();
     }
 
-    public void SetReady(bool ready) {
+    public void SetReady(bool ready, bool isFromCharacterSelection = false) {
         IsReady = ready;
+
+        if (isFromCharacterSelection)
+            return;
+
         EntityWalk = gameObject.AddComponent<EntityWalk>();
     }
 
@@ -260,7 +266,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     private void OnExpReceived(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NOTIFY_EXP2 NOTIFY_EXP2) {
-            switch ((EntityStatus)NOTIFY_EXP2.expType) {
+            switch ((EntityStatus) NOTIFY_EXP2.expType) {
                 case EntityStatus.SP_JOBEXP:
                     Status.job_exp += NOTIFY_EXP2.exp;
                     break;
@@ -305,10 +311,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
         switch (status) {
             case EntityStatus.SP_BASEEXP:
-                Status.base_exp = (uint)value;
+                Status.base_exp = (uint) value;
                 break;
             case EntityStatus.SP_JOBEXP:
-                Status.job_exp = (uint)value;
+                Status.job_exp = (uint) value;
                 break;
             case EntityStatus.SP_HP:
                 Status.hp = value;
@@ -323,10 +329,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
                 Status.max_sp = value;
                 break;
             case EntityStatus.SP_BASELEVEL:
-                Status.base_level = (uint)value;
+                Status.base_level = (uint) value;
                 break;
             case EntityStatus.SP_JOBLEVEL:
-                Status.job_level = (uint)value;
+                Status.job_level = (uint) value;
                 break;
             case EntityStatus.SP_NEXTBASEEXP:
                 Status.next_base_exp = value;
@@ -363,7 +369,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
             return;
         }
 
-        if (actionRequest == null) return;
+        if (actionRequest == null)
+            return;
 
         var srcEntity = Core.EntityManager.GetEntity(actionRequest.GID);
         var dstEntity = Core.EntityManager.GetEntity(actionRequest.targetGID);
@@ -474,7 +481,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     public void LookTo(Vector3 position) {
-        var offset = new Vector2Int((int)position.x, (int)position.z) - new Vector2Int((int)transform.position.x, (int)transform.position.z);
+        var offset = new Vector2Int((int) position.x, (int) position.z) - new Vector2Int((int) transform.position.x, (int) transform.position.z);
         Direction = PathFindingManager.GetDirectionForOffset(offset);
     }
 
@@ -483,7 +490,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
      * The packet to receive damage data and etc is ZC_PAR_CHANGE
      */
     public void Damage(float amount, double tick, DamageType? damageType = null) {
-        var DamagePrefab = (GameObject)Resources.Load("Prefabs/Damage");
+        var DamagePrefab = (GameObject) Resources.Load("Prefabs/Damage");
         if (!DamagePrefab)
             throw new Exception("Could not load damage prefab");
 
