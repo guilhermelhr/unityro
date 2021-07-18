@@ -40,13 +40,14 @@ namespace ROIO
             public byte[] data;
         }
 
-        public static void loadGrf(string grfPath, string customGrfPath)
+        //@TODO use grf array instead
+        public static void loadGrf(string rootPath, List<string> grfs)
         {
-            Grf = Grf.grf_callback_open(grfPath, "r", null);
+            Grf = Grf.grf_callback_open(rootPath + grfs[0], "r", null);
 
-            if (customGrfPath != null)
+            if (grfs.Count > 1)
             {
-                CustomGrf = Grf.grf_callback_open(customGrfPath, "r", null);
+                CustomGrf = Grf.grf_callback_open(rootPath + grfs[1], "r", null);
             }
 
             Tables.Init();

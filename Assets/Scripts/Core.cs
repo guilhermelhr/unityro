@@ -40,7 +40,7 @@ public class Core : MonoBehaviour {
     public static Camera MainCamera;
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
 
-    public static Hashtable Configs = new Hashtable();
+    public static Configuration Configs;
     private static string CFG_NAME = "config.txt";
 
     private bool roCamEnabled;
@@ -128,36 +128,12 @@ public class Core : MonoBehaviour {
     }
 
     private void LoadGrf() {
-        var a = Configs["grf"] as string;
-        var b = Configs["rdata"] as string;
-        FileManager.loadGrf(a, b);
+        FileManager.loadGrf(Configs.root, Configs.grf);
         OnGrfLoaded?.Invoke();
     }
 
     private void LoadConfigs() {
-
-        string cfgTxt = null;
-        if (Application.isMobilePlatform) {
-            cfgTxt = "grf=" + Application.streamingAssetsPath + "/data.grf";
-        } else {
-            cfgTxt = FileManager.Load("config.txt") as string;
-
-            if (cfgTxt == null) {
-                FileStream stream = File.Open(Application.dataPath + "/" + CFG_NAME, FileMode.Create);
-
-                string defaultCfg = "grf=" + Application.dataPath + "/data.grf";
-                stream.Write(Encoding.UTF8.GetBytes(defaultCfg), 0, defaultCfg.Length);
-                stream.Close();
-                cfgTxt = defaultCfg;
-            }
-        }
-
-        foreach (string s in cfgTxt.Split('\n')) {
-            string[] properties = s.Split('=');
-            if (properties.Length == 2) {
-                Configs.Add(properties[0], properties[1]);
-            }
-        }
+        Configs = ConfigurationLoader.Init();
     }
 
     void FixedUpdate() {

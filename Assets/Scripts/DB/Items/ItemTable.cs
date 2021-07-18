@@ -333,7 +333,7 @@ public class ItemTable {
     public static void LoadItemDb() {
         Script script = new Script();
         script.Options.ScriptLoader = new CustomScriptLoader();
-        script.DoFile(Core.Configs["itemInfo"] as string);
+        script.DoFile($"{Core.Configs.root}{Core.Configs.system}itemInfo.lua");
         Table table = (Table)script.Globals["tbl"];
 
         foreach (var key in table.Keys) {
