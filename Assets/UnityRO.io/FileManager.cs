@@ -14,8 +14,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
-namespace ROIO
-{
+namespace ROIO {
     /// <summary>
     /// File System
     /// Manages file io
@@ -23,49 +22,40 @@ namespace ROIO
     /// @author Guilherme Hernandez
     /// Based on ROBrowser by Vincent Thibault (robrowser.com)
     /// </summary>
-    public class FileManager
-    {
+    public class FileManager {
 
         private static Regex rext = new Regex(@".[^\.]+$");
         private static BMPLoader loader = new BMPLoader();
 
-        public static Grf Grf { get; private set; } = null;
-        public static Grf CustomGrf { get; private set; } = null;
+        private static List<Grf> GrfList = new List<Grf>();
 
         private static bool batching = false;
         private static List<string> batch = new List<string>();
 
-        public class RawImage
-        {
+        public class RawImage {
             public byte[] data;
         }
 
-        public static void loadGrf(string grfPath, string customGrfPath)
-        {
-            Grf = Grf.grf_callback_open(grfPath, "r", null);
-
-            if (customGrfPath != null)
-            {
-                CustomGrf = Grf.grf_callback_open(customGrfPath, "r", null);
+        public static void LoadGRF(string rootPath, List<string> grfs) {
+            GrfList = new List<Grf>();
+            foreach (var path in grfs) {
+                var grf = Grf.grf_callback_open(rootPath + path, "r", null);
+                GrfList.Add(grf);
             }
 
             Tables.Init();
         }
 
-        public static void InitBatch()
-        {
+        public static void InitBatch() {
             batching = true;
         }
 
-        public static void EndBatch(System.Action batchItemLoadedCallback = null)
-        {
+        public static void EndBatch(System.Action batchItemLoadedCallback = null) {
             batching = false;
-            if (batch.Count > 0)
-            {
+            if (batch.Count > 0) {
                 pendingThreads = batch.Count;
                 doneEvent = new ManualResetEvent(false);
-                for (int i = 0; i < batch.Count; i++)
-                {
+                for (int i = 0; i < batch.Count; i++) {
                     string ext = rext.Match(batch[i]).Value.Substring(1).ToLower();
                     BatchLoader loader = new BatchLoader(batch[i], ext);
                     ThreadPool.QueueUserWorkItem(loader.ThreadPoolCallback, new object[] { i, batchItemLoadedCallback });
@@ -75,40 +65,28 @@ namespace ROIO
             }
         }
 
-        public static object Load(string file)
-        {
+        public static object Load(string file) {
             file = file.Trim();
             file = file.Replace("\\", "/");
 
-            if (batching)
-            {
-                if (!batch.Contains(file))
-                {
+            if (batching) {
+                if (!batch.Contains(file)) {
                     batch.Add(file);
                 }
                 return null;
             }
 
-            if (!string.IsNullOrEmpty(file))
-            {
+            if (!string.IsNullOrEmpty(file)) {
                 string ext = rext.Match(file).Value.Substring(1).ToLower();
-                if (!string.IsNullOrEmpty(ext))
-                {
-                    if (FileCache.Has(file))
-                    {
+                if (!string.IsNullOrEmpty(ext)) {
+                    if (FileCache.Has(file)) {
                         return FileCache.Get(file, ext);
-                    }
-                    else
-                    {
+                    } else {
                         object data = DoLoad(file, ext);
-                        if (data != null)
-                        {
-                            if (FileCache.Add(file, ext, data))
-                            {
+                        if (data != null) {
+                            if (FileCache.Add(file, ext, data)) {
                                 return FileCache.Get(file, ext);
-                            }
-                            else
-                            {
+                            } else {
                                 return data;
                             }
                         }
@@ -119,29 +97,21 @@ namespace ROIO
             return null;
         }
 
-        private static object DoLoad(string file, string ext)
-        {
-            if (ext == "grf")
-            {
+        private static object DoLoad(string file, string ext) {
+            if (ext == "grf") {
                 return File.OpenRead(file);
-            }
-            else
-            {
-                using (var br = ReadSync(file))
-                {
-                    if (br == null)
-                    {
+            } else {
+                using (var br = ReadSync(file)) {
+                    if (br == null) {
                         throw new Exception($"Could not load file: {file}");
                     }
 
-                    switch (ext)
-                    {
+                    switch (ext) {
                         // Images
                         case "jpg":
                         case "jpeg":
                         case "png":
-                            return new RawImage()
-                            {
+                            return new RawImage() {
                                 data = br.ToArray()
                             };
                         case "bmp":
@@ -200,8 +170,7 @@ namespace ROIO
         /// </summary>
         /// <param name="path">file path</param>
         /// <returns>file or null</returns>
-        public static MemoryStreamReader UnityReadSync(string path)
-        {
+        public static MemoryStreamReader UnityReadSync(string path) {
             TextAsset result = Resources.Load(path) as TextAsset;
             return new MemoryStreamReader(result.bytes);
         }
@@ -211,8 +180,7 @@ namespace ROIO
         /// </summary>
         /// <param name="path">file path</param>
         /// <returns><see cref="ResourceRequest"/></returns>
-        public static ResourceRequest UnityReadAsync(string path)
-        {
+        public static ResourceRequest UnityReadAsync(string path) {
             ResourceRequest result = Resources.LoadAsync(path);
 
             return result;
@@ -223,84 +191,36 @@ namespace ROIO
         /// </summary>
         /// <param name="path">file path</param>
         /// <returns>file or null</returns>
-        public static MemoryStreamReader ReadSync(string path)
-        {
-            //try custom grf first
-            //try grf first
-            if (CustomGrf != null)
-            {
-                GrfFile file = CustomGrf.GetDescriptor(path);
-                if (file != null)
-                {
-                    byte[] data = CustomGrf.GetData(file);
+        public static MemoryStreamReader ReadSync(string path) {
+            foreach(var grf in GrfList) {
+                GrfFile file = grf.GetDescriptor(path);
+                if (file != null) {
+                    byte[] data = grf.GetData(file);
 
-                    if (data != null)
-                    {
+                    if (data != null) {
                         return new MemoryStreamReader(data);
                     }
-                }
-            }
-            //try grf first
-            if (Grf != null)
-            {
-                GrfFile file = Grf.GetDescriptor(path);
-                if (file != null)
-                {
-                    byte[] data = Grf.GetData(file);
-
-                    if (data != null)
-                    {
-                        return new MemoryStreamReader(data);
-                    }
-                    else
-                    {
-                        Debug.Log("Could not read grf data for " + path);
-                    }
-                }
-                else
-                {
-                    Debug.Log("File not found on GRF: " + path);
                 }
             }
 
             //try filesystem
-            if (File.Exists(Application.dataPath + "/" + path))
-            {
+            if (File.Exists(Application.dataPath + "/" + path)) {
                 byte[] buffer = File.ReadAllBytes(Application.dataPath + "/" + path);
                 return new MemoryStreamReader(buffer);
-            }
-            else
-            {
+            } else {
                 return null;
             }
         }
 
         public static StreamReader ReadSync(string path, Encoding encoding) {
-            //try custom grf first
-            //try grf first
-            if (CustomGrf != null) {
-                GrfFile file = CustomGrf.GetDescriptor(path);
+            foreach(var grf in GrfList) {
+                GrfFile file = grf.GetDescriptor(path);
                 if (file != null) {
-                    byte[] data = CustomGrf.GetData(file);
+                    byte[] data = grf.GetData(file);
 
                     if (data != null) {
                         return new StreamReader(new MemoryStreamReader(data), encoding);
                     }
-                }
-            }
-            //try grf first
-            if (Grf != null) {
-                GrfFile file = Grf.GetDescriptor(path);
-                if (file != null) {
-                    byte[] data = Grf.GetData(file);
-
-                    if (data != null) {
-                        return new StreamReader(new MemoryStreamReader(data), encoding);
-                    } else {
-                        Debug.Log("Could not read grf data for " + path);
-                    }
-                } else {
-                    Debug.Log("File not found on GRF: " + path);
                 }
             }
 
@@ -319,20 +239,17 @@ namespace ROIO
         /// <param name="path">file path</param>
         /// <returns>BinaryReader containing file or null</returns>
         /// <seealso cref="BinaryReader"/>
-        public static async Task<MemoryStreamReader> ReadAsync(string path)
-        {
+        public static async Task<MemoryStreamReader> ReadAsync(string path) {
             MemoryStreamReader result = new MemoryStreamReader();
 
             using (FileStream sourceStream = new FileStream(path,
                 FileMode.Open, FileAccess.Read, FileShare.Read,
-                bufferSize: 4096, useAsync: true))
-            {
+                bufferSize: 4096, useAsync: true)) {
 
 
                 byte[] buffer = new byte[4096];
                 int numRead;
-                while ((numRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) != 0)
-                {
+                while ((numRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) != 0) {
                     result.Write(buffer, 0, numRead);
                 }
             }
@@ -343,39 +260,30 @@ namespace ROIO
 
         private static int pendingThreads;
         private static ManualResetEvent doneEvent;
-        private class BatchLoader
-        {
+        private class BatchLoader {
             private string file;
             private string ext;
 
             public string File { get { return file; } }
 
-            public BatchLoader(string file, string ext)
-            {
+            public BatchLoader(string file, string ext) {
                 this.file = file;
                 this.ext = ext;
             }
 
-            public void ThreadPoolCallback(object state)
-            {
-                try
-                {
+            public void ThreadPoolCallback(object state) {
+                try {
                     object[] parameters = state as object[];
-                    System.Action callback = (System.Action)parameters[1];
-                    if (!FileCache.Has(file))
-                    {
+                    System.Action callback = (System.Action) parameters[1];
+                    if (!FileCache.Has(file)) {
                         object data = DoLoad(file, ext);
                         callback?.Invoke();
-                        if (data != null)
-                        {
+                        if (data != null) {
                             FileCache.Add(file, ext, data);
                         }
                     }
-                }
-                finally
-                {
-                    if (Interlocked.Decrement(ref pendingThreads) == 0)
-                    {
+                } finally {
+                    if (Interlocked.Decrement(ref pendingThreads) == 0) {
                         doneEvent.Set();
                     }
                 }
