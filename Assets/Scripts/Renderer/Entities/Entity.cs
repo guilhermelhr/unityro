@@ -349,6 +349,20 @@ public class Entity : MonoBehaviour, INetworkEntity {
             case EntityStatus.SP_LUK:
                 MapUiController.Instance.StatsWindow.UpdateData($"{value} + {plusValue}", status);
                 break;
+
+            case EntityStatus.SP_SPEED:
+                Status.walkSpeed = (short) value;
+                break;
+
+            case EntityStatus.SP_STATUSPOINT:
+                Status.StatusPoints = (uint) value;
+                break;
+
+            case EntityStatus.SP_SKILLPOINT:
+                Status.SkillPoints = (uint) value;
+                MapUiController.Instance.SkillWindow.UpdateSkillPoints();
+                break;
+
             default:
                 break;
         }
