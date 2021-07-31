@@ -135,8 +135,6 @@ GameObject:
   - component: {fileID: 151935713}
   - component: {fileID: 151935712}
   - component: {fileID: 151935711}
-  - component: {fileID: 151935709}
-  - component: {fileID: 151935710}
   m_Layer: 8
   m_Name: Camera
   m_TagString: MainCamera
@@ -158,46 +156,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 20, y: 0, z: 0}
---- !u!114 &151935709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 151935707}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d30b1dc80bc8d6d44b9df49892fe41b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraSensitivity: 40
-  climbSpeed: 4
-  normalMoveSpeed: 10
-  speedFactor: 0.25
-  fastMoveFactor: 3
-  posLerp: 1
-  rotLerp: 1
-  speedLerp: 1
---- !u!114 &151935710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 151935707}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7129797e95ed6024b8146ac91ee78200, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _target: {fileID: 0}
-  zoom: 0
-  distance: 30
-  TargetRotation: 0
-  Direction: 0
-  Altitude: 35
-  Rotation: 0
-  Angle: 0
 --- !u!81 &151935711
 AudioListener:
   m_ObjectHideFlags: 0

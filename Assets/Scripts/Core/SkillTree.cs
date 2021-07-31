@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 public class SkillTree {
 
@@ -20,5 +21,9 @@ public class SkillTree {
         }
 
         MapUiController.Instance.SkillWindow.UpdateSkills();
+    }
+
+    public bool HasSkill(short skillId, short level) {
+        return OwnedSkillsInfos.Find(t => t.SkillID == skillId && t.Level == level) != null;
     }
 }
