@@ -11,16 +11,26 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     private Texture2D NO_SKILL_TEXTURE;
 
     [SerializeField]
+    private RawImage skillContainer;
+
+    [SerializeField]
     private RawImage skillImage;
 
     [SerializeField]
     private TextMeshProUGUI skillName;
+
+    [SerializeField]
+    private TextMeshProUGUI neededLevel;
+
+    [SerializeField]
+    private Color highlightedColor;
 
     private Material unownedSkillShader;
     private Shader ownedSkillShader;
 
     private Skill Skill;
     private ISkillWindowController skillWindowController;
+    public bool IsHighlighted { get; private set; }
 
     // Start is called before the first frame update
     void Start() {
@@ -69,13 +79,13 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
 
     public void OnPointerExit(PointerEventData eventData) {
         if (Skill != null) {
-            throw new System.NotImplementedException();
+            skillWindowController.ResetSkillRequirements();
         }
     }
 
     public void OnPointerClick(PointerEventData eventData) {
         if (Skill != null) {
-            throw new System.NotImplementedException();
+           
         }
     }
 
@@ -96,6 +106,14 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     }
 
     public void Highlight(int level) {
-        Debug.Log($"Highlight {Skill.SkillName} at level {level}");
+        IsHighlighted = true;
+        skillContainer.color = highlightedColor;
+        neededLevel.text = $"{level}";
+    }
+
+    public void UnHighlight() {
+        IsHighlighted = false;
+        neededLevel.text = null;
+        skillContainer.color = Color.white;
     }
 }

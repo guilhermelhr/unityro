@@ -50,7 +50,9 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
             tab.onValueChanged.AddListener(delegate {
                 OnTabChanged(tab, job);
             });
-            tab.GetComponent<Tab>().SetLabel(JobHelper.GetJobName(job.Key, Session.CurrentSession.Entity.GetBaseStatus().sex));
+            tab
+                .GetComponent<Tab>()
+                .SetLabel(JobHelper.GetJobName(job.Key, Session.CurrentSession.Entity.GetBaseStatus().sex));
             tab.group = tabLayout;
             tab.transform.SetParent(tabLayout.transform);
             tabLayout.RegisterToggle(tab);
@@ -69,12 +71,15 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
     private void OnTabChanged(Toggle tab, KeyValuePair<int, Dictionary<int, Skill>> tree) {
         ResetGrid();
         foreach (var position in tree.Value.Keys) {
-            UISkillArray[position].SetSkill(tree.Value[position]);
+            UISkillArray[position]
+                .SetSkill(tree.Value[position]);
         }
     }
 
     public void HighlightSkill(short skillID, int level) {
-        UISkillArray.Find(it => it.GetSkillID() == skillID).Highlight(level);
+        UISkillArray
+            .Find(it => it.GetSkillID() == skillID)
+            .Highlight(level);
     }
 
     public bool HasRequiredSkill(short skillID, short level) {
@@ -110,5 +115,12 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
                 NeededSkills.Add(new KeyValuePair<Skill, int>(neededSkill, neededSkillDict.Value));
             }
         }
+    }
+
+    public void ResetSkillRequirements() {
+        NeededSkills = new List<KeyValuePair<Skill, int>>();
+        UISkillArray
+            .FindAll(it => it.IsHighlighted)
+            .ForEach(it => it.UnHighlight());
     }
 }
