@@ -4,4 +4,5 @@
     void HighlightSkill(short skillID, int level);
     bool HasRequiredSkill(short skillID, short level);
     void ResetSkillRequirements();
+    void AllocateSkillPoints(short skillID);
 }

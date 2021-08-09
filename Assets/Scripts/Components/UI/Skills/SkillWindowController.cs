@@ -16,7 +16,7 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
 
     private List<UISkill> UISkillArray;
     private List<Toggle> tabs = new List<Toggle>();
-    private int SkillPoints;
+    private int AvailableSkillPoints;
     private List<KeyValuePair<Skill, int>> NeededSkills = new List<KeyValuePair<Skill, int>>();
 
     // Start is called before the first frame update
@@ -63,9 +63,9 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
 
     public void UpdateSkillPoints() {
         var entity = Session.CurrentSession.Entity as Entity;
-        SkillPoints = (int) entity.GetBaseStatus().SkillPoints;
+        AvailableSkillPoints = (int) entity.GetBaseStatus().SkillPoints;
 
-        skillPointsText.text = $"Skill Points: {SkillPoints}";
+        skillPointsText.text = $"Skill Points: {AvailableSkillPoints}";
     }
 
     private void OnTabChanged(Toggle tab, KeyValuePair<int, Dictionary<int, Skill>> tree) {
@@ -122,5 +122,19 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
         UISkillArray
             .FindAll(it => it.IsHighlighted)
             .ForEach(it => it.UnHighlight());
+    }
+
+    public void AllocateSkillPoints(short skillID) {
+        var points = new List<short>();
+        foreach (var skill in NeededSkills) {
+            for (int i = 0; i < skill.Value; i++) {
+                points.Add(skill.Key.SkillId);
+            }
+        }
+        points.Add(skillID);
+
+        if (AvailableSkillPoints >= points.Count) {
+
+        }
     }
 }
