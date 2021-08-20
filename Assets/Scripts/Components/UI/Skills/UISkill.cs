@@ -23,6 +23,9 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     private TextMeshProUGUI neededLevel;
 
     [SerializeField]
+    private TextMeshProUGUI currentLevel;
+
+    [SerializeField]
     private Color highlightedColor;
 
     private Material unownedSkillShader;
@@ -31,15 +34,6 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     private Skill Skill;
     private ISkillWindowController skillWindowController;
     public bool IsHighlighted { get; private set; }
-
-    // Start is called before the first frame update
-    void Start() {
-    }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
 
     public void SetSkill(Skill skill) {
         Skill = skill;
@@ -85,7 +79,9 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
 
     public void OnPointerClick(PointerEventData eventData) {
         if (Skill != null) {
-           
+            if (skillWindowController.IsRequirementsMet(Skill.SkillId)) {
+
+            }
         }
     }
 

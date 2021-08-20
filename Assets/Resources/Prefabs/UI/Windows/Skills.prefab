@@ -1033,7 +1033,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8464970662252607772}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 528904151261720603}
+        m_TargetAssemblyTypeName: SkillWindowController, UnityRO
+        m_MethodName: CancelSkillPoints
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &772048344108538955
 GameObject:
   m_ObjectHideFlags: 0
@@ -1153,7 +1165,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 989310433256356886}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 528904151261720603}
+        m_TargetAssemblyTypeName: SkillWindowController, UnityRO
+        m_MethodName: ApplySkillPoints
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1662381041638101733
 GameObject:
   m_ObjectHideFlags: 0

@@ -123,4 +123,22 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
             .FindAll(it => it.IsHighlighted)
             .ForEach(it => it.UnHighlight());
     }
+
+    public bool IsRequirementsMet(short skillID) {
+        Skill skill = SkillTable.Skills[skillID];
+        foreach (var neededSkillDict in skill.NeededSkillList) {
+            if (!HasRequiredSkill((short) neededSkillDict.Key, (short) neededSkillDict.Value)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void ApplySkillPoints() {
+
+    }
+
+    public void CancelSkillPoints() {
+
+    }
 }
