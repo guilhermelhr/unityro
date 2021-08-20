@@ -79,9 +79,7 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
 
     public void OnPointerClick(PointerEventData eventData) {
         if (Skill != null) {
-            if (skillWindowController.IsRequirementsMet(Skill.SkillId)) {
-
-            }
+            skillWindowController.AllocateSkillPoints(Skill.SkillId);
         }
     }
 

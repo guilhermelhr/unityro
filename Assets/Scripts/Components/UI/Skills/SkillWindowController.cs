@@ -16,7 +16,7 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
 
     private List<UISkill> UISkillArray;
     private List<Toggle> tabs = new List<Toggle>();
-    private int SkillPoints;
+    private int AvailableSkillPoints;
     private List<KeyValuePair<Skill, int>> NeededSkills = new List<KeyValuePair<Skill, int>>();
 
     // Start is called before the first frame update
@@ -63,9 +63,9 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
 
     public void UpdateSkillPoints() {
         var entity = Session.CurrentSession.Entity as Entity;
-        SkillPoints = (int) entity.GetBaseStatus().SkillPoints;
+        AvailableSkillPoints = (int) entity.GetBaseStatus().SkillPoints;
 
-        skillPointsText.text = $"Skill Points: {SkillPoints}";
+        skillPointsText.text = $"Skill Points: {AvailableSkillPoints}";
     }
 
     private void OnTabChanged(Toggle tab, KeyValuePair<int, Dictionary<int, Skill>> tree) {
@@ -124,21 +124,17 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
             .ForEach(it => it.UnHighlight());
     }
 
-    public bool IsRequirementsMet(short skillID) {
-        Skill skill = SkillTable.Skills[skillID];
-        foreach (var neededSkillDict in skill.NeededSkillList) {
-            if (!HasRequiredSkill((short) neededSkillDict.Key, (short) neededSkillDict.Value)) {
-                return false;
+    public void AllocateSkillPoints(short skillID) {
+        var points = new List<short>();
+        foreach (var skill in NeededSkills) {
+            for (int i = 0; i < skill.Value; i++) {
+                points.Add(skill.Key.SkillId);
             }
         }
-        return true;
-    }
+        points.Add(skillID);
 
-    public void ApplySkillPoints() {
+        if (AvailableSkillPoints >= points.Count) {
 
-    }
-
-    public void CancelSkillPoints() {
-
+        }
     }
 }
