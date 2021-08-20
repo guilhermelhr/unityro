@@ -6,6 +6,11 @@ using UnityEngine.UI;
 
 public class SkillWindowController : MonoBehaviour, ISkillWindowController {
 
+    private class SkillAllocation {
+        public short skillID;
+        public int level;
+    }
+
     [SerializeField] private GridLayoutGroup GridLayout;
     [SerializeField] private ToggleGroup tabLayout;
     [SerializeField] private Toggle tabPrefab;
@@ -18,6 +23,7 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
     private List<Toggle> tabs = new List<Toggle>();
     private int AvailableSkillPoints;
     private List<KeyValuePair<Skill, int>> NeededSkills = new List<KeyValuePair<Skill, int>>();
+    private List<SkillAllocation> AllocatedSkillPoints = new List<SkillAllocation>();
 
     // Start is called before the first frame update
     void Start() {
@@ -124,17 +130,74 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
             .ForEach(it => it.UnHighlight());
     }
 
-    public void AllocateSkillPoints(short skillID) {
-        var points = new List<short>();
-        foreach (var skill in NeededSkills) {
-            for (int i = 0; i < skill.Value; i++) {
-                points.Add(skill.Key.SkillId);
+    public void ApplyAllocatedPoints() {
+        var packets = new List<CZ.UPGRADE_SKILLLEVEL>();
+
+        foreach(var allocation in AllocatedSkillPoints) {
+            for (int i = 0; i < allocation.level; i++) {
+                packets.Add(new CZ.UPGRADE_SKILLLEVEL {
+                    SkillID = allocation.skillID
+                });
             }
         }
-        points.Add(skillID);
 
-        if (AvailableSkillPoints >= points.Count) {
+        packets.ForEach(it => it.Send());
+    }
 
+    public void ResetAllocatedPoints() {
+        AllocatedSkillPoints = new List<SkillAllocation>();
+    }
+
+    public void AllocateSkillPoints(short skillID) {
+        var targetUiSkill = UISkillArray.Find(it => it.GetSkillID() == skillID);
+
+        foreach (var skill in NeededSkills) {
+            if (AllocatedSkillPoints.Any(it => it.skillID == skill.Key.SkillId)) {
+                continue;
+            }
+            var uiSkill = UISkillArray.Find(it => it.GetSkillID() == skill.Key.SkillId);
+
+            if (AvailableSkillPoints >= skill.Value) {
+                uiSkill.AddPoints(skill.Value);
+
+                AllocatedSkillPoints.Add(new SkillAllocation {
+                    skillID = skill.Key.SkillId,
+                    level = skill.Value
+                });
+                
+                UpdateSkillPoints(skill.Value);
+            } else {
+                uiSkill.AddPoints(AvailableSkillPoints);
+
+                AllocatedSkillPoints.Add(new SkillAllocation {
+                    skillID = skill.Key.SkillId,
+                    level = AvailableSkillPoints
+                });
+
+                UpdateSkillPoints(AvailableSkillPoints);
+            }
         }
+
+        if (AvailableSkillPoints > 0 && targetUiSkill.CurrentPoints < targetUiSkill.Skill.MaxLv) {
+            targetUiSkill.AddPoints(1);
+            UpdateSkillPoints(1);
+
+
+            SkillAllocation allocation = AllocatedSkillPoints.Find(it => it.skillID == targetUiSkill.Skill.SkillId);
+            if (allocation == null) {
+                AllocatedSkillPoints.Add(new SkillAllocation {
+                    skillID = targetUiSkill.Skill.SkillId,
+                    level = 1
+                });
+            } else {
+                allocation.level += 1;
+            }
+        }
+    }
+
+    private void UpdateSkillPoints(int value) {
+        var entity = Session.CurrentSession.Entity as Entity;
+        entity.GetBaseStatus().SkillPoints -= (uint) value;
+        UpdateSkillPoints();
     }
 }

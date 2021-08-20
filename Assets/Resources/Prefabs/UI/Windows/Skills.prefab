@@ -1036,7 +1036,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 528904151261720603}
         m_TargetAssemblyTypeName: SkillWindowController, UnityRO
-        m_MethodName: CancelSkillPoints
+        m_MethodName: ResetAllocatedPoints
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1168,7 +1168,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 528904151261720603}
         m_TargetAssemblyTypeName: SkillWindowController, UnityRO
-        m_MethodName: ApplySkillPoints
+        m_MethodName: ApplyAllocatedPoints
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

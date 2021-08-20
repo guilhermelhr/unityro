@@ -95,9 +95,9 @@ MonoBehaviour:
   m_fontSize: 9
   m_fontSizeBase: 9
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 7
+  m_fontSizeMax: 9
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
@@ -331,7 +331,7 @@ MonoBehaviour:
   skillImage: {fileID: 3005101721542587341}
   skillName: {fileID: 8692422620189959571}
   neededLevel: {fileID: 6963183084842364496}
-  currentLevel: {fileID: 2432816082718693361}
+  currentLevelLabel: {fileID: 2432816082718693361}
   highlightedColor: {r: 0.6745283, g: 0.9410015, b: 1, a: 0.6862745}
 --- !u!1 &4206124418212413585
 GameObject:
@@ -440,11 +440,11 @@ RectTransform:
   m_Father: {fileID: 7058206508881918588}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 8, y: -3}
-  m_SizeDelta: {x: 10, y: 14}
-  m_Pivot: {x: 1, y: 0.5}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 20, y: 0}
+  m_SizeDelta: {x: 20, y: 14}
+  m_Pivot: {x: 1, y: 1}
 --- !u!222 &7591819824797037054
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -503,9 +503,9 @@ MonoBehaviour:
   m_fontSize: 9
   m_fontSizeBase: 9
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 7
+  m_fontSizeMax: 9
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256

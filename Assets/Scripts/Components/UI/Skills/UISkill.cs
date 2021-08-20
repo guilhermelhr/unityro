@@ -23,7 +23,7 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     private TextMeshProUGUI neededLevel;
 
     [SerializeField]
-    private TextMeshProUGUI currentLevel;
+    private TextMeshProUGUI currentLevelLabel;
 
     [SerializeField]
     private Color highlightedColor;
@@ -31,9 +31,10 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     private Material unownedSkillShader;
     private Shader ownedSkillShader;
 
-    private Skill Skill;
     private ISkillWindowController skillWindowController;
+    public Skill Skill { get; private set; }
     public bool IsHighlighted { get; private set; }
+    public int CurrentPoints { get; private set; }
 
     public void SetSkill(Skill skill) {
         Skill = skill;
@@ -109,5 +110,10 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         IsHighlighted = false;
         neededLevel.text = null;
         skillContainer.color = Color.white;
+    }
+
+    internal void AddPoints(int value) {
+        CurrentPoints += value;
+        currentLevelLabel.text = $"(+{CurrentPoints})";
     }
 }
