@@ -8,18 +8,16 @@ public partial class ZC {
         public const PacketHeader HEADER = PacketHeader.ZC_SKILLINFO_UPDATE;
         public const int SIZE = 11;
 
-        public short SkillId;
-        public short SkillLevel;
-        public short SpCost;
-        public short AttackRange;
-        public bool IsUpgradeable;
+        public SkillInfo SkillInfo;
 
         public void Read(MemoryStreamReader br, int size) {
-            SkillId = br.ReadShort();
-            SkillLevel = br.ReadShort();
-            SpCost = br.ReadShort();
-            AttackRange = br.ReadShort();
-            IsUpgradeable = br.ReadByte() == 1;
+            SkillInfo = new SkillInfo {
+                SkillID = br.ReadShort(),
+                Level = br.ReadShort(),
+                SpCost = br.ReadShort(),
+                AttackRange = br.ReadShort(),
+                CanUpgrade = br.ReadByte() == 1
+            };
         }
     }
 }

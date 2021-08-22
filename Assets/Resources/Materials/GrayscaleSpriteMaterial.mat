@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BlackWhiteSpriteMaterial
-  m_Shader: {fileID: 10764, guid: 0000000000000000f000000000000000, type: 0}
+  m_Name: GrayscaleSpriteMaterial
+  m_Shader: {fileID: 4800000, guid: 6c2f4490ba9fe0f43ac6d9cb7fede922, type: 3}
   m_ShaderKeywords: UNITY_UI_ALPHACLIP
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
@@ -68,6 +68,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - PixelSnap: 0
     - _BlendOp: 0
     - _BumpScale: 1
     - _CameraFadingEnabled: 0
@@ -83,6 +84,7 @@ Material:
     - _DistortionStrength: 1
     - _DistortionStrengthScaled: 0
     - _DstBlend: 0
+    - _EffectAmount: 1
     - _EmissionEnabled: 0
     - _FlipbookMode: 0
     - _GlossMapScale: 1

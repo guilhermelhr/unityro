@@ -913,7 +913,7 @@ MonoBehaviour:
   tabPrefab: {fileID: 2817399501481143878, guid: 9f4c21f16e4a3cc42bc9092f7dfde24f, type: 3}
   skillPointsText: {fileID: 4984165944601208159}
   unownedSkillShader: {fileID: 2100000, guid: f7cd118f3f26eef44baec674447787f0, type: 2}
-  ownedSkillShader: {fileID: 4800000, guid: 01a13a9d77e7a23459ac61f6b149d170, type: 3}
+  ownedSkillShader: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!1 &586392404257837842
 GameObject:
   m_ObjectHideFlags: 0

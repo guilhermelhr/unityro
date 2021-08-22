@@ -29,10 +29,11 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     private Color highlightedColor;
 
     private Material unownedSkillShader;
-    private Shader ownedSkillShader;
+    private Material ownedSkillShader;
 
     private ISkillWindowController skillWindowController;
     public Skill Skill { get; private set; }
+    public SkillInfo SkillInfo { get; private set; }
     public bool IsHighlighted { get; private set; }
     public int CurrentPoints { get; private set; }
 
@@ -57,11 +58,16 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         }
     }
 
+    internal void Reset() {
+        SetSkill(null);
+        SetSkillInfo(null);
+    }
+
     internal void SetWindowController(ISkillWindowController skillWindowController) {
         this.skillWindowController = skillWindowController;
     }
 
-    internal void SetShaders(Material unownedSkillShader, Shader ownedSkillShader) {
+    internal void SetShaders(Material unownedSkillShader, Material ownedSkillShader) {
         this.unownedSkillShader = unownedSkillShader;
         this.ownedSkillShader = ownedSkillShader;
     }
@@ -98,6 +104,16 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
 
     public short GetSkillID() {
         return Skill?.SkillId ?? -1;
+    }
+
+    internal void SetSkillInfo(SkillInfo skillInfo) {
+        SkillInfo = skillInfo;
+        if (skillInfo != null) {
+            skillImage.material = ownedSkillShader;
+            currentLevelLabel.text = $"{skillInfo.Level}";
+        } else {
+            currentLevelLabel.text = null;
+        }
     }
 
     public void Highlight(int level) {

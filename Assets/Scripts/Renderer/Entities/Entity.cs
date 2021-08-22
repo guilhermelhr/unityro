@@ -41,7 +41,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Core.NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
         Core.NetworkClient.HookPacket(ZC.STATUS.HEADER, OnStatsWindowData);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_EXP2.HEADER, OnExpReceived);
-        Core.NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillListReceived);
+        Core.NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillsUpdated);
+        Core.NetworkClient.HookPacket(ZC.SKILLINFO_UPDATE.HEADER, OnSkillsUpdated);
         Core.NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
     }
 
@@ -258,9 +259,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
     }
 
-    private void OnSkillListReceived(ushort cmd, int size, InPacket packet) {
+    private void OnSkillsUpdated(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.SKILLINFO_LIST SKILLINFO_LIST) {
             SkillTree.Init(Status.jobId, SKILLINFO_LIST.skills);
+        } else if (packet is ZC.SKILLINFO_UPDATE SKILLINFO_UPDATE) {
+            SkillTree.UpdateSkill(SKILLINFO_UPDATE.SkillInfo);
         }
     }
 

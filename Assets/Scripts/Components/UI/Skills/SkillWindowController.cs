@@ -15,15 +15,15 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
     [SerializeField] private ToggleGroup tabLayout;
     [SerializeField] private Toggle tabPrefab;
     [SerializeField] private TextMeshProUGUI skillPointsText;
-
     [SerializeField] private Material unownedSkillShader;
-    [SerializeField] private Shader ownedSkillShader;
+    [SerializeField] private Material ownedSkillShader;
 
     private List<UISkill> UISkillArray;
-    private List<Toggle> tabs = new List<Toggle>();
-    private int AvailableSkillPoints;
     private List<KeyValuePair<Skill, int>> NeededSkills = new List<KeyValuePair<Skill, int>>();
     private List<SkillAllocation> AllocatedSkillPoints = new List<SkillAllocation>();
+    private Dictionary<int, Toggle> CurrentTabs = new Dictionary<int, Toggle>();
+    private Toggle CurrentToggle;
+    private int AvailableSkillPoints;
 
     // Start is called before the first frame update
     void Start() {
@@ -38,7 +38,7 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
 
     private void ResetGrid() {
         foreach (var uis in UISkillArray) {
-            uis.SetSkill(null);
+            uis.Reset();
             uis.SetShaders(unownedSkillShader, ownedSkillShader);
             uis.SetWindowController(this);
         }
@@ -47,11 +47,27 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
     public void UpdateSkills() {
         InitGrid();
         ResetGrid();
-        tabs = new List<Toggle>();
         var entity = Session.CurrentSession.Entity as Entity;
         var skillTree = entity.SkillTree;
 
+        // Check if the current tabs are present on the current skill tree
+        // we might have changed classes
+        foreach (var toggle in CurrentTabs) {
+            if (!skillTree.ClassTree.ContainsKey(toggle.Key)) {
+                var tab = toggle.Value;
+                tab.group = null;
+                tab.transform.SetParent(null);
+                tabLayout.UnregisterToggle(tab);
+                DestroyImmediate(tab);
+            }
+        }
+
+        // populate tabs
         foreach (var job in skillTree.ClassTree) {
+            if (CurrentTabs.ContainsKey(job.Key)) {
+                continue;
+            }
+
             var tab = Instantiate(tabPrefab);
             tab.onValueChanged.AddListener(delegate {
                 OnTabChanged(tab, job);
@@ -62,9 +78,14 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
             tab.group = tabLayout;
             tab.transform.SetParent(tabLayout.transform);
             tabLayout.RegisterToggle(tab);
-            tabs.Add(tab);
+
+            CurrentTabs.Add(job.Key, tab);
         }
-        tabs[0].isOn = true;
+
+        if (CurrentToggle != null) {
+            CurrentToggle.isOn = false;
+            CurrentToggle.isOn = true;
+        }
     }
 
     public void UpdateSkillPoints() {
@@ -75,10 +96,19 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
     }
 
     private void OnTabChanged(Toggle tab, KeyValuePair<int, Dictionary<int, Skill>> tree) {
+        var entity = Session.CurrentSession.Entity as Entity;
+        var skillTree = entity.SkillTree;
+
+        CurrentToggle = tab;
         ResetGrid();
+
         foreach (var position in tree.Value.Keys) {
             UISkillArray[position]
                 .SetSkill(tree.Value[position]);
+        }
+
+        foreach (var skillInfo in skillTree.OwnedSkillsInfos) {
+            UISkillArray.Find(it => it.GetSkillID() == skillInfo.SkillID)?.SetSkillInfo(skillInfo);
         }
     }
 
@@ -133,7 +163,7 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
     public void ApplyAllocatedPoints() {
         var packets = new List<CZ.UPGRADE_SKILLLEVEL>();
 
-        foreach(var allocation in AllocatedSkillPoints) {
+        foreach (var allocation in AllocatedSkillPoints) {
             for (int i = 0; i < allocation.level; i++) {
                 packets.Add(new CZ.UPGRADE_SKILLLEVEL {
                     SkillID = allocation.skillID
@@ -164,7 +194,7 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
                     skillID = skill.Key.SkillId,
                     level = skill.Value
                 });
-                
+
                 UpdateSkillPoints(skill.Value);
             } else {
                 uiSkill.AddPoints(AvailableSkillPoints);
