@@ -33,6 +33,6 @@ public class SkillTree {
     }
 
     public bool HasSkill(short skillId, short level) {
-        return OwnedSkillsInfos.Find(t => t.SkillID == skillId && t.Level == level) != null;
+        return OwnedSkillsInfos.Find(t => t.SkillID == skillId && t.Level >= level) != null;
     }
 }

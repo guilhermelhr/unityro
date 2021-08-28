@@ -208,7 +208,7 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
             }
         }
 
-        if (AvailableSkillPoints > 0 && targetUiSkill.CurrentPoints < targetUiSkill.Skill.MaxLv) {
+        if (AvailableSkillPoints > 0 && targetUiSkill.CanUpgradeCurrentSkill()) {
             targetUiSkill.AddPoints(1);
             UpdateSkillPoints(1);
 

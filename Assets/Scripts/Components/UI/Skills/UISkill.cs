@@ -26,6 +26,9 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     private TextMeshProUGUI currentLevelLabel;
 
     [SerializeField]
+    private TextMeshProUGUI allocatedPointsLabel;
+
+    [SerializeField]
     private Color highlightedColor;
 
     private Material unownedSkillShader;
@@ -35,7 +38,7 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     public Skill Skill { get; private set; }
     public SkillInfo SkillInfo { get; private set; }
     public bool IsHighlighted { get; private set; }
-    public int CurrentPoints { get; private set; }
+    public int AllocatedPoints { get; private set; }
 
     public void SetSkill(Skill skill) {
         Skill = skill;
@@ -61,6 +64,7 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     internal void Reset() {
         SetSkill(null);
         SetSkillInfo(null);
+        allocatedPointsLabel.text = null;
     }
 
     internal void SetWindowController(ISkillWindowController skillWindowController) {
@@ -119,7 +123,10 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     public void Highlight(int level) {
         IsHighlighted = true;
         skillContainer.color = highlightedColor;
-        neededLevel.text = $"{level}";
+
+        if (level > 0) {
+            neededLevel.text = $"{level}";
+        }
     }
 
     public void UnHighlight() {
@@ -129,7 +136,15 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     }
 
     internal void AddPoints(int value) {
-        CurrentPoints += value;
-        currentLevelLabel.text = $"(+{CurrentPoints})";
+        AllocatedPoints += value;
+        allocatedPointsLabel.text = $"+{AllocatedPoints}";
+    }
+
+    internal int GetCurrentLevel() {
+        return SkillInfo?.Level ?? 0;
+    }
+
+    internal bool CanUpgradeCurrentSkill() {
+        return GetCurrentLevel() + AllocatedPoints < Skill.MaxLv;
     }
 }
