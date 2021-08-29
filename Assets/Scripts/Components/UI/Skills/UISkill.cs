@@ -39,8 +39,9 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     public SkillInfo SkillInfo { get; private set; }
     public bool IsHighlighted { get; private set; }
     public int AllocatedPoints { get; private set; }
+    public int SelectedLevel { get; private set; }
 
-    public void SetSkill(Skill skill) {
+    internal void SetSkill(Skill skill) {
         Skill = skill;
 
         if (skill != null) {
@@ -48,9 +49,8 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
                 var texture = FileManager.Load($"{DBManager.INTERFACE_PATH}item/{skill.SkillTag.ToLower()}.bmp") as Texture2D;
                 skillImage.texture = texture;
                 skillImage.material = unownedSkillShader;
-            } catch {
+            } catch {}
 
-            }
             skillName.text = skill.SkillName;
         } else {
             if (NO_SKILL_TEXTURE == null)
@@ -106,17 +106,29 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         }
     }
 
-    public short GetSkillID() {
-        return Skill?.SkillId ?? -1;
-    }
+    internal short GetSkillID() => Skill?.SkillId ?? -1;
 
     internal void SetSkillInfo(SkillInfo skillInfo) {
         SkillInfo = skillInfo;
+
         if (skillInfo != null) {
             skillImage.material = ownedSkillShader;
-            currentLevelLabel.text = $"{skillInfo.Level}";
+
+            if (Skill.CanSelectLevel) {
+                SelectedLevel = skillInfo.Level;
+            }
+
+            SetCurrentLevelLabelText();
         } else {
             currentLevelLabel.text = null;
+        }
+    }
+
+    private void SetCurrentLevelLabelText() {
+        if (Skill.CanSelectLevel) {
+            currentLevelLabel.text = $"{SelectedLevel}/{SkillInfo.Level}";
+        } else {
+            currentLevelLabel.text = $"{SelectedLevel}";
         }
     }
 

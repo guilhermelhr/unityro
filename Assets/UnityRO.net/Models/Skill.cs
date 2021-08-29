@@ -1,15 +1,10 @@
-﻿using MoonSharp.Interpreter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 public class Skill {
     public short SkillId;
     public string SkillName;
     public int MaxLv;
-    public bool bSeparateLv;
+    public bool CanSelectLevel;
     public List<int> SpAmount;
     public List<int> AttackRange;
     public List<int[]> SkillScale;
