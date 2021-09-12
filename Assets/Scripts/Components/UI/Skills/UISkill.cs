@@ -83,8 +83,19 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        if (Skill != null) {
-            skillWindowController.AllocateSkillPoints(Skill.SkillId);
+        if (Skill == null) {
+            return;
+        }
+
+        switch (eventData.clickCount) {
+            case 1:
+                skillWindowController.AllocateSkillPoints(Skill.SkillId);
+                break;
+            case 2:
+                skillWindowController.UseSkill(Skill.SkillId, (short) SelectedLevel, SkillInfo.SkillType);
+                break;
+            default:
+                return;
         }
     }
 

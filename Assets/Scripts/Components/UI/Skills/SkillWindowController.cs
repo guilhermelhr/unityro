@@ -18,12 +18,17 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
     [SerializeField] private Material unownedSkillShader;
     [SerializeField] private Material ownedSkillShader;
 
+    private EntityControl EntityControl;
     private List<UISkill> UISkillArray;
     private List<KeyValuePair<Skill, int>> NeededSkills = new List<KeyValuePair<Skill, int>>();
     private List<SkillAllocation> AllocatedSkillPoints = new List<SkillAllocation>();
     private Dictionary<int, Toggle> CurrentTabs = new Dictionary<int, Toggle>();
     private Toggle CurrentToggle;
     private int AvailableSkillPoints;
+
+    private void Awake() {
+        EntityControl = FindObjectOfType<EntityControl>();
+    }
 
     // Start is called before the first frame update
     void Start() {
@@ -230,5 +235,9 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
         var entity = Session.CurrentSession.Entity as Entity;
         entity.GetBaseStatus().SkillPoints -= (uint) value;
         UpdateSkillPoints();
+    }
+
+    public void UseSkill(short skillID, short level, int type) {
+        EntityControl.UseSkill(skillID, level, type);
     }
 }

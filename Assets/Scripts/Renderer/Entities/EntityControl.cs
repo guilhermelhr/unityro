@@ -136,4 +136,18 @@ public class EntityControl : MonoBehaviour {
         }
 
     }
+
+    internal void UseSkill(short skillID, short level, int type) {
+        if ((type & (int) SkillTargetType.Self) > 0) {
+            new CZ.USE_SKILL2() {
+                SkillId = skillID,
+                SelectedLevel = level,
+                TargetId = (int) Entity.GID
+            }.Send();
+        }
+
+        if ((type & (int) SkillTargetType.Target) > 0) {
+            // render target and use skill locking
+        }
+    }
 }

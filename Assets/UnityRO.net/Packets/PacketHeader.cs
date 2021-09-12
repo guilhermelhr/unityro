@@ -92,6 +92,7 @@
     CZ_USE_ITEM2 = 0x439,
     CZ_REQUEST_ACT2 = 0x437,
     CZ_UPGRADE_SKILLLEVEL = 0x112,
+    CZ_USE_SKILL2 = 0x438,
     #endregion
 
     #region ZC
@@ -195,6 +196,7 @@
     ZC_EQUIP_ARROW = 0x13c,
     ZC_ACTION_FAILURE = 0x13b,
     ZC_NOTIFY_RANKING = 0x19a,
+    ZC_ACK_TOUSESKILL = 0x110,
     #endregion
 
     //ZC_INVENTORY_ITEMLIST_EQUIP = 0xa0d,
@@ -274,7 +276,6 @@
     //ZC_MVP_GETTING_SPECIAL_EXP = 0x10b,
     //ZC_MVP = 0x10c,
     //ZC_THROW_MVPITEM = 0x10d,
-    //ZC_ACK_TOUSESKILL = 0x110,
     //ZC_ADD_SKILL = 0x111,
     //CZ_USE_SKILL = 0x113,
     //ZC_NOTIFY_SKILL = 0x114,

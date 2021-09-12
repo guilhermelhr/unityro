@@ -5,4 +5,5 @@
     bool HasRequiredSkill(short skillID, short level);
     void ResetSkillRequirements();
     void AllocateSkillPoints(short skillID);
+    void UseSkill(short skillID, short level, int type);
 }

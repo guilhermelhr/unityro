@@ -44,6 +44,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Core.NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillsUpdated);
         Core.NetworkClient.HookPacket(ZC.SKILLINFO_UPDATE.HEADER, OnSkillsUpdated);
         Core.NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
+        Core.NetworkClient.HookPacket(ZC.ACK_TOUSESKILL.HEADER, OnUseSkillResult);
     }
 
     public void Init(SPR spr, ACT act) {
@@ -495,6 +496,15 @@ public class Entity : MonoBehaviour, INetworkEntity {
             new EntityViewer.MotionRequest { Motion = SpriteMotion.Attack },
             new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = Core.Tick + pkt.sourceSpeed }
         );
+    }
+
+    private void OnUseSkillResult(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.ACK_TOUSESKILL TOUSESKILL) {
+            // success
+            if (TOUSESKILL.Flag > 0) {
+                return;
+            }
+        }
     }
 
     public void LookTo(Vector3 position) {
