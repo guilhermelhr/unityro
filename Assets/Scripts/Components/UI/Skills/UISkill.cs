@@ -29,6 +29,12 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     private TextMeshProUGUI allocatedPointsLabel;
 
     [SerializeField]
+    private CustomButton increaseLevelButton;
+
+    [SerializeField]
+    private CustomButton decreaseLevelButton;
+
+    [SerializeField]
     private Color highlightedColor;
 
     private Material unownedSkillShader;
@@ -49,7 +55,7 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
                 var texture = FileManager.Load($"{DBManager.INTERFACE_PATH}item/{skill.SkillTag.ToLower()}.bmp") as Texture2D;
                 skillImage.texture = texture;
                 skillImage.material = unownedSkillShader;
-            } catch {}
+            } catch { }
 
             skillName.text = skill.SkillName;
         } else {
@@ -65,6 +71,8 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         SetSkill(null);
         SetSkillInfo(null);
         allocatedPointsLabel.text = null;
+        increaseLevelButton.gameObject.SetActive(false);
+        decreaseLevelButton.gameObject.SetActive(false);
     }
 
     internal void SetWindowController(ISkillWindowController skillWindowController) {
@@ -124,12 +132,16 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     private void SetCurrentLevelLabelText() {
         if (Skill.CanSelectLevel) {
             currentLevelLabel.text = $"{SelectedLevel}/{SkillInfo.Level}";
+            increaseLevelButton.gameObject.SetActive(true);
+            decreaseLevelButton.gameObject.SetActive(true);
         } else {
+            increaseLevelButton.gameObject.SetActive(false);
+            decreaseLevelButton.gameObject.SetActive(false);
             currentLevelLabel.text = $"{SelectedLevel}";
         }
     }
 
-    public void Highlight(int level) {
+    internal void Highlight(int level) {
         IsHighlighted = true;
         skillContainer.color = highlightedColor;
 
@@ -138,7 +150,7 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         }
     }
 
-    public void UnHighlight() {
+    internal void UnHighlight() {
         IsHighlighted = false;
         neededLevel.text = null;
         skillContainer.color = Color.white;
