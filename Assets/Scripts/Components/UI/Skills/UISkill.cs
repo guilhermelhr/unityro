@@ -10,32 +10,15 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     private const string NO_SKILL_IMAGE = "basic_interface/no_skill.bmp";
     private Texture2D NO_SKILL_TEXTURE;
 
-    [SerializeField]
-    private RawImage skillContainer;
-
-    [SerializeField]
-    private RawImage skillImage;
-
-    [SerializeField]
-    private TextMeshProUGUI skillName;
-
-    [SerializeField]
-    private TextMeshProUGUI neededLevel;
-
-    [SerializeField]
-    private TextMeshProUGUI currentLevelLabel;
-
-    [SerializeField]
-    private TextMeshProUGUI allocatedPointsLabel;
-
-    [SerializeField]
-    private CustomButton increaseLevelButton;
-
-    [SerializeField]
-    private CustomButton decreaseLevelButton;
-
-    [SerializeField]
-    private Color highlightedColor;
+    [SerializeField] private RawImage skillContainer;
+    [SerializeField] private RawImage skillImage;
+    [SerializeField] private TextMeshProUGUI skillName;
+    [SerializeField] private TextMeshProUGUI neededLevel;
+    [SerializeField] private TextMeshProUGUI currentLevelLabel;
+    [SerializeField] private TextMeshProUGUI allocatedPointsLabel;
+    [SerializeField] private CustomButton increaseLevelButton;
+    [SerializeField] private CustomButton decreaseLevelButton;
+    [SerializeField] private Color highlightedColor;
 
     private Material unownedSkillShader;
     private Material ownedSkillShader;
@@ -63,6 +46,7 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
                 NO_SKILL_TEXTURE = FileManager.Load(DBManager.INTERFACE_PATH + NO_SKILL_IMAGE) as Texture2D;
 
             skillImage.texture = NO_SKILL_TEXTURE;
+            skillImage.material = unownedSkillShader;
             skillName.text = null;
         }
     }
@@ -73,6 +57,8 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         allocatedPointsLabel.text = null;
         increaseLevelButton.gameObject.SetActive(false);
         decreaseLevelButton.gameObject.SetActive(false);
+        AllocatedPoints = 0;
+        SelectedLevel = 0;
     }
 
     internal void SetWindowController(ISkillWindowController skillWindowController) {
@@ -119,12 +105,13 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     internal void SetSkillInfo(SkillInfo skillInfo) {
         SkillInfo = skillInfo;
 
-        if (skillInfo != null) {
+        if (skillInfo != null && skillInfo.Level > 0) {
             skillImage.material = ownedSkillShader;
             SelectedLevel = skillInfo.Level;
 
             SetCurrentLevelLabelText();
         } else {
+            skillImage.material = unownedSkillShader;
             currentLevelLabel.text = null;
         }
     }
@@ -165,7 +152,19 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         return SkillInfo?.Level ?? 0;
     }
 
-    internal bool CanUpgradeCurrentSkill() {
-        return GetCurrentLevel() + AllocatedPoints < Skill.MaxLv;
+    internal bool CanUpgradeCurrentSkill() => GetCurrentLevel() + AllocatedPoints < Skill.MaxLv;
+
+    public void IncreaseCurrentLevel() {
+        if (Skill.CanSelectLevel && SelectedLevel < SkillInfo.Level) {
+            SelectedLevel++;
+        }
+        SetCurrentLevelLabelText();
+    }
+
+    public void DecreaseCurrentLevel() {
+        if (Skill.CanSelectLevel && SelectedLevel > 1) {
+            SelectedLevel--;
+        }
+        SetCurrentLevelLabelText();
     }
 }

@@ -47,6 +47,7 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
     public void UpdateSkills() {
         InitGrid();
         ResetGrid();
+        ResetAllocatedPoints();
         var entity = Session.CurrentSession.Entity as Entity;
         var skillTree = entity.SkillTree;
 
