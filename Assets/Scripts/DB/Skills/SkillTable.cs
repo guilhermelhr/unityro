@@ -26,7 +26,7 @@ public class SkillTable {
                 SkillName = dict["SkillName"].ToString(),
                 MaxLv = int.Parse(dict["MaxLv"].ToString()),
                 SpAmount = (dict["SpAmount"] as Table).Pairs.Select(t => int.Parse(t.Value.ToString())).ToList(),
-                bSeparateLv = dict["bSeperateLv"] != null ? bool.Parse(dict["bSeperateLv"].ToString()) : true,
+                CanSelectLevel = dict["bSeperateLv"] != null ? bool.Parse(dict["bSeperateLv"].ToString()) : true,
                 AttackRange = (dict["AttackRange"] as Table).Pairs.Select(t => int.Parse(t.Value.ToString())).ToList()
             };
 

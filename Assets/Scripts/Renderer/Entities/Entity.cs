@@ -41,8 +41,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Core.NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
         Core.NetworkClient.HookPacket(ZC.STATUS.HEADER, OnStatsWindowData);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_EXP2.HEADER, OnExpReceived);
-        Core.NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillListReceived);
+        Core.NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillsUpdated);
+        Core.NetworkClient.HookPacket(ZC.SKILLINFO_UPDATE.HEADER, OnSkillsUpdated);
         Core.NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
+        Core.NetworkClient.HookPacket(ZC.ACK_TOUSESKILL.HEADER, OnUseSkillResult);
     }
 
     public void Init(SPR spr, ACT act) {
@@ -258,9 +260,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
     }
 
-    private void OnSkillListReceived(ushort cmd, int size, InPacket packet) {
+    private void OnSkillsUpdated(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.SKILLINFO_LIST SKILLINFO_LIST) {
             SkillTree.Init(Status.jobId, SKILLINFO_LIST.skills);
+        } else if (packet is ZC.SKILLINFO_UPDATE SKILLINFO_UPDATE) {
+            SkillTree.UpdateSkill(SKILLINFO_UPDATE.SkillInfo);
         }
     }
 
@@ -492,6 +496,15 @@ public class Entity : MonoBehaviour, INetworkEntity {
             new EntityViewer.MotionRequest { Motion = SpriteMotion.Attack },
             new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = Core.Tick + pkt.sourceSpeed }
         );
+    }
+
+    private void OnUseSkillResult(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.ACK_TOUSESKILL TOUSESKILL) {
+            // success
+            if (TOUSESKILL.Flag > 0) {
+                return;
+            }
+        }
     }
 
     public void LookTo(Vector3 position) {
