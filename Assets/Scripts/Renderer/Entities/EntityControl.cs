@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using System;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,6 +10,8 @@ public class EntityControl : MonoBehaviour {
     private LayerMask EntityMask;
     private CursorRenderer CursorRenderer;
     private TextMeshPro EntityNameText;
+
+    private PendingAction CurrentPendingAction = new PendingAction.None();
 
     public Entity Entity;
 
@@ -34,7 +38,13 @@ public class EntityControl : MonoBehaviour {
 
         var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
         var didHitAnything = Physics.Raycast(ray, out var hit, 150, EntityMask | GroundMask);
+        var didHitAnyEntity = Physics.Raycast(ray, out var entityHit, 150, EntityMask);
         var isActionRequested = Input.GetKeyDown(KeyCode.Mouse0) && !EventSystem.current.IsPointerOverGameObject();
+
+        if (isActionRequested && CurrentPendingAction is PendingAction.TargetSelection && !didHitAnyEntity) {
+            CurrentPendingAction = new PendingAction.None();
+        }
+
         if (!didHitAnything) {
             return;
         }
@@ -42,25 +52,29 @@ public class EntityControl : MonoBehaviour {
         hit.collider.gameObject.TryGetComponent<EntityViewer>(out var target);
 
         if (target != null) {
-            switch (target.Entity.Type) {
-                case EntityType.NPC:
-                    CursorRenderer.SetAction(CursorAction.TALK, false);
-                    break;
-                case EntityType.ITEM:
-                    CursorRenderer.SetAction(CursorAction.PICK, true);
-                    break;
-                case EntityType.MOB:
-                    CursorRenderer.SetAction(CursorAction.ATTACK, false);
-                    break;
-                case EntityType.WARP:
-                    CursorRenderer.SetAction(CursorAction.WARP, false);
-                    break;
+            if (CurrentPendingAction is PendingAction.None) {
+                switch (target.Entity.Type) {
+                    case EntityType.NPC:
+                        CursorRenderer.SetAction(CursorAction.TALK, false);
+                        break;
+                    case EntityType.ITEM:
+                        CursorRenderer.SetAction(CursorAction.PICK, true);
+                        break;
+                    case EntityType.MOB:
+                        CursorRenderer.SetAction(CursorAction.ATTACK, false);
+                        break;
+                    case EntityType.WARP:
+                        CursorRenderer.SetAction(CursorAction.WARP, false);
+                        break;
+                }
             }
 
             RenderEntityName(hit, target);
             if (isActionRequested) {
                 ProcessEntityClick(target.Entity);
             }
+        } else if (CurrentPendingAction is PendingAction.TargetSelection) {
+            CursorRenderer.SetAction(CursorAction.TARGET, false);
         } else {
             EntityNameText.text = null;
             CursorRenderer.SetAction(CursorAction.DEFAULT, true);
@@ -89,7 +103,9 @@ public class EntityControl : MonoBehaviour {
 
                 OutPacket pickPacket = new CZ.ITEM_PICKUP2() { ID = (int) target.AID };
                 if (Vector3.Distance(transform.position, target.transform.position) > 2) {
-                    Entity.AfterMoveAction = pickPacket;
+                    Entity.AfterMoveAction = delegate {
+                        pickPacket.Send();
+                    };
 
                     new CZ.REQUEST_MOVE2() {
                         x = (short) target.transform.position.x,
@@ -105,30 +121,45 @@ public class EntityControl : MonoBehaviour {
                 break;
             case EntityType.MOB:
                 // TODO render lock arrow
-                var path = Core.PathFinding.GetPath(Entity.transform.position, target.transform.position, Entity.GetBaseStatus().attackRange + 1);
+
+                List<PathNode> path;
+                OutPacket actionPacket;
+
+                if (CurrentPendingAction is PendingAction.TargetSelection TargetSelection) {
+                    path = Core.PathFinding.GetPath(Entity.transform.position, target.transform.position, TargetSelection.SkillInfo.AttackRange + 1);
+                    actionPacket = new CZ.USE_SKILL2() {
+                        SkillId = TargetSelection.SkillInfo.SkillID,
+                        SelectedLevel = TargetSelection.Level,
+                        TargetId = (int) target.AID
+                    };
+                } else {
+                    path = Core.PathFinding.GetPath(Entity.transform.position, target.transform.position, Entity.GetBaseStatus().attackRange + 1);
+                    actionPacket = new CZ.REQUEST_ACT2() {
+                        TargetID = target.AID,
+                        action = EntityActionType.CONTINUOUS_ATTACK
+                    };
+                }
+
+                Action actionDelegate = delegate {
+                    actionPacket.Send();
+                    CurrentPendingAction = new PendingAction.None();
+                };
 
                 if (path.Count == 0) {
                     return;
+                } else if (path.Count <= 1) {
+                    actionDelegate.Invoke();
+                } else {
+                    PathNode endNode = path[path.Count - 1];
+
+                    Entity.AfterMoveAction = actionDelegate;
+
+                    new CZ.REQUEST_MOVE2() {
+                        x = (short) endNode.x,
+                        y = (short) endNode.z,
+                        dir = (byte) Entity.Direction
+                    }.Send();
                 }
-
-                OutPacket packet = new CZ.REQUEST_ACT2() {
-                    TargetID = target.AID,
-                    action = EntityActionType.CONTINUOUS_ATTACK
-                };
-
-                PathNode endNode;
-                if (path.Count <= 1) {
-                    packet.Send();
-                }
-                endNode = path[path.Count - 1];
-
-                Entity.AfterMoveAction = packet;
-
-                new CZ.REQUEST_MOVE2() {
-                    x = (short) endNode.x,
-                    y = (short) endNode.z,
-                    dir = (byte) Entity.Direction
-                }.Send();
 
                 break;
             case EntityType.WARP:
@@ -137,17 +168,34 @@ public class EntityControl : MonoBehaviour {
 
     }
 
-    internal void UseSkill(short skillID, short level, int type) {
-        if ((type & (int) SkillTargetType.Self) > 0) {
+    internal void UseSkill(SkillInfo skillInfo, short level) {
+        if ((skillInfo.SkillType & (int) SkillTargetType.Self) > 0) {
             new CZ.USE_SKILL2() {
-                SkillId = skillID,
+                SkillId = skillInfo.SkillID,
                 SelectedLevel = level,
                 TargetId = (int) Entity.GID
             }.Send();
         }
 
-        if ((type & (int) SkillTargetType.Target) > 0) {
-            // render target and use skill locking
+        if ((skillInfo.SkillType & (int) SkillTargetType.Target) > 0) {
+            CurrentPendingAction = new PendingAction.TargetSelection(skillInfo, level);
         }
     }
+
+    public partial class PendingAction {
+
+        public class None : PendingAction { }
+
+        public class TargetSelection : PendingAction {
+            public SkillInfo SkillInfo;
+            public short Level;
+
+            public TargetSelection(SkillInfo skillInfo, short level) {
+                SkillInfo = skillInfo;
+                Level = level;
+            }
+        }
+
+    }
+
 }

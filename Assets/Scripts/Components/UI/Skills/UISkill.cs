@@ -92,7 +92,7 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
                 skillWindowController.AllocateSkillPoints(Skill.SkillId);
                 break;
             case 2:
-                skillWindowController.UseSkill(Skill.SkillId, (short) SelectedLevel, SkillInfo.SkillType);
+                skillWindowController.UseSkill(SkillInfo, (short) SelectedLevel);
                 break;
             default:
                 return;
@@ -101,13 +101,13 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
 
     public void OnPointerDown(PointerEventData eventData) {
         if (Skill != null) {
-            throw new System.NotImplementedException();
+
         }
     }
 
     public void OnPointerUp(PointerEventData eventData) {
         if (Skill != null) {
-            throw new System.NotImplementedException();
+
         }
     }
 

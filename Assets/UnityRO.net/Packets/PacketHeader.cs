@@ -197,6 +197,7 @@
     ZC_ACTION_FAILURE = 0x13b,
     ZC_NOTIFY_RANKING = 0x19a,
     ZC_ACK_TOUSESKILL = 0x110,
+    ZC_NOTIFY_SKILL2 = 0x1de,
     #endregion
 
     //ZC_INVENTORY_ITEMLIST_EQUIP = 0xa0d,
@@ -467,7 +468,6 @@
     //CA_REQ_HASH = 0x1db,
     //AC_ACK_HASH = 0x1dc,
     //CA_LOGIN2 = 0x1dd,
-    //ZC_NOTIFY_SKILL2 = 0x1de,
     //CZ_REQ_ACCOUNTNAME = 0x1df,
     //ZC_ACK_ACCOUNTNAME = 0x1e0,
     //ZC_SPIRITS2 = 0x1e1,

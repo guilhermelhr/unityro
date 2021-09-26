@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4198923579231531511}
   - component: {fileID: 2633761153983157808}
   - component: {fileID: 3167618847927520808}
+  - component: {fileID: 5165792731094662471}
   m_Layer: 5
   m_Name: Damage
   m_TagString: Untagged
@@ -122,3 +123,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb6ffaa76585d574f88170fe4e236f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!210 &5165792731094662471
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6716218986333011097}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 5

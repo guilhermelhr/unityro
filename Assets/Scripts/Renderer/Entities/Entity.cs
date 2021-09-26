@@ -1,15 +1,18 @@
 ﻿using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class Entity : MonoBehaviour, INetworkEntity {
 
+    private GameObject DamagePrefab;
+
     public Action OnParameterUpdated;
 
     private EntityWalk EntityWalk;
-    public OutPacket AfterMoveAction;
+    public Action AfterMoveAction;
 
     // Picking Priority
     // TODO
@@ -32,6 +35,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public Inventory Inventory = new Inventory();
     public SkillTree SkillTree = new SkillTree();
 
+    private void Awake() {
+        DamagePrefab = (GameObject) Resources.Load("Prefabs/Damage");
+    }
+
     private void HookPackets() {
         Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT.HEADER, OnEntityAction);
@@ -45,6 +52,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Core.NetworkClient.HookPacket(ZC.SKILLINFO_UPDATE.HEADER, OnSkillsUpdated);
         Core.NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
         Core.NetworkClient.HookPacket(ZC.ACK_TOUSESKILL.HEADER, OnUseSkillResult);
+        Core.NetworkClient.HookPacket(ZC.NOTIFY_SKILL2.HEADER, OnEntityUseSkillToAttack);
     }
 
     public void Init(SPR spr, ACT act) {
@@ -252,6 +260,83 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void StopMoving() {
         EntityWalk.StopMoving();
+    }
+
+    private void OnEntityUseSkillToAttack(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.NOTIFY_SKILL2 NOTIFY_SKILL2) {
+            var srcEntity = Core.EntityManager.GetEntity(NOTIFY_SKILL2.AID);
+            var dstEntity = Core.EntityManager.GetEntity(NOTIFY_SKILL2.targetID);
+
+            if (NOTIFY_SKILL2.AID == Session.CurrentSession.Entity.GetEntityGID() || NOTIFY_SKILL2.AID == Session.CurrentSession.AccountID) {
+                srcEntity = Session.CurrentSession.Entity as Entity;
+            } else if (NOTIFY_SKILL2.targetID == Session.CurrentSession.Entity.GetEntityGID() || NOTIFY_SKILL2.targetID == Session.CurrentSession.AccountID) {
+                dstEntity = Session.CurrentSession.Entity as Entity;
+            }
+
+            if (srcEntity != null) {
+                NOTIFY_SKILL2.attackMT = Math.Min(450, NOTIFY_SKILL2.attackMT);
+                NOTIFY_SKILL2.attackMT = Math.Max(1, NOTIFY_SKILL2.attackMT);
+                srcEntity.SetAttackSpeed((ushort) NOTIFY_SKILL2.attackMT);
+
+                if (srcEntity.Type != EntityType.MOB) {
+                    // SET DIALOG BOX
+                    // srcEntity.dialog.set( ( (SkillInfo[pkt.SKID] && SkillInfo[pkt.SKID].SkillName ) || 'Unknown Skill' ) + ' !!' );
+                }
+
+                srcEntity.ChangeMotion(
+                    new EntityViewer.MotionRequest {
+                        Motion = SpriteMotion.Attack2,
+                        delay = 0
+                    },
+                    new EntityViewer.MotionRequest {
+                        Motion = SpriteMotion.Idle,
+                        delay = 0
+                    }
+                );
+            }
+
+            if (dstEntity != null) {
+                Entity target = NOTIFY_SKILL2.damage > 0 ? dstEntity : srcEntity;
+                int i;
+
+                if (NOTIFY_SKILL2.damage > 0 && target) {
+                    for (i = 0; i < NOTIFY_SKILL2.count; i++) {
+                        StartCoroutine(AddDamageFromSkill(dstEntity, target, NOTIFY_SKILL2, i, NOTIFY_SKILL2.attackMT + (200 * i)));
+                    }
+                }
+            }
+
+            if (srcEntity && dstEntity) {
+                //EffectManager.spamSkill(pkt.SKID, dstEntity.GID, null, Renderer.tick + pkt.attackMT);
+            }
+        }
+    }
+
+    private IEnumerator AddDamageFromSkill(Entity dstEntity, Entity target, ZC.NOTIFY_SKILL2 NOTIFY_SKILL2, int k, float delay) {
+        yield return new WaitForSeconds(delay / 1000);
+
+        var isAlive = dstEntity.Action != AnimationHelper.GetMotionIdForSprite(Type, SpriteMotion.Dead);
+        var isCombo = target.Type != EntityType.PC && NOTIFY_SKILL2.count > 1;
+
+        //EffectManager.spamSkillHit( pkt.SKID, dstEntity.GID, Renderer.tick);
+        dstEntity.Damage(NOTIFY_SKILL2.damage / NOTIFY_SKILL2.count, Core.Tick);
+
+        // Only display combo if the target is not entity and
+        // there are multiple attacks
+        if (isCombo) {
+            dstEntity.Damage(
+                NOTIFY_SKILL2.damage * (k + 1),
+                Core.Tick,
+                DamageType.COMBO | (k + 1 == NOTIFY_SKILL2.count ? DamageType.COMBO_FINAL : 0)
+            );
+        }
+
+        if (isAlive) {
+            dstEntity.ChangeMotion(
+                new EntityViewer.MotionRequest { Motion = SpriteMotion.Hit, delay = 0 },
+                new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = 0 }
+            );
+        }
     }
 
     private void OnAttackRangeReceived(ushort cmd, int size, InPacket packet) {
@@ -517,10 +602,6 @@ public class Entity : MonoBehaviour, INetworkEntity {
      * The packet to receive damage data and etc is ZC_PAR_CHANGE
      */
     public void Damage(float amount, double tick, DamageType? damageType = null) {
-        var DamagePrefab = (GameObject) Resources.Load("Prefabs/Damage");
-        if (!DamagePrefab)
-            throw new Exception("Could not load damage prefab");
-
         var damageRenderer = Instantiate(DamagePrefab).GetComponent<DamageRenderer>();
         damageRenderer.Display(amount, tick, damageType, this);
     }

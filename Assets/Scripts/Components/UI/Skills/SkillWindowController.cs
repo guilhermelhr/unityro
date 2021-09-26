@@ -237,7 +237,7 @@ public class SkillWindowController : MonoBehaviour, ISkillWindowController {
         UpdateSkillPoints();
     }
 
-    public void UseSkill(short skillID, short level, int type) {
-        EntityControl.UseSkill(skillID, level, type);
+    public void UseSkill(SkillInfo skillInfo, short level) {
+        EntityControl.UseSkill(skillInfo, level);
     }
 }

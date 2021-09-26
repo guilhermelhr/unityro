@@ -18,23 +18,23 @@ public class EntityWalk : MonoBehaviour {
     private void Awake() {
         Entity = GetComponent<Entity>();
 
-        if(Entity.HasAuthority) {
+        if (Entity.HasAuthority) {
             Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERMOVE.HEADER, OnPlayerMovement); //Our movement
         }
     }
 
     private void Update() {
-        if(isWalking && !nodes.IsEmpty()) {
+        if (isWalking && !nodes.IsEmpty()) {
             bool isEnd = false;
-            while(_tick <= Core.Tick) {
+            while (_tick <= Core.Tick) {
                 var current = nodes[nodeIndex];
-                if(nodeIndex == nodes.Count - 1) {
+                if (nodeIndex == nodes.Count - 1) {
                     isEnd = true;
                     break;
                 }
                 var next = nodes[nodeIndex + 1];
                 var isDiagonal = PathFindingManager.IsDiagonal(next, current);
-                lastSpeed = (ushort)(isDiagonal ? Entity.GetBaseStatus().walkSpeed * 14 / 10 : Entity.GetBaseStatus().walkSpeed); //Diagonal walking is slower
+                lastSpeed = (ushort) (isDiagonal ? Entity.GetBaseStatus().walkSpeed * 14 / 10 : Entity.GetBaseStatus().walkSpeed); //Diagonal walking is slower
                 _tick += lastSpeed;
                 nodeIndex++;
             }
@@ -47,7 +47,7 @@ public class EntityWalk : MonoBehaviour {
             transform.position = currentNode + direction * timeDelta;
             Entity.Direction = PathFindingManager.GetDirectionForOffset(nextNode, currentNode);
 
-            if(isEnd) {
+            if (isEnd) {
                 isWalking = false;
                 nodes.Clear();
 
@@ -60,8 +60,9 @@ public class EntityWalk : MonoBehaviour {
      * Server has acknowledged our request and set data back to us
      */
     private void OnPlayerMovement(ushort cmd, int size, InPacket packet) {
-        if(!Entity) return;
-        if(packet is ZC.NOTIFY_PLAYERMOVE) {
+        if (!Entity)
+            return;
+        if (packet is ZC.NOTIFY_PLAYERMOVE) {
             var pkt = packet as ZC.NOTIFY_PLAYERMOVE;
 
             StartMoving(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
@@ -71,8 +72,8 @@ public class EntityWalk : MonoBehaviour {
     public void StartMoving(int startX, int startY, int endX, int endY) {
         _tick = Core.Tick;
         nodeIndex = 0;
-        nodes = Core.PathFinding.GetPath(startX, startY, endX, endY).Select(node => new Vector3(node.x, (float)node.y, node.z)).ToList();
-        
+        nodes = Core.PathFinding.GetPath(startX, startY, endX, endY).Select(node => new Vector3(node.x, (float) node.y, node.z)).ToList();
+
         if (!nodes.IsEmpty()) {
             Entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
             isWalking = true;
@@ -88,7 +89,7 @@ public class EntityWalk : MonoBehaviour {
     private IEnumerator OnWalkEnd() {
         StopMoving();
         yield return new WaitForEndOfFrame();
-        Entity.AfterMoveAction?.Send();
+        Entity.AfterMoveAction?.Invoke();
         Entity.AfterMoveAction = null;
 
         yield return null;
@@ -98,8 +99,8 @@ public class EntityWalk : MonoBehaviour {
         /**
          * Validate things such as if entity is sit, whatever
          */
-        if(Core.Instance.Offline) {
-            StartMoving((int)transform.position.x, (int)transform.position.z, x, y);
+        if (Core.Instance.Offline) {
+            StartMoving((int) transform.position.x, (int) transform.position.z, x, y);
         } else {
             new CZ.REQUEST_MOVE2(x, y, dir).Send();
         }
