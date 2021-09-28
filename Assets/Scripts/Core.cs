@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityRO.GameCamera;
 
 public class Core : MonoBehaviour {
 
@@ -38,7 +39,6 @@ public class Core : MonoBehaviour {
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
 
     public static Configuration Configs;
-    private static string CFG_NAME = "config.txt";
 
     private bool roCamEnabled;
 
@@ -85,6 +85,8 @@ public class Core : MonoBehaviour {
         if (!Offline) {
             NetworkClient.Start();
         } else {
+            BeginMapLoading(mapname ?? "prontera");
+
             var entity = EntityManager.SpawnPlayer(new CharacterData() { Sex = 1, Job = 0, Name = "Player", GID = 20001, Weapon = 1, Speed = 150 });
             entity.transform.position = new Vector3(150, 0, 150);
             entity.SetAttackSpeed(135);
@@ -93,8 +95,8 @@ public class Core : MonoBehaviour {
             //var mob = EntityManager.Spawn(new EntityData() { job = 1002, name = "Poring", GID = 20001, speed = 697, PosDir = new int[] { 0, 0, 0 }, objecttype = EntityType.MOB });
             //mob.transform.position = new Vector3(150, 0, 155);
 
-            //MainCamera.GetComponent<ROCamera>().SetTarget(entity.EntityViewer.transform);
-            //MainCamera.transform.SetParent(entity.transform);
+            CharacterCamera charCam = FindObjectOfType<CharacterCamera>();
+            charCam.SetTarget(entity.EntityViewer.transform);
 
             entity.SetReady(true);
             //mob.SetReady(true);
@@ -170,7 +172,8 @@ public class Core : MonoBehaviour {
     }
 
     public void BeginMapLoading(string mapName) {
-        if (!MapRenderer.Ready && MapLoader.Progress != 0) return;
+        if (!MapRenderer.Ready && MapLoader.Progress != 0)
+            return;
         SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         StartCoroutine(
