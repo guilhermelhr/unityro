@@ -9,8 +9,8 @@ using UnityEngine;
 public class Models {
     private List<RSM.CompiledModel> models;
 
-    private Material material = (Material)Resources.Load("ModelMaterial", typeof(Material));
-    private Material material2s = (Material)Resources.Load("ModelMaterial2Sided", typeof(Material));
+    private Material material = (Material) Resources.Load("Materials/ModelMaterial", typeof(Material));
+    private Material material2s = (Material) Resources.Load("Materials/ModelMaterial2Sided", typeof(Material));
 
     public Models(List<RSM.CompiledModel> models) {
         this.models = models;
@@ -34,22 +34,22 @@ public class Models {
         Dictionary<int, AnimProperties> anims = new Dictionary<int, AnimProperties>();
         int nodeId = 0;
 
-        for(var index = 0; index < models.Count; index++) {
+        for (var index = 0; index < models.Count; index++) {
             RSM.CompiledModel model = models[index];
             GameObject modelObj = new GameObject(model.rsm.name);
             modelObj.transform.parent = parent.transform;
 
-            foreach(var nodeData in model.nodesData) {
-                foreach(var meshesByTexture in nodeData) {
+            foreach (var nodeData in model.nodesData) {
+                foreach (var meshesByTexture in nodeData) {
                     long textureId = meshesByTexture.Key;
                     RSM.NodeMeshData meshData = meshesByTexture.Value;
                     RSM.Node node = meshData.node;
 
-                    if(meshesByTexture.Value.vertices.Count == 0) {
+                    if (meshesByTexture.Value.vertices.Count == 0) {
                         continue;
                     }
 
-                    for(int i = 0; i < meshData.vertices.Count; i += 3) {
+                    for (int i = 0; i < meshData.vertices.Count; i += 3) {
                         meshData.triangles.AddRange(new int[] {
                                 i + 0 , i + 1, i + 2
                             });
@@ -70,15 +70,15 @@ public class Models {
                     var mf = nodeObj.AddComponent<MeshFilter>();
                     mf.mesh = mesh;
                     var mr = nodeObj.AddComponent<MeshRenderer>();
-                    if(meshData.twoSided) {
+                    if (meshData.twoSided) {
                         mr.material = material2s;
-                        if(textureFile.EndsWith("tga")) {
+                        if (textureFile.EndsWith("tga")) {
                             mr.material.shader = Resources.Load("2SidedAlpha") as Shader;
                             mr.material.renderQueue += 1;
                         }
                     } else {
                         mr.material = material;
-                        if(textureFile.EndsWith("tga")) {
+                        if (textureFile.EndsWith("tga")) {
                             mr.material.shader = Resources.Load("ModelShaderAlpha") as Shader;
                             mr.material.renderQueue += 1;
                         }
@@ -86,7 +86,7 @@ public class Models {
 
                     mr.material.mainTexture = FileManager.Load("data/texture/" + textureFile) as Texture2D;
 
-                    if(model.rsm.shadeType == RSM.SHADING.SMOOTH) {
+                    if (model.rsm.shadeType == RSM.SHADING.SMOOTH) {
                         NormalSolver.RecalculateNormals(mf.mesh, 60);
                     } else {
                         mf.mesh.RecalculateNormals();
@@ -103,7 +103,7 @@ public class Models {
                     properties.mainName = model.rsm.mainNode.name;
                     properties.parentName = node.parentName;
 
-                    if(node.posKeyframes.Count > 0 || node.rotKeyframes.Count > 0) {
+                    if (node.posKeyframes.Count > 0 || node.rotKeyframes.Count > 0) {
                         nodeObj.AddComponent<NodeAnimation>().nodeId = nodeId;
                         anims.Add(nodeId, new AnimProperties() {
                             posKeyframes = node.posKeyframes,
@@ -121,9 +121,9 @@ public class Models {
             modelObj.SetActive(false);
 
             //instantiate model
-            for(int i = 0; i < model.rsm.instances.Count; i++) {
+            for (int i = 0; i < model.rsm.instances.Count; i++) {
                 GameObject instanceObj;
-                if(i == model.rsm.instances.Count - 1) {
+                if (i == model.rsm.instances.Count - 1) {
                     //last instance
                     instanceObj = modelObj;
                 } else {
@@ -155,8 +155,8 @@ public class Models {
 
                 //setup hierarchy
                 var propertiesComponents = instanceObj.GetComponentsInChildren<NodeProperties>();
-                foreach(var properties in propertiesComponents) {
-                    if(properties.isChild) {
+                foreach (var properties in propertiesComponents) {
+                    if (properties.isChild) {
                         var nodeParent = instanceObj.transform.FindRecursive(properties.parentName);
                         properties.transform.parent = nodeParent;
                     }
@@ -164,13 +164,13 @@ public class Models {
 
                 //setup animations
                 var animComponents = instanceObj.GetComponentsInChildren<NodeAnimation>();
-                foreach(var animComponent in animComponents) {
+                foreach (var animComponent in animComponents) {
                     var properties = anims[animComponent.nodeId];
                     animComponent.Initialize(properties);
                 }
 
                 instanceObj.SetActive(true);
-                if(index % MapLoader.BATCH_SIZE == 0)
+                if (index % MapLoader.BATCH_SIZE == 0)
                     yield return new WaitForEndOfFrame();
             }
 

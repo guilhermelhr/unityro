@@ -54,8 +54,8 @@ MonoBehaviour:
     LerpTime: 0.2
     LerpThreshold: 0
   LerpTime: 0.5
-  Distance: 20
+  Distance: 50
   ZoomConstraint: {x: 20, y: 50}
   PitchConstraint: {x: 30, y: 45}
   m_Target: {fileID: 0}
-  Direction: 1
+  Direction: 0

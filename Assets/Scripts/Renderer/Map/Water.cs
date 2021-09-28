@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class Water {
     private Texture2D[] textures = new Texture2D[32];
-    private Material material = (Material) Resources.Load("WaterMaterial", typeof(Material));
+    private Material material = (Material) Resources.Load("Materials/WaterMaterial", typeof(Material));
     private Mesh[] meshes;
     private MeshRenderer[] renderers;
     private GameObject[] objects;
@@ -18,7 +18,7 @@ public class Water {
     public void InitTextures(GND.Mesh compiledMesh, RSW.WaterInfo waterInfo) {
         info = waterInfo;
 
-        for(int i = 0; i < 32; i++) {
+        for (int i = 0; i < 32; i++) {
             var texture = FileManager.Load(waterInfo.images[i]) as Texture2D;
             textures[i] = texture;
         }
@@ -27,19 +27,19 @@ public class Water {
     public void BuildMesh(GND.Mesh compiledMesh) {
         meshes = new Mesh[(int) Math.Ceiling(compiledMesh.waterVertCount / (float) MapRenderer.MAX_VERTICES)];
 
-        for(int nMesh = 0; nMesh < meshes.Length; nMesh++) {
+        for (int nMesh = 0; nMesh < meshes.Length; nMesh++) {
             List<Vector3> vertices = new List<Vector3>();
             List<int> triangles = new List<int>();
             List<Vector3> normals = new List<Vector3>();
             List<Vector2> uv = new List<Vector2>();
 
             float[] vertexData = new float[5];
-            for(int i = 0, ended = 0; vertices.Count < MapRenderer.MAX_VERTICES && ended == 0; i++) {
+            for (int i = 0, ended = 0; vertices.Count < MapRenderer.MAX_VERTICES && ended == 0; i++) {
                 Ground.Vertex[] vs = new Ground.Vertex[4];
-                for(int j = 0; j < 4; j++) {
+                for (int j = 0; j < 4; j++) {
                     var vIndex = i * 4 + j + nMesh * MapRenderer.MAX_VERTICES;
 
-                    if(vIndex * vertexData.Length >= compiledMesh.waterMesh.Length) {
+                    if (vIndex * vertexData.Length >= compiledMesh.waterMesh.Length) {
                         ended = 1;
                         break;
                     }
@@ -52,7 +52,7 @@ public class Water {
                     uv.Add(vertex.texCoord);
                 }
 
-                if(ended == 0) {
+                if (ended == 0) {
                     triangles.AddRange(new int[] {
                         i * 4 + 0, i * 4 + 2, i * 4 + 3, //left triangle  
                         i * 4 + 0, i * 4 + 1, i * 4 + 2, //right triangle                      
@@ -76,7 +76,7 @@ public class Water {
         GameObject water = new GameObject("_Water");
         water.transform.parent = MapRenderer.mapParent.transform;
 
-        for(int i = 0; i < meshes.Length; i++) {
+        for (int i = 0; i < meshes.Length; i++) {
             Mesh mesh = meshes[i];
 
             GameObject gameObject = new GameObject("Water[" + i + "]");
@@ -115,14 +115,14 @@ public class Water {
         int textureId = (int) Conversions.SafeDivide(frame, info.animSpeed) % 32;
 
         float offset = frame * info.waveSpeed;
-        foreach(MeshRenderer mr in renderers) {
+        foreach (MeshRenderer mr in renderers) {
             mr.material.SetFloat("_WaterOffset", offset);
         }
 
         //Debug.Log("id: " + textureId + " offset: " + offset);
 
-        if(currTexture != textureId) {
-            foreach(GameObject gameObject in objects){
+        if (currTexture != textureId) {
+            foreach (GameObject gameObject in objects) {
                 var mr = gameObject.GetComponent<MeshRenderer>();
                 mr.material.mainTexture = textures[textureId];
             }

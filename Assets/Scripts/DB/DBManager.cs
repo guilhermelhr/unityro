@@ -15,9 +15,9 @@ public class DBManager {
 
     public static void Init() {
         new LuaInterface();
-        WeaponActions = FileManager.Load("WeaponActions.json") as JObject;
-        WeaponJobTable = FileManager.Load("WeaponJobTable.json") as JObject;
-        ClassTable = FileManager.Load("ClassTable.json") as JObject;
+        WeaponActions = FileManager.Load("Resources/DataTables/WeaponActions.json") as JObject;
+        WeaponJobTable = FileManager.Load("Resources/DataTables/WeaponJobTable.json") as JObject;
+        ClassTable = FileManager.Load("Resources/DataTables/ClassTable.json") as JObject;
     }
 
     public static Item GetItemInfo(int gID) {
@@ -46,7 +46,7 @@ public class DBManager {
     }
 
     public static int GetWeaponAction(Job job, int sex, int weapon) {
-        var jobValue = $"{(ushort)job}";
+        var jobValue = $"{(ushort) job}";
         var weaponViewId = $"{GetItemViewID(weapon)}";
 
         try {
@@ -63,7 +63,7 @@ public class DBManager {
 
     public static int GetItemViewID(int itemId) {
         // Already a ViewID
-        if (itemId < (int)WeaponType.MAX) {
+        if (itemId < (int) WeaponType.MAX) {
             return itemId;
         }
         ItemDB.TryGetValue(itemId, out Item item);
@@ -71,14 +71,16 @@ public class DBManager {
         return item?.ClassNum ?? 0;
     }
 
-    public static string GetBodyPath(Job job, int sex) {
-        var id = (int)job;
+    public static string GetBodyPath(int job, int sex) {
+
+        var isPC = ClassTable.TryGetValue(job.ToString(), out var jobPath);
+        var isMonster = MonsterPath.TryGetValue(job, out string monsterPath);
+        var sexPath = SexTable[sex];
+
 
         // PC
-        if (id < 45) {
-            var jobPath = ClassTable[$"{id}"] == null ? ClassTable["0"] : ClassTable[$"{id}"];
-
-            return $"data/sprite/ÀÎ°£Á·/¸öÅë/{SexTable[sex]}/{jobPath}_{SexTable[sex]}";
+        if (job < 45) {
+            return $"data/sprite/ÀÎ°£Á·/¸öÅë/{sexPath}/{jobPath}_{sexPath}";
         }
 
         // TODO: Warp STR file
@@ -87,29 +89,28 @@ public class DBManager {
         //}
 
         // Not visible sprite
-        if (id == 111 || id == 139) {
+        if (job == 111 || job == 139) {
             return null;
         }
 
         // NPC
-        if (id < 1000) {
-            return "data/sprite/npc/" + (MonsterPath[id] ?? MonsterPath[46]).ToLower();
+        if (job < 1000) {
+            return "data/sprite/npc/" + (monsterPath ?? MonsterPath[46]).ToLower();
         }
 
         // Monsters
-        if (id < 4000) {
-            return "data/sprite/¸ó½ºÅÍ/" + (MonsterPath[id] ?? MonsterPath[1001]).ToLower();
+        if (job < 4000) {
+            return "data/sprite/¸ó½ºÅÍ/" + (monsterPath ?? MonsterPath[1001]).ToLower();
         }
 
         // PC
-        if (id < 6000) {
-            var jobPath = ClassTable[$"{id}"] == null ? ClassTable["0"] : ClassTable[$"{id}"];
-
-            return $"data/sprite/ÀÎ°£Á·/¸öÅë/{SexTable[sex]}/{jobPath}_{SexTable[sex]}";
+        if (job < 6000) {
+            return $"data/sprite/ÀÎ°£Á·/¸öÅë/{sexPath}/{jobPath}_{sexPath}";
         }
 
+
         // Homunculus
-        return "data/sprite/homun/" + (MonsterPath[id] ?? MonsterPath[1002]).ToLower();
+        return "data/sprite/homun/" + (monsterPath ?? MonsterPath[1001]).ToLower();
 
         // TODO: add support for mercenary
     }
@@ -138,7 +139,7 @@ public class DBManager {
         var baseClass = GetBaseClass(job);
         var ViewID = GetItemViewID(id);
 
-        ItemTable.Weapons.TryGetValue((WeaponType)ViewID, out var weapon);
+        ItemTable.Weapons.TryGetValue((WeaponType) ViewID, out var weapon);
         return $"data/sprite/ÀÎ°£Á·/{baseClass}/{baseClass}_{SexTable[sex]}{weapon.KoreanTo1252() ?? $"_{ViewID}"}";
     }
 

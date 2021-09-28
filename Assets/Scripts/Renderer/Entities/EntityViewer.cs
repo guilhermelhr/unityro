@@ -75,7 +75,7 @@ public class EntityViewer : MonoBehaviour {
 
             switch (ViewerType) {
                 case ViewerType.BODY:
-                    path = DBManager.GetBodyPath((Job) Entity.Status.jobId, Entity.Status.sex);
+                    path = DBManager.GetBodyPath(Entity.Status.jobId, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD:
                     path = DBManager.GetHeadPath(Entity.Status.hair, Entity.Status.sex);
