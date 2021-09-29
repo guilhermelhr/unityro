@@ -27,7 +27,6 @@ public class EntityViewer : MonoBehaviour {
     public List<EntityViewer> Children = new List<EntityViewer>();
     private Dictionary<int, SpriteRenderer> Layers = new Dictionary<int, SpriteRenderer>();
     private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
-    private AudioSource AudioSource;
 
     private Sprite[] sprites;
     private ACT currentACT;
@@ -56,17 +55,6 @@ public class EntityViewer : MonoBehaviour {
         Init();
 
         InitShadow();
-
-        if (AudioSource == null && Parent == null) {
-            AudioSource = gameObject.AddComponent<AudioSource>();
-            AudioSource.spatialBlend = 0.7f;
-            AudioSource.priority = 60;
-            AudioSource.maxDistance = 40;
-            AudioSource.rolloffMode = AudioRolloffMode.Linear;
-            AudioSource.volume = 1f;
-            AudioSource.dopplerLevel = 0;
-            AudioSource.outputAudioMixerGroup = MapRenderer.SoundsMixerGroup;
-        }
     }
 
     public void Init(bool reloadSprites = false) {
@@ -202,12 +190,7 @@ public class EntityViewer : MonoBehaviour {
             if (clipName == "atk")
                 return;
 
-            var clip = FileManager.Load($"data/wav/{clipName}") as AudioClip;
-
-            if (clip != null && AudioSource != null) {
-                AudioSource.clip = clip;
-                AudioSource.Play();
-            }
+            Entity.PlayAudio($"data/wav/{clipName}");
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Effects;
+using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
@@ -9,11 +10,12 @@ using UnityEngine.Rendering;
 public class Entity : MonoBehaviour, INetworkEntity {
 
     private GameObject DamagePrefab;
+    private EntityWalk EntityWalk;
+    private AudioSource AudioSource;
 
     public Action OnParameterUpdated;
-
-    private EntityWalk EntityWalk;
     public Action AfterMoveAction;
+
 
     // Picking Priority
     // TODO
@@ -38,6 +40,17 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     private void Awake() {
         DamagePrefab = (GameObject) Resources.Load("Prefabs/Damage");
+
+        if (AudioSource == null) {
+            AudioSource = gameObject.AddComponent<AudioSource>();
+            AudioSource.spatialBlend = 0.7f;
+            AudioSource.priority = 60;
+            AudioSource.maxDistance = 60;
+            AudioSource.rolloffMode = AudioRolloffMode.Linear;
+            AudioSource.volume = 1f;
+            AudioSource.dopplerLevel = 0;
+            AudioSource.outputAudioMixerGroup = MapRenderer.SoundsMixerGroup;
+        }
     }
 
     private void HookPackets() {
@@ -54,6 +67,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Core.NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
         Core.NetworkClient.HookPacket(ZC.ACK_TOUSESKILL.HEADER, OnUseSkillResult);
         Core.NetworkClient.HookPacket(ZC.NOTIFY_SKILL2.HEADER, OnEntityUseSkillToAttack);
+        Core.NetworkClient.HookPacket(ZC.USESKILL_ACK2.HEADER, OnEntityCastSkill);
     }
 
     public void Init(SPR spr, ACT act) {
@@ -266,6 +280,36 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void StopMoving() {
         EntityWalk.StopMoving();
+    }
+
+    private void OnEntityCastSkill(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.USESKILL_ACK2 USESKILL_ACK2) {
+            var srcEntity = Core.EntityManager.GetEntity(USESKILL_ACK2.AID);
+            var dstEntity = Core.EntityManager.GetEntity(USESKILL_ACK2.targetID);
+
+            if (!srcEntity) {
+                return;
+            }
+
+            if (USESKILL_ACK2.delayTime > 0) {
+                srcEntity.CastSkill(USESKILL_ACK2.delayTime / 1000f, USESKILL_ACK2.property);
+            }
+        }
+    }
+
+    public void CastSkill(float delayTime, uint property) {
+        PlayAudio("data/wav/effect/ef_beginspell.wav");
+        CastingEffect.StartCasting(delayTime, "data/texture/effect/ring_yellow.tga", gameObject);
+        ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Casting, delay = 0 });
+    }
+
+    public void PlayAudio(string path) {
+        var clip = FileManager.Load(path) as AudioClip;
+
+        if (clip != null && AudioSource != null) {
+            AudioSource.clip = clip;
+            AudioSource.Play();
+        }
     }
 
     private void OnEntityUseSkillToAttack(ushort cmd, int size, InPacket packet) {

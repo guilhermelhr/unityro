@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using Assets.Scripts.Utility;
 using UnityEngine;
 
-namespace Assets.Scripts.Effects
-{
-    class PrimitiveBaseEffect : MonoBehaviour
-    {
+namespace Assets.Scripts.Effects {
+    class PrimitiveBaseEffect : MonoBehaviour {
         public float Duration;
         public float CurrentPos;
 
@@ -40,19 +38,16 @@ namespace Assets.Scripts.Effects
         protected float frameTime;
 
 
-        public void FollowEntity(GameObject target, bool destroyWithEntity = true)
-        {
+        public void FollowEntity(GameObject target, bool destroyWithEntity = true) {
             FollowTarget = target;
             destroyOnTargetLost = destroyWithEntity;
         }
 
-        public void DelayUpdate(float time)
-        {
+        public void DelayUpdate(float time) {
             activeDelay = time;
         }
 
-        protected void OnDestroy()
-        {
+        protected void OnDestroy() {
             if (Parts != null)
                 EffectPool.ReturnParts(Parts);
             if (mesh != null)
@@ -65,8 +60,7 @@ namespace Assets.Scripts.Effects
             mb = null;
         }
 
-        protected void Init(int partCount, Material mat)
-        {
+        protected void Init(int partCount, Material mat) {
             mf = gameObject.AddComponent<MeshFilter>();
             mr = gameObject.AddComponent<MeshRenderer>();
 
@@ -81,8 +75,7 @@ namespace Assets.Scripts.Effects
         }
 
 
-        public void Update()
-        {
+        public void Update() {
             activeDelay -= Time.deltaTime;
             if (activeDelay > 0f)
                 return;
@@ -90,25 +83,25 @@ namespace Assets.Scripts.Effects
             frameTime = 1 / Time.deltaTime;
             //Debug.Log(frameTime);
 
-            if (FollowTarget == null && destroyOnTargetLost)
-            {
+            if (FollowTarget == null && destroyOnTargetLost) {
                 Debug.Log(gameObject + " will destroy as it's follower is gone.");
                 Destroy(gameObject);
                 return;
             }
 
-            if (FollowTarget != null)
-                transform.localPosition = FollowTarget.transform.localPosition;
+            if (FollowTarget != null) {
+                var position = FollowTarget.transform.localPosition;
+                transform.localPosition = new Vector3(position.x + 0.5f, position.y, position.z + 0.5f);
+            }
+
 
             pauseTime -= Time.deltaTime;
-            if (pauseTime < 0)
-            {
+            if (pauseTime < 0) {
                 CurrentPos += Time.deltaTime;
                 Step = Mathf.RoundToInt(CurrentPos / (1 / 60f));
             }
 
-            if (CurrentPos > Duration)
-            {
+            if (CurrentPos > Duration) {
                 Debug.Log($"{gameObject} will destroy as it's completed it's duration: {CurrentPos} of {Duration}");
 
                 Destroy(gameObject);

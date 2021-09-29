@@ -15,8 +15,7 @@ public partial class ZC {
         public uint delayTime;
         public byte isDisposable;
         public uint property;
-
-        public ushort SKID { get; private set; }
+        public ushort SKID;
 
         public void Read(MemoryStreamReader fp, int size) {
             AID = fp.ReadUInt();
@@ -26,7 +25,7 @@ public partial class ZC {
             SKID = fp.ReadUShort();
             property = fp.ReadUInt();
             delayTime = fp.ReadUInt();
-            isDisposable = (byte)fp.ReadByte();
+            isDisposable = (byte) fp.ReadByte();
         }
     }
 }
