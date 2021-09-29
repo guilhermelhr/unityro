@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 219046964}
   - component: {fileID: 219046963}
   - component: {fileID: 219046968}
+  - component: {fileID: 219046962}
   m_Layer: 8
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -142,6 +143,14 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!81 &219046962
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219046961}
+  m_Enabled: 1
 --- !u!124 &219046963
 Behaviour:
   m_ObjectHideFlags: 0
@@ -305,6 +314,7 @@ GameObject:
   - component: {fileID: 1036250385}
   - component: {fileID: 1036250388}
   - component: {fileID: 1036250387}
+  - component: {fileID: 1036250389}
   m_Layer: 0
   m_Name: Core
   m_TagString: Untagged
@@ -367,6 +377,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3979aa886cf3f41c5933859006bfd91b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1036250389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036250384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ee9e1eb6061c4f80bbe106e6e9d83ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpriteShader: {fileID: 4800000, guid: 01a13a9d77e7a23459ac61f6b149d170, type: 3}
+  AlphaBlendParticleShader: {fileID: 203, guid: 0000000000000000f000000000000000, type: 0}
+  AdditiveShader: {fileID: 4800000, guid: f8219110d81864edd8c0d26cf961e89f, type: 3}
 --- !u!1001 &1280583300
 PrefabInstance:
   m_ObjectHideFlags: 0

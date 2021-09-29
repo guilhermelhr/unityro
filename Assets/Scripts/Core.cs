@@ -1,4 +1,5 @@
-﻿using ROIO;
+﻿using Assets.Scripts.Effects;
+using ROIO;
 using ROIO.Loaders;
 using System;
 using UnityEngine;
@@ -154,6 +155,16 @@ public class Core : MonoBehaviour {
             // handle cursor
             Cursor.lockState = roCamEnabled ? CursorLockMode.None : Cursor.lockState;
             Cursor.visible = roCamEnabled;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q)) {
+            var entity = (Session.CurrentSession.Entity as Entity);
+            CastingEffect.StartCasting(3, "data/texture/effect/ring_red.tga", entity.gameObject);
+        } else if (Input.GetKeyDown(KeyCode.W)) {
+            var entity = (Session.CurrentSession.Entity as Entity);
+            var temp = new GameObject("Warp");
+            temp.transform.position = entity.transform.position;
+            MapWarpEffect.StartWarp(temp);
         }
     }
 
