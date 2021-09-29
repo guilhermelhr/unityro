@@ -597,6 +597,7 @@ GameObject:
   - component: {fileID: 6849943526642155882}
   - component: {fileID: 6849943526642155884}
   - component: {fileID: 6849943526642155885}
+  - component: {fileID: 6849943526642155886}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -659,3 +660,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 679d2baa6b2184f85859a589b10e9b6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6849943526642155886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6849943526642155881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ee9e1eb6061c4f80bbe106e6e9d83ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpriteShader: {fileID: 4800000, guid: 01a13a9d77e7a23459ac61f6b149d170, type: 3}
+  AlphaBlendParticleShader: {fileID: 10721, guid: 0000000000000000f000000000000000, type: 0}
+  AdditiveShader: {fileID: 4800000, guid: f8219110d81864edd8c0d26cf961e89f, type: 3}

@@ -69,7 +69,9 @@ public class EntityControl : MonoBehaviour {
                 }
             }
 
-            RenderEntityName(hit, target);
+            if (target.Entity.Type != EntityType.WARP) {
+                RenderEntityName(hit, target);
+            }
             if (isActionRequested) {
                 ProcessEntityClick(target.Entity);
             }

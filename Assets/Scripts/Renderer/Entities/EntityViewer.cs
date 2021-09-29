@@ -70,6 +70,12 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void Init(bool reloadSprites = false) {
+        meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
+
+        if (Entity.Type == EntityType.WARP) {
+            return;
+        }
+
         if (currentSPR == null || reloadSprites) {
             string path = "";
 
@@ -126,8 +132,6 @@ public class EntityViewer : MonoBehaviour {
                 currentSPR = null;
             }
         }
-
-        meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
 
         if (currentAction == null) {
             ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });

@@ -2,6 +2,7 @@
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -92,7 +93,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.CurrentMotion = new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle };
 
         entity.Init(spr, act);
-        entity.AID = (uint)itemSpawnInfo.mapID;
+        entity.AID = (uint) itemSpawnInfo.mapID;
         entityCache.Add(entity.AID, entity);
         entity.SetReady(true);
 
@@ -101,11 +102,12 @@ public class EntityManager : MonoBehaviour {
 
     private Entity SpawnPC(EntitySpawnData data) {
         var player = new GameObject(data.name);
-        player.layer = LayerMask.NameToLayer("Characters");
+        var layer = LayerMask.NameToLayer("Characters");
+        player.layer = layer;
         player.transform.localScale = Vector3.one;
 
         var entity = player.AddComponent<Entity>();
-        entity.Init(data, LayerMask.NameToLayer("Characters"));
+        entity.Init(data, layer);
 
         entityCache.Add(data.AID, entity);
         entity.SetReady(true);
@@ -115,10 +117,11 @@ public class EntityManager : MonoBehaviour {
 
     private Entity SpawnNPC(EntitySpawnData data) {
         var npc = new GameObject(data.name);
-        npc.layer = LayerMask.NameToLayer("NPC");
+        var layer = LayerMask.NameToLayer("NPC");
+        npc.layer = layer;
         npc.transform.localScale = Vector3.one;
         var entity = npc.AddComponent<Entity>();
-        entity.Init(data, LayerMask.NameToLayer("NPC"));
+        entity.Init(data, layer);
 
         entityCache.Add(data.AID, entity);
         entity.SetReady(true);
@@ -128,10 +131,11 @@ public class EntityManager : MonoBehaviour {
 
     private Entity SpawnMOB(EntitySpawnData data) {
         var mob = new GameObject(data.name);
-        mob.layer = LayerMask.NameToLayer("Monsters");
+        var layer = LayerMask.NameToLayer("Monsters");
+        mob.layer = layer;
         mob.transform.localScale = Vector3.one;
         var entity = mob.AddComponent<Entity>();
-        entity.Init(data, LayerMask.NameToLayer("Monsters"));
+        entity.Init(data, layer);
 
         entityCache.Add(data.AID, entity);
         entity.SetReady(true);
@@ -141,14 +145,20 @@ public class EntityManager : MonoBehaviour {
 
     public Entity SpawnPlayer(CharacterData data) {
         var player = new GameObject(data.Name);
-        player.layer = LayerMask.NameToLayer("Characters");
+        var layer = LayerMask.NameToLayer("Characters");
+        player.layer = layer;
         player.transform.localScale = Vector3.one;
         var entity = player.AddComponent<Entity>();
-        entity.Init(data, LayerMask.NameToLayer("Characters"));
+        entity.Init(data, layer);
 
         var controller = player.AddComponent<EntityControl>();
         controller.Entity = entity;
 
         return entity;
+    }
+
+    public void ClearEntities() {
+        entityCache.Values.ToList().ForEach(it => GameObject.Destroy(it));
+        entityCache.Clear();
     }
 }

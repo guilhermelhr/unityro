@@ -1,4 +1,5 @@
-﻿using ROIO.Models.FileTypes;
+﻿using Assets.Scripts.Effects;
+using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.Threading.Tasks;
@@ -60,7 +61,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     public void Init(EntitySpawnData data, int rendererLayer) {
-        Type = data.objecttype;
+        Type = data.job == 45 ? EntityType.WARP : data.objecttype;
         Direction = ((NpcDirection) data.PosDir[2]).ToDirection();
 
         GID = data.GID;
@@ -154,6 +155,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
         ShadowSize = 1f;
         // Add more options such as sex etc
 
+        if (Type == EntityType.WARP) {
+            var warp = body.AddComponent<MapWarpEffect>();
+            warp.StartWarp(body);
+            return;
+        }
         // Any other than PC has Head etc
         if (Type != EntityType.PC) {
             return;

@@ -160,11 +160,6 @@ public class Core : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Q)) {
             var entity = (Session.CurrentSession.Entity as Entity);
             CastingEffect.StartCasting(3, "data/texture/effect/ring_red.tga", entity.gameObject);
-        } else if (Input.GetKeyDown(KeyCode.W)) {
-            var entity = (Session.CurrentSession.Entity as Entity);
-            var temp = new GameObject("Warp");
-            temp.transform.position = entity.transform.position;
-            MapWarpEffect.StartWarp(temp);
         }
     }
 
@@ -187,6 +182,7 @@ public class Core : MonoBehaviour {
             return;
         SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
+        EntityManager.ClearEntities();
         StartCoroutine(
             MapLoader.Load(mapName + ".rsw", MapRenderer.OnComplete)
         );

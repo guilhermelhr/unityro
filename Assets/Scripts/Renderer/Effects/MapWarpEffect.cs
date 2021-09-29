@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using JetBrains.Annotations;
-using ROIO;
+﻿using ROIO;
 using UnityEngine;
 
 namespace Assets.Scripts.Effects {
@@ -16,13 +10,11 @@ namespace Assets.Scripts.Effects {
         private PrimitiveCylinderEffect prim2;
         private PrimitiveCircleEffect circle;
 
-        public static Material Ring1Material;
-        public static Material Ring2Material;
-        public static Material CircleMaterial;
+        private Material Ring1Material;
+        private Material Ring2Material;
+        private Material CircleMaterial;
 
-        public static MapWarpEffect StartWarp(GameObject parent) {
-            var warp = parent.AddComponent<MapWarpEffect>();
-
+        public void StartWarp(GameObject parent) {
             if (Ring1Material == null) {
                 Ring1Material = new Material(ShaderCache.Instance.AdditiveShader);
                 Ring1Material.mainTexture = FileManager.Load("data/texture/effect/ring_blue.tga") as Texture2D;
@@ -41,11 +33,9 @@ namespace Assets.Scripts.Effects {
                 //CircleMaterial.color = new Color(1f, 1f, 1f, 1f);
             }
 
-            warp.FollowTarget = parent;
+            FollowTarget = parent;
 
-            warp.Init();
-
-            return warp;
+            Init();
         }
 
         public void Init() {
