@@ -10,16 +10,17 @@ public class EntityControl : MonoBehaviour {
     private LayerMask EntityMask;
     private CursorRenderer CursorRenderer;
     private TextMeshPro EntityNameText;
+    private GridRenderer GridRenderer;
 
     private PendingAction CurrentPendingAction = new PendingAction.None();
 
     public Entity Entity;
 
-    // Use this for initialization
     void Start() {
         GroundMask = LayerMask.GetMask("Ground");
         EntityMask = LayerMask.GetMask("NPC", "Monsters", "Items");
         CursorRenderer = Core.CursorRenderer;
+        GridRenderer = FindObjectOfType<GridRenderer>();
 
         MaybeInitEntityNameObject();
     }
@@ -80,6 +81,10 @@ public class EntityControl : MonoBehaviour {
         } else {
             EntityNameText.text = null;
             CursorRenderer.SetAction(CursorAction.DEFAULT, true);
+
+            if (!GridRenderer.IsCurrentPositionValid) {
+                CursorRenderer.SetAction(CursorAction.INVALID, false);
+            }
             if (isActionRequested) {
                 Entity.RequestMove(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z), 0);
             }

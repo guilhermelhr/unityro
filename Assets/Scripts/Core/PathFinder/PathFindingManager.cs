@@ -1,6 +1,5 @@
 ﻿using ROIO.Models.FileTypes;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,6 +30,16 @@ public class PathFindingManager {
 
     private int gridX => (int)Altitude.getWidth();
     private int gridY => (int)Altitude.getHeight();
+
+    public Vector2Int GetClosestTileTopToPoint(Vector2 point, Vector3 position) {
+        var x = Mathf.FloorToInt(point.x - position.x);
+        var y = Mathf.FloorToInt(point.y - position.z);
+
+        if (x < 0 || x >= gridX || y < 0 || y >= gridY)
+            return Vector2Int.zero;
+
+        return new Vector2Int(x, y);
+    }
 
     public bool LoadMap(Altitude altitude) {
         if (altitude != null && altitude != this.Altitude) {

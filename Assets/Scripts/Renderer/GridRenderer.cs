@@ -1,5 +1,4 @@
 ﻿using ROIO;
-using System;
 using UnityEngine;
 
 public class GridRenderer : MonoBehaviour {
@@ -14,10 +13,7 @@ public class GridRenderer : MonoBehaviour {
     private Vector3[] vertices;
     private Vector2[] uvs;
     private int[] triangles;
-
-    private void Awake() {
-
-    }
+    public bool IsCurrentPositionValid { get; private set; }
 
     public void Start() {
         LoadGridTexture();
@@ -25,7 +21,7 @@ public class GridRenderer : MonoBehaviour {
 
     private void Update() {
         if (gridIcon == null) {
-            gridIcon = (Texture2D)FileManager.Load("data/texture/grid.tga");
+            gridIcon = (Texture2D) FileManager.Load("data/texture/grid.tga");
         }
 
         var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
@@ -52,12 +48,14 @@ public class GridRenderer : MonoBehaviour {
 
     private void RenderGridSelector(Vector2 targetPosition) {
         var cell = Core.PathFinding.GetCell(targetPosition.x, targetPosition.y);
-        GetClosestTileTopToPoint(targetPosition, out var target);
+        var target = Core.PathFinding.GetClosestTileTopToPoint(targetPosition, transform.position);
+        IsCurrentPositionValid = Core.PathFinding.IsWalkable(target.x, target.y);
 
-        if (!Core.PathFinding.IsWalkable(target.x, target.y)) {
-            //Disable renderer
+        if (!IsCurrentPositionValid) {
+            meshRenderer.enabled = false;
             return;
         } else {
+            meshRenderer.enabled = true;
             material.mainTexture = gridIcon;
             material.color = new Color(50 / 255f, 240 / 255f, 160 / 255f, 0.6f);
         }
@@ -92,18 +90,5 @@ public class GridRenderer : MonoBehaviour {
         meshRenderer.enabled = true;
     }
 
-    public bool GetClosestTileTopToPoint(Vector2 point, out Vector2Int tile) {
-        tile = new Vector2Int();
 
-        var x = Mathf.FloorToInt((point.x - transform.position.x));
-        var y = Mathf.FloorToInt((point.y - transform.position.z));
-
-        //Debug.Log(WalkData.Width + " " + WalkData.Height + " " + x + " " + y);
-
-        if (x < 0 || x >= (Core.PathFinding.Altitude.getWidth()) || y < 0 || y >= (Core.PathFinding.Altitude.getHeight()))
-            return false;
-
-        tile = new Vector2Int(x, y);
-        return true;
-    }
 }
