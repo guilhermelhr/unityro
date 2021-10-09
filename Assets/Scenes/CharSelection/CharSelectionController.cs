@@ -66,7 +66,7 @@ public class CharSelectionController : MonoBehaviour {
             DontDestroyOnLoad(mapUI);
 
             var loginInfo = NetworkClient.Instance.State.LoginInfo;
-            new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int)new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
+            new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int) new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
         }
     }
 
@@ -81,21 +81,27 @@ public class CharSelectionController : MonoBehaviour {
             var controller = item.GetComponent<CharacterCellController>();
             if (i < currentCharactersInfo.Chars.Count) {
                 controller.BindData(currentCharactersInfo.Chars[i]);
-                controller.OnCharacterSelected = OnCharacterSelected;
             }
+            controller.OnCharacterSelected = OnCharacterSelected;
 
             characterSlots.Add(controller);
         }
     }
 
     private void OnCharacterSelected(CharacterData character) {
-        this.selectedCharacter = character;
+        if (character == null) {
+            SceneManager.LoadSceneAsync(6, LoadSceneMode.Additive);
+        } else {
+            this.selectedCharacter = character;
+        }
     }
 
     public void OnEnterGameClicked() {
-        if (selectedCharacter == null) return;
+        if (selectedCharacter == null)
+            return;
         var charIndex = currentCharactersInfo.Chars.IndexOf(selectedCharacter);
-        if (charIndex < 0) return;
+        if (charIndex < 0)
+            return;
 
         new CH.SELECT_CHAR(charIndex).Send();
     }
@@ -103,7 +109,7 @@ public class CharSelectionController : MonoBehaviour {
     public void CreateChar() {
         new CH.MAKE_CHAR2() {
             Name = Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8),
-            CharNum = (byte)currentCharactersInfo.Chars.Count
+            CharNum = (byte) currentCharactersInfo.Chars.Count
         }.Send();
     }
 }
