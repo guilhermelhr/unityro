@@ -3,7 +3,6 @@ using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -153,6 +152,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     private void SetupViewer(EntityEquipInfo data, int rendererLayer) {
+        if (EntityViewer != null) {
+            Destroy(EntityViewer.gameObject);
+        }
+
         var body = new GameObject("Body");
         body.layer = rendererLayer;
         body.transform.SetParent(gameObject.transform, false);

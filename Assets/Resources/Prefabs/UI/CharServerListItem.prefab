@@ -167,7 +167,7 @@ GameObject:
   - component: {fileID: 5767030055705609274}
   - component: {fileID: 1968045064413456425}
   m_Layer: 5
-  m_Name: Toggle
+  m_Name: CharServerListItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
