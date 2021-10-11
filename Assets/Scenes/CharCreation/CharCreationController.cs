@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class CharCreationController : MonoBehaviour {
 
@@ -11,6 +12,7 @@ public class CharCreationController : MonoBehaviour {
     public Entity StyleEntity;
     public Entity HumanSelectionEntity;
     public Entity DoramSelecionEntity;
+    public TMP_InputField CharacterName;
 
     public GridLayoutGroup GridLayout;
     public ToggleGroup HairToggleGroup;
@@ -21,7 +23,7 @@ public class CharCreationController : MonoBehaviour {
 
     private int SelectedSex = 1;
     private bool IsHumanSelected = true;
-    private int SelectedHair = 0;
+    private int SelectedHair = 1;
     private int SelectedHairColor = 0;
 
     void Start() {
@@ -60,8 +62,24 @@ public class CharCreationController : MonoBehaviour {
 
     public void SetSex(int sex) {
         SelectedSex = sex;
-        UpdateEntity(StyleEntity, sex);
         SetHairstyles();
+        UpdateEntity(StyleEntity, sex);
+    }
+
+    public void CreateCharacter() {
+        var name = CharacterName.text;
+        if (name.Length < 4) {
+            return;
+        }
+
+        new CH.MAKE_CHAR2() {
+            Name = name,
+            CharNum = (byte) NetworkClient.Instance.State.CurrentCharactersInfo.Chars.Count,
+            Sex = (byte) SelectedSex,
+            Head = (ushort) SelectedHair,
+            HeadPal = (ushort) SelectedHairColor,
+            StartJob = IsHumanSelected ? 0 : 4218
+        }.Send();
     }
 
     private void InitEntity(Entity entity, int sex = 1, int job = 0) {
@@ -70,7 +88,7 @@ public class CharCreationController : MonoBehaviour {
         entity.SetReady(true, true);
     }
 
-    private void UpdateEntity(Entity entity, int sex = 1, int hair = 0, int color = 0) {
+    private void UpdateEntity(Entity entity, int sex = 1, int hair = 1, int color = 1) {
         entity.Status.sex = (byte) sex;
         entity.Status.hair = (short) hair;
         entity.Status.hair_color = (short) color;
@@ -78,7 +96,11 @@ public class CharCreationController : MonoBehaviour {
     }
 
     private void SetHairstyles() {
+        if (HairToggleList == null) {
+            return;
+        }
         var count = IsHumanSelected ? HUMAN_MAX_HAIRSTYLE : DORAM_MAX_HAIRTYLE;
+        HairToggleList.ForEach(it => it.SetImage(null, -1));
         for (int i = 1; i <= count; i++) {
             var hairstylePath = "make_character_ver2/img_hairstyle";
             if (IsHumanSelected) {

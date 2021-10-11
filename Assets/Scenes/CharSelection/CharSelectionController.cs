@@ -29,6 +29,8 @@ public class CharSelectionController : MonoBehaviour {
         if (packet is HC.ACCEPT_MAKECHAR ACCEPT_MAKECHAR) {
             currentCharactersInfo.Chars.Add(ACCEPT_MAKECHAR.characterData);
             characterSlots.Find(it => it.IsEmpty).BindData(ACCEPT_MAKECHAR.characterData);
+
+            SceneManager.UnloadSceneAsync(6);
         }
     }
 
