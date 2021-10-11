@@ -26,8 +26,8 @@ public class CharCreationController : MonoBehaviour {
 
     void Start() {
         InitEntity(StyleEntity);
-        InitEntity(HumanSelectionEntity);
-        InitEntity(DoramSelecionEntity);
+        InitEntity(HumanSelectionEntity, sex: SelectedSex, job: 0);
+        InitEntity(DoramSelecionEntity, sex: SelectedSex, job: 4218);
 
         HairToggleList = GridLayout.GetComponentsInChildren<ToggleImage>().ToList();
     }
@@ -48,9 +48,11 @@ public class CharCreationController : MonoBehaviour {
         if (isHuman) {
             DoramSelecionEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
             HumanSelectionEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
+            InitEntity(StyleEntity, sex: SelectedSex, job: 0);
         } else {
             DoramSelecionEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
             HumanSelectionEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
+            InitEntity(StyleEntity, sex: SelectedSex, job: 4218);
         }
 
         SetHairstyles();
@@ -62,8 +64,8 @@ public class CharCreationController : MonoBehaviour {
         SetHairstyles();
     }
 
-    private void InitEntity(Entity entity, int sex = 1) {
-        entity.Init(new CharacterData() { Sex = sex, Job = 0, Name = "Player", GID = 20001, Weapon = 1, Speed = 150 }, LayerMask.NameToLayer("Characters"), true);
+    private void InitEntity(Entity entity, int sex = 1, int job = 0) {
+        entity.Init(new CharacterData() { Sex = sex, Job = (short) job, Name = "Player", GID = 20001, Weapon = 1, Speed = 150, Hair = 1 }, LayerMask.NameToLayer("Characters"), true);
         entity.SortingGroup.sortingOrder = 3;
         entity.SetReady(true, true);
     }
@@ -95,7 +97,7 @@ public class CharCreationController : MonoBehaviour {
     }
 
     private void OnHairToggleChanged(int index) {
-        SelectedHair = index;
+        SelectedHair = index + 1;
         UpdateEntity(StyleEntity, SelectedSex, SelectedHair, SelectedHairColor);
     }
 }

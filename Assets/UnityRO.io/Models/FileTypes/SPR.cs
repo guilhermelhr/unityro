@@ -127,6 +127,7 @@ namespace ROIO.Models.FileTypes {
                 Frame frame = frames[i];
                 Texture2D texture = new Texture2D(frame.width, frame.height, TextureFormat.RGBA32, false);
                 texture.LoadRawTextureData(frame.data);
+                texture.filterMode = FilterMode.Bilinear;
                 texture.Apply();
                 /**
                  * This anchor offset is a hack
