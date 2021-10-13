@@ -35,6 +35,10 @@ public class EntityControl : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        if (GridRenderer == null) {
+            GridRenderer = FindObjectOfType<GridRenderer>();
+        }
+
         MaybeInitEntityNameObject();
 
         var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);

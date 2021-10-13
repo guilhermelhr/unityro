@@ -83,10 +83,9 @@ public class DBManager {
             return $"data/sprite/ÀÎ°£Á·/¸öÅë/{sexPath}/{jobPath}_{sexPath}";
         }
 
-        // TODO: Warp STR file
-        //if (id == 45) {
-        //    return null;
-        //}
+        if (job == 4218) {
+            return $"data/sprite/µµ¶÷Á·/¸öÅë/{sexPath}/summoner_{sexPath}";
+        }
 
         // Not visible sprite
         if (job == 111 || job == 139) {
@@ -115,8 +114,12 @@ public class DBManager {
         // TODO: add support for mercenary
     }
 
-    public static string GetHeadPath(int headId, int sex) {
-        return $"data/sprite/ÀÎ°£Á·/¸Ó¸®Åë/{SexTable[sex]}/{HairIndexPath[sex][headId]}_{SexTable[sex]}";
+    public static string GetHeadPath(int job, int headId, int sex) {
+        if (job == 4218) {
+            return $"data/sprite/µµ¶÷Á·/¸Ó¸®Åë/{SexTable[sex]}/{headId}_{SexTable[sex]}";
+        }
+
+        return $"data/sprite/ÀÎ°£Á·/¸Ó¸®Åë/{SexTable[sex]}/{headId}_{SexTable[sex]}";
     }
 
     public static string GetShieldPath(int id, int job, int sex) {

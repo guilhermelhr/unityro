@@ -72,7 +72,7 @@ public class EntityViewer : MonoBehaviour {
                     path = DBManager.GetBodyPath(Entity.Status.jobId, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD:
-                    path = DBManager.GetHeadPath(Entity.Status.hair, Entity.Status.sex);
+                    path = DBManager.GetHeadPath(Entity.Status.jobId, Entity.Status.hair, Entity.Status.sex);
                     break;
                 case ViewerType.WEAPON:
                     currentViewID = Entity.EquipInfo.Weapon;

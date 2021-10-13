@@ -3,7 +3,6 @@ using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -23,6 +22,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public EntityType Type = EntityType.UNKNOWN;
     public EntityViewer EntityViewer;
     public Direction Direction = 0;
+    public SortingGroup SortingGroup;
     public float ShadowSize;
     public int Action = 0;
     public int HeadDir;
@@ -134,8 +134,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
         SetupViewer(EquipInfo, rendererLayer);
 
-        if (isFromCharacterSelection)
+        if (isFromCharacterSelection) {
+            ShadowSize = 0f;
             return;
+        }
 
         HookPackets();
     }
@@ -150,13 +152,17 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     private void SetupViewer(EntityEquipInfo data, int rendererLayer) {
+        if (EntityViewer != null) {
+            Destroy(EntityViewer.gameObject);
+        }
+
         var body = new GameObject("Body");
         body.layer = rendererLayer;
         body.transform.SetParent(gameObject.transform, false);
         body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
         body.AddComponent<Billboard>();
-        var sortingGroup = body.AddComponent<SortingGroup>();
-        sortingGroup.sortingOrder = 2;
+        SortingGroup = body.AddComponent<SortingGroup>();
+        SortingGroup.sortingOrder = 2;
 
         var bodyViewer = body.AddComponent<EntityViewer>();
         bodyViewer.ViewerType = ViewerType.BODY;
