@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -9,6 +10,7 @@ public class CharSelectionController : MonoBehaviour {
     public GridLayoutGroup GridLayout;
     public GameObject charSelectionItem;
     public GameObject MapUIPrefab;
+    public EventSystem EventSystem;
 
     private HC.NOTIFY_ZONESVR2 currentMapInfo;
     private HC.ACCEPT_ENTER currentCharactersInfo;
@@ -31,6 +33,7 @@ public class CharSelectionController : MonoBehaviour {
             characterSlots.Find(it => it.IsEmpty).BindData(ACCEPT_MAKECHAR.characterData);
 
             SceneManager.UnloadSceneAsync(6);
+            EventSystem.gameObject.SetActive(true);
         }
     }
 
@@ -92,6 +95,12 @@ public class CharSelectionController : MonoBehaviour {
 
     private void OnCharacterSelected(CharacterData character) {
         if (character == null) {
+            EventSystem.gameObject.SetActive(false);
+            SceneManager.sceneUnloaded += delegate (Scene scene) {
+                if (scene.buildIndex == 6) {
+                    EventSystem.gameObject.SetActive(true);
+                }
+            };
             SceneManager.LoadSceneAsync(6, LoadSceneMode.Additive);
         } else {
             this.selectedCharacter = character;

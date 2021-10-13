@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class CharCreationController : MonoBehaviour {
 
@@ -80,6 +81,10 @@ public class CharCreationController : MonoBehaviour {
             HeadPal = (ushort) SelectedHairColor,
             StartJob = IsHumanSelected ? 0 : 4218
         }.Send();
+    }
+
+    public void CloseWindow() {
+        SceneManager.UnloadSceneAsync(6);
     }
 
     private void InitEntity(Entity entity, int sex = 1, int job = 0) {
