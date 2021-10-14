@@ -1,6 +1,5 @@
 ﻿using ROIO;
 using ROIO.Models.FileTypes;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,6 +8,10 @@ using UnityEngine.Rendering;
 public class EntityManager : MonoBehaviour {
 
     private Dictionary<uint, Entity> entityCache = new Dictionary<uint, Entity>();
+
+    private void Awake() {
+        DontDestroyOnLoad(this);
+    }
 
     public Entity Spawn(EntitySpawnData data) {
         switch (data.objecttype) {

@@ -15,6 +15,14 @@ public class GridRenderer : MonoBehaviour {
     private int[] triangles;
     public bool IsCurrentPositionValid { get; private set; }
 
+    private GameManager GameManager;
+    private PathFinder PathFinder;
+
+    private void Awake() {
+        GameManager = FindObjectOfType<GameManager>();
+        PathFinder = FindObjectOfType<PathFinder>();
+    }
+
     public void Start() {
         LoadGridTexture();
     }
@@ -24,7 +32,7 @@ public class GridRenderer : MonoBehaviour {
             gridIcon = (Texture2D) FileManager.Load("data/texture/grid.tga");
         }
 
-        var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
+        var ray = GameManager.MainCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, 150, LayerMask.GetMask("Ground"))) {
             var target = new Vector2(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z));
             RenderGridSelector(target);
@@ -47,9 +55,9 @@ public class GridRenderer : MonoBehaviour {
     }
 
     private void RenderGridSelector(Vector2 targetPosition) {
-        var cell = Core.PathFinding.GetCell(targetPosition.x, targetPosition.y);
-        var target = Core.PathFinding.GetClosestTileTopToPoint(targetPosition, transform.position);
-        IsCurrentPositionValid = Core.PathFinding.IsWalkable(target.x, target.y);
+        var cell = PathFinder.GetCell(targetPosition.x, targetPosition.y);
+        var target = PathFinder.GetClosestTileTopToPoint(targetPosition, transform.position);
+        IsCurrentPositionValid = PathFinder.IsWalkable(target.x, target.y);
 
         if (!IsCurrentPositionValid) {
             meshRenderer.enabled = false;
@@ -71,10 +79,10 @@ public class GridRenderer : MonoBehaviour {
 
         var offset = new Vector3(0f, 0.015f, 0f);
 
-        vertices[0] = new Vector3(target.x, cell.Heights[0] / 5f, target.y + 1) + offset;
-        vertices[1] = new Vector3(target.x + 1, cell.Heights[1] / 5f, target.y + 1) + offset;
-        vertices[2] = new Vector3(target.x, cell.Heights[2] / 5f, target.y) + offset;
-        vertices[3] = new Vector3(target.x + 1, cell.Heights[3] / 5f, target.y) + offset;
+        //vertices[0] = new Vector3(target.x, cell.Heights[0] / 5f, target.y + 1) + offset;
+        //vertices[1] = new Vector3(target.x + 1, cell.Heights[1] / 5f, target.y + 1) + offset;
+        //vertices[2] = new Vector3(target.x, cell.Heights[2] / 5f, target.y) + offset;
+        //vertices[3] = new Vector3(target.x + 1, cell.Heights[3] / 5f, target.y) + offset;
 
         uvs[0] = new Vector2(0, 1);
         uvs[1] = new Vector2(1, 1);

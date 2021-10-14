@@ -16,13 +16,21 @@ public class CharSelectionController : MonoBehaviour {
     private HC.ACCEPT_ENTER currentCharactersInfo;
     private CharacterData selectedCharacter;
 
+    private EntityManager EntityManager;
+    private NetworkClient NetworkClient;
+
     private List<CharacterCellController> characterSlots;
 
+    private void Awake() {
+        EntityManager = FindObjectOfType<EntityManager>();
+        NetworkClient = FindObjectOfType<NetworkClient>();
+    }
+
     void Start() {
-        currentCharactersInfo = NetworkClient.Instance.State.CurrentCharactersInfo;
-        NetworkClient.Instance.HookPacket(HC.NOTIFY_ZONESVR2.HEADER, OnCharacterSelectionAccepted);
-        NetworkClient.Instance.HookPacket(HC.ACCEPT_MAKECHAR.HEADER, OnMakeCharAccepted);
-        NetworkClient.Instance.HookPacket(ZC.ACCEPT_ENTER2.HEADER, OnMapServerLoginAccepted);
+        currentCharactersInfo = NetworkClient.State.CurrentCharactersInfo;
+        NetworkClient.HookPacket(HC.NOTIFY_ZONESVR2.HEADER, OnCharacterSelectionAccepted);
+        NetworkClient.HookPacket(HC.ACCEPT_MAKECHAR.HEADER, OnMakeCharAccepted);
+        NetworkClient.HookPacket(ZC.ACCEPT_ENTER2.HEADER, OnMapServerLoginAccepted);
 
         PopulateUI();
     }
@@ -46,9 +54,9 @@ public class CharSelectionController : MonoBehaviour {
                 PosY = pkt.PosY,
                 Dir = pkt.Dir
             };
-            NetworkClient.Instance.State.MapLoginInfo = mapLoginInfo;
+            NetworkClient.State.MapLoginInfo = mapLoginInfo;
             Session.CurrentSession.SetCurrentMap(mapLoginInfo.mapname);
-            NetworkClient.Instance.StartHeatBeat();
+            NetworkClient.StartHeatBeat();
 
             SceneManager.LoadScene("MapScene");
         }
@@ -56,21 +64,21 @@ public class CharSelectionController : MonoBehaviour {
 
     private void OnCharacterSelectionAccepted(ushort cmd, int size, InPacket packet) {
         if (packet is HC.NOTIFY_ZONESVR2) {
-            NetworkClient.Instance.Disconnect();
+            NetworkClient.Disconnect();
 
             currentMapInfo = packet as HC.NOTIFY_ZONESVR2;
-            NetworkClient.Instance.State.SelectedCharacter = selectedCharacter;
-            NetworkClient.Instance.ChangeServer(currentMapInfo.IP.ToString(), currentMapInfo.Port);
-            NetworkClient.Instance.CurrentConnection.Start();
+            NetworkClient.State.SelectedCharacter = selectedCharacter;
+            NetworkClient.ChangeServer(currentMapInfo.IP.ToString(), currentMapInfo.Port);
+            NetworkClient.CurrentConnection.Start();
 
-            var entity = Core.EntityManager.SpawnPlayer(Core.NetworkClient.State.SelectedCharacter);
-            Session.StartSession(new Session(entity, Core.NetworkClient.State.LoginInfo.AccountID));
+            var entity = EntityManager.SpawnPlayer(NetworkClient.State.SelectedCharacter);
+            Session.StartSession(new Session(entity, NetworkClient.State.LoginInfo.AccountID));
             DontDestroyOnLoad(entity.gameObject);
 
             var mapUI = Instantiate(MapUIPrefab);
             DontDestroyOnLoad(mapUI);
 
-            var loginInfo = NetworkClient.Instance.State.LoginInfo;
+            var loginInfo = NetworkClient.State.LoginInfo;
             new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int) new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
         }
     }

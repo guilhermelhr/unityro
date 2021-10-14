@@ -30,6 +30,10 @@ public class CursorRenderer : MonoBehaviour {
     private int currentFrame;
     private double currentFrameTime = 0;
 
+    private void Awake() {
+        DontDestroyOnLoad(this);
+    }
+
     // Use this for initialization
     void Start() {
         spr = FileManager.Load("data/sprite/cursors.spr") as SPR;
@@ -81,7 +85,7 @@ public class CursorRenderer : MonoBehaviour {
         }
 
         this.type = type;
-        this.tick = Core.Tick;
+        this.tick = GameManager.Tick;
         this.repeat = repeat;
 
         this.currentAction = animation ?? (int) type;

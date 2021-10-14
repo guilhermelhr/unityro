@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -205,6 +205,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &474186720
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 474186722}
+  - component: {fileID: 474186721}
+  m_Layer: 0
+  m_Name: ShaderCache
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &474186721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474186720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ee9e1eb6061c4f80bbe106e6e9d83ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpriteShader: {fileID: 4800000, guid: 01a13a9d77e7a23459ac61f6b149d170, type: 3}
+  AlphaBlendParticleShader: {fileID: 10721, guid: 0000000000000000f000000000000000, type: 0}
+  AdditiveShader: {fileID: 4800000, guid: f8219110d81864edd8c0d26cf961e89f, type: 3}
+--- !u!4 &474186722
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474186720}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.3102584, y: 1.0231476, z: 257.09717}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &726516690
 GameObject:
@@ -452,6 +498,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!223 &1518520348
 Canvas:
   m_ObjectHideFlags: 0
@@ -569,6 +616,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &2052593201
@@ -595,9 +643,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6849943526642155883}
   - component: {fileID: 6849943526642155882}
-  - component: {fileID: 6849943526642155884}
-  - component: {fileID: 6849943526642155885}
-  - component: {fileID: 6849943526642155886}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -617,11 +662,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7086719cce558a44489091c3f16b6408, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Offline: 0
-  mapname: 
-  soundsMixerGroup: {fileID: 243063458056754506, guid: 80607cd4d5abb9d49824975c92ad1afc, type: 2}
-  worldLight: {fileID: 2052593200}
-  mapDropdown: {fileID: 0}
+  OfflineOnly: 0
+  OfflineMapname: 
+  SoundMixerGroup: {fileID: 243063458056754506, guid: 80607cd4d5abb9d49824975c92ad1afc, type: 2}
+  WorldLight: {fileID: 2052593200}
 --- !u!4 &6849943526642155883
 Transform:
   m_ObjectHideFlags: 0
@@ -636,42 +680,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6849943526642155884
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6849943526642155881}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3979aa886cf3f41c5933859006bfd91b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &6849943526642155885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6849943526642155881}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 679d2baa6b2184f85859a589b10e9b6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &6849943526642155886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6849943526642155881}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ee9e1eb6061c4f80bbe106e6e9d83ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SpriteShader: {fileID: 4800000, guid: 01a13a9d77e7a23459ac61f6b149d170, type: 3}
-  AlphaBlendParticleShader: {fileID: 10721, guid: 0000000000000000f000000000000000, type: 0}
-  AdditiveShader: {fileID: 4800000, guid: f8219110d81864edd8c0d26cf961e89f, type: 3}

@@ -8,19 +8,28 @@ public class EntityControl : MonoBehaviour {
 
     private LayerMask GroundMask;
     private LayerMask EntityMask;
-    private CursorRenderer CursorRenderer;
     private TextMeshPro EntityNameText;
-    private GridRenderer GridRenderer;
+    private Camera MainCamera;
 
     private PendingAction CurrentPendingAction = new PendingAction.None();
 
     public Entity Entity;
 
+    private CursorRenderer CursorRenderer;
+    private GridRenderer GridRenderer;
+    private PathFinder PathFinder;
+
+
+    private void Awake() {
+        CursorRenderer = FindObjectOfType<CursorRenderer>();
+        GridRenderer = FindObjectOfType<GridRenderer>();
+        PathFinder = FindObjectOfType<PathFinder>();
+        MainCamera = Camera.main;
+    }
+
     void Start() {
         GroundMask = LayerMask.GetMask("Ground");
         EntityMask = LayerMask.GetMask("NPC", "Monsters", "Items");
-        CursorRenderer = Core.CursorRenderer;
-        GridRenderer = FindObjectOfType<GridRenderer>();
 
         MaybeInitEntityNameObject();
     }
@@ -38,10 +47,13 @@ public class EntityControl : MonoBehaviour {
         if (GridRenderer == null) {
             GridRenderer = FindObjectOfType<GridRenderer>();
         }
+        if (MainCamera == null) {
+            MainCamera = Camera.main;
+        }
 
         MaybeInitEntityNameObject();
 
-        var ray = Core.MainCamera.ScreenPointToRay(Input.mousePosition);
+        var ray = MainCamera.ScreenPointToRay(Input.mousePosition);
         var didHitAnything = Physics.Raycast(ray, out var hit, 150, EntityMask | GroundMask);
         var didHitAnyEntity = Physics.Raycast(ray, out var entityHit, 150, EntityMask);
         var isActionRequested = Input.GetKeyDown(KeyCode.Mouse0) && !EventSystem.current.IsPointerOverGameObject();
@@ -110,7 +122,7 @@ public class EntityControl : MonoBehaviour {
                 }.Send();
                 break;
             case EntityType.ITEM:
-                Core.CursorRenderer.SetAction(CursorAction.PICK, false, 2);
+                CursorRenderer.SetAction(CursorAction.PICK, false, 2);
 
                 OutPacket pickPacket = new CZ.ITEM_PICKUP2() { ID = (int) target.AID };
                 if (Vector3.Distance(transform.position, target.transform.position) > 2) {
@@ -137,14 +149,14 @@ public class EntityControl : MonoBehaviour {
                 OutPacket actionPacket;
 
                 if (CurrentPendingAction is PendingAction.TargetSelection TargetSelection) {
-                    path = Core.PathFinding.GetPath(Entity.transform.position, target.transform.position, TargetSelection.SkillInfo.AttackRange + 1);
+                    path = PathFinder.GetPath(Entity.transform.position, target.transform.position, TargetSelection.SkillInfo.AttackRange + 1);
                     actionPacket = new CZ.USE_SKILL2() {
                         SkillId = TargetSelection.SkillInfo.SkillID,
                         SelectedLevel = TargetSelection.Level,
                         TargetId = (int) target.AID
                     };
                 } else {
-                    path = Core.PathFinding.GetPath(Entity.transform.position, target.transform.position, Entity.GetBaseStatus().attackRange + 1);
+                    path = PathFinder.GetPath(Entity.transform.position, target.transform.position, Entity.GetBaseStatus().attackRange + 1);
                     actionPacket = new CZ.REQUEST_ACT2() {
                         TargetID = target.AID,
                         action = EntityActionType.CONTINUOUS_ATTACK

@@ -21,6 +21,7 @@ public class CharCreationController : MonoBehaviour {
 
     private bool IsDirty = false;
     private List<ToggleImage> HairToggleList;
+    private NetworkClient NetworkClient;
 
     private int SelectedSex = 1;
     private bool IsHumanSelected = true;
@@ -28,6 +29,8 @@ public class CharCreationController : MonoBehaviour {
     private int SelectedHairColor = 0;
 
     void Start() {
+        NetworkClient = FindObjectOfType<NetworkClient>();
+
         InitEntity(StyleEntity);
         InitEntity(HumanSelectionEntity, sex: SelectedSex, job: 0);
         InitEntity(DoramSelecionEntity, sex: SelectedSex, job: 4218);
@@ -75,7 +78,7 @@ public class CharCreationController : MonoBehaviour {
 
         new CH.MAKE_CHAR2() {
             Name = name,
-            CharNum = (byte) NetworkClient.Instance.State.CurrentCharactersInfo.Chars.Count,
+            CharNum = (byte) NetworkClient.State.CurrentCharactersInfo.Chars.Count,
             Sex = (byte) SelectedSex,
             Head = (ushort) SelectedHair,
             HeadPal = (ushort) SelectedHairColor,

@@ -9,10 +9,14 @@ public class ChatBoxController : MonoBehaviour {
     [SerializeField] private GameObject LinearLayout;
     [SerializeField] private GameObject TextLinePrefab;
 
+    private NetworkClient NetworkClient;
+
     private void Awake() {
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_PLAYERCHAT.HEADER, OnMessageRecieved);
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_CHAT.HEADER, OnMessageRecieved);
-        Core.NetworkClient.HookPacket(ZC.MSG.HEADER, OnMessageRecieved);
+        NetworkClient = FindObjectOfType<NetworkClient>();
+
+        NetworkClient.HookPacket(ZC.NOTIFY_PLAYERCHAT.HEADER, OnMessageRecieved);
+        NetworkClient.HookPacket(ZC.NOTIFY_CHAT.HEADER, OnMessageRecieved);
+        NetworkClient.HookPacket(ZC.MSG.HEADER, OnMessageRecieved);
     }
 
     private void OnMessageRecieved(ushort cmd, int size, InPacket packet) {

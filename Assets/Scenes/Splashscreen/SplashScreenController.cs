@@ -9,7 +9,7 @@ public class SplashScreenController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        Core.OnGrfLoaded += OnGrfLoaded;
+        GameManager.OnGrfLoaded += OnGrfLoaded;
     }
 
     private void OnGrfLoaded() {
@@ -19,6 +19,6 @@ public class SplashScreenController : MonoBehaviour
     // Update is called once per frame
     void Destroy()
     {
-        Core.OnGrfLoaded -= OnGrfLoaded;
+        GameManager.OnGrfLoaded -= OnGrfLoaded;
     }
 }

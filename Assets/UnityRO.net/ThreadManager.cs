@@ -8,6 +8,10 @@ public class ThreadManager : MonoBehaviour {
     private static readonly List<System.Action> executeCopiedOnMainThread = new List<System.Action>();
     private static bool actionToExecuteOnMainThread = false;
 
+    private void Awake() {
+        DontDestroyOnLoad(this);
+    }
+
     private void Update() {
         UpdateMain();
     }

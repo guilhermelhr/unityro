@@ -26,7 +26,7 @@ public class Models {
     }
 
     public IEnumerator BuildMeshes() {
-        float remainingProgress = 100 - Core.MapLoader.Progress;
+        float remainingProgress = 100 - GameManager.GetMapLoaderProgress();
         float modelProgress = remainingProgress / models.Count;
 
         GameObject parent = new GameObject("_Models");
@@ -174,11 +174,11 @@ public class Models {
                     yield return new WaitForEndOfFrame();
             }
 
-            Core.MapLoader.Progress += modelProgress;
+            GameManager.IncreaseMapLoadingProgress(modelProgress);
         }
 
         anims.Clear();
-        Core.MapLoader.Progress += 1;
+        GameManager.IncreaseMapLoadingProgress(1);
         yield return null;
     }
 

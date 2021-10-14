@@ -12,7 +12,7 @@ namespace Tests {
     [Parallelizable(ParallelScope.Children)]
     public class MapLoaderTests {
 
-        MapSelector mapSelector;
+        //MapSelector mapSelector;
 
         [OneTimeSetUp]
         public void SetUp() {
@@ -26,19 +26,19 @@ namespace Tests {
         public void AssertEveryMapLoadCorrectly() {
 
             using (StreamWriter w = File.AppendText("D:/Ragnarok/log.txt")) {
-                foreach (var filename in mapSelector.GetMapList()) {
-                    var mapName = MapSelector.GetMapName(filename);
-                    w.WriteLine("[Test]");
-                    w.WriteLine($"public void Assert_{mapName.Replace("@", "_").Replace("-", "_")}_Loads() {{");
-                    w.WriteLine("var stopWatch = new System.Diagnostics.Stopwatch();");
-                    w.WriteLine("stopWatch.Restart();");
-                    w.WriteLine($"Debug.Log(\"Starting to load {mapName}\");");
-                    w.WriteLine($"new MapLoader().Load(\"{mapName}.rsw\", Substitute.For<Action<string, string, object>>());");
-                    w.WriteLine("stopWatch.Stop();");
-                    w.WriteLine($"Debug.Log($\"{mapName} took {{stopWatch.Elapsed}} to load\");");
-                    w.WriteLine("}");
-                    w.WriteLine();
-                }
+                //foreach (var filename in mapSelector.GetMapList()) {
+                //    var mapName = MapSelector.GetMapName(filename);
+                //    w.WriteLine("[Test]");
+                //    w.WriteLine($"public void Assert_{mapName.Replace("@", "_").Replace("-", "_")}_Loads() {{");
+                //    w.WriteLine("var stopWatch = new System.Diagnostics.Stopwatch();");
+                //    w.WriteLine("stopWatch.Restart();");
+                //    w.WriteLine($"Debug.Log(\"Starting to load {mapName}\");");
+                //    w.WriteLine($"new MapLoader().Load(\"{mapName}.rsw\", Substitute.For<Action<string, string, object>>());");
+                //    w.WriteLine("stopWatch.Stop();");
+                //    w.WriteLine($"Debug.Log($\"{mapName} took {{stopWatch.Elapsed}} to load\");");
+                //    w.WriteLine("}");
+                //    w.WriteLine();
+                //}
             }
         }
 

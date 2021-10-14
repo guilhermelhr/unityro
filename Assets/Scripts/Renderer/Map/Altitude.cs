@@ -13,23 +13,20 @@ using UnityEngine;
 public class Altitude {
     private static int MAX_INTERSECT_COUNT = 150;
     public GAT gat { get; private set; }
+
     private List<PathNode> nodes;
+    private PathFinder PathFinder;
 
-    public Altitude(ROIO.Utils.MemoryStreamReader stream) {
-        gat = AltitudeLoader.Load(stream);
-
-        init(gat);
-    }
-
-    public Altitude(GAT gat) {
+    public Altitude(GAT gat, PathFinder pathFinder) {
         this.gat = gat;
+        PathFinder = pathFinder;
 
         init(gat);
     }
 
     private void init(GAT gat) {
         GenerateNodes();
-        Core.PathFinding.LoadMap(this);
+        PathFinder.LoadMap(this);
     }
     private void GenerateNodes() {
         nodes = new List<PathNode>();

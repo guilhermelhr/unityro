@@ -7,12 +7,12 @@ public class LuaInterface {
 
     public static Script Environment { get; private set; } = new Script();
 
-    public LuaInterface() {
+    public LuaInterface(Configuration configs) {
         LoadSkillInfoZ();
         LoadJobInfo();
         LoadAccessoryInfo();
 
-        ItemTable.LoadItemDb();
+        ItemTable.LoadItemDb(configs);
         SkillTable.LoadSkillData();
     }
 

@@ -147,7 +147,7 @@ public class EntityViewer : MonoBehaviour {
         var entityDirection = (int) Entity.Direction + 8;
         currentActionIndex = (ActionId + (cameraDirection + entityDirection) % 8) % currentACT.actions.Length;
         currentAction = currentACT.actions[currentActionIndex];
-        currentFrame = GetCurrentFrame(Core.Tick - AnimationStart);
+        currentFrame = GetCurrentFrame(GameManager.Tick - AnimationStart);
         var frame = currentAction.frames[currentFrame];
 
         UpdateMesh(frame);
@@ -274,9 +274,9 @@ public class EntityViewer : MonoBehaviour {
         if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
             previousFrame = frame = animCount - 1;
 
-            if (CurrentMotion.delay > 0 && Core.Tick < CurrentMotion.delay) {
+            if (CurrentMotion.delay > 0 && GameManager.Tick < CurrentMotion.delay) {
                 if (NextMotion.HasValue) {
-                    StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float) (CurrentMotion.delay - Core.Tick) / 1000f));
+                    StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float) (CurrentMotion.delay - GameManager.Tick) / 1000f));
                 }
             } else {
                 if (NextMotion.HasValue) {
@@ -336,7 +336,7 @@ public class EntityViewer : MonoBehaviour {
         NextMotion = nextMotion;
         Entity.Action = newAction;
         ActionId = newAction;
-        AnimationStart = Core.Tick;
+        AnimationStart = GameManager.Tick;
         previousFrame = 0;
 
         foreach (var child in Children) {

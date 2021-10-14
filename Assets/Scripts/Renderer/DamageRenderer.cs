@@ -26,7 +26,7 @@ public class DamageRenderer : MonoBehaviour {
         if(!Ready)
             return;
 
-        float perc = (float)((Core.Tick - start) / Delay);
+        float perc = (float)((GameManager.Tick - start) / Delay);
 
         if((CurrentType & DamageType.COMBO) > 0) {
             scale = (float)(Math.Min(perc, 0.05) * 0.75);
@@ -42,7 +42,7 @@ public class DamageRenderer : MonoBehaviour {
         } else if((CurrentType & DamageType.HEAL) > 0) {
 
         } else if((CurrentType & DamageType.MISS) > 0) {
-            perc = (float)((Core.Tick - start) / 800);
+            perc = (float)((GameManager.Tick - start) / 800);
             scale = 0.5f;
             transform.position += Vector3.up * Time.deltaTime * 7;
         }

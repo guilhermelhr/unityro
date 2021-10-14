@@ -1,4 +1,5 @@
 ﻿using MoonSharp.Interpreter;
+using ROIO;
 using ROIO.Loaders;
 using System;
 using System.Collections.Generic;
@@ -330,10 +331,10 @@ public class ItemTable {
         { WeaponType.WEAPONTYPE_FOXTAIL_METAL, WeaponType.WEAPONTYPE_ROD }
     };
 
-    public static void LoadItemDb() {
+    public static void LoadItemDb(Configuration configs) {
         Script script = new Script();
         script.Options.ScriptLoader = new CustomScriptLoader();
-        script.DoFile($"{Core.Configs.root}{Core.Configs.system}itemInfo.lua");
+        script.DoFile(configs.GetSystemPath() + "itemInfo.lua");
         Table table = (Table)script.Globals["tbl"];
 
         foreach (var key in table.Keys) {

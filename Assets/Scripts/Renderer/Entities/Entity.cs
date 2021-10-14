@@ -38,8 +38,15 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public Inventory Inventory = new Inventory();
     public SkillTree SkillTree = new SkillTree();
 
+    private NetworkClient NetworkClient;
+    private EntityManager EntityManager;
+    private PathFinder PathFinder;
+
     private void Awake() {
         DamagePrefab = (GameObject) Resources.Load("Prefabs/Damage");
+        NetworkClient = FindObjectOfType<NetworkClient>();
+        EntityManager = FindObjectOfType<EntityManager>();
+        PathFinder = FindObjectOfType<PathFinder>();
 
         if (AudioSource == null) {
             AudioSource = gameObject.AddComponent<AudioSource>();
@@ -54,20 +61,20 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     private void HookPackets() {
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_ACT.HEADER, OnEntityAction);
-        Core.NetworkClient.HookPacket(ZC.PAR_CHANGE.HEADER, OnParameterChange);
-        Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE.HEADER, OnParameterChange);
-        Core.NetworkClient.HookPacket(ZC.LONGPAR_CHANGE2.HEADER, OnParameterChange);
-        Core.NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
-        Core.NetworkClient.HookPacket(ZC.STATUS.HEADER, OnStatsWindowData);
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_EXP2.HEADER, OnExpReceived);
-        Core.NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillsUpdated);
-        Core.NetworkClient.HookPacket(ZC.SKILLINFO_UPDATE.HEADER, OnSkillsUpdated);
-        Core.NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
-        Core.NetworkClient.HookPacket(ZC.ACK_TOUSESKILL.HEADER, OnUseSkillResult);
-        Core.NetworkClient.HookPacket(ZC.NOTIFY_SKILL2.HEADER, OnEntityUseSkillToAttack);
-        Core.NetworkClient.HookPacket(ZC.USESKILL_ACK2.HEADER, OnEntityCastSkill);
+        NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
+        NetworkClient.HookPacket(ZC.NOTIFY_ACT.HEADER, OnEntityAction);
+        NetworkClient.HookPacket(ZC.PAR_CHANGE.HEADER, OnParameterChange);
+        NetworkClient.HookPacket(ZC.LONGPAR_CHANGE.HEADER, OnParameterChange);
+        NetworkClient.HookPacket(ZC.LONGPAR_CHANGE2.HEADER, OnParameterChange);
+        NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
+        NetworkClient.HookPacket(ZC.STATUS.HEADER, OnStatsWindowData);
+        NetworkClient.HookPacket(ZC.NOTIFY_EXP2.HEADER, OnExpReceived);
+        NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillsUpdated);
+        NetworkClient.HookPacket(ZC.SKILLINFO_UPDATE.HEADER, OnSkillsUpdated);
+        NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
+        NetworkClient.HookPacket(ZC.ACK_TOUSESKILL.HEADER, OnUseSkillResult);
+        NetworkClient.HookPacket(ZC.NOTIFY_SKILL2.HEADER, OnEntityUseSkillToAttack);
+        NetworkClient.HookPacket(ZC.USESKILL_ACK2.HEADER, OnEntityCastSkill);
     }
 
     public void Init(SPR spr, ACT act) {
@@ -100,7 +107,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             Robe = (short) data.Robe
         };
 
-        gameObject.transform.position = new Vector3(data.PosDir[0], Core.PathFinding.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
+        gameObject.transform.position = new Vector3(data.PosDir[0], PathFinder.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
 
         SetupViewer(EquipInfo, rendererLayer);
     }
@@ -241,7 +248,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         switch (type) {
             case 0: // Moved out of sight
                 // TODO start coroutine to fade-out entity
-                Core.EntityManager.RemoveEntity(id);
+                EntityManager.RemoveEntity(id);
                 break;
             case 1: // Died
                 var isPC = Type == EntityType.PC;
@@ -251,14 +258,14 @@ public class Entity : MonoBehaviour, INetworkEntity {
                 }
                 break;
             default:
-                Core.EntityManager.RemoveEntity(id);
+                EntityManager.RemoveEntity(id);
                 break;
         }
     }
 
     private IEnumerator DestroyAfterSeconds(uint id) {
         yield return new WaitForSeconds(1f);
-        Core.EntityManager.RemoveEntity(id);
+        EntityManager.RemoveEntity(id);
         yield return null;
     }
 
@@ -290,8 +297,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     private void OnEntityCastSkill(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.USESKILL_ACK2 USESKILL_ACK2) {
-            var srcEntity = Core.EntityManager.GetEntity(USESKILL_ACK2.AID);
-            var dstEntity = Core.EntityManager.GetEntity(USESKILL_ACK2.targetID);
+            var srcEntity = EntityManager.GetEntity(USESKILL_ACK2.AID);
+            var dstEntity = EntityManager.GetEntity(USESKILL_ACK2.targetID);
 
             if (!srcEntity) {
                 return;
@@ -320,8 +327,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     private void OnEntityUseSkillToAttack(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NOTIFY_SKILL2 NOTIFY_SKILL2) {
-            var srcEntity = Core.EntityManager.GetEntity(NOTIFY_SKILL2.AID);
-            var dstEntity = Core.EntityManager.GetEntity(NOTIFY_SKILL2.targetID);
+            var srcEntity = EntityManager.GetEntity(NOTIFY_SKILL2.AID);
+            var dstEntity = EntityManager.GetEntity(NOTIFY_SKILL2.targetID);
 
             if (NOTIFY_SKILL2.AID == Session.CurrentSession.Entity.GetEntityGID() || NOTIFY_SKILL2.AID == Session.CurrentSession.AccountID) {
                 srcEntity = Session.CurrentSession.Entity as Entity;
@@ -375,14 +382,14 @@ public class Entity : MonoBehaviour, INetworkEntity {
         var isCombo = target.Type != EntityType.PC && NOTIFY_SKILL2.count > 1;
 
         //EffectManager.spamSkillHit( pkt.SKID, dstEntity.GID, Renderer.tick);
-        dstEntity.Damage(NOTIFY_SKILL2.damage / NOTIFY_SKILL2.count, Core.Tick);
+        dstEntity.Damage(NOTIFY_SKILL2.damage / NOTIFY_SKILL2.count, GameManager.Tick);
 
         // Only display combo if the target is not entity and
         // there are multiple attacks
         if (isCombo) {
             dstEntity.Damage(
                 NOTIFY_SKILL2.damage * (k + 1),
-                Core.Tick,
+                GameManager.Tick,
                 DamageType.COMBO | (k + 1 == NOTIFY_SKILL2.count ? DamageType.COMBO_FINAL : 0)
             );
         }
@@ -531,8 +538,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         if (actionRequest == null)
             return;
 
-        var srcEntity = Core.EntityManager.GetEntity(actionRequest.GID);
-        var dstEntity = Core.EntityManager.GetEntity(actionRequest.targetGID);
+        var srcEntity = EntityManager.GetEntity(actionRequest.GID);
+        var dstEntity = EntityManager.GetEntity(actionRequest.targetGID);
 
         if (actionRequest.GID == Session.CurrentSession.Entity.GetEntityGID() || actionRequest.GID == Session.CurrentSession.AccountID) {
             srcEntity = Session.CurrentSession.Entity as Entity;
@@ -589,8 +596,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
                 pkt.action != ActionRequestType.ATTACK_MULTIPLE_NOMOTION &&
                 pkt.action != ActionRequestType.ATTACK_NOMOTION) {
                 dstEntity.ChangeMotion(
-                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Hit, delay = Core.Tick + pkt.sourceSpeed },
-                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = Core.Tick + pkt.sourceSpeed * 2 }
+                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Hit, delay = GameManager.Tick + pkt.sourceSpeed },
+                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = GameManager.Tick + pkt.sourceSpeed * 2 }
                     );
             }
 
@@ -602,29 +609,29 @@ public class Entity : MonoBehaviour, INetworkEntity {
                     // regular damage (and endure)
                     case ActionRequestType.ATTACK_MULTIPLE_NOMOTION:
                     case ActionRequestType.ATTACK:
-                        target.Damage(pkt.damage, Core.Tick + pkt.sourceSpeed);
+                        target.Damage(pkt.damage, GameManager.Tick + pkt.sourceSpeed);
                         break;
 
                     // double attack
                     case ActionRequestType.ATTACK_MULTIPLE:
                         // Display combo only if entity is mob and the attack don't miss
                         if (dstEntity.Type == EntityType.MOB && pkt.damage > 0) {
-                            dstEntity.Damage(pkt.damage / 2, Core.Tick + pkt.sourceSpeed * 1, DamageType.COMBO);
-                            dstEntity.Damage(pkt.damage, Core.Tick + pkt.sourceSpeed * 2, DamageType.COMBO | DamageType.COMBO_FINAL);
+                            dstEntity.Damage(pkt.damage / 2, GameManager.Tick + pkt.sourceSpeed * 1, DamageType.COMBO);
+                            dstEntity.Damage(pkt.damage, GameManager.Tick + pkt.sourceSpeed * 2, DamageType.COMBO | DamageType.COMBO_FINAL);
                         }
 
-                        target.Damage(pkt.damage / 2, Core.Tick + pkt.sourceSpeed * 1);
-                        target.Damage(pkt.damage / 2, Core.Tick + pkt.sourceSpeed * 2);
+                        target.Damage(pkt.damage / 2, GameManager.Tick + pkt.sourceSpeed * 1);
+                        target.Damage(pkt.damage / 2, GameManager.Tick + pkt.sourceSpeed * 2);
                         break;
 
                     // TODO: critical damage
                     case ActionRequestType.ATTACK_CRITICAL:
-                        target.Damage(pkt.damage, Core.Tick + pkt.sourceSpeed);
+                        target.Damage(pkt.damage, GameManager.Tick + pkt.sourceSpeed);
                         break;
 
                     // TODO: lucky miss
                     case ActionRequestType.ATTACK_LUCKY:
-                        target.Damage(0, Core.Tick + pkt.sourceSpeed);
+                        target.Damage(0, GameManager.Tick + pkt.sourceSpeed);
                         break;
                 }
             }
@@ -635,7 +642,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         srcEntity.SetAttackSpeed(pkt.sourceSpeed);
         srcEntity.ChangeMotion(
             new EntityViewer.MotionRequest { Motion = SpriteMotion.Attack },
-            new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = Core.Tick + pkt.sourceSpeed }
+            new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = GameManager.Tick + pkt.sourceSpeed }
         );
     }
 
@@ -650,7 +657,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void LookTo(Vector3 position) {
         var offset = new Vector2Int((int) position.x, (int) position.z) - new Vector2Int((int) transform.position.x, (int) transform.position.z);
-        Direction = PathFindingManager.GetDirectionForOffset(offset);
+        Direction = PathFinder.GetDirectionForOffset(offset);
     }
 
     /**

@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ROIO;
 using System.Collections.Generic;
-using System.Text;
 
 public class DBManager {
 
@@ -13,8 +12,8 @@ public class DBManager {
     private static JObject WeaponJobTable;
     private static JObject ClassTable;
 
-    public static void Init() {
-        new LuaInterface();
+    public static void Init(Configuration configs) {
+        new LuaInterface(configs);
         WeaponActions = FileManager.Load("Resources/DataTables/WeaponActions.json") as JObject;
         WeaponJobTable = FileManager.Load("Resources/DataTables/WeaponJobTable.json") as JObject;
         ClassTable = FileManager.Load("Resources/DataTables/ClassTable.json") as JObject;

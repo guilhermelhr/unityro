@@ -4,40 +4,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ROIO.Loaders
-{
+namespace ROIO.Loaders {
     /// <summary>
     /// Loaders for a ro map
     /// 
     /// @author Guilherme Hernandez
     /// Based on ROBrowser by Vincent Thibault (robrowser.com)
     /// </summary>
-    public class MapLoader
-    {
+    public class MapLoader {
         public const int BATCH_SIZE = 20;
         private float progress = 0;
-        public Action<int> OnProgress = null;
+        public static Action<int> OnProgress = null;
 
-        public float Progress
-        {
-            get
-            {
+        public float Progress {
+            get {
                 return progress;
             }
 
-            set
-            {
-                var progress = Math.Min(100, value);
-                if ((int)progress != (int)this.progress && OnProgress != null)
-                {
-                    OnProgress.Invoke((int)progress);
+            set {
+                var p = Math.Min(100, value);
+                if ((int) p != (int) progress && OnProgress != null) {
+                    OnProgress.Invoke((int) p);
                 }
-                this.progress = progress;
+                progress = p;
             }
         }
 
-        public IEnumerator Load(string mapname, Action<string, string, object> callback)
-        {
+        public IEnumerator Load(string mapname, Action<string, string, object> callback) {
             Progress = 0;
 
             RSW world = LoadWorld(mapname, callback);
@@ -47,13 +40,11 @@ namespace ROIO.Loaders
             yield return LoadModels(mapname, world.modelDescriptors, callback);
         }
 
-        private RSW LoadWorld(string mapname, Action<string, string, object> callback)
-        {
+        private RSW LoadWorld(string mapname, Action<string, string, object> callback) {
             // Load RSW
             string rswPath = "data/" + GetFilePath(mapname);
             RSW world = FileManager.Load(rswPath) as RSW;
-            if (world == null)
-            {
+            if (world == null) {
                 throw new Exception("Could not load rsw for " + mapname);
             }
 
@@ -63,12 +54,10 @@ namespace ROIO.Loaders
             return world;
         }
 
-        private GAT LoadAltitude(string mapname, Action<string, string, object> callback)
-        {
+        private GAT LoadAltitude(string mapname, Action<string, string, object> callback) {
             string gatPath = "data/" + GetFilePath(WorldLoader.files.gat);
             GAT altitude = FileManager.Load(gatPath) as GAT;
-            if (altitude == null)
-            {
+            if (altitude == null) {
                 throw new Exception("Could not load gat for " + mapname);
             }
 
@@ -78,12 +67,10 @@ namespace ROIO.Loaders
             return altitude;
         }
 
-        private GND LoadGround(string mapname, RSW world, Action<string, string, object> callback)
-        {
+        private GND LoadGround(string mapname, RSW world, Action<string, string, object> callback) {
             string gndPath = "data/" + GetFilePath(WorldLoader.files.gnd);
             GND ground = FileManager.Load(gndPath) as GND;
-            if (ground == null)
-            {
+            if (ground == null) {
                 throw new Exception("Could not load gnd for " + mapname);
             }
 
@@ -96,16 +83,14 @@ namespace ROIO.Loaders
             return ground;
         }
 
-        private IEnumerator LoadModels(string mapname, List<RSW.ModelDescriptor> modelDescriptors, Action<string, string, object> callback)
-        {
+        private IEnumerator LoadModels(string mapname, List<RSW.ModelDescriptor> modelDescriptors, Action<string, string, object> callback) {
             /**
              * Divide by 3 because of each loop in which we increase progress
              */
             float remainingProgress = 100 - Progress;
             float modelProgress = remainingProgress / modelDescriptors.Count / 3;
 
-            for (int i = 0; i < modelDescriptors.Count; i++)
-            {
+            for (int i = 0; i < modelDescriptors.Count; i++) {
                 var model = modelDescriptors[i];
                 model.filename = "data/model/" + model.filename;
 
@@ -118,11 +103,9 @@ namespace ROIO.Loaders
 
             //create model instances
             HashSet<RSM> objectsSet = new HashSet<RSM>();
-            for (int i = 0; i < modelDescriptors.Count; ++i)
-            {
-                RSM model = (RSM)FileManager.Load(modelDescriptors[i].filename);
-                if (model != null)
-                {
+            for (int i = 0; i < modelDescriptors.Count; ++i) {
+                RSM model = (RSM) FileManager.Load(modelDescriptors[i].filename);
+                if (model != null) {
                     model.CreateInstance(modelDescriptors[i]);
                     objectsSet.Add(model);
                 }
@@ -135,14 +118,12 @@ namespace ROIO.Loaders
             RSM[] objects = new RSM[objectsSet.Count];
             objectsSet.CopyTo(objects);
 
-            yield return CompileModels(objects, modelProgress, (compiledModels) =>
-            {
+            yield return CompileModels(objects, modelProgress, (compiledModels) => {
                 callback.Invoke(mapname, "MAP_MODELS", compiledModels);
             });
         }
 
-        private IEnumerator CompileModels(RSM[] objects, float progressStep, Action<List<RSM.CompiledModel>> OnComplete)
-        {
+        private IEnumerator CompileModels(RSM[] objects, float progressStep, Action<List<RSM.CompiledModel>> OnComplete) {
             /**
              * Calculate progress again because rsm objects
              * are way less than model descriptors and divide by 2
@@ -152,8 +133,7 @@ namespace ROIO.Loaders
             float modelProgress = remainingProgress / objects.Length / 2;
 
             List<RSM.CompiledModel> models = new List<RSM.CompiledModel>();
-            for (int i = 0; i < objects.Length; i++)
-            {
+            for (int i = 0; i < objects.Length; i++) {
                 var compiledModel = ModelLoader.Compile(objects[i]);
                 models.Add(compiledModel);
 
@@ -167,25 +147,20 @@ namespace ROIO.Loaders
             yield return models;
         }
 
-        private IEnumerator LoadModelTexture(RSM.CompiledModel model)
-        {
+        private IEnumerator LoadModelTexture(RSM.CompiledModel model) {
             HashSet<string> textures = new HashSet<string>();
-            foreach (var nodeMesh in model.nodesData)
-            {
+            foreach (var nodeMesh in model.nodesData) {
                 //load its textures
-                foreach (var textureId in nodeMesh.Keys)
-                {
+                foreach (var textureId in nodeMesh.Keys) {
                     var texture = "data/texture/" + model.rsm.textures[textureId];
                     //load texture
-                    if (!textures.Contains(texture))
-                    {
+                    if (!textures.Contains(texture)) {
                         textures.Add(texture);
                         FileManager.Load(texture);
                         yield return new WaitForEndOfFrame();
                     }
 
-                    if (textures.Count == model.rsm.textures.Length)
-                    {
+                    if (textures.Count == model.rsm.textures.Length) {
                         //we found every possible texture, no need to keep looking for new ones
                         yield break;
                     }
@@ -195,32 +170,26 @@ namespace ROIO.Loaders
             yield return null;
         }
 
-        private void LoadModelsTextures(List<RSM.CompiledModel> compiledModels)
-        {
+        private void LoadModelsTextures(List<RSM.CompiledModel> compiledModels) {
             HashSet<string> textures = new HashSet<string>();
 
             //enqueue textures
             FileManager.InitBatch();
 
             //for each model
-            foreach (var model in compiledModels)
-            {
+            foreach (var model in compiledModels) {
                 //and each of its nodes
-                foreach (var nodeMesh in model.nodesData)
-                {
+                foreach (var nodeMesh in model.nodesData) {
                     //load its textures
-                    foreach (var textureId in nodeMesh.Keys)
-                    {
+                    foreach (var textureId in nodeMesh.Keys) {
                         var texture = "data/texture/" + model.rsm.textures[textureId];
                         //load texture
-                        if (!textures.Contains(texture))
-                        {
+                        if (!textures.Contains(texture)) {
                             textures.Add(texture);
                             FileManager.Load(texture);
                         }
 
-                        if (textures.Count == model.rsm.textures.Length)
-                        {
+                        if (textures.Count == model.rsm.textures.Length) {
                             //we found every possible texture, no need to keep looking for new ones
                             FileManager.EndBatch();
 
@@ -234,18 +203,15 @@ namespace ROIO.Loaders
             FileManager.EndBatch();
         }
 
-        private void LoadGroundTexture(RSW world, GND.Mesh ground)
-        {
+        private void LoadGroundTexture(RSW world, GND.Mesh ground) {
             LinkedList<string> textures = new LinkedList<string>();
 
             FileManager.InitBatch();
 
             //queue water textures
-            if (ground.waterVertCount > 0)
-            {
+            if (ground.waterVertCount > 0) {
                 var path = "data/texture/\xbf\xf6\xc5\xcd/water" + world.water.type;
-                for (int i = 0; i < 32; i++)
-                {
+                for (int i = 0; i < 32; i++) {
                     string num = i < 10 ? "0" + i : "" + i;
                     textures.AddLast(path + num + ".jpg");
                     FileManager.Load(textures.Last.Value);
@@ -253,8 +219,7 @@ namespace ROIO.Loaders
             }
 
             //queue ground textures
-            for (int i = 0; i < ground.textures.Length; i++)
-            {
+            for (int i = 0; i < ground.textures.Length; i++) {
                 textures.AddLast("data/texture/" + ground.textures[i]);
                 FileManager.Load(textures.Last.Value);
             }
@@ -263,10 +228,8 @@ namespace ROIO.Loaders
 
             //splice water textures from ground textures
             List<string> waterTextures = new List<string>();
-            if (ground.waterVertCount > 0)
-            {
-                for (int i = 0; i < 32; i++)
-                {
+            if (ground.waterVertCount > 0) {
+                for (int i = 0; i < 32; i++) {
                     waterTextures.Add(textures.First.Value);
                     textures.RemoveFirst();
                 }
@@ -277,10 +240,8 @@ namespace ROIO.Loaders
             textures.CopyTo(ground.textures, 0);
         }
 
-        private string GetFilePath(string path)
-        {
-            if (Tables.ResNameTable.ContainsKey(path))
-            {
+        private string GetFilePath(string path) {
+            if (Tables.ResNameTable.ContainsKey(path)) {
                 return Convert.ToString(Tables.ResNameTable[path]);
             }
 

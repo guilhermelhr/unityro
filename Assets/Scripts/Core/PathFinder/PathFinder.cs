@@ -3,7 +3,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathFindingManager {
+public class PathFinder : MonoBehaviour {
+    public void Awake() {
+        DontDestroyOnLoad(this);
+    }
 
     public struct PathRequest {
         public Vector2Int from;
@@ -63,9 +66,7 @@ public class PathFindingManager {
         return path;
     }
 
-    public float GetCellHeight(int x, int y) {
-        return (float)Altitude.GetCellHeight(x, y);
-    }
+    public float GetCellHeight(int x, int y) => (float) Altitude.GetCellHeight(x, y);
 
     public List<PathNode> GetPath(int startX, int startY, int endX, int endY, int range = 0) {
         if (startX == endX && startY == endY) {
@@ -77,27 +78,12 @@ public class PathFindingManager {
             to = new Vector2Int(endX, endY)
         };
 
-        List<PathNode> path = FindPath(newRequest, range);
-        return path;
+        return FindPath(newRequest, range);
     }
 
-    public void DebugNodes() {
-        if (this.mapNodes == null) return;
-        foreach (var node in this.mapNodes) {
-            var origin = new Vector3(node.x, (float)Altitude.GetCellHeight(node.x, node.z), node.z);
-            Gizmos.color = node.walkable ? Color.green : Color.black;
-            Gizmos.DrawCube(origin, new Vector3(1, 1, 1));
-        }
+    public bool IsWalkable(float x, float y) => Altitude.IsCellWalkable((int) Math.Floor(x), (int) Math.Floor(y));
 
-    }
-
-    public bool IsWalkable(float x, float y) {
-        return Altitude.IsCellWalkable((int)Math.Floor(x), (int)Math.Floor(y));
-    }
-
-    public GAT.Cell GetCell(float x, float y) {
-        return Altitude.GetCell(x, y);
-    }
+    public GAT.Cell GetCell(float x, float y) => Altitude.GetCell(x, y);
 
     private List<PathNode> FindPath(PathRequest pr, int range = 0) {
         finalPath.Clear();
@@ -234,15 +220,6 @@ public class PathFindingManager {
         path.Reverse();
 
         return path;
-    }
-
-    public static bool IsNeighbor(Vector2Int pos1, Vector2Int pos2) {
-        var x = Mathf.Abs(pos1.x - pos2.x);
-        var y = Mathf.Abs(pos1.y - pos2.y);
-
-        if (x <= 1 && y <= 1)
-            return true;
-        return false;
     }
 
     public static Direction GetDirectionForOffset(Vector3 v1, Vector3 v2) {

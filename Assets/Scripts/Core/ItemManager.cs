@@ -4,18 +4,30 @@ using UnityEngine;
 
 public class ItemManager : MonoBehaviour {
 
+    private NetworkClient NetworkClient;
+    private EntityManager EntityManager;
+    private PathFinder PathFinding;
+
     private void Awake() {
-        Core.NetworkClient.HookPacket(ZC.ITEM_FALL_ENTRY5.HEADER, OnItemSpamInGround);
-        Core.NetworkClient.HookPacket(ZC.ITEM_ENTRY.HEADER, OnItemSpamInGround);
-        Core.NetworkClient.HookPacket(ZC.ITEM_PICKUP_ACK7.HEADER, OnItemPickup);
-        Core.NetworkClient.HookPacket(ZC.ITEM_DISAPPEAR.HEADER, OnItemDisappear);
-        Core.NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_EQUIP.HEADER, OnInventoryUpdate);
-        Core.NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_NORMAL.HEADER, OnInventoryUpdate);
-        Core.NetworkClient.HookPacket(ZC.USE_ITEM_ACK2.HEADER, OnUseItemAnswer);
-        Core.NetworkClient.HookPacket(ZC.ACK_WEAR_EQUIP_V5.HEADER, OnItemEquipAnswer);
-        Core.NetworkClient.HookPacket(ZC.ACK_TAKEOFF_EQUIP_V5.HEADER, OnItemTakeOffAnswer);
-        Core.NetworkClient.HookPacket(ZC.DELETE_ITEM_FROM_BODY.HEADER, OnInventoryRemoveItem);
-        Core.NetworkClient.HookPacket(ZC.EQUIP_ARROW.HEADER, OnEquipAmmo);
+        DontDestroyOnLoad(this);
+
+        NetworkClient = FindObjectOfType<NetworkClient>();
+        EntityManager = FindObjectOfType<EntityManager>();
+        PathFinding = FindObjectOfType<PathFinder>();
+    }
+
+    private void Start() {
+        NetworkClient.HookPacket(ZC.ITEM_FALL_ENTRY5.HEADER, OnItemSpamInGround);
+        NetworkClient.HookPacket(ZC.ITEM_ENTRY.HEADER, OnItemSpamInGround);
+        NetworkClient.HookPacket(ZC.ITEM_PICKUP_ACK7.HEADER, OnItemPickup);
+        NetworkClient.HookPacket(ZC.ITEM_DISAPPEAR.HEADER, OnItemDisappear);
+        NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_EQUIP.HEADER, OnInventoryUpdate);
+        NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_NORMAL.HEADER, OnInventoryUpdate);
+        NetworkClient.HookPacket(ZC.USE_ITEM_ACK2.HEADER, OnUseItemAnswer);
+        NetworkClient.HookPacket(ZC.ACK_WEAR_EQUIP_V5.HEADER, OnItemEquipAnswer);
+        NetworkClient.HookPacket(ZC.ACK_TAKEOFF_EQUIP_V5.HEADER, OnItemTakeOffAnswer);
+        NetworkClient.HookPacket(ZC.DELETE_ITEM_FROM_BODY.HEADER, OnInventoryRemoveItem);
+        NetworkClient.HookPacket(ZC.EQUIP_ARROW.HEADER, OnEquipAmmo);
     }
 
     private void OnEquipAmmo(ushort cmd, int size, InPacket packet) {
@@ -119,7 +131,7 @@ public class ItemManager : MonoBehaviour {
         if (packet is ZC.ITEM_DISAPPEAR) {
             var pkt = packet as ZC.ITEM_DISAPPEAR;
 
-            Core.EntityManager.RemoveEntity(pkt.AID);
+            EntityManager.RemoveEntity(pkt.AID);
         }
     }
 
@@ -160,9 +172,9 @@ public class ItemManager : MonoBehaviour {
 
             var x = pkt.x - 0.5 + pkt.subX / 12;
             var z = pkt.y - 0.5 + pkt.subY / 12;
-            var y = Core.PathFinding.GetCellHeight((int)x, (int)z) + 5.0;
+            var y = PathFinding.GetCellHeight((int)x, (int)z) + 5.0;
 
-            Core.EntityManager.SpawnItem(new ItemSpawnInfo() {
+            EntityManager.SpawnItem(new ItemSpawnInfo() {
                 AID = pkt.id,
                 mapID = pkt.mapID,
                 Position = new Vector3((float)x, (float)y, (float)z),
@@ -175,9 +187,9 @@ public class ItemManager : MonoBehaviour {
         } else if (packet is ZC.ITEM_ENTRY ITEM_ENTRY) {
             var x = ITEM_ENTRY.x - 0.5 + ITEM_ENTRY.subX / 12;
             var z = ITEM_ENTRY.y - 0.5 + ITEM_ENTRY.subY / 12;
-            var y = Core.PathFinding.GetCellHeight((int)x, (int)z) + 1.0;
+            var y = PathFinding.GetCellHeight((int)x, (int)z) + 1.0;
 
-            Core.EntityManager.SpawnItem(new ItemSpawnInfo() {
+            EntityManager.SpawnItem(new ItemSpawnInfo() {
                 AID = ITEM_ENTRY.id,
                 mapID = ITEM_ENTRY.mapID,
                 Position = new Vector3((float)x, (float)y, (float)z),

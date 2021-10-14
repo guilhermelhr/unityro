@@ -3,6 +3,12 @@ using UnityRO.GameCamera;
 
 public class Billboard : MonoBehaviour {
 
+    private GameManager GameManager;
+
+    private void Awake() {
+        GameManager = FindObjectOfType<GameManager>();
+    }
+
     public void LateUpdate() {
         UpdateRotation();
         MaybeUpdateScale();
@@ -17,7 +23,7 @@ public class Billboard : MonoBehaviour {
     }
 
     private void UpdateRotation() {
-        transform.localRotation = Core.MainCamera.transform.rotation;
+        transform.localRotation = GameManager.MainCamera.transform.rotation;
         Vector3 euler = transform.localEulerAngles;
         euler.x = 0;
         transform.localEulerAngles = euler;

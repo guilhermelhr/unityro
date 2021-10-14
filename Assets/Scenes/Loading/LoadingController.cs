@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ROIO.Loaders;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -8,11 +9,11 @@ public class LoadingController : MonoBehaviour {
     public Slider Slider;
 
     private void Awake() {
-        Core.MapLoader.OnProgress += OnProgress;
+        MapLoader.OnProgress += OnProgress;
     }
 
     private void OnMapLoaded() {
-        Core.MapLoader.OnProgress -= OnProgress;
+        MapLoader.OnProgress -= OnProgress;
         SceneManager.UnloadSceneAsync("LoadingScene");
     }
 
@@ -20,8 +21,8 @@ public class LoadingController : MonoBehaviour {
         Slider.value = progress;
         ProgressText.text = $"{progress}%";
 
-        if (progress == 100 && Core.MapRenderer.Ready) {
-            Core.MapLoader.Progress = 0;
+        if (progress == 100 && GameManager.IsMapRendererReady()) {
+            GameManager.ResetMapLoadingProgress();
             OnMapLoaded();
         }
     }

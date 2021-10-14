@@ -9,28 +9,34 @@ public class CharServerSelectionController : MonoBehaviour {
     public GameObject LinearLayout;
     public GameObject CharServerListItem;
 
+    private NetworkClient NetworkClient;
+
     private CharServerInfo charServerInfo;
+
+    private void Awake() {
+        NetworkClient = FindObjectOfType<NetworkClient>();
+    }
 
     // Start is called before the first frame update
     private void Start() {
         // Disconnect from Login Server
-        Core.NetworkClient.Disconnect();
+        NetworkClient.Disconnect();
 
         // Hook packets
-        Core.NetworkClient.HookPacket(HC.ACCEPT_ENTER.HEADER, OnEnterResponse);
+        NetworkClient.HookPacket(HC.ACCEPT_ENTER.HEADER, OnEnterResponse);
 
         BuildServerList();
     }
 
     private void OnEnterResponse(ushort cmd, int size, InPacket packet) {
         if(packet is HC.ACCEPT_ENTER) {
-            Core.NetworkClient.State.CurrentCharactersInfo = packet as HC.ACCEPT_ENTER;
+            NetworkClient.State.CurrentCharactersInfo = packet as HC.ACCEPT_ENTER;
             SceneManager.LoadSceneAsync("CharSelectionScene");
         }
     }
 
     private void BuildServerList() {
-        var charServers = Core.NetworkClient.State.LoginInfo.Servers;
+        var charServers = NetworkClient.State.LoginInfo.Servers;
         if(charServers == null || charServers.Length == 0) {
             throw new Exception("Char server list is empty");
         }
@@ -55,13 +61,13 @@ public class CharServerSelectionController : MonoBehaviour {
     }
 
     public void OnOkClicked() {
-        var loginInfo = Core.NetworkClient.State.LoginInfo;
+        var loginInfo = NetworkClient.State.LoginInfo;
         if(charServerInfo == null || loginInfo == null) {
             throw new Exception("Invalid charserverinfo or login info");
         };
-        Core.NetworkClient.State.CharServer = charServerInfo;
-        Core.NetworkClient.ChangeServer(charServerInfo.IP.ToString(), charServerInfo.Port);
-        Core.NetworkClient.SkipBytes(4);
+        NetworkClient.State.CharServer = charServerInfo;
+        NetworkClient.ChangeServer(charServerInfo.IP.ToString(), charServerInfo.Port);
+        NetworkClient.SkipBytes(4);
 
         new CH.ENTER(loginInfo.AccountID, loginInfo.LoginID1, loginInfo.LoginID2, loginInfo.Sex).Send();
     }

@@ -12,13 +12,14 @@ using UnityEngine.Audio;
 /// Based on ROBrowser by Vincent Thibault (robrowser.com)
 /// </summary>
 public class MapRenderer {
+
     public Action<GameObject> OnMapLoaded = null;
 
     public static int MAX_VERTICES = 65532;
+    public static AudioMixerGroup SoundsMixerGroup;
 
     public static GameObject mapParent;
-    public static AudioMixerGroup SoundsMixerGroup;
-    public static Light WorldLight;
+    public Light WorldLight;
     public static uint width, height;
 
     private Altitude altitude;
@@ -30,8 +31,19 @@ public class MapRenderer {
 
     private bool worldCompleted, altitudeCompleted, groundCompleted, modelsCompleted;
 
+    private GameManager GameManager;
+    private PathFinder PathFinder;
+
     public bool Ready {
         get { return worldCompleted && altitudeCompleted && groundCompleted && modelsCompleted;  }
+    }
+
+    // TODO this PathFinder here probably can be somewhere else
+    public MapRenderer(GameManager gameManager, PathFinder pathFinder, AudioMixerGroup audioMixerGroup, Light worldLight) {
+        SoundsMixerGroup = audioMixerGroup;
+        WorldLight = worldLight;
+        GameManager = gameManager;
+        PathFinder = pathFinder;
     }
 
     /*public class Fog {
@@ -149,7 +161,7 @@ public class MapRenderer {
     /// <param name="gat"></param>
     private void OnAltitudeComplete(GAT gat) {
         altitudeCompleted = true;
-        altitude = new Altitude(gat);
+        altitude = new Altitude(gat, PathFinder);
     }
 
     private void OnGroundComplete(GND.Mesh mesh) {
@@ -182,7 +194,7 @@ public class MapRenderer {
 
     private void OnModelsComplete(List<RSM.CompiledModel> compiledModels) {
         models = new Models(compiledModels);
-        Core.Instance.StartCoroutine(models.BuildMeshes());
+        GameManager.StartCoroutine(models.BuildMeshes());
 
         modelsCompleted = true;
     }

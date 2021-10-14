@@ -6,4 +6,11 @@ namespace ROIO {
         public List<string> grf;
         public string system;
     }
+
+    public static class ConfigurationExtensions {
+
+        public static string GetSystemPath(this Configuration configuration) {
+            return $"{configuration.root}{configuration.system}";
+        }
+    }
 }

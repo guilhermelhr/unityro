@@ -6,6 +6,17 @@ using static PacketSerializer;
 
 public class NetworkClient : MonoBehaviour {
 
+    private static NetworkClient _instance;
+    private static NetworkClient Instance {
+        get {
+            if (_instance == null) {
+                _instance = FindObjectOfType<NetworkClient>();
+            }
+
+            return _instance;
+        }
+    }
+
     public struct NetworkClientState {
         public MapLoginInfo MapLoginInfo;
         public CharServerInfo CharServer;
@@ -16,23 +27,16 @@ public class NetworkClient : MonoBehaviour {
 
     public static int CLIENT_ID = new System.Random().Next();
 
-    public static NetworkClient Instance { get; private set; }
     public Connection CurrentConnection;
     public NetworkClientState State;
 
     private void Awake() {
-        if (Instance == null) {
-            Instance = this;
-        }
+        DontDestroyOnLoad(this);
     }
 
     public void Start() {
         CurrentConnection = new Connection();
         State = new NetworkClientState();
-    }
-
-    private void OnDestroy() {
-        Instance = null;
     }
 
     private void OnApplicationQuit() {
@@ -54,7 +58,7 @@ public class NetworkClient : MonoBehaviour {
     public bool IsConnected => CurrentConnection.IsConnected();
 
     public void HookPacket(PacketHeader cmd, OnPacketReceived onPackedReceived) {
-        CurrentConnection?.Hook((ushort)cmd, onPackedReceived);
+        CurrentConnection?.Hook((ushort) cmd, onPackedReceived);
     }
 
     public void SkipBytes(int bytesToSkip) {
@@ -63,10 +67,10 @@ public class NetworkClient : MonoBehaviour {
 
     public BinaryWriter GetBinaryWriter() => CurrentConnection.GetBinaryWriter();
 
-    public NetworkStream GetStream() => CurrentConnection.GetStream();
+    public static NetworkStream GetStream() => Instance?.CurrentConnection?.GetStream();
 
     private IEnumerator ServerHeartBeat() {
-        for(; ;) {
+        for (; ; ) {
             // TODO check if connection is still alive. If not, disconnect client
             new CZ.REQUEST_TIME2().Send();
             yield return new WaitForSeconds(10f);
