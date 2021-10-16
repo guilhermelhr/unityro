@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,7 +41,7 @@ public class NpcBoxController : MonoBehaviour {
             NAID = pkt.NAID;
             CurrentAction = ButtonAction.NEXT;
             nextCloseButton.gameObject.SetActive(true);
-            nextCloseButton.GetComponentInChildren<Text>().text = "Next";
+            nextCloseButton.GetComponentInChildren<TextMeshProUGUI>().text = "Next";
         }
     }
 
@@ -51,7 +52,7 @@ public class NpcBoxController : MonoBehaviour {
             NAID = pkt.NAID;
             CurrentAction = ButtonAction.CLOSE;
             nextCloseButton.gameObject.SetActive(true);
-            nextCloseButton.GetComponentInChildren<Text>().text = "Close";
+            nextCloseButton.GetComponentInChildren<TextMeshProUGUI>().text = "Close";
         }
     }
 

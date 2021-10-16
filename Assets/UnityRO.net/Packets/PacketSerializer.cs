@@ -146,7 +146,7 @@ public class PacketSerializer {
     }
 
     public void Hook(ushort cmd, OnPacketReceived onPackedReceived) {
-        PacketHooks.Add(cmd, onPackedReceived);
+        PacketHooks[cmd] = onPackedReceived;
     }
 
     public event Action<ushort, int, InPacket> PacketReceived;
