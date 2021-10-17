@@ -79,10 +79,10 @@ public class GridRenderer : MonoBehaviour {
 
         var offset = new Vector3(0f, 0.015f, 0f);
 
-        //vertices[0] = new Vector3(target.x, cell.Heights[0] / 5f, target.y + 1) + offset;
-        //vertices[1] = new Vector3(target.x + 1, cell.Heights[1] / 5f, target.y + 1) + offset;
-        //vertices[2] = new Vector3(target.x, cell.Heights[2] / 5f, target.y) + offset;
-        //vertices[3] = new Vector3(target.x + 1, cell.Heights[3] / 5f, target.y) + offset;
+        vertices[0] = new Vector3(target.x, cell.Heights[0] / 5f, target.y + 1) + offset;
+        vertices[1] = new Vector3(target.x + 1, cell.Heights[1] / 5f, target.y + 1) + offset;
+        vertices[2] = new Vector3(target.x, cell.Heights[2] / 5f, target.y) + offset;
+        vertices[3] = new Vector3(target.x + 1, cell.Heights[3] / 5f, target.y) + offset;
 
         uvs[0] = new Vector2(0, 1);
         uvs[1] = new Vector2(1, 1);

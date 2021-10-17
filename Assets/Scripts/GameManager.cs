@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour {
     #region Inspector
     [Header(":: Game Setup")]
     public bool OfflineOnly = false;
-    public string OfflineMapname;
 
     [Header(":: Rendering Setup")]
     public AudioMixerGroup SoundMixerGroup;
@@ -53,7 +52,9 @@ public class GameManager : MonoBehaviour {
     private void LoadGrf() {
         FileManager.LoadGRF(Configs.root, Configs.grf);
         OnGrfLoaded?.Invoke();
+
         InitManagers();
+        MaybeInitOfflineUtils();
 
         MapRenderer = new MapRenderer(this, PathFinder, SoundMixerGroup, WorldLight);
         MapLoader = new MapLoader();
@@ -121,6 +122,13 @@ public class GameManager : MonoBehaviour {
         new GameObject("CursorRenderer").AddComponent<CursorRenderer>();
         new GameObject("GridRenderer").AddComponent<GridRenderer>();
         new GameObject("ItemManager").AddComponent<ItemManager>();
-        new GameObject("ShaderCache").AddComponent<ShaderCache>();
+    }
+
+    private void MaybeInitOfflineUtils() {
+        if (!OfflineOnly) {
+            return;
+        }
+
+        gameObject.AddComponent<OfflineUtility>();
     }
 }

@@ -62,6 +62,7 @@ public class MapRenderer {
     public void OnComplete(string mapname, string id, object data) {
         if(mapParent == null) {
             mapParent = new GameObject(mapname);
+            mapParent.tag = "Map";
         }
 
         float start = Time.realtimeSinceStartup;
