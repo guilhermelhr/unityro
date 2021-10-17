@@ -1,9 +1,41 @@
+using ROIO;
+using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 public class DataUtility {
+
+    [MenuItem("UnityRO/Utils/Extract Data")]
+    static void ExtractData() {
+        var descriptors = FileManager.GetFileDescriptors();
+
+        var file = 1f;
+        foreach(DictionaryEntry entry in descriptors) {
+            try {
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", "Extracting data", file / descriptors.Count)) {
+                    break;
+                }
+
+                var path = (entry.Key as string).Trim().Replace("\\", "/");
+                var bytes = FileManager.ReadSync(path).ToArray();
+                var filename = Path.GetFileName(path);
+                var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
+
+                Directory.CreateDirectory(Path.Combine("Assets", "Resources", "Extracted", dir));
+
+                File.WriteAllBytes(Path.Combine("Assets", "Resources", "Extracted", dir, filename), bytes);
+                file++;
+            } catch(Exception e) {
+                Debug.LogError(e);
+            }
+        }
+
+        EditorUtility.ClearProgressBar();
+        EditorApplication.ExitPlaymode();
+    }
 
     [MenuItem("UnityRO/Utils/Prefabs/Create Maps Prefabs")]
     static void CreateMapPrefabs() {

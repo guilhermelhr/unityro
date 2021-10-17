@@ -5,6 +5,7 @@ using ROIO.Loaders;
 using ROIO.Models.FileTypes;
 using ROIO.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -256,6 +257,21 @@ namespace ROIO {
 
             result.Seek(0, SeekOrigin.Begin);
             return result;
+        }
+
+        public static Hashtable GetFileDescriptors() {
+            var files = new Hashtable(StringComparer.OrdinalIgnoreCase);
+            var list = new List<Grf>();
+            list.AddRange(GrfList);
+            list.Reverse();
+            
+            list.ForEach(grf => {
+                foreach(DictionaryEntry a in grf.files) {
+                    files[a.Key] = a.Value;
+                }
+            });
+
+            return files;
         }
 
         private static int pendingThreads;
