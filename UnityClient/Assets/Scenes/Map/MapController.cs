@@ -47,6 +47,7 @@ public class MapController : MonoBehaviour {
         NetworkClient.HookPacket(ZC.RESURRECTION.HEADER, OnEntityResurrected);
         NetworkClient.HookPacket(ZC.SPRITE_CHANGE2.HEADER, OnSpriteChanged);
         NetworkClient.HookPacket(ZC.ACTION_FAILURE.HEADER, OnActionFailure);
+        NetworkClient.HookPacket(ZC.NOTIFY_TIME.HEADER, delegate{ });
 
         GameManager.InitCamera();
         GameManager.SetWorldLight(worldLight);
@@ -145,7 +146,7 @@ public class MapController : MonoBehaviour {
                 entity.StopMoving();
                 GameManager.BeginMapLoading(pkt.MapName.Split('.')[0]);
                 Session.CurrentSession.SetCurrentMap(pkt.MapName);
-                //entity.transform.position = new Vector3(pkt.PosX, GameManager.PathFinding.GetCellHeight(pkt.PosX, pkt.PosY), pkt.PosY);
+                entity.transform.position = new Vector3(pkt.PosX, PathFinding.GetCellHeight(pkt.PosX, pkt.PosY), pkt.PosY);
                 new CZ.NOTIFY_ACTORINIT().Send();
             }
         }

@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6311717821052930159}
-  - component: {fileID: 3167618847927520808}
   - component: {fileID: 5947326155187263642}
   - component: {fileID: -2884726863326175304}
   - component: {fileID: 272106249056908748}
+  - component: {fileID: 9072695443332610036}
   m_Layer: 5
   m_Name: EntityName
   m_TagString: Untagged
@@ -39,18 +39,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3167618847927520808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6716218986333011097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb6ffaa76585d574f88170fe4e236f3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!210 &5947326155187263642
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -192,5 +180,18 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: -2884726863326175304}
   m_maskType: 0
+  _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
+--- !u!114 &9072695443332610036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6716218986333011097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e12b014e80e8d5e48815d71293b47a02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -71,11 +71,14 @@ public class DBManager {
     }
 
     public static string GetBodyPath(int job, int sex) {
+        // Dirty hack to workaround guild flags
+        if (job == 722) {
+            job = 973;
+        }
 
         var isPC = ClassTable.TryGetValue(job.ToString(), out var jobPath);
         var isMonster = MonsterPath.TryGetValue(job, out string monsterPath);
         var sexPath = SexTable[sex];
-
 
         // PC
         if (job < 45) {

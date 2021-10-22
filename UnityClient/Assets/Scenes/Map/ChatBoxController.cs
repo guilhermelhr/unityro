@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ChatBoxController : MonoBehaviour {
 
     [SerializeField] private InputField MessageInput;
+    [SerializeField] private GameObject PMInput;
     [SerializeField] private GameObject LinearLayout;
     [SerializeField] private GameObject TextLinePrefab;
 
