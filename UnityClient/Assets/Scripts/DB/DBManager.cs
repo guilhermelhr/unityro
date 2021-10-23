@@ -19,20 +19,20 @@ public class DBManager {
         ClassTable = FileManager.Load("DataTables/ClassTable.json") as JObject;
     }
 
-    public static Item GetItemInfo(int gID) {
+    public static Item GetItem(int gID) {
         ItemDB.TryGetValue(gID, out Item item);
 
         return item;
     }
 
     public static string GetItemPath(int gID, bool isIdentified) {
-        var it = GetItemInfo(gID);
+        var it = GetItem(gID);
         var resName = isIdentified ? it.identifiedResourceName : it.unidentifiedResourceName;
         return $"data/sprite/¾ÆÀÌÅÛ/{resName}";
     }
 
     public static string GetItemResPath(int itemID, bool isIdentified) {
-        var item = GetItemInfo(itemID);
+        var item = GetItem(itemID);
         return GetItemResPath(item, isIdentified);
     }
 

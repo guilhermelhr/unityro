@@ -91,7 +91,7 @@ public class ItemManager : MonoBehaviour {
         // TODO apply a diff here
         // TODO find out how favorite tab works
         foreach (var itemInfo in list) {
-            var item = DBManager.GetItemInfo(itemInfo.ItemID);
+            var item = DBManager.GetItem(itemInfo.ItemID);
             if (item == null) continue;
             var res = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D;
             var collection = FileManager.Load(DBManager.GetItemCollectionPath(item, itemInfo.IsIdentified)) as Texture2D;
@@ -146,7 +146,7 @@ public class ItemManager : MonoBehaviour {
 
             var itemInfo = pkt.itemInfo;
 
-            Item item = DBManager.GetItemInfo(itemInfo.ItemID);
+            Item item = DBManager.GetItem(itemInfo.ItemID);
             itemInfo.item = item;
 
             Texture2D itemRes = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D;

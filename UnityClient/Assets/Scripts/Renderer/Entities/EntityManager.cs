@@ -59,7 +59,7 @@ public class EntityManager : MonoBehaviour {
 
     public Entity SpawnItem(ItemSpawnInfo itemSpawnInfo) {
 
-        Item item = DBManager.GetItemInfo(itemSpawnInfo.AID);
+        Item item = DBManager.GetItem(itemSpawnInfo.AID);
         string itemPath = DBManager.GetItemPath(itemSpawnInfo.AID, itemSpawnInfo.IsIdentified);
 
         ACT act = FileManager.Load(itemPath + ".act") as ACT;

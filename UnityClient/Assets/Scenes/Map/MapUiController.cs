@@ -14,6 +14,8 @@ public class MapUiController : MonoBehaviour {
     [SerializeField] public StatsWindowController StatsWindow;
     [SerializeField] public SkillWindowController SkillWindow;
     [SerializeField] public ChatBoxController ChatBox;
+    [SerializeField] public NpcShopTypeSelectorController ShopDealType;
+    [SerializeField] private NpcShopController ShopController; 
 
     private NetworkClient NetworkClient;
 
@@ -29,14 +31,17 @@ public class MapUiController : MonoBehaviour {
         NetworkClient.HookPacket(ZC.WAIT_DIALOG.HEADER, NpcBox.AddNextButton);
         NetworkClient.HookPacket(ZC.CLOSE_SCRIPT.HEADER, NpcBox.CloseAndReset);
         NetworkClient.HookPacket(ZC.MENU_LIST.HEADER, NpcMenu.SetMenu);
+        NetworkClient.HookPacket(ZC.SAY_DIALOG.HEADER, NpcMenu.SetMenu);
+        NetworkClient.HookPacket(ZC.SELECT_DEALTYPE.HEADER, ShopDealType.DisplayDealTypeSelector);
+        NetworkClient.HookPacket(ZC.PC_PURCHASE_ITEMLIST.HEADER, ShopController.DisplayShop);
 
         NpcMenu.OnNpcMenuSelected = OnNpcMenuSelected;
     }
 
-    public void DisplayItemDetails(ItemInfo itemInfo) {
+    public void DisplayItemDetails(ItemInfo itemInfo, Vector2 position) {
         var details = Instantiate(ItemDetailsPrefab);
         details.SetItem(itemInfo);
-        details.transform.position = Vector3.zero;
+        details.transform.position = position;
         details.transform.SetParent(gameObject.transform);
     }
 

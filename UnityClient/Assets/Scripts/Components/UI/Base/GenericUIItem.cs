@@ -24,7 +24,7 @@ public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnPointerClick(PointerEventData eventData) {
         if (eventData.button == PointerEventData.InputButton.Right) {
-            MapUiController.Instance.DisplayItemDetails(itemInfo);
+            MapUiController.Instance.DisplayItemDetails(itemInfo, eventData.position);
         }
 
         if(eventData.clickCount == 2) {

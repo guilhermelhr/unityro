@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
-using System.Linq;
 
 public class ItemDetailsWindow : MonoBehaviour {
 
@@ -25,12 +22,11 @@ public class ItemDetailsWindow : MonoBehaviour {
         var text = itemInfo.IsIdentified ? itemInfo.item.identifiedDescriptionName : itemInfo.item.unidentifiedDescriptionName;
 
         foreach(var line in text.Split('\n')) {
-            var go = Instantiate(TextPrefab);
+            var go = Instantiate(TextPrefab, ScrollView.transform);
             var t = go.GetComponentInChildren<TextMeshProUGUI>();
             t.text = line.Replace("\"", "");
             t.overflowMode = TextOverflowModes.Overflow;
             t.enableWordWrapping = true;
-            t.transform.SetParent(ScrollView.transform);
         }
     }
 
