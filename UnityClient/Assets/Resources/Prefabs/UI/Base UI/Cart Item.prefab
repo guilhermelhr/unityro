@@ -351,9 +351,9 @@ GameObject:
   - component: {fileID: 1721945853705080509}
   - component: {fileID: 700420622541971927}
   - component: {fileID: 7242692091483809182}
-  - component: {fileID: 8545841509984908865}
+  - component: {fileID: 4693485359565361936}
   m_Layer: 5
-  m_Name: Shop Item
+  m_Name: Cart Item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -419,7 +419,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8545841509984908865
+--- !u!114 &4693485359565361936
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -428,7 +428,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8422053571356774970}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20e2346a7ad0e6242a4c6a9a75d364c3, type: 3}
+  m_Script: {fileID: 11500000, guid: 301c81f1242549a4abac657a00e6c55b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ItemImage: {fileID: 4507041381137904377}

@@ -5,6 +5,7 @@ public class NpcShopController : MonoBehaviour {
 
     [SerializeField] private GameObject CatalogScrollView;
     [SerializeField] private ShopItem ShopItemPrefab;
+    [SerializeField] private ShopCart ShopCart;
 
     private List<ShopItem> CurrentShopItems;
 
@@ -24,6 +25,7 @@ public class NpcShopController : MonoBehaviour {
     public void Cancel() {
         CurrentShopItems.ForEach(it => Destroy(it.gameObject));
         CurrentShopItems.Clear();
+        ShopCart.Clear();
         gameObject.SetActive(false);
     }
 }
