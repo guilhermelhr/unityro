@@ -8,7 +8,6 @@ public class EntityControl : MonoBehaviour {
 
     private LayerMask GroundMask;
     private LayerMask EntityMask;
-    private TextMeshPro EntityNameText;
     private Camera MainCamera;
 
     private PendingAction CurrentPendingAction = new PendingAction.None();
@@ -30,16 +29,6 @@ public class EntityControl : MonoBehaviour {
     void Start() {
         GroundMask = LayerMask.GetMask("Ground");
         EntityMask = LayerMask.GetMask("NPC", "Monsters", "Items");
-
-        MaybeInitEntityNameObject();
-    }
-
-    private void MaybeInitEntityNameObject() {
-        if (EntityNameText != null)
-            return;
-
-        var textPrefab = (GameObject) Resources.Load("Prefabs/EntityName");
-        EntityNameText = Instantiate(textPrefab).GetComponent<TextMeshPro>();
     }
 
     // Update is called once per frame
@@ -50,8 +39,6 @@ public class EntityControl : MonoBehaviour {
         if (MainCamera == null) {
             MainCamera = Camera.main;
         }
-
-        MaybeInitEntityNameObject();
 
         var ray = MainCamera.ScreenPointToRay(Input.mousePosition);
         var didHitAnything = Physics.Raycast(ray, out var hit, 150, EntityMask | GroundMask);
@@ -86,16 +73,12 @@ public class EntityControl : MonoBehaviour {
                 }
             }
 
-            if (target.Entity.Type != EntityType.WARP) {
-                RenderEntityName(hit, target);
-            }
             if (isActionRequested) {
                 ProcessEntityClick(target.Entity);
             }
         } else if (CurrentPendingAction is PendingAction.TargetSelection) {
             CursorRenderer.SetAction(CursorAction.TARGET, false);
         } else {
-            EntityNameText.text = null;
             CursorRenderer.SetAction(CursorAction.DEFAULT, true);
 
             if (!GridRenderer.IsCurrentPositionValid) {
@@ -105,12 +88,6 @@ public class EntityControl : MonoBehaviour {
                 Entity.RequestMove(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z), 0);
             }
         }
-    }
-
-    private void RenderEntityName(RaycastHit hit, EntityViewer target) {
-        var nameTargetPosition = hit.collider.gameObject.transform.parent.position;
-        EntityNameText.gameObject.transform.position = new Vector3(nameTargetPosition.x + 0.5f, nameTargetPosition.y, nameTargetPosition.z);
-        EntityNameText.text = target.Entity.Status.name;
     }
 
     private void ProcessEntityClick(Entity target) {

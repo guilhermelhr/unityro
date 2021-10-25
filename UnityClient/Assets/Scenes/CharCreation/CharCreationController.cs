@@ -91,7 +91,7 @@ public class CharCreationController : MonoBehaviour {
     }
 
     private void InitEntity(Entity entity, int sex = 1, int job = 0) {
-        entity.Init(new CharacterData() { Sex = sex, Job = (short) job, Name = "Player", GID = 20001, Weapon = 1, Speed = 150, Hair = 1 }, LayerMask.NameToLayer("Characters"), true);
+        entity.Init(new CharacterData() { Sex = sex, Job = (short) job, Name = "Player", GID = 20001, Weapon = 1, Speed = 150, Hair = 1 }, LayerMask.NameToLayer("Characters"), null, true);
         entity.SortingGroup.sortingOrder = 3;
         entity.SetReady(true, true);
     }

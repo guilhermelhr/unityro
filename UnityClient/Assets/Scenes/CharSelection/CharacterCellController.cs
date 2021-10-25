@@ -25,7 +25,7 @@ public class CharacterCellController : MonoBehaviour, IPointerClickHandler {
         player.transform.localPosition = new Vector3(-15f, -40f, 0f);
 
         var entity = player.AddComponent<Entity>();
-        entity.Init(data, LayerMask.NameToLayer("Characters"), true);
+        entity.Init(data, LayerMask.NameToLayer("Characters"), null, true);
         entity.SetReady(true, true);
     }
     public void OnPointerClick(PointerEventData eventData) {

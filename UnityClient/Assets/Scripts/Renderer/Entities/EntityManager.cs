@@ -1,16 +1,19 @@
 ﻿using ROIO;
 using ROIO.Models.FileTypes;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class EntityManager : MonoBehaviour {
 
+    private GameObject EntityCanvasPrefab;
     private Dictionary<uint, Entity> entityCache = new Dictionary<uint, Entity>();
 
     private void Awake() {
         DontDestroyOnLoad(this);
+        EntityCanvasPrefab = Resources.Load("Prefabs/UI/EntityCanvas") as GameObject;
     }
 
     public Entity Spawn(EntitySpawnData data) {
@@ -105,12 +108,13 @@ public class EntityManager : MonoBehaviour {
 
     private Entity SpawnPC(EntitySpawnData data) {
         var player = new GameObject(data.name);
+        var canvas = Instantiate(EntityCanvasPrefab, player.transform).GetComponent<EntityCanvas>();
         var layer = LayerMask.NameToLayer("Characters");
         player.layer = layer;
         player.transform.localScale = Vector3.one;
 
         var entity = player.AddComponent<Entity>();
-        entity.Init(data, layer);
+        entity.Init(data, layer, canvas);
 
         entityCache.Add(data.AID, entity);
         entity.SetReady(true);
@@ -120,11 +124,12 @@ public class EntityManager : MonoBehaviour {
 
     private Entity SpawnNPC(EntitySpawnData data) {
         var npc = new GameObject(data.name);
+        var canvas = Instantiate(EntityCanvasPrefab, npc.transform).GetComponent<EntityCanvas>();
         var layer = LayerMask.NameToLayer("NPC");
         npc.layer = layer;
         npc.transform.localScale = Vector3.one;
         var entity = npc.AddComponent<Entity>();
-        entity.Init(data, layer);
+        entity.Init(data, layer, canvas);
 
         entityCache.Add(data.AID, entity);
         entity.SetReady(true);
@@ -134,11 +139,12 @@ public class EntityManager : MonoBehaviour {
 
     private Entity SpawnMOB(EntitySpawnData data) {
         var mob = new GameObject(data.name);
+        var canvas = Instantiate(EntityCanvasPrefab, mob.transform).GetComponent<EntityCanvas>();
         var layer = LayerMask.NameToLayer("Monsters");
         mob.layer = layer;
         mob.transform.localScale = Vector3.one;
         var entity = mob.AddComponent<Entity>();
-        entity.Init(data, layer);
+        entity.Init(data, layer, canvas);
 
         entityCache.Add(data.AID, entity);
         entity.SetReady(true);
@@ -148,11 +154,12 @@ public class EntityManager : MonoBehaviour {
 
     public Entity SpawnPlayer(CharacterData data) {
         var player = new GameObject(data.Name);
+        var canvas = Instantiate(EntityCanvasPrefab, player.transform).GetComponent<EntityCanvas>();
         var layer = LayerMask.NameToLayer("Characters");
         player.layer = layer;
         player.transform.localScale = Vector3.one;
         var entity = player.AddComponent<Entity>();
-        entity.Init(data, layer);
+        entity.Init(data, layer, canvas);
 
         var controller = player.AddComponent<EntityControl>();
         controller.Entity = entity;

@@ -10,11 +10,11 @@ public class UiBillboard : MonoBehaviour {
     }
 
 
-    private void Update() {
+    private void LateUpdate() {
         if (MainCamera == null) {
             MainCamera = Camera.main;
         }
 
-        transform.rotation = Camera.main.transform.rotation;
+        transform.LookAt(transform.position + MainCamera.transform.forward);
     }
 }

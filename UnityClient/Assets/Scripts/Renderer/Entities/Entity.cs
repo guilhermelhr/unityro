@@ -15,10 +15,6 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public Action OnParameterUpdated;
     public Action AfterMoveAction;
 
-
-    // Picking Priority
-    // TODO
-
     public EntityType Type = EntityType.UNKNOWN;
     public EntityViewer EntityViewer;
     public Direction Direction = 0;
@@ -30,9 +26,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public bool IsReady = false;
     public bool HasAuthority => GID == Session.CurrentSession.Entity?.GetEntityGID();
 
-    [SerializeField] public uint GID;
-    [SerializeField] public uint AID;
-
+    public uint GID;
+    public uint AID;
     public EntityBaseStatus Status = new EntityBaseStatus();
     public EntityEquipInfo EquipInfo;
     public Inventory Inventory = new Inventory();
@@ -41,12 +36,16 @@ public class Entity : MonoBehaviour, INetworkEntity {
     private NetworkClient NetworkClient;
     private EntityManager EntityManager;
     private PathFinder PathFinder;
+    private EntityCanvas Canvas;
+    private Camera MainCamera;
+    private LayerMask EntityMask;
 
     private void Awake() {
         DamagePrefab = (GameObject) Resources.Load("Prefabs/Damage");
         NetworkClient = FindObjectOfType<NetworkClient>();
         EntityManager = FindObjectOfType<EntityManager>();
         PathFinder = FindObjectOfType<PathFinder>();
+        EntityMask = LayerMask.GetMask("NPC", "Monsters", "Characters");
 
         if (AudioSource == null) {
             AudioSource = gameObject.AddComponent<AudioSource>();
@@ -57,6 +56,31 @@ public class Entity : MonoBehaviour, INetworkEntity {
             AudioSource.volume = 1f;
             AudioSource.dopplerLevel = 0;
             AudioSource.outputAudioMixerGroup = MapRenderer.SoundsMixerGroup;
+        }
+    }
+
+    private void Update() {
+        if (MainCamera == null) {
+            MainCamera = Camera.main;
+        }
+
+        CheckForMouseOver();
+    }
+
+    private void CheckForMouseOver() {
+        var ray = MainCamera.ScreenPointToRay(Input.mousePosition);
+        var didHitAnyEntity = Physics.Raycast(ray, out var entityHit, 150, EntityMask);
+
+        if (entityHit.collider == null) {
+            Canvas?.HideEntityName();
+            return;
+        }
+        entityHit.collider.gameObject.TryGetComponent<EntityViewer>(out var target);
+
+        if (didHitAnyEntity && target != null && target.Entity == this) {
+            Canvas?.ShowEntityName();
+        } else {
+            Canvas?.HideEntityName();
         }
     }
 
@@ -81,7 +105,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         EntityViewer.Init(spr, act);
     }
 
-    public void Init(EntitySpawnData data, int rendererLayer) {
+    public void Init(EntitySpawnData data, int rendererLayer, EntityCanvas canvas) {
+        Canvas = canvas;
         Type = data.job == 45 ? EntityType.WARP : data.objecttype;
         Direction = ((NpcDirection) data.PosDir[2]).ToDirection();
 
@@ -112,7 +137,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         SetupViewer(EquipInfo, rendererLayer);
     }
 
-    public void Init(CharacterData data, int rendererLayer, bool isFromCharacterSelection = false) {
+    public void Init(CharacterData data, int rendererLayer, EntityCanvas canvas, bool isFromCharacterSelection = false) {
+        Canvas = canvas;
         Type = EntityType.PC;
         GID = (uint) data.GID;
 
@@ -156,6 +182,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             return;
 
         EntityWalk = gameObject.AddComponent<EntityWalk>();
+        SetupCanvas();
     }
 
     private void SetupViewer(EntityEquipInfo data, int rendererLayer) {
@@ -198,6 +225,17 @@ public class Entity : MonoBehaviour, INetworkEntity {
         MaybeInitLayer(rendererLayer, bodyViewer, data.HeadTop, ViewerType.HEAD_TOP);
         MaybeInitLayer(rendererLayer, bodyViewer, data.HeadMid, ViewerType.HEAD_MID);
         MaybeInitLayer(rendererLayer, bodyViewer, data.HeadBottom, ViewerType.HEAD_BOTTOM);
+    }
+
+    private void SetupCanvas() {
+        Canvas.SetEntityName(Status.name);
+        Canvas.SetEntityHP(Status.hp, Status.max_hp);
+        Canvas.SetEntitySP(Status.sp, Status.max_sp);
+
+        if (HasAuthority) {
+            Canvas.ShowEntityHP();
+            Canvas.ShowEntitySP();
+        }
     }
 
     private void InitHead(int rendererLayer, EntityViewer bodyViewer) {
