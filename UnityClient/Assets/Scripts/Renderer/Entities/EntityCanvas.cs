@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -36,10 +37,14 @@ public class EntityCanvas : MonoBehaviour {
     public void SetEntityMessage(string message) {
         EntityMessage.text = message;
         EntityMessage.autoSizeTextContainer = true;
-        EntityMessage.gameObject.SetActive(true);
+        EntityMessage.transform.parent.gameObject.SetActive(true);
 
         Vector2 textSize = EntityMessage.GetPreferredValues(message);
         (EntityMessage.gameObject.transform as RectTransform).sizeDelta = textSize;
+
+        StartCoroutine(HideAfterSeconds(3f, delegate {
+            EntityMessage.transform.parent.gameObject.SetActive(false);
+        }));
     }
 
     internal void ShowEntityName() {
@@ -64,5 +69,10 @@ public class EntityCanvas : MonoBehaviour {
 
     internal void HideEntitySP() {
         SPBar.gameObject.SetActive(false);
+    }
+
+    private IEnumerator HideAfterSeconds(float seconds, Action callback) {
+        yield return new WaitForSeconds(seconds);
+        callback.Invoke();
     }
 }
