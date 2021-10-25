@@ -59,6 +59,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
     }
 
+    internal void DisplayChatBubble(string message) {
+        Canvas?.SetEntityMessage(message);
+    }
+
     private void Update() {
         if (MainCamera == null) {
             MainCamera = Camera.main;

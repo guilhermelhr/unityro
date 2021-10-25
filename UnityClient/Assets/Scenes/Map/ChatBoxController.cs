@@ -11,9 +11,11 @@ public class ChatBoxController : MonoBehaviour {
     [SerializeField] private GameObject TextLinePrefab;
 
     private NetworkClient NetworkClient;
+    private EntityManager EntityManager;
 
     private void Awake() {
         NetworkClient = FindObjectOfType<NetworkClient>();
+        EntityManager = FindObjectOfType<EntityManager>();
 
         NetworkClient.HookPacket(ZC.NOTIFY_PLAYERCHAT.HEADER, OnMessageRecieved);
         NetworkClient.HookPacket(ZC.NOTIFY_CHAT.HEADER, OnMessageRecieved);
@@ -36,9 +38,11 @@ public class ChatBoxController : MonoBehaviour {
             var prefab = Instantiate(TextLinePrefab);
             var uiText = prefab.GetComponentInChildren<TextMeshProUGUI>();
             uiText.text = pkt.Message;
-            uiText.color = Color.white;
+            uiText.color = Color.green;
 
             prefab.transform.SetParent(LinearLayout.transform, false);
+
+            EntityManager.GetEntity(pkt.GID).DisplayChatBubble(pkt.Message);
         } else if (packet is ZC.MSG) {
             var pkt = packet as ZC.MSG;
 
