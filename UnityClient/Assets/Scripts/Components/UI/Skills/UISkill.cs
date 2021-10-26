@@ -5,7 +5,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler {
+public class UISkill : MonoBehaviour,
+    IPointerEnterHandler,
+    IPointerExitHandler,
+    IPointerClickHandler,
+    IUsable,
+    IBeginDragHandler,
+    IEndDragHandler,
+    IDragHandler {
 
     private const string NO_SKILL_IMAGE = "basic_interface/no_skill.bmp";
     private Texture2D NO_SKILL_TEXTURE;
@@ -22,6 +29,8 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
 
     private Material unownedSkillShader;
     private Material ownedSkillShader;
+    private Canvas Canvas;
+    private RectTransform ItemDragImageTransform;
 
     private ISkillWindowController skillWindowController;
     public Skill Skill { get; private set; }
@@ -29,6 +38,10 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     public bool IsHighlighted { get; private set; }
     public int AllocatedPoints { get; private set; }
     public int SelectedLevel { get; private set; }
+
+    private void Awake() {
+        Canvas = Canvas.FindMainCanvas();
+    }
 
     internal void SetSkill(Skill skill) {
         Skill = skill;
@@ -92,23 +105,15 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
                 skillWindowController.AllocateSkillPoints(Skill.SkillId);
                 break;
             case 2:
-                skillWindowController.UseSkill(SkillInfo, (short) SelectedLevel);
+                UseSkill();
                 break;
             default:
                 return;
         }
     }
 
-    public void OnPointerDown(PointerEventData eventData) {
-        if (Skill != null) {
-
-        }
-    }
-
-    public void OnPointerUp(PointerEventData eventData) {
-        if (Skill != null) {
-
-        }
+    private void UseSkill() {
+        skillWindowController.UseSkill(SkillInfo, (short) SelectedLevel);
     }
 
     internal short GetSkillID() => Skill?.SkillId ?? -1;
@@ -177,5 +182,59 @@ public class UISkill : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
             SelectedLevel--;
         }
         SetCurrentLevelLabelText();
+    }
+
+    public string GetDisplayName() {
+        return Skill.SkillName;
+    }
+
+    public int GetDisplayNumber() {
+        return SelectedLevel;
+    }
+
+    public Texture2D GetTexture() {
+        return skillImage.texture as Texture2D;
+    }
+
+    public void OnUse() {
+        UseSkill();
+    }
+
+    public void OnRightClick() {
+        throw new NotImplementedException();
+    }
+
+    public void OnBeginDrag(PointerEventData eventData) {
+        if (Skill == null) {
+            return;
+        }
+
+        var ItemDragImage = new GameObject("ShopItemDrag");
+        ItemDragImage.transform.SetParent(Canvas.transform, false);
+        ItemDragImage.transform.SetAsLastSibling();
+
+        var image = ItemDragImage.AddComponent<RawImage>();
+        image.texture = skillImage.texture as Texture2D;
+        image.SetNativeSize();
+
+        CanvasGroup canvasGroup = ItemDragImage.gameObject.AddComponent<CanvasGroup>();
+        canvasGroup.blocksRaycasts = false;
+
+        ItemDragImageTransform = ItemDragImage.GetComponent<RectTransform>();
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(eventData.pointerEnter.transform as RectTransform,
+            eventData.position,
+            eventData.pressEventCamera,
+            out var globalMousePos)
+        ) {
+            ItemDragImageTransform.position = globalMousePos;
+        }
+    }
+
+    public void OnEndDrag(PointerEventData eventData) {
+        Destroy(ItemDragImageTransform.gameObject);
+    }
+
+    public void OnDrag(PointerEventData eventData) {
+        ItemDragImageTransform.anchoredPosition += eventData.delta / Canvas.scaleFactor;
     }
 }

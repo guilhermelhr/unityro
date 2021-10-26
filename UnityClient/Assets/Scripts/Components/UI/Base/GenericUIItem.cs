@@ -1,97 +1,147 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class GenericUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler {
+public class GenericUIItem : MonoBehaviour,
+    IPointerEnterHandler,
+    IPointerExitHandler,
+    IPointerClickHandler,
+    IUsable,
+    IBeginDragHandler,
+    IEndDragHandler,
+    IDragHandler {
 
-    private bool isDragging;
-    private Vector3 InitialPosition = Vector3.zero;
+    [SerializeField] protected ItemInfo itemInfo;
 
-    [SerializeField]
-    protected ItemInfo itemInfo;
+    private Canvas Canvas;
+    private RectTransform ItemDragImageTransform;
 
-    private void Update() {
-        if(isDragging) {
-            transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2);
-        } else if(InitialPosition != Vector3.zero) {
-            var dir = InitialPosition - transform.position;
-            transform.position += dir * Time.deltaTime * 10;
-        }
-
-        if(transform.position == InitialPosition) {
-            InitialPosition = Vector3.zero;
-        }
+    private void Awake() {
+        Canvas = Canvas.FindMainCanvas();
     }
 
     public void OnPointerClick(PointerEventData eventData) {
         if (eventData.button == PointerEventData.InputButton.Right) {
-            MapUiController.Instance.DisplayItemDetails(itemInfo, eventData.position);
+            DisplayItemDetails(eventData.position);
         }
 
-        if(eventData.clickCount == 2) {
+        if (eventData.clickCount == 2) {
             MapController.Instance.UIController.HideTooltip();
-            switch((ItemType)itemInfo.itemType) {
-                // Usable item
-                case ItemType.HEALING:
-                case ItemType.USABLE:
-                case ItemType.USABLE_UNK:
-                    (Session.CurrentSession.Entity as Entity).Inventory.OnUseItem(itemInfo.index);
-                    break;
+            UseItem();
+        }
+    }
 
-                // Use card
-                case ItemType.CARD:
-                    //Inventory.onUseCard(item.index);
-                    break;
+    private void DisplayItemDetails(Vector2 position) {
+        MapUiController.Instance.DisplayItemDetails(itemInfo, position);
+    }
 
-                case ItemType.USABLE_SKILL:
-                    break;
+    private void UseItem() {
+        switch ((ItemType) itemInfo.itemType) {
+            // Usable item
+            case ItemType.HEALING:
+            case ItemType.USABLE:
+            case ItemType.USABLE_UNK:
+                (Session.CurrentSession.Entity as Entity).Inventory.OnUseItem(itemInfo.index);
+                break;
 
-                // Equip item
-                case ItemType.WEAPON:
-                case ItemType.EQUIP:
-                case ItemType.PETEQUIP:
-                case ItemType.AMMO:
-                    if(itemInfo.IsIdentified && !itemInfo.IsDamaged) {
-                        if(itemInfo.wearState <= 0 || itemInfo.itemType == (int)ItemType.AMMO) {//wear
-                            (Session.CurrentSession.Entity as Entity).Inventory.OnEquipItem(itemInfo.index, itemInfo.location);
-                        } else {//takeoff
-                            (Session.CurrentSession.Entity as Entity).Inventory.OnTakeOffItem(itemInfo.index);
-                        }
+            // Use card
+            case ItemType.CARD:
+                //Inventory.onUseCard(item.index);
+                break;
+
+            case ItemType.USABLE_SKILL:
+                break;
+
+            // Equip item
+            case ItemType.WEAPON:
+            case ItemType.EQUIP:
+            case ItemType.PETEQUIP:
+            case ItemType.AMMO:
+                if (itemInfo.IsIdentified && !itemInfo.IsDamaged) {
+                    if (itemInfo.wearState <= 0 || itemInfo.itemType == (int) ItemType.AMMO) {//wear
+                        (Session.CurrentSession.Entity as Entity).Inventory.OnEquipItem(itemInfo.index, itemInfo.location);
+                    } else {//takeoff
+                        (Session.CurrentSession.Entity as Entity).Inventory.OnTakeOffItem(itemInfo.index);
                     }
-                    break;
-            }
+                }
+                break;
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
-        if(itemInfo == null || isDragging) return;
+        if (itemInfo == null)
+            return;
         var rectTransform = (transform as RectTransform);
-        var itemName = itemInfo.IsIdentified ? itemInfo.item.identifiedDisplayName : itemInfo.item.unidentifiedDisplayName;
-        var extra = "";
-        if(itemInfo.tab == InventoryType.EQUIP) {
-            extra = $"[{itemInfo.item.slotCount}]";
-        } else if(itemInfo.amount > 0) {
-            extra = $"- {itemInfo.amount} ea";
-        }
-
-        var label = $"{itemName} {extra}";
+        string label = GetItemName();
         var position = rectTransform.position + new Vector3(rectTransform.rect.x, rectTransform.rect.y + rectTransform.rect.height);
         MapController.Instance.UIController.DisplayTooltip(label, position);
     }
 
+    private string GetItemName() {
+        var itemName = itemInfo.IsIdentified ? itemInfo.item.identifiedDisplayName : itemInfo.item.unidentifiedDisplayName;
+        var extra = "";
+        if (itemInfo.tab == InventoryType.EQUIP) {
+            extra = $"[{itemInfo.item.slotCount}]";
+        }
+
+        var label = $"{itemName} {extra}";
+        return label;
+    }
+
     public void OnPointerExit(PointerEventData eventData) {
-        if(itemInfo == null || isDragging) return;
+        if (itemInfo == null)
+            return;
 
         MapController.Instance.UIController.HideTooltip();
     }
 
-    public void OnPointerUp(PointerEventData eventData) {
-        isDragging = false;
+    public void OnUse() {
+        UseItem();
     }
 
-    public void OnPointerDown(PointerEventData eventData) {
-        if(eventData.dragging) {
-            isDragging = true;
-            InitialPosition = transform.position;
+    public string GetDisplayName() {
+        return GetItemName();
+    }
+
+    public int GetDisplayNumber() {
+        return itemInfo.amount;
+    }
+
+    public Texture2D GetTexture() {
+        return itemInfo.res;
+    }
+
+    public void OnRightClick() {
+        DisplayItemDetails(Vector2.zero);
+    }
+
+    public void OnBeginDrag(PointerEventData eventData) {
+        var ItemDragImage = new GameObject("ShopItemDrag");
+        ItemDragImage.transform.SetParent(Canvas.transform, false);
+        ItemDragImage.transform.SetAsLastSibling();
+
+        var image = ItemDragImage.AddComponent<RawImage>();
+        image.texture = itemInfo.res;
+        image.SetNativeSize();
+
+        CanvasGroup canvasGroup = ItemDragImage.gameObject.AddComponent<CanvasGroup>();
+        canvasGroup.blocksRaycasts = false;
+
+        ItemDragImageTransform = ItemDragImage.GetComponent<RectTransform>();
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(eventData.pointerEnter.transform as RectTransform,
+            eventData.position,
+            eventData.pressEventCamera,
+            out var globalMousePos)
+        ) {
+            ItemDragImageTransform.position = globalMousePos;
         }
+    }
+
+    public void OnEndDrag(PointerEventData eventData) {
+        Destroy(ItemDragImageTransform.gameObject);
+    }
+
+    public void OnDrag(PointerEventData eventData) {
+        ItemDragImageTransform.anchoredPosition += eventData.delta / Canvas.scaleFactor;
     }
 }

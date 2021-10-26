@@ -1,6 +1,6 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
+[RequireComponent(typeof(Canvas))]
 public class UiBillboard : MonoBehaviour {
 
     private Camera MainCamera;
@@ -8,7 +8,6 @@ public class UiBillboard : MonoBehaviour {
     private void Awake() {
         MainCamera = Camera.main;
     }
-
 
     private void LateUpdate() {
         if (MainCamera == null) {

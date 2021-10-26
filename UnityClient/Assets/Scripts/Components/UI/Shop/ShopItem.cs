@@ -18,7 +18,7 @@ public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     private RectTransform ItemDragImageTransform;
 
     private void Awake() {
-        Canvas = FindObjectOfType<Canvas>();
+        Canvas = Canvas.FindMainCanvas();
     }
 
     public void SetItemShopInfo(ItemNPCShopInfo itemShopInfo) {
