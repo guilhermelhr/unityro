@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,9 +13,25 @@ public class EntityCanvas : MonoBehaviour {
     [SerializeField] private Slider HPBar;
     [SerializeField] private Slider SPBar;
 
+    private Entity Entity;
+
+    public void Init(Entity entity) {
+        Entity = entity;
+        entity.OnParameterUpdated += OnEntityParameterUpdated;
+    }
+
+    private void OnDestroy() {
+        Entity.OnParameterUpdated -= OnEntityParameterUpdated;
+    }
+
+    private void OnEntityParameterUpdated() {
+        SetEntityName(Entity.Status.name);
+        SetEntityHP(Entity.Status.hp, Entity.Status.max_hp);
+        SetEntitySP(Entity.Status.sp, Entity.Status.max_sp);
+    }
+
     public void SetEntityName(string name) {
         EntityName.text = name;
-        EntityName.autoSizeTextContainer = true;
 
         Vector2 textSize = EntityName.GetPreferredValues(name);
         (EntityName.gameObject.transform as RectTransform).sizeDelta = textSize;
@@ -36,13 +51,12 @@ public class EntityCanvas : MonoBehaviour {
 
     public void SetEntityMessage(string message) {
         EntityMessage.text = message;
-        EntityMessage.autoSizeTextContainer = true;
         EntityMessage.transform.parent.gameObject.SetActive(true);
 
         Vector2 textSize = EntityMessage.GetPreferredValues(message);
         (EntityMessage.gameObject.transform as RectTransform).sizeDelta = textSize;
 
-        StartCoroutine(HideAfterSeconds(3f, delegate {
+        StartCoroutine(HideAfterSeconds(6f, delegate {
             EntityMessage.transform.parent.gameObject.SetActive(false);
         }));
     }

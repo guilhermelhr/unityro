@@ -30,7 +30,7 @@ public class CustomPanel : RawImage,
 
     private void LoadPressedTexture() {
         try {
-            if(pressedImage != null && pressedImage == null) {
+            if(pressedImage != null && pressedImage.Length > 0 && pressedImage == null) {
                 pressedTexture = LoadImage(pressedImage);
             }
         } catch {
@@ -40,7 +40,7 @@ public class CustomPanel : RawImage,
 
     private void LoadHoverTexture() {
         try {
-            if(hoverImage != null && hoverImage == null) {
+            if(hoverImage != null && hoverImage.Length > 0 && hoverImage == null) {
                 hoverTexture = LoadImage(hoverImage);
             }
         } catch {
@@ -50,7 +50,7 @@ public class CustomPanel : RawImage,
 
     private void LoadIdleTexture() {
         try {
-            if(backgroundImage != null && backgroundTexture == null) {
+            if(backgroundImage != null && backgroundImage.Length > 0 && backgroundTexture == null) {
                 backgroundTexture = LoadImage(backgroundImage);
                 texture = backgroundTexture;
                 if(overrideSize)

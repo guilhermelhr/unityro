@@ -237,6 +237,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Canvas.SetEntitySP(Status.sp, Status.max_sp);
 
         if (HasAuthority) {
+            Canvas.Init(this);
             Canvas.ShowEntityHP();
             Canvas.ShowEntitySP();
         }
