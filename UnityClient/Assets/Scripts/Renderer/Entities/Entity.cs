@@ -197,7 +197,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         var body = new GameObject("Body");
         body.layer = rendererLayer;
         body.transform.SetParent(gameObject.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
+        body.transform.localPosition = new Vector3(0f, 0.4f, 0f);
         body.AddComponent<Billboard>();
         SortingGroup = body.AddComponent<SortingGroup>();
         SortingGroup.sortingOrder = 2;

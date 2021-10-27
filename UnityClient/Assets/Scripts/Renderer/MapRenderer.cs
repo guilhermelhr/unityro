@@ -62,6 +62,7 @@ public class MapRenderer {
     public void OnComplete(string mapname, string id, object data) {
         if(mapParent == null) {
             mapParent = new GameObject(mapname);
+            mapParent.transform.localPosition = new Vector3(0.5f, 0f, 0.5f);
             mapParent.tag = "Map";
         }
 

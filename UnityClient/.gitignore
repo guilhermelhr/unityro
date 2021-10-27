@@ -82,6 +82,8 @@ crashlytics-build.properties
 /[Aa]ssets/config.txt
 /[Aa]ssets/config.json
 /[Aa]ssets/config.json.meta
+/[Aa]ssets/StreamingAssets/config.json
+/[Aa]ssets/StreamingAssets/config.json.meta
 
 /[Aa]ssets/[Rr]esources/[Pp]refabs/[Dd]ata/*
 /[Aa]ssets/[Rr]esources/[Pp]refabs/[Dd]ata.meta

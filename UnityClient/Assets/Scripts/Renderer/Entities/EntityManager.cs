@@ -77,7 +77,7 @@ public class EntityManager : MonoBehaviour {
         var body = new GameObject("Body");
         body.layer = LayerMask.NameToLayer("Items");
         body.transform.SetParent(itemGO.transform, false);
-        body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
+        body.transform.localPosition = new Vector3(0f, 0.4f, 0f);
         body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
