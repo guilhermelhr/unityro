@@ -1,13 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
-namespace UnityRO.GameCamera
-{
+namespace UnityRO.GameCamera {
     /// <summary>
     /// Ingame player camera controller
     /// </summary>
-    public class CharacterCamera : MonoBehaviour
-    {
+    public class CharacterCamera : MonoBehaviour {
         [Header(":: Refs")]
         public Camera GameCamera;
         [Header(":: User Parameters")]
@@ -23,19 +21,19 @@ namespace UnityRO.GameCamera
         public Vector2 ZoomConstraint;
         public Vector2 PitchConstraint;
 
-        [SerializeField] 
+        [SerializeField]
         private Transform m_Target;
 
         public Direction Direction;
         public Vector3 HorizontalDirection { get; private set; }
-        public float Pitch { get; private set; }
+        public float Pitch { get; private set; } = 0.7853982f;
 
-        private float m_Yaw;
-        private float m_Altitude;
-        private float m_SphereSliceRadius;
+        private float m_Yaw = 7.869574f;
+        private float m_Altitude = 0.7071068f;
+        private float m_SphereSliceRadius = 0.7071068f;
         // cache
         private readonly float s_PI2 = Mathf.PI * 2f;
-        private Vector2 m_PitchConstraintRad;
+        private Vector2 m_PitchConstraintRad = new Vector2(0.5235988f, 0.7853982f);
 
         //@TODO: Double right tap to reset cam
         //@TODO: Remove static / create entityviewer factories
@@ -44,86 +42,68 @@ namespace UnityRO.GameCamera
         /// </summary>
         public static CharacterCamera ROCamera { get; private set; }
 
-        public void SetTarget(Transform tr)
-        {
+        public void SetTarget(Transform tr) {
             m_Target = tr;
         }
 
-        private void Awake()
-        {
+        private void Awake() {
             ROCamera = this; // 
             m_PitchConstraintRad = new Vector2(PitchConstraint.x, PitchConstraint.y) * Mathf.Deg2Rad;
             RecomputeCameraAngle();
         }
 
-        private void Update()
-        {
+        private void Update() {
             float dt = Time.deltaTime;
             bool shiftModifier = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
             float mouseScroll = Input.mouseScrollDelta.y;
 
-            if ( Input.GetMouseButton(1))
-            {
+            if (Input.GetMouseButton(1)) {
                 float hX = Input.GetAxis("Mouse X");
                 float hY = Input.GetAxis("Mouse Y");
 
-                if ( shiftModifier  )
-                {
-                    float vScroll =  hY * MouseSensitivity.y + mouseScroll * ScrollPitchSensitivity;
-                    if (vScroll != 0f )
-                    {
+                if (shiftModifier) {
+                    float vScroll = hY * MouseSensitivity.y + mouseScroll * ScrollPitchSensitivity;
+                    if (vScroll != 0f) {
                         Pitch -= vScroll * dt;
                         RecomputeCameraAngle();
                     }
-                }
-                else 
-                {
+                } else {
                     YawControl.SetInertia(hX * MouseSensitivity.x);
                 }
-            }
-            else if ( Input.GetMouseButtonUp(1))
-            {
-                if ( !shiftModifier )
-                {
+            } else if (Input.GetMouseButtonUp(1)) {
+                if (!shiftModifier) {
                     YawControl.Release();
                 }
             }
 
-            if ( !shiftModifier && mouseScroll != 0f )
-            {
+            if (!shiftModifier && mouseScroll != 0f) {
                 ZoomControl.SetInertia(mouseScroll * ScrollZoomSensitivity);
                 ZoomControl.Release();
             }
 
-            if ( YawControl.Update(dt) )
-            {
+            if (YawControl.Update(dt)) {
                 m_Yaw -= YawControl.Velocity * dt;
-                if (m_Yaw < 0f)
-                {
+                if (m_Yaw < 0f) {
                     m_Yaw += s_PI2;
                 }
                 RecomputeHorizontalDirection();
             }
-            if (ZoomControl.Update(dt))
-            {
+            if (ZoomControl.Update(dt)) {
                 float zoomVel = ZoomControl.Velocity * dt;
                 Distance = Mathf.Clamp(Distance + zoomVel, ZoomConstraint.x, ZoomConstraint.y);
             }
         }
 
-        private void LateUpdate() 
-        {
+        private void LateUpdate() {
             UpdateCameraPosition();
             UpdateCameraLookAt();
         }
 
-        private void UpdateCameraPosition() 
-        {
+        private void UpdateCameraPosition() {
             Vector3 pos = Vector3.zero;
             Vector3 hDir = HorizontalDirection;
 
-            if (m_Target != null)
-            {
+            if (m_Target != null) {
                 pos = m_Target.transform.position;
             }
 
@@ -132,30 +112,26 @@ namespace UnityRO.GameCamera
             GameCamera.transform.localPosition = pos;
         }
 
-        private void UpdateCameraLookAt()
-        {
-            if ( m_Target != null)
-            {
+        private void UpdateCameraLookAt() {
+            if (m_Target != null) {
                 GameCamera.transform.LookAt(m_Target);
             }
 
-            float angle =(float)( (m_Yaw + Math.PI / 8f) / (2f * Math.PI));
+            float angle = (float) ((m_Yaw + Math.PI / 8f) / (2f * Math.PI));
 
             if (angle < 0f)
                 angle += 1f;
 
             float orientedAngle = angle - 1f / 4f;
-            int direction = (int)(orientedAngle * 8) % 8;
-            Direction = (Direction)direction;
+            int direction = (int) (orientedAngle * 8) % 8;
+            Direction = (Direction) direction;
         }
 
-        private void RecomputeHorizontalDirection()
-        {
+        private void RecomputeHorizontalDirection() {
             HorizontalDirection = new Vector3(Mathf.Cos(m_Yaw) * m_SphereSliceRadius, 0f, Mathf.Sin(m_Yaw) * m_SphereSliceRadius);
         }
 
-        private void RecomputeCameraAngle()
-        {
+        private void RecomputeCameraAngle() {
             Pitch = Mathf.Clamp(Pitch, m_PitchConstraintRad.x, m_PitchConstraintRad.y);
             m_Altitude = Mathf.Sin(Pitch);
             m_SphereSliceRadius = Mathf.Cos(Pitch);
