@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SkillWindowController : MonoBehaviour, ISkillWindowController {
+public class SkillWindowController : DraggableUIWindow, ISkillWindowController {
 
     private class SkillAllocation {
         public short skillID;

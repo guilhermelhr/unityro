@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class NpcShopController : MonoBehaviour {
+public class NpcShopController : DraggableUIWindow {
 
     [SerializeField] private GameObject CatalogScrollView;
     [SerializeField] private ShopItem ShopItemPrefab;

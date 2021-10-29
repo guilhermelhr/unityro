@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-public class SmallBasicInfoWindow : MonoBehaviour {
+public class SmallBasicInfoWindow : DraggableUIWindow {
 
     [SerializeField]
     private TextMeshProUGUI line1;

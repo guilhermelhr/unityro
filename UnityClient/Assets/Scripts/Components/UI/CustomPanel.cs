@@ -1,4 +1,5 @@
 ﻿using ROIO;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -30,7 +31,7 @@ public class CustomPanel : RawImage,
 
     private void LoadPressedTexture() {
         try {
-            if(pressedImage != null && pressedImage.Length > 0 && pressedImage == null) {
+            if(pressedImage != null && pressedImage.Length > 0 && pressedTexture == null) {
                 pressedTexture = LoadImage(pressedImage);
             }
         } catch {
@@ -40,7 +41,7 @@ public class CustomPanel : RawImage,
 
     private void LoadHoverTexture() {
         try {
-            if(hoverImage != null && hoverImage.Length > 0 && hoverImage == null) {
+            if(hoverImage != null && hoverImage.Length > 0 && hoverTexture == null) {
                 hoverTexture = LoadImage(hoverImage);
             }
         } catch {
@@ -53,11 +54,12 @@ public class CustomPanel : RawImage,
             if(backgroundImage != null && backgroundImage.Length > 0 && backgroundTexture == null) {
                 backgroundTexture = LoadImage(backgroundImage);
                 texture = backgroundTexture;
-                if(overrideSize)
-                    GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundTexture.width, backgroundTexture.height);
+                if (overrideSize)
+                    SetNativeSize();
             }
-        } catch {
+        } catch(Exception e) {
             Debug.LogError("Failed to load background image from " + this);
+            Debug.LogException(e);
         }
     }
 

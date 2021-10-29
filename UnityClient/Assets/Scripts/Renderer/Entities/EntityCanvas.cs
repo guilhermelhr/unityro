@@ -17,11 +17,13 @@ public class EntityCanvas : MonoBehaviour {
 
     public void Init(Entity entity) {
         Entity = entity;
-        entity.OnParameterUpdated += OnEntityParameterUpdated;
+        Entity.OnParameterUpdated += OnEntityParameterUpdated;
     }
 
     private void OnDestroy() {
-        Entity.OnParameterUpdated -= OnEntityParameterUpdated;
+        if (Entity != null) {
+            Entity.OnParameterUpdated -= OnEntityParameterUpdated;
+        }
     }
 
     private void OnEntityParameterUpdated() {

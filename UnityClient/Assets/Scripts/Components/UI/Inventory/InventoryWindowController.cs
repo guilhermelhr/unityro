@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryWindowController : MonoBehaviour {
+public class InventoryWindowController : DraggableUIWindow {
 
     [SerializeField]
     private GridLayoutGroup GridLayout;
@@ -29,6 +29,7 @@ public class InventoryWindowController : MonoBehaviour {
     public const int MIN_WINDOW_ROWS = 6;
 
     private List<InventoryCell> Cells = new List<InventoryCell>();
+    private int CURRENT_WINDOW_COLUMNS = MAX_WINDOW_COLUMNS;
 
     private void Awake() {
         if (Cells.IsEmpty()) {
@@ -37,7 +38,7 @@ public class InventoryWindowController : MonoBehaviour {
     }
 
     private void InitGrid() {
-        for (int i = 0; i < MIN_WINDOW_COLUMNS * MIN_WINDOW_ROWS; i++) {
+        for (int i = 0; i < CURRENT_WINDOW_COLUMNS * CURRENT_WINDOW_COLUMNS; i++) {
             var cell = Instantiate<InventoryCell>(GridCellPrefab);
             cell.transform.SetParent(GridLayout.transform, false);
             Cells.Add(cell);

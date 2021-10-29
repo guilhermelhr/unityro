@@ -2,7 +2,7 @@
 using TMPro;
 using System;
 
-public class StatsWindowController : MonoBehaviour {
+public class StatsWindowController : DraggableUIWindow {
 
     [SerializeField] private TextMeshProUGUI Str;
     [SerializeField] private TextMeshProUGUI StrNeed;

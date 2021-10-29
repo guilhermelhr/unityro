@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NpcBoxController : MonoBehaviour {
+public class NpcBoxController : DraggableUIWindow {
 
     enum ButtonAction {
         NEXT, CLOSE

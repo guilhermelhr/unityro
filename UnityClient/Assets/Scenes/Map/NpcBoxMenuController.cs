@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class NpcBoxMenuController : MonoBehaviour {
+public class NpcBoxMenuController : DraggableUIWindow {
 
     public Action<uint, byte> OnNpcMenuSelected;
 
