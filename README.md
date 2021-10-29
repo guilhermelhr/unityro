@@ -29,7 +29,7 @@ We're creating a few pieces of documentation, feel free to check them at [Wiki](
 Check [this](http://www.youtube.com/watch?feature=player_embedded&v=3Q76pVG46tA) video to see a ~~current~~ state.
 
 
-### Client specifc features
+### Client specific features
 - [x] Connection with rAthena (Hercules should also work fine)
 - [x] Chat system
 - [x] Combat-ish System
