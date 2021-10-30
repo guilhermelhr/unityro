@@ -58,7 +58,7 @@ public partial class ZC {
 
             entityData.xSize = (byte)br.ReadByte();
             entityData.ySize = (byte)br.ReadByte();
-            entityData.state = (byte)br.ReadByte();
+            entityData.state = (EntitySpawnData.EntitySpawnState) br.ReadByte();
 
             entityData.clevel = br.ReadShort();
             entityData.font = br.ReadShort();

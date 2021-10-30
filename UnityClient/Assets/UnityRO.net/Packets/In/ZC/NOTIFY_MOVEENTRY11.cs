@@ -61,7 +61,10 @@ public partial class ZC {
 
             entityData.xSize = (byte)br.ReadByte();
             entityData.ySize = (byte)br.ReadByte();
-            entityData.state = (byte)br.ReadByte();
+
+            // This needs checking... struct packet_unit_walking does not seem to have state
+            //entityData.state = (byte)br.ReadByte();
+            entityData.state = EntitySpawnData.EntitySpawnState.Stand;
 
             entityData.clevel = br.ReadShort();
             entityData.font = br.ReadShort();

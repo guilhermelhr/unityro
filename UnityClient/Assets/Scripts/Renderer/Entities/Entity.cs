@@ -139,6 +139,21 @@ public class Entity : MonoBehaviour, INetworkEntity {
         gameObject.transform.position = new Vector3(data.PosDir[0], PathFinder.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
 
         SetupViewer(EquipInfo, rendererLayer);
+
+        SetReady(true);
+
+        switch (data.state) {
+            case EntitySpawnData.EntitySpawnState.Stand:
+                break;
+            case EntitySpawnData.EntitySpawnState.Sit:
+                ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Sit });
+                break;
+            case EntitySpawnData.EntitySpawnState.Dead:
+                ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Dead });
+                break;
+            default:
+                break;
+        }
     }
 
     public void Init(CharacterData data, int rendererLayer, EntityCanvas canvas, bool isFromCharacterSelection = false) {
@@ -287,28 +302,27 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     public void Vanish(int type) {
-        var id = GID > 0 ? GID : AID;
         switch (type) {
             case 0: // Moved out of sight
                 // TODO start coroutine to fade-out entity
-                EntityManager.RemoveEntity(id);
+                Destroy(gameObject);
                 break;
             case 1: // Died
                 var isPC = Type == EntityType.PC;
                 ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Dead });
                 if (!isPC) {
-                    StartCoroutine(DestroyAfterSeconds(id));
+                    StartCoroutine(DestroyAfterSeconds());
                 }
                 break;
             default:
-                EntityManager.RemoveEntity(id);
+                Destroy(gameObject);
                 break;
         }
     }
 
-    private IEnumerator DestroyAfterSeconds(uint id) {
+    private IEnumerator DestroyAfterSeconds() {
         yield return new WaitForSeconds(1f);
-        EntityManager.RemoveEntity(id);
+        Destroy(gameObject);
         yield return null;
     }
 
@@ -582,7 +596,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             return;
 
         var srcEntity = EntityManager.GetEntity(actionRequest.GID);
-        var dstEntity = EntityManager.GetEntity(actionRequest.targetGID);
+        var dstEntity = actionRequest.action != ActionRequestType.STAND && actionRequest.action != ActionRequestType.SIT ? EntityManager.GetEntity(actionRequest.targetGID) : null;
 
         if (actionRequest.GID == Session.CurrentSession.Entity.GetEntityGID() || actionRequest.GID == Session.CurrentSession.AccountID) {
             srcEntity = Session.CurrentSession.Entity as Entity;
@@ -612,15 +626,25 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
             // Sit
             case ActionRequestType.SIT:
+                OnEntitySit(srcEntity);
                 break;
 
             // Stand
             case ActionRequestType.STAND:
+                OnEntityStand(srcEntity);
                 break;
 
             default:
                 break;
         }
+    }
+
+    private void OnEntityStand(Entity srcEntity) {
+        srcEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
+    }
+
+    private void OnEntitySit(Entity srcEntity) {
+        srcEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Sit });
     }
 
     private void OnEntityPickup(Entity srcEntity, Entity dstEntity) {

@@ -121,7 +121,7 @@ public class EntityViewer : MonoBehaviour {
             }
         }
 
-        if (currentAction == null) {
+        if (ActionId == -1) {
             ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
         }
 
@@ -321,7 +321,23 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void ChangeMotion(MotionRequest motion, MotionRequest? nextMotion = null) {
-        State = SpriteState.Alive;
+        switch (motion.Motion) {
+            case SpriteMotion.Dead:
+                State = SpriteState.Dead;
+                break;
+            case SpriteMotion.Sit:
+                State = SpriteState.Sit;
+                break;
+            case SpriteMotion.Idle:
+                State = SpriteState.Idle;
+                break;
+            case SpriteMotion.Walk:
+                State = SpriteState.Walking;
+                break;
+            default:
+                State = SpriteState.Alive;
+                break;
+        }
 
         int newAction;
         if (motion.Motion == SpriteMotion.Attack) {

@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SpriteMaterial
-  m_Shader: {fileID: 4800000, guid: 44668537274eb12498b47617c9729d07, type: 3}
+  m_Shader: {fileID: 4800000, guid: df22f17273489774c986cc98fd9b7a26, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA _ZWRITE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -68,7 +68,7 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0
+    - _Offset: 0.4
     - _Parallax: 0.02
     - _Rotation: 0
     - _SmoothnessTextureChannel: 0

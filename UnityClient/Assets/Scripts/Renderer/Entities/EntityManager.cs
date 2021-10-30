@@ -19,7 +19,7 @@ public class EntityManager : MonoBehaviour {
     public Entity Spawn(EntitySpawnData data) {
         switch (data.objecttype) {
             case EntityType.PC:
-                entityCache.TryGetValue(data.GID, out var pc);
+                entityCache.TryGetValue(data.AID, out var pc);
                 pc?.gameObject.SetActive(true);
                 return pc ?? SpawnPC(data);
             case EntityType.NPC:
@@ -35,29 +35,30 @@ public class EntityManager : MonoBehaviour {
         }
     }
 
-    public void RemoveEntity(uint GID) {
-        entityCache.TryGetValue(GID, out Entity entity);
+    public void RemoveEntity(uint AID) {
+        entityCache.TryGetValue(AID, out Entity entity);
         if (entity != null) {
             Destroy(entity.gameObject);
-            entityCache.Remove(GID);
+            entityCache.Remove(AID);
         }
     }
 
-    public Entity GetEntity(uint GID) {
-        var hasFound = entityCache.TryGetValue(GID, out var entity);
+    public Entity GetEntity(uint AID) {
+        var hasFound = entityCache.TryGetValue(AID, out var entity);
         if (hasFound) {
             return entity;
-        } else if (Session.CurrentSession.Entity.GetEntityGID() == GID || Session.CurrentSession.AccountID == GID) {
+        } else if (Session.CurrentSession.Entity.GetEntityGID() == AID || Session.CurrentSession.AccountID == AID) {
             return Session.CurrentSession.Entity as Entity;
         } else {
-            Debug.LogError($"No Entity found for given ID: {GID}");
+            Debug.LogError($"No Entity found for given ID: {AID}");
             return null;
         }
     }
 
     //TODO this needs checking
-    public void VanishEntity(uint GID, int type) {
-        GetEntity(GID)?.Vanish(type);
+    public void VanishEntity(uint AID, int type) {
+        GetEntity(AID)?.Vanish(type);
+        entityCache.Remove(AID);
     }
 
     public Entity SpawnItem(ItemSpawnInfo itemSpawnInfo) {
@@ -114,10 +115,9 @@ public class EntityManager : MonoBehaviour {
         player.transform.localScale = Vector3.one;
 
         var entity = player.AddComponent<Entity>();
-        entity.Init(data, layer, canvas);
 
         entityCache.Add(data.AID, entity);
-        entity.SetReady(true);
+        entity.Init(data, layer, canvas);
 
         return entity;
     }
@@ -129,10 +129,9 @@ public class EntityManager : MonoBehaviour {
         npc.layer = layer;
         npc.transform.localScale = Vector3.one;
         var entity = npc.AddComponent<Entity>();
-        entity.Init(data, layer, canvas);
 
         entityCache.Add(data.AID, entity);
-        entity.SetReady(true);
+        entity.Init(data, layer, canvas);
 
         return entity;
     }
@@ -144,10 +143,9 @@ public class EntityManager : MonoBehaviour {
         mob.layer = layer;
         mob.transform.localScale = Vector3.one;
         var entity = mob.AddComponent<Entity>();
-        entity.Init(data, layer, canvas);
 
         entityCache.Add(data.AID, entity);
-        entity.SetReady(true);
+        entity.Init(data, layer, canvas);
 
         return entity;
     }

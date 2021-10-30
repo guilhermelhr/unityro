@@ -10,8 +10,8 @@ Shader "Unlit/CustomSpriteShader"
 	{
 		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
 		_Color("Tint", Color) = (1,1,1,1)
-		_Offset("Offset", Float) = 0
-		_Rotation("Rotation", Range(0,360)) = 180
+		_Offset("Offset", Float) = 0.4
+		_Rotation("Rotation", Range(0,360)) = 0
 	}
 
 		SubShader

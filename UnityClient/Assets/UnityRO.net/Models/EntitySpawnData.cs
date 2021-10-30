@@ -39,7 +39,7 @@
 
 	public byte xSize;
 	public byte ySize;
-	public byte state;
+	public EntitySpawnState state;
 
 	public short clevel;
 	public short font;
@@ -53,5 +53,11 @@
 	/* Might be earlier, this is when the named item bug began */
 	public string name;
     public uint moveStartTime;
+
+    public enum EntitySpawnState : byte {
+        Stand = 0,
+        Dead = 1,
+        Sit = 2
+    }
 }
 
