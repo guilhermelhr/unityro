@@ -116,8 +116,8 @@ public class StrEffectRenderer : MonoBehaviour {
     }
 
     private void UpdateLayerData(GameObject go, Material mat, Vector2 pos, Color color) {
-        go.transform.localPosition = new Vector3((pos.x - 320f) / 35f + 0.5f, -(pos.y - 360f) / 35f, 0);
-        go.transform.localScale = new Vector3(1f, 1f, 1f);
+        go.transform.localPosition = new Vector3((pos.x - 320f) / 35f, -(pos.y - 360f) / 35f, 0);
+        go.transform.localScale = Vector3.one;
         mat.SetColor("_Color", color);
     }
 
