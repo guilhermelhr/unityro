@@ -298,7 +298,7 @@
         "m_Position": {
             "serializedVersion": "2",
             "x": -382.0,
-            "y": -0.0000040531158447265629,
+            "y": -0.0000040531158447265628,
             "width": 208.0,
             "height": 434.0000305175781
         }
@@ -347,7 +347,7 @@
     "m_ActiveSubTarget": {
         "m_Id": "c21069ea0c514f10ae693e800c58e9c9"
     },
-    "m_SurfaceType": 1,
+    "m_SurfaceType": 0,
     "m_AlphaMode": 0,
     "m_TwoSided": true,
     "m_AlphaClip": true,
