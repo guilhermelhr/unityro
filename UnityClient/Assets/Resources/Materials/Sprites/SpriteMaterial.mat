@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SpriteMaterial
-  m_Shader: {fileID: 4800000, guid: df22f17273489774c986cc98fd9b7a26, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: c3f9acf1ae1414fee858e96ee3c2a396, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA _ZWRITE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -55,6 +55,18 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
     - _Cull: 0
@@ -68,7 +80,7 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0.4
+    - _Offset: 0
     - _Parallax: 0.02
     - _Rotation: 0
     - _SmoothnessTextureChannel: 0

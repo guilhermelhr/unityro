@@ -9,8 +9,8 @@ using UnityEngine;
 public class Models {
     private List<RSM.CompiledModel> models;
 
-    private Material material = (Material) Resources.Load("Materials/ModelMaterial", typeof(Material));
-    private Material material2s = (Material) Resources.Load("Materials/ModelMaterial2Sided", typeof(Material));
+    private Material material = (Material) Resources.Load("Materials/Models/ModelMaterial", typeof(Material));
+    private Material material2s = (Material) Resources.Load("Materials/Models/ModelMaterial2Sided", typeof(Material));
 
     public Models(List<RSM.CompiledModel> models) {
         this.models = models;
