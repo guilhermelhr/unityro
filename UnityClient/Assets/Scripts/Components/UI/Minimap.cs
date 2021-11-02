@@ -1,5 +1,6 @@
 using ROIO;
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,8 +28,8 @@ public class Minimap : MonoBehaviour {
     }
 
     private void OnMapChanged(string mapName) {
-        CurrentMap = mapName;
-        MapThumbTexture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/{mapName}.bmp") as Texture2D;
+        CurrentMap = Path.GetFileNameWithoutExtension(mapName);
+        MapThumbTexture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/{CurrentMap}.bmp") as Texture2D;
 
         if (MapThumbTexture == null) {
             return;
