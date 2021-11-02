@@ -77,13 +77,15 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/[Dd]ata.meta
 /[Aa]ssets/[Ss]treamingAssets/[Rr]esources/[Dd]ata
 /[Aa]ssets/[Ss]treamingAssets/[Rr]esources/[Dd]ata.meta
+/[Aa]ssets/[Ss]treamingAssets/config.json
+/[Aa]ssets/[Ss]treamingAssets/config.json.meta
 
-/Packages
+/Packages/*
+!/Packages/*.json
+
 /[Aa]ssets/config.txt
 /[Aa]ssets/config.json
 /[Aa]ssets/config.json.meta
-/[Aa]ssets/StreamingAssets/config.json
-/[Aa]ssets/StreamingAssets/config.json.meta
 
 /[Aa]ssets/[Rr]esources/[Pp]refabs/[Dd]ata/*
 /[Aa]ssets/[Rr]esources/[Pp]refabs/[Dd]ata.meta

@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class Water {
     private Texture2D[] textures = new Texture2D[32];
-    private Material material = (Material) Resources.Load("Materials/WaterMaterial", typeof(Material));
+    private Material material = (Material) Resources.Load("Materials/Models/WaterMaterial", typeof(Material));
     private Mesh[] meshes;
     private MeshRenderer[] renderers;
     private GameObject[] objects;

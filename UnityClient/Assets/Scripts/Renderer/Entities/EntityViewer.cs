@@ -33,8 +33,6 @@ public class EntityViewer : MonoBehaviour {
     private SPR currentSPR;
     private ACT.Action currentAction;
     private int currentActionIndex;
-
-    [SerializeField]
     private int currentViewID;
     private int currentFrame = 0;
     private long AnimationStart;
@@ -42,6 +40,7 @@ public class EntityViewer : MonoBehaviour {
     private double previousFrame = 0;
 
     private MeshCollider meshCollider;
+    private Material SpriteMaterial;
 
     public void Init(SPR spr, ACT act) {
         currentSPR = spr;
@@ -52,6 +51,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void Start() {
+        SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
         Init();
 
         InitShadow();
@@ -208,6 +208,7 @@ public class EntityViewer : MonoBehaviour {
                 var go = new GameObject($"Layer{i}");
                 spriteRenderer = go.AddComponent<SpriteRenderer>();
                 spriteRenderer.transform.SetParent(gameObject.transform, false);
+                spriteRenderer.material = SpriteMaterial;
             }
 
             CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
@@ -313,7 +314,7 @@ public class EntityViewer : MonoBehaviour {
 
     private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
         rotation = Quaternion.Euler(0, 0, -layer.angle);
-        scale = new Vector3(layer.scale.x * (layer.isMirror ? -1 : 1), -(layer.scale.y), 1);
+        scale = new Vector3(layer.scale.x * (layer.isMirror ? -1 : 1), layer.scale.y, 1);
         var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
         var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
 

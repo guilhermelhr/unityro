@@ -1,12 +1,4 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
-
-// Simplified Diffuse shader. Differences from regular Diffuse one:
-// - no Main Color
-// - fully supports only 1 directional light. Other lights can affect it, but it will be per-vertex/SH.
-
-Shader "Custom/2SidedAlphaClipped" {
+﻿Shader "Custom/2SidedAlphaClipped" {
 	Properties{ _MainTex("Base (RGB) Trans (A)", 2D) = "white" {} }
 
 	SubShader{	

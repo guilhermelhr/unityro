@@ -12,7 +12,7 @@ public class Ground {
     private Texture2D atlas;
     private Texture2D lightmap;
     private Texture2D tintmap;
-    private Material material = (Material) Resources.Load("Materials/GroundMaterial", typeof(Material));
+    private Material material = (Material) Resources.Load("Materials/Models/GroundMaterial", typeof(Material));
 
     public struct Vertex {
         public Vector3 position;

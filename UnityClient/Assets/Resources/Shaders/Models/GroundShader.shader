@@ -31,19 +31,15 @@ Shader "Custom/GroundShader" {
 			fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
 			fixed4 lightmap = tex2D(_Lightmap, IN.uv2_Lightmap);
 			
-			//clip(c.a - 0.5f);
 			if (c.a == 0.0) {
 				discard;
 			}
 
 			if (length(IN.uv3_Tintmap)) {
 				fixed4 tintmap = tex2D(_Tintmap, IN.uv3_Tintmap);
-				//tintmap *= 1.2;
 				c *= fixed4(tintmap.bgr, 1.0);
 			}
 			
-			//lightmap *= 1.2;
-
 			o.Albedo = c.rgb + lightmap.rgb;
 			o.Alpha = c.a;
 		}
