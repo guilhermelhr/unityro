@@ -1,10 +1,7 @@
 ﻿using ROIO.Models.FileTypes;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace ROIO.Loaders {
     /// <summary>
@@ -57,27 +54,16 @@ namespace ROIO.Loaders {
 
         private async Task<GND.Mesh> CompileGroundMesh(GND ground, RSW world) {
             GND.Mesh compiledGround = await Task.Run(() => GroundLoader.Compile(ground, world.water.level, world.water.waveHeight));
-            LoadGroundTexture(world, compiledGround);
+            await LoadGroundTexture(world, compiledGround);
             return compiledGround;
         }
 
         private async Task LoadModels(string mapname, List<RSW.ModelDescriptor> modelDescriptors, Action<string, string, object> callback) {
-            //// cache models
-            FileManager.InitBatch();
-            for (int i = 0; i < modelDescriptors.Count; i++) {
-                var model = modelDescriptors[i];
-                model.filename = "data/model/" + model.filename;
-
-                FileManager.Load(model.filename);
-            }
-            await Task.Run(() => FileManager.EndBatch());
-
-            // create model instances
             HashSet<RSM> objectsSet = new HashSet<RSM>();
 
             for (int i = 0; i < modelDescriptors.Count; i++) {
                 await Task.Run(() => {
-                    RSM model = FileManager.Load(modelDescriptors[i].filename) as RSM;
+                    RSM model = FileManager.Load("data/model/" + modelDescriptors[i].filename) as RSM;
                     if (model != null) {
                         model.CreateInstance(modelDescriptors[i]);
                         objectsSet.Add(model);
@@ -89,21 +75,23 @@ namespace ROIO.Loaders {
             RSM[] models = new RSM[objectsSet.Count];
             objectsSet.CopyTo(models);
 
-            RSM.CompiledModel[] compiledModels = await CompileModels(models);
-            callback.Invoke(mapname, "MAP_MODELS", compiledModels);
+            await CompileModels(mapname, models, callback);
         }
 
-        private async Task<RSM.CompiledModel[]> CompileModels(RSM[] objects) {
-            RSM.CompiledModel[] models = new RSM.CompiledModel[objects.Length];
-            for (int i = 0; i < objects.Length; i++) {
-                var model = await Task.Run(() => ModelLoader.Compile(objects[i]));
-                models[i] = model;
+        private async Task CompileModels(string mapname, RSM[] objects, Action<string, string, object> callback) {
+            List<Task<RSM.CompiledModel>> tasks = new List<Task<RSM.CompiledModel>>();
+
+            foreach(var model in objects) {
+                var t = Task.Run(() => ModelLoader.Compile(model));
+                tasks.Add(t);
             }
 
-            return models;
+            RSM.CompiledModel[] compiledModels = await Task.WhenAll(tasks);
+            callback.Invoke(mapname, "MAP_MODELS", compiledModels);
+
         }
 
-        private void LoadGroundTexture(RSW world, GND.Mesh ground) {
+        private async Task LoadGroundTexture(RSW world, GND.Mesh ground) {
             LinkedList<string> textures = new LinkedList<string>();
 
             FileManager.InitBatch();
@@ -124,7 +112,7 @@ namespace ROIO.Loaders {
                 FileManager.Load(textures.Last.Value);
             }
 
-            FileManager.EndBatch();
+            await Task.Run(() => FileManager.EndBatch());
 
             //splice water textures from ground textures
             List<string> waterTextures = new List<string>();
