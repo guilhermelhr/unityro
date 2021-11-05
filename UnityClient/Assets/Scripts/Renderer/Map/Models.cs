@@ -25,10 +25,7 @@ public class Models {
         internal bool isChild;
     }
 
-    public IEnumerator BuildMeshes() {
-        float remainingProgress = 100 - GameManager.GetMapLoaderProgress();
-        float modelProgress = remainingProgress / models.Count;
-
+    public void BuildMeshes() {
         GameObject parent = new GameObject("_Models");
         parent.transform.parent = MapRenderer.mapParent.transform;
         Dictionary<int, AnimProperties> anims = new Dictionary<int, AnimProperties>();
@@ -170,16 +167,10 @@ public class Models {
                 }
 
                 instanceObj.SetActive(true);
-                if (index % MapLoader.BATCH_SIZE == 0)
-                    yield return new WaitForEndOfFrame();
             }
-
-            GameManager.IncreaseMapLoadingProgress(modelProgress);
         }
 
         anims.Clear();
-        GameManager.IncreaseMapLoadingProgress(1);
-        yield return null;
     }
 
     public void Render() {

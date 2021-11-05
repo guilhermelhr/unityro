@@ -195,7 +195,7 @@ public class MapRenderer {
 
     private void OnModelsComplete(List<RSM.CompiledModel> compiledModels) {
         models = new Models(compiledModels);
-        GameManager.StartCoroutine(models.BuildMeshes());
+        models.BuildMeshes();
 
         modelsCompleted = true;
     }

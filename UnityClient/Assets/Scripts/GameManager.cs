@@ -90,28 +90,22 @@ public class GameManager : MonoBehaviour {
         MainCamera = Camera.main;
     }
 
-    public void BeginMapLoading(string mapName) {
-        if (!MapRenderer.Ready && MapLoader.Progress != 0)
-            return;
-        SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
+    public async void BeginMapLoading(string mapName) {
+        // if (!MapRenderer.Ready)
+        //     return;
+        
+        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         EntityManager.ClearEntities();
-        StartCoroutine(
-            MapLoader.Load(mapName + ".rsw", MapRenderer.OnComplete)
-        );
+
+        await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
+        SceneManager.UnloadSceneAsync("LoadingScene");
     }
 
     //TODO Get rid of these
     #region Statics
     private static GameManager Instance;
-    public static float GetMapLoaderProgress() => Instance.MapLoader.Progress;
-    public static void IncreaseMapLoadingProgress(float val) {
-        Instance.MapLoader.Progress += val;
-    }
-    public static bool IsMapRendererReady() => Instance.MapRenderer.Ready;
-    public static void ResetMapLoadingProgress() {
-        Instance.MapLoader.Progress = 0;
-    }
+
     #endregion
 
     private void InitManagers() {

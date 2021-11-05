@@ -8,22 +8,8 @@ public class LoadingController : MonoBehaviour {
     public Text ProgressText;
     public Slider Slider;
 
-    private void Awake() {
-        MapLoader.OnProgress += OnProgress;
-    }
-
-    private void OnMapLoaded() {
-        MapLoader.OnProgress -= OnProgress;
-        SceneManager.UnloadSceneAsync("LoadingScene");
-    }
-
     private void OnProgress(int progress) {
         Slider.value = progress;
         ProgressText.text = $"{progress}%";
-
-        if (progress == 100 && GameManager.IsMapRendererReady()) {
-            GameManager.ResetMapLoadingProgress();
-            OnMapLoaded();
-        }
     }
 }
