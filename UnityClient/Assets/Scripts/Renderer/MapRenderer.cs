@@ -2,6 +2,7 @@
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -77,7 +78,7 @@ public class MapRenderer {
                 OnGroundComplete(data as GND.Mesh);
                 break;
             case "MAP_MODELS":
-                OnModelsComplete(data as List<RSM.CompiledModel>);
+                OnModelsComplete(data as RSM.CompiledModel[]);
                 break;
         }
         float delta = Time.realtimeSinceStartup - start;
@@ -193,8 +194,8 @@ public class MapRenderer {
         groundCompleted = true;
     }
 
-    private void OnModelsComplete(List<RSM.CompiledModel> compiledModels) {
-        models = new Models(compiledModels);
+    private void OnModelsComplete(RSM.CompiledModel[] compiledModels) {
+        models = new Models(compiledModels.ToList());
         models.BuildMeshes();
 
         modelsCompleted = true;

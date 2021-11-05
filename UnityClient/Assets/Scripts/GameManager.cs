@@ -97,8 +97,12 @@ public class GameManager : MonoBehaviour {
         SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         EntityManager.ClearEntities();
-
+        var stopWatch = new System.Diagnostics.Stopwatch();
+        stopWatch.Restart();
         await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
+        stopWatch.Stop();
+
+        Debug.Log($"Map took {stopWatch.Elapsed} to load");
         SceneManager.UnloadSceneAsync("LoadingScene");
     }
 
