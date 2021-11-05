@@ -81,6 +81,7 @@ namespace ROIO.Loaders {
             // create model instances
             // HashSet<RSM> objectsSet = new HashSet<RSM>();
             Task<RSM>[] tasks = new Task<RSM>[modelDescriptors.Count];
+            
             for (int i = 0; i < modelDescriptors.Count; ++i) {
                 tasks[i] = Task.Run<RSM>(() => {
                     RSM model = FileManager.Load(modelDescriptors[i].filename) as RSM;
