@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour {
     public static Action OnGrfLoaded;
 
     public Camera MainCamera { get; private set; }
+    public bool IsMapReady => MapRenderer.Ready;
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
 
     private Configuration Configs;
@@ -93,7 +94,7 @@ public class GameManager : MonoBehaviour {
     public async void BeginMapLoading(string mapName) {
         // if (!MapRenderer.Ready)
         //     return;
-        
+
         SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         EntityManager.ClearEntities();
