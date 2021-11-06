@@ -32,12 +32,12 @@ public class GridRenderer : MonoBehaviour {
     }
 
     private void Update() {
-        if (gridIcon == null) {
-            gridIcon = (Texture2D) FileManager.Load("data/texture/grid.tga");
-        }
-
         if (!GameManager.IsMapReady) {
             return;
+        }
+
+        if (gridIcon == null) {
+            gridIcon = (Texture2D) FileManager.Load("data/texture/grid.tga");
         }
 
         var ray = GameManager.MainCamera.ScreenPointToRay(Input.mousePosition);
