@@ -1,6 +1,7 @@
 ﻿
 using ROIO;
 using ROIO.Models.FileTypes;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,13 +24,15 @@ public class Models {
         internal bool isChild;
     }
 
-    public void BuildMeshes() {
+    public void BuildMeshes(Action<float> OnProgress) {
         GameObject parent = new GameObject("_Models");
         parent.transform.parent = MapRenderer.mapParent.transform;
         Dictionary<int, AnimProperties> anims = new Dictionary<int, AnimProperties>();
         int nodeId = 0;
 
         for (var index = 0; index < models.Count; index++) {
+            OnProgress.Invoke(index / (float)models.Count);
+            
             RSM.CompiledModel model = models[index];
             GameObject modelObj = new GameObject(model.rsm.name);
             modelObj.transform.parent = parent.transform;
@@ -79,7 +82,8 @@ public class Models {
                         }
                     }
 
-                    mr.material.mainTexture = FileManager.Load("data/texture/" + textureFile) as Texture2D;
+                    var properties = nodeObj.AddComponent<NodeProperties>();
+                    properties.SetTextureName(textureFile);
 
                     if (model.rsm.shadeType == RSM.SHADING.SMOOTH) {
                         NormalSolver.RecalculateNormals(mf.mesh, 60);
@@ -93,7 +97,6 @@ public class Models {
                     nodeObj.transform.rotation = rotation;
                     nodeObj.transform.localScale = matrix.ExtractScale();
 
-                    var properties = nodeObj.AddComponent<NodeProperties>();
                     properties.nodeId = nodeId;
                     properties.mainName = model.rsm.mainNode.name;
                     properties.parentName = node.parentName;

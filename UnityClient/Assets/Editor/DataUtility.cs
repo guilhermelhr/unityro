@@ -9,7 +9,7 @@ using UnityEngine;
 #if UNITY_EDITOR
 public class DataUtility {
 
-    [MenuItem("UnityRO/Utils/Extract Data")]
+    [MenuItem("UnityRO/Utils/Extract/Entire data")]
     static void ExtractData() {
         var config = ConfigurationLoader.Init();
         FileManager.LoadGRF(config.root, config.grf);
@@ -30,6 +30,51 @@ public class DataUtility {
                 var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
 
                 string assetPath = Path.Combine("Assets", "StreamingAssets", dir);
+
+                Directory.CreateDirectory(assetPath);
+
+                var completePath = Path.Combine(assetPath, filename);
+                File.WriteAllBytes(completePath, bytes);
+
+                if (file % 50 == 0) {
+                    AssetDatabase.ImportAsset(completePath);
+                }
+
+                file++;
+            } catch (Exception e) {
+                Debug.LogError(e);
+            }
+        }
+
+        EditorUtility.ClearProgressBar();
+        EditorApplication.ExitPlaymode();
+    }
+
+    [MenuItem("UnityRO/Utils/Extract/Textures")]
+    static void ExtractTextures() {
+        var config = ConfigurationLoader.Init();
+        FileManager.LoadGRF(config.root, config.grf);
+        var descriptors = FileManager.GetFileDescriptors();
+
+        var file = 1f;
+        foreach (DictionaryEntry entry in descriptors) {
+            try {
+                var progress = file / descriptors.Count;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting data (this is going to take 40 mins+) - {progress * 100}%", progress)) {
+                    break;
+                }
+
+                var path = (entry.Key as string).Trim();
+                if (!path.StartsWith("data/texture/")) {
+                    file++;
+                    continue;
+                }
+                var bytes = FileManager.ReadSync(path).ToArray();
+                var filename = Path.GetFileName(path);
+                var extension = Path.GetExtension(filename).ToLowerInvariant();
+                var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
+
+                string assetPath = Path.Combine("Assets", "Resources", "Textures", dir);
 
                 Directory.CreateDirectory(assetPath);
 
@@ -85,7 +130,7 @@ public class DataUtility {
                 texture.SetPixels(originalTexture.GetPixels());
                 texture.Apply();
                 texture.name = $"{id}";
-                
+
                 AssetDatabase.CreateAsset(texture, Path.Combine(localPath, id + "_texture.asset"));
 
                 renderer.material.mainTexture = texture;

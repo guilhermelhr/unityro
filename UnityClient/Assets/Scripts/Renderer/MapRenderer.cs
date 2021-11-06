@@ -14,7 +14,7 @@ using UnityEngine.Audio;
 /// </summary>
 public class MapRenderer {
 
-    public Action<GameObject> OnMapLoaded = null;
+    internal static Action<float> OnProgress;
 
     public static int MAX_VERTICES = 65532;
     public static AudioMixerGroup SoundsMixerGroup;
@@ -194,7 +194,9 @@ public class MapRenderer {
 
     private void OnModelsComplete(RSM.CompiledModel[] compiledModels) {
         models = new Models(compiledModels.ToList());
-        models.BuildMeshes();
+        models.BuildMeshes(delegate(float progress) {
+            OnProgress?.Invoke(progress);
+        });
 
         modelsCompleted = true;
     }
