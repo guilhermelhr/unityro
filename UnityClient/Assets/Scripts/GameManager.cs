@@ -2,6 +2,7 @@
 using ROIO;
 using ROIO.Loaders;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -103,8 +104,24 @@ public class GameManager : MonoBehaviour {
         await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
         stopWatch.Stop();
 
-        Debug.Log($"Map took {stopWatch.Elapsed} to load");
+        Debug.Log($"Map loaded in {stopWatch.ElapsedMilliseconds} millis");
         SceneManager.UnloadSceneAsync("LoadingScene");
+
+    }
+
+    public async Task<long> BenchmarkMapLoading(string mapName) {
+        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+        MapRenderer.Clear();
+        EntityManager.ClearEntities();
+        var stopWatch = new System.Diagnostics.Stopwatch();
+        stopWatch.Restart();
+        await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
+        stopWatch.Stop();
+
+        Debug.Log($"Map loaded in {stopWatch.ElapsedMilliseconds} millis");
+        SceneManager.UnloadSceneAsync("LoadingScene");
+
+        return stopWatch.ElapsedMilliseconds;
     }
 
     //TODO Get rid of these
