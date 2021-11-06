@@ -54,6 +54,6 @@ public class OfflineUtility : MonoBehaviour {
     public async void LoadMap() {
         var time = await GameManager.BenchmarkMapLoading(MapName);
         MapLoadingTimes.Add(time);
-        Debug.Log($"Average map loading times {MapLoadingTimes.Average()}");
+        Debug.Log($"Average map loading times {MapLoadingTimes.Average() / 1000f}");
     }
 }

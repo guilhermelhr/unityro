@@ -110,15 +110,15 @@ public class GameManager : MonoBehaviour {
     }
 
     public async Task<long> BenchmarkMapLoading(string mapName) {
-        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         EntityManager.ClearEntities();
+        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         var stopWatch = new System.Diagnostics.Stopwatch();
         stopWatch.Restart();
         await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
         stopWatch.Stop();
 
-        Debug.Log($"Map loaded in {stopWatch.ElapsedMilliseconds} millis");
+        Debug.Log($"Map loaded in {stopWatch.Elapsed.TotalSeconds} seconds");
         SceneManager.UnloadSceneAsync("LoadingScene");
 
         return stopWatch.ElapsedMilliseconds;
