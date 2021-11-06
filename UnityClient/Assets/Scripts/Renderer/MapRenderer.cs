@@ -66,7 +66,8 @@ public class MapRenderer {
             mapParent.tag = "Map";
         }
 
-        float start = Time.realtimeSinceStartup;
+        var stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Restart();
         switch(id) {
             case "MAP_WORLD":
                 OnWorldComplete(data as RSW);
@@ -81,8 +82,8 @@ public class MapRenderer {
                 OnModelsComplete(data as RSM.CompiledModel[]);
                 break;
         }
-        float delta = Time.realtimeSinceStartup - start;
-        Debug.Log(id + " oncomplete time: " + delta);
+        stopwatch.Stop();
+        Debug.Log(id + " oncomplete time: " + stopwatch.Elapsed.TotalSeconds);
 
         if(Ready) {
             OnMapComplete(mapname);
@@ -98,8 +99,6 @@ public class MapRenderer {
         foreach(var sound in world.sounds) {
             sounds.Add(sound, null);
         }
-        Debug.Log(sounds.Count() + " sounds loaded");
-
 
         if(WeatherEffect.HasMap(mapname)) {
             //create sky
@@ -151,7 +150,6 @@ public class MapRenderer {
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
         RenderSettings.ambientLight = ambient * lightInfo.intensity;
 
-        Debug.Log("diffuse: " + diffuse);
         WorldLight.color = diffuse;
 
         worldCompleted = true;
@@ -175,14 +173,14 @@ public class MapRenderer {
         ground.InitTextures(mesh);
         ground.Render();
 
-        if(mesh.waterVertCount > 0) {
+        if (mesh.waterVertCount > 0) {
             water = new Water();
             water.InitTextures(mesh, world.water);
             water.BuildMesh(mesh);
         }
 
         //initialize sounds
-        for(int i = 0; i < world.sounds.Count; i++) {
+        for (int i = 0; i < world.sounds.Count; i++) {
             world.sounds[i].pos[0] += mesh.width;
             world.sounds[i].pos[1] *= -1;
             world.sounds[i].pos[2] += mesh.height;
@@ -248,7 +246,6 @@ public class MapRenderer {
                 UnityEngine.Object.Destroy(t);
             }
         }
-        Debug.Log(dCount + " textures destroyed");
 
         worldCompleted = altitudeCompleted = groundCompleted = modelsCompleted = false;
     }

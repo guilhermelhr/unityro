@@ -1,4 +1,5 @@
 ﻿using ROIO.Models.FileTypes;
+using ROIO.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,12 +24,10 @@ namespace ROIO.Loaders {
             if (world == null) {
                 throw new Exception("Could not load rsw for " + mapname);
             }
-
             callback.Invoke(mapname, "MAP_WORLD", world);
 
-            Task ground = LoadGround(mapname, world, callback);
-            Task models = LoadModels(mapname, world.modelDescriptors, callback);
-            await Task.WhenAll(ground, models);
+            await LoadGround(mapname, world, callback);
+            
         }
 
         private async Task LoadAltitude(string mapname, Action<string, string, object> callback) {
@@ -48,37 +47,38 @@ namespace ROIO.Loaders {
                 throw new Exception("Could not load gnd for " + mapname);
             }
 
-            GND.Mesh compiledGround = await CompileGroundMesh(ground, world);
+            GND.Mesh compiledGround = await CompileGroundMesh(mapname, ground, world, callback);
+            LoadModels(mapname, world.modelDescriptors, callback);
+
             callback.Invoke(mapname, "MAP_GROUND", compiledGround);
         }
 
-        private async Task<GND.Mesh> CompileGroundMesh(GND ground, RSW world) {
+        private async Task<GND.Mesh> CompileGroundMesh(string mapname, GND ground, RSW world, Action<string, string, object> callback) {           
             GND.Mesh compiledGround = await Task.Run(() => GroundLoader.Compile(ground, world.water.level, world.water.waveHeight));
             await LoadGroundTexture(world, compiledGround);
+
             return compiledGround;
         }
 
-        private async Task LoadModels(string mapname, List<RSW.ModelDescriptor> modelDescriptors, Action<string, string, object> callback) {
+        private void LoadModels(string mapname, List<RSW.ModelDescriptor> modelDescriptors, Action<string, string, object> callback) {
             HashSet<RSM> objectsSet = new HashSet<RSM>();
 
             for (int i = 0; i < modelDescriptors.Count; i++) {
-                await Task.Run(() => {
-                    RSM model = FileManager.Load("data/model/" + modelDescriptors[i].filename) as RSM;
-                    if (model != null) {
-                        model.CreateInstance(modelDescriptors[i]);
-                        objectsSet.Add(model);
-                    }
-                });
+                RSM model = FileManager.Load("data/model/" + modelDescriptors[i].filename) as RSM;
+                if (model != null) {
+                    model.CreateInstance(modelDescriptors[i]);
+                    objectsSet.Add(model);
+                }
             }
 
             FileCache.ClearAllWithExt("rsm");
             RSM[] models = new RSM[objectsSet.Count];
             objectsSet.CopyTo(models);
 
-            await CompileModels(mapname, models, callback);
+            CompileModels(mapname, models, callback);
         }
 
-        private async Task CompileModels(string mapname, RSM[] objects, Action<string, string, object> callback) {
+        private async void CompileModels(string mapname, RSM[] objects, Action<string, string, object> callback) {
             List<Task<RSM.CompiledModel>> tasks = new List<Task<RSM.CompiledModel>>();
 
             foreach(var model in objects) {
@@ -88,7 +88,6 @@ namespace ROIO.Loaders {
 
             RSM.CompiledModel[] compiledModels = await Task.WhenAll(tasks);
             callback.Invoke(mapname, "MAP_MODELS", compiledModels);
-
         }
 
         private async Task LoadGroundTexture(RSW world, GND.Mesh ground) {
