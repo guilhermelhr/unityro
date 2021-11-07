@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour {
     #endregion
 
     public static Action OnGrfLoaded;
+    public static Action OnMapLoaded;
 
     public Camera MainCamera { get; private set; }
     public bool IsMapReady => MapRenderer.Ready;
@@ -92,13 +93,13 @@ public class GameManager : MonoBehaviour {
         MainCamera = Camera.main;
     }
 
-    public async void BeginMapLoading(string mapName) {
+    public async Task BeginMapLoading(string mapName) {
         // if (!MapRenderer.Ready)
         //     return;
 
+        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         EntityManager.ClearEntities();
-        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         var stopWatch = new System.Diagnostics.Stopwatch();
         stopWatch.Restart();
         await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
@@ -106,7 +107,7 @@ public class GameManager : MonoBehaviour {
 
         Debug.Log($"Map loaded in {stopWatch.Elapsed.TotalSeconds} seconds");
         SceneManager.UnloadSceneAsync("LoadingScene");
-
+        OnMapLoaded?.Invoke();
     }
 
     public async Task<long> BenchmarkMapLoading(string mapName) {

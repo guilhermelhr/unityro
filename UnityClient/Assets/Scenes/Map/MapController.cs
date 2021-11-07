@@ -17,7 +17,7 @@ public class MapController : MonoBehaviour {
     private EntityManager EntityManager;
     private PathFinder PathFinding;
 
-    private void Awake() {
+    private async void Awake() {
         if (Instance == null) {
             Instance = this;
         }
@@ -51,7 +51,7 @@ public class MapController : MonoBehaviour {
 
         GameManager.InitCamera();
         GameManager.SetWorldLight(worldLight);
-        GameManager.BeginMapLoading(mapInfo.mapname);
+        await GameManager.BeginMapLoading(mapInfo.mapname);
 
         InitEntity(mapInfo);
     }

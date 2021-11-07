@@ -69,6 +69,11 @@ public class MapRenderer {
         var stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Restart();
         switch(id) {
+            case "MAP_GROUND_SIZE":
+                var size = (Vector2) data;
+                width = (uint) size.x;
+                height = (uint) size.y;
+                break;
             case "MAP_WORLD":
                 OnWorldComplete(data as RSW);
                 break;

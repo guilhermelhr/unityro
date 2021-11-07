@@ -15,7 +15,6 @@ namespace ROIO.Loaders {
 
         public async Task Load(string mapname, Action<string, string, object> callback) {
             await LoadWorld(mapname, callback);
-            await LoadAltitude(mapname, callback);
         }
 
         private async Task LoadWorld(string mapname, Action<string, string, object> callback) {
@@ -26,11 +25,12 @@ namespace ROIO.Loaders {
             }
             callback.Invoke(mapname, "MAP_WORLD", world);
 
+            LoadAltitude(mapname, callback);
             await LoadGround(mapname, world, callback);
-            
+
         }
 
-        private async Task LoadAltitude(string mapname, Action<string, string, object> callback) {
+        private async void LoadAltitude(string mapname, Action<string, string, object> callback) {
             string gatPath = "data/" + GetFilePath(WorldLoader.files.gat);
             GAT altitude = await Task.Run(() => FileManager.Load(gatPath) as GAT);
             if (altitude == null) {
@@ -46,14 +46,14 @@ namespace ROIO.Loaders {
             if (ground == null) {
                 throw new Exception("Could not load gnd for " + mapname);
             }
+            callback.Invoke(mapname, "MAP_GROUND_SIZE", new UnityEngine.Vector2(ground.width, ground.height));
 
-            GND.Mesh compiledGround = await CompileGroundMesh(mapname, ground, world, callback);
             LoadModels(mapname, world.modelDescriptors, callback);
-
+            GND.Mesh compiledGround = await CompileGroundMesh(mapname, ground, world, callback);
             callback.Invoke(mapname, "MAP_GROUND", compiledGround);
         }
 
-        private async Task<GND.Mesh> CompileGroundMesh(string mapname, GND ground, RSW world, Action<string, string, object> callback) {           
+        private async Task<GND.Mesh> CompileGroundMesh(string mapname, GND ground, RSW world, Action<string, string, object> callback) {
             GND.Mesh compiledGround = await Task.Run(() => GroundLoader.Compile(ground, world.water.level, world.water.waveHeight));
             await LoadGroundTexture(world, compiledGround);
 
@@ -81,7 +81,7 @@ namespace ROIO.Loaders {
         private async void CompileModels(string mapname, RSM[] objects, Action<string, string, object> callback) {
             List<Task<RSM.CompiledModel>> tasks = new List<Task<RSM.CompiledModel>>();
 
-            foreach(var model in objects) {
+            foreach (var model in objects) {
                 var t = Task.Run(() => ModelLoader.Compile(model));
                 tasks.Add(t);
             }
