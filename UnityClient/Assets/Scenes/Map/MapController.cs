@@ -137,14 +137,14 @@ public class MapController : MonoBehaviour {
         }
     }
 
-    private void OnEntityMoved(ushort cmd, int size, InPacket packet) {
+    private async void OnEntityMoved(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NPCACK_MAPMOVE) {
             var pkt = packet as ZC.NPCACK_MAPMOVE;
 
             if (pkt.MapName != Session.CurrentSession.CurrentMap) {
                 var entity = Session.CurrentSession.Entity as Entity;
                 entity.StopMoving();
-                GameManager.BeginMapLoading(pkt.MapName.Split('.')[0]);
+                await GameManager.BeginMapLoading(pkt.MapName.Split('.')[0]);
                 Session.CurrentSession.SetCurrentMap(pkt.MapName);
                 entity.transform.position = new Vector3(pkt.PosX, PathFinding.GetCellHeight(pkt.PosX, pkt.PosY), pkt.PosY);
                 new CZ.NOTIFY_ACTORINIT().Send();
