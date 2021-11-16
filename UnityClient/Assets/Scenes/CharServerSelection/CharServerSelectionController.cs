@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ROIO;
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,6 +20,8 @@ public class CharServerSelectionController : MonoBehaviour {
 
     // Start is called before the first frame update
     private void Start() {
+        Background.SetImage("bgi_temp.bmp");
+        
         // Disconnect from Login Server
         NetworkClient.Disconnect();
 

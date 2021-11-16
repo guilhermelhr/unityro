@@ -1,4 +1,5 @@
 ﻿using ROIO.Loaders;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,6 +11,10 @@ public class LoadingController : MonoBehaviour {
 
     private void Awake() {
         MapLoader.OnProgress += OnProgress;
+    }
+
+    private void Start() {
+        Background.setLoading();
     }
 
     private void OnMapLoaded() {

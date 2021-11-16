@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ROIO;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,6 +31,7 @@ public class CharCreationController : MonoBehaviour {
     private int SelectedHairColor = 0;
 
     void Start() {
+        Background.SetImage("bgi_temp.bmp");
         NetworkClient = FindObjectOfType<NetworkClient>();
 
         InitEntity(StyleEntity);
