@@ -1,6 +1,4 @@
-﻿using ROIO;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -9,17 +7,11 @@ public class LoginController : MonoBehaviour {
 
     public InputField usernameField;
     public InputField passwordField;
-
+    
     private NetworkClient NetworkClient;
     
     void Start() {
-//        Texture2D texture = FileManager.Load($"{DBManager.INTERFACE_PATH}bgi_temp.bmp") as Texture2D;
-//        RawImage image = GameObject.Find("Screen").GetComponent<RawImage>();
-//        image.texture = texture;
-
-        Background.SetImage("bgi_temp.bmp");
-//        background = FindObjectOfType<Background>();
-//        background.SetImage("bgi_temp.bmp");
+        Background.SetLoginBackground();
         
         NetworkClient = FindObjectOfType<NetworkClient>();
 

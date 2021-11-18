@@ -31,7 +31,7 @@ public class CharCreationController : MonoBehaviour {
     private int SelectedHairColor = 0;
 
     void Start() {
-        Background.SetImage("bgi_temp.bmp");
+        Background.SetLoginBackground();
         NetworkClient = FindObjectOfType<NetworkClient>();
 
         InitEntity(StyleEntity);

@@ -1,5 +1,4 @@
 ﻿using ROIO.Loaders;
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -14,7 +13,7 @@ public class LoadingController : MonoBehaviour {
     }
 
     private void Start() {
-        Background.setLoading();
+        Background.SetLoading();
     }
 
     private void OnMapLoaded() {

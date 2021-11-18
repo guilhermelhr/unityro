@@ -28,7 +28,7 @@ public class CharSelectionController : MonoBehaviour {
     }
 
     void Start() {
-        Background.SetImage("bgi_temp.bmp");
+        Background.SetLoginBackground();
         currentCharactersInfo = NetworkClient.State.CurrentCharactersInfo;
         NetworkClient.HookPacket(HC.NOTIFY_ZONESVR2.HEADER, OnCharacterSelectionAccepted);
         NetworkClient.HookPacket(HC.ACCEPT_MAKECHAR.HEADER, OnMakeCharAccepted);
