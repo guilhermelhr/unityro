@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -111,7 +112,8 @@ public class CharSelectionController : MonoBehaviour {
             };
             SceneManager.LoadSceneAsync(6, LoadSceneMode.Additive);
         } else {
-            this.selectedCharacter = character;
+            selectedCharacter = character;
+            SetTextFields(character);
         }
     }
 
@@ -130,5 +132,65 @@ public class CharSelectionController : MonoBehaviour {
             Name = Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8),
             CharNum = (byte) currentCharactersInfo.Chars.Count
         }.Send();
+    }
+    
+    private void SetTextFields(CharacterData character) {
+        GameObject panel = GameObject.Find("Main Panel/Panel");
+        int children = panel.transform.childCount;
+        for (int i = 0; i < children; i++) {
+            Text field = panel.transform.GetChild(i).GetComponent<Text>();
+            
+            switch (i) {
+                case 0: // map
+                    field.text = character.MapName; // @todo get map name
+                    break;
+                    
+                case 1: // job
+                    field.text =
+                        CultureInfo.InvariantCulture.TextInfo.ToTitleCase(
+                            JobHelper.GetJobName(character.Job, character.Sex));
+                    break;
+            
+                case 2: // lv.
+                    field.text = character.BaseLevel.ToString();
+                    break;
+            
+                case 3: // exp
+                    field.text = character.Exp.ToString();
+                    break;
+            
+                case 4: // hp
+                    field.text = character.MaxHP.ToString();
+                    break;
+            
+                case 5: // sp
+                    field.text = character.MaxSP.ToString();
+                    break;
+            
+                case 6: // str
+                    field.text = character.Str.ToString();
+                    break;
+            
+                case 7: // agi
+                    field.text = character.Agi.ToString();
+                    break;
+            
+                case 8: // vit
+                    field.text = character.Vit.ToString();
+                    break;
+            
+                case 9: // int
+                    field.text = character.Int.ToString();
+                    break;
+            
+                case 10: // dex
+                    field.text = character.Dex.ToString();
+                    break;
+            
+                case 11: // luk
+                    field.text = character.Luk.ToString();
+                    break;
+            }
+        }
     }
 }
