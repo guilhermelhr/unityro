@@ -122,23 +122,14 @@ public class DataUtility {
                 break;
             }
 
-            var originalTexture = renderer.material.mainTexture as Texture2D;
-            var id = filter.mesh.GetInstanceID();
-
             try {
-                var texture = new Texture2D(originalTexture.width, originalTexture.height);
-                texture.SetPixels(originalTexture.GetPixels());
-                texture.Apply();
-                texture.name = $"{id}";
-
-                AssetDatabase.CreateAsset(texture, Path.Combine(localPath, id + "_texture.asset"));
-
-                renderer.material.mainTexture = texture;
-            } catch {
-                Debug.LogError("Error saving " + id + "_texture.asset");
+                var material = renderer.material;
+                AssetDatabase.CreateAsset(material, Path.Combine(localPath, $"material_{i}.mat"));
+            } catch (Exception e) {
+                Debug.LogError(e);
             }
 
-            AssetDatabase.CreateAsset(filter.mesh, Path.Combine(localPath, id + ".asset"));
+            AssetDatabase.CreateAsset(filter.mesh, Path.Combine(localPath, $"filter_{i}.asset"));
         }
 
         localPath = AssetDatabase.GenerateUniqueAssetPath(localPath + ".prefab");

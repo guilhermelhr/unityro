@@ -2,6 +2,7 @@
 using ROIO;
 using ROIO.Models.FileTypes;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ public class Models {
         internal bool isChild;
     }
 
-    public void BuildMeshes(Action<float> OnProgress) {
+    public IEnumerator BuildMeshes(Action<float> OnProgress) {
         GameObject parent = new GameObject("_Models");
         parent.transform.parent = MapRenderer.mapParent.transform;
         Dictionary<int, AnimProperties> anims = new Dictionary<int, AnimProperties>();
@@ -169,8 +170,11 @@ public class Models {
 
                 instanceObj.SetActive(true);
             }
+
+            yield return null;
         }
 
+        yield return null;
         anims.Clear();
     }
 

@@ -7,13 +7,15 @@ public class LoadingController : MonoBehaviour {
     public Slider Slider;
 
     private void Awake() {
-        MapRenderer.OnProgress += delegate (float progress) {
-            OnProgress((int) progress);
-        };
+        MapRenderer.OnProgress += OnProgress;
     }
 
-    private void OnProgress(int progress) {
+    private void OnDestroy() {
+        MapRenderer.OnProgress -= OnProgress;
+    }
+
+    private void OnProgress(float progress) {
         Slider.value = progress;
-        ProgressText.text = $"{progress}%";
+        ProgressText.text = $"{(int)(progress * 100)}%";
     }
 }

@@ -66,7 +66,13 @@ public class PathFinder : MonoBehaviour {
         return path;
     }
 
-    public float GetCellHeight(int x, int y) => (float) Altitude.GetCellHeight(x, y);
+    public float GetCellHeight(int x, int y) { 
+        if (Altitude != null) {
+            return (float) Altitude.GetCellHeight(x, y);
+        } else {
+            return 0f;
+        }
+    }
 
     public List<PathNode> GetPath(int startX, int startY, int endX, int endY, int range = 0) {
         if (startX == endX && startY == endY) {

@@ -36,7 +36,7 @@ public class MapRenderer {
     private PathFinder PathFinder;
 
     public bool Ready {
-        get { return worldCompleted && altitudeCompleted && groundCompleted && modelsCompleted;  }
+        get { return worldCompleted && altitudeCompleted && groundCompleted && modelsCompleted; }
     }
 
     // TODO this PathFinder here probably can be somewhere else
@@ -61,14 +61,14 @@ public class MapRenderer {
     public Fog fog = new Fog(false);*/
 
     public void OnComplete(string mapname, string id, object data) {
-        if(mapParent == null) {
+        if (mapParent == null) {
             mapParent = new GameObject(mapname);
             mapParent.tag = "Map";
         }
 
         var stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Restart();
-        switch(id) {
+        switch (id) {
             case "MAP_GROUND_SIZE":
                 var size = (Vector2) data;
                 width = (uint) size.x;
@@ -90,7 +90,7 @@ public class MapRenderer {
         stopwatch.Stop();
         Debug.Log(id + " oncomplete time: " + stopwatch.Elapsed.TotalSeconds);
 
-        if(Ready) {
+        if (Ready) {
             OnMapComplete(mapname);
         }
     }
@@ -101,11 +101,11 @@ public class MapRenderer {
         FileCache.ClearAll();
 
         //add sounds to playlist (and cache)
-        foreach(var sound in world.sounds) {
+        foreach (var sound in world.sounds) {
             sounds.Add(sound, null);
         }
 
-        if(WeatherEffect.HasMap(mapname)) {
+        if (WeatherEffect.HasMap(mapname)) {
             //create sky
             sky = new Sky();
             //initialize clouds
@@ -118,8 +118,8 @@ public class MapRenderer {
         //add lights
         GameObject lightsParent = new GameObject("_lights");
         lightsParent.transform.parent = mapParent.transform;
-        
-        foreach(var light in world.lights) {
+
+        foreach (var light in world.lights) {
             var lightObj = new GameObject(light.name);
             lightObj.transform.SetParent(lightsParent.transform);
             Light lightComponent = lightObj.AddComponent<Light>();
@@ -199,37 +199,39 @@ public class MapRenderer {
 
     private void OnModelsComplete(RSM.CompiledModel[] compiledModels) {
         models = new Models(compiledModels.ToList());
-        models.BuildMeshes(delegate(float progress) {
-            OnProgress?.Invoke(progress);
-        });
+        GameManager.StartCoroutine(models.BuildMeshes(OnMapLoadingProgress));
 
         modelsCompleted = true;
     }
 
+    private void OnMapLoadingProgress(float progress) {
+        OnProgress?.Invoke(progress);
+    }
+
     public void PostRender() {
-        if(water != null) {
+        if (water != null) {
             water.Render();
         }
     }
 
     public void Render() {
-        if(sky != null) {
+        if (sky != null) {
             sky.Render();
         }
-        
+
         models.Render();
     }
 
     public void FixedUpdate() {
         sounds.Update();
-        if(sky != null) {
+        if (sky != null) {
             sky.FixedUpdate();
         }
     }
 
     public void Clear() {
         sounds.Clear();
-        if(sky != null) {
+        if (sky != null) {
             sky.Clear();
         }
 
@@ -239,7 +241,7 @@ public class MapRenderer {
         sky = null;
 
         //destroy map
-        if(mapParent != null) {
+        if (mapParent != null) {
             UnityEngine.Object.Destroy(mapParent);
             mapParent = null;
         }
@@ -247,8 +249,8 @@ public class MapRenderer {
         //destroy textures
         var ob = UnityEngine.Object.FindObjectsOfType(typeof(Texture2D));
         int dCount = 0;
-        foreach(Texture2D t in ob) {
-            if(t.name.StartsWith("maptexture@")) {
+        foreach (Texture2D t in ob) {
+            if (t.name.StartsWith("maptexture@")) {
                 dCount++;
                 UnityEngine.Object.Destroy(t);
             }
