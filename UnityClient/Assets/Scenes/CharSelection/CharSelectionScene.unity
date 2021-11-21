@@ -1943,6 +1943,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridLayout: {fileID: 1435697183}
   charSelectionItem: {fileID: 4032596202115033325, guid: 866f7df4b50119f4694d1818e5abbd71, type: 3}
+  textPanel: {fileID: 1117223860}
   MapUIPrefab: {fileID: 5602318628702151036, guid: b07c21aedd8bf489ab5509ad1b6168ab, type: 3}
   EventSystem: {fileID: 821012552}
 --- !u!4 &1697507789
