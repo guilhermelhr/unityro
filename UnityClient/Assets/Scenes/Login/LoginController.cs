@@ -7,10 +7,13 @@ public class LoginController : MonoBehaviour {
 
     public InputField usernameField;
     public InputField passwordField;
-
+    public RawImage background;
+    
     private NetworkClient NetworkClient;
-
+    
     void Start() {
+        background.SetLoginBackground();
+        
         NetworkClient = FindObjectOfType<NetworkClient>();
 
         NetworkClient.ChangeServer("127.0.0.1", 6900);
