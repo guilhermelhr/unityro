@@ -8,6 +8,7 @@ public class CharServerSelectionController : MonoBehaviour {
 
     public GameObject LinearLayout;
     public GameObject CharServerListItem;
+    public RawImage background;
 
     private NetworkClient NetworkClient;
 
@@ -19,6 +20,8 @@ public class CharServerSelectionController : MonoBehaviour {
 
     // Start is called before the first frame update
     private void Start() {
+        background.SetLoginBackground();
+        
         // Disconnect from Login Server
         NetworkClient.Disconnect();
 

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ROIO;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,6 +21,8 @@ public class CharCreationController : MonoBehaviour {
     public ToggleGroup HairToggleGroup;
     public ToggleGroup SexToggleGroup;
 
+    public RawImage background;
+
     private bool IsDirty = false;
     private List<ToggleImage> HairToggleList;
     private NetworkClient NetworkClient;
@@ -29,6 +33,7 @@ public class CharCreationController : MonoBehaviour {
     private int SelectedHairColor = 0;
 
     void Start() {
+        background.SetLoginBackground();
         NetworkClient = FindObjectOfType<NetworkClient>();
 
         InitEntity(StyleEntity);

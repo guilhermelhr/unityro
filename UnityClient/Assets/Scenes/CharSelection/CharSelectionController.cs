@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -9,6 +10,8 @@ public class CharSelectionController : MonoBehaviour {
 
     public GridLayoutGroup GridLayout;
     public GameObject charSelectionItem;
+    public GameObject textPanel;
+    public RawImage background;
     public GameObject MapUIPrefab;
     public EventSystem EventSystem;
 
@@ -27,6 +30,7 @@ public class CharSelectionController : MonoBehaviour {
     }
 
     void Start() {
+        background.SetLoginBackground();
         currentCharactersInfo = NetworkClient.State.CurrentCharactersInfo;
         NetworkClient.HookPacket(HC.NOTIFY_ZONESVR2.HEADER, OnCharacterSelectionAccepted);
         NetworkClient.HookPacket(HC.ACCEPT_MAKECHAR.HEADER, OnMakeCharAccepted);
@@ -111,7 +115,8 @@ public class CharSelectionController : MonoBehaviour {
             };
             SceneManager.LoadSceneAsync(6, LoadSceneMode.Additive);
         } else {
-            this.selectedCharacter = character;
+            selectedCharacter = character;
+            SetTextFields(selectedCharacter);
         }
     }
 
@@ -130,5 +135,52 @@ public class CharSelectionController : MonoBehaviour {
             Name = Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8),
             CharNum = (byte) currentCharactersInfo.Chars.Count
         }.Send();
+    }
+    
+    private void SetTextFields(CharacterData character) {
+        Text[] fields = textPanel.GetComponentsInChildren<Text>();
+        int numChildren = fields.Length;
+        for (int i = 0; i < numChildren; i++) {
+            switch (i) {
+                case 0: // map
+                    fields[i].text = character.MapName; // @todo get map name
+                    break;
+                case 1: // job
+                    fields[i].text =
+                        CultureInfo.InvariantCulture.TextInfo.ToTitleCase(
+                            JobHelper.GetJobName(character.Job, character.Sex));
+                    break;
+                case 2: // lv.
+                    fields[i].text = character.BaseLevel.ToString();
+                    break;
+                case 3: // exp
+                    fields[i].text = character.Exp.ToString();
+                    break;
+                case 4: // hp
+                    fields[i].text = character.MaxHP.ToString();
+                    break;
+                case 5: // sp
+                    fields[i].text = character.MaxSP.ToString();
+                    break;
+                case 6: // str
+                    fields[i].text = character.Str.ToString();
+                    break;
+                case 7: // agi
+                    fields[i].text = character.Agi.ToString();
+                    break;
+                case 8: // vit
+                    fields[i].text = character.Vit.ToString();
+                    break;
+                case 9: // int
+                    fields[i].text = character.Int.ToString();
+                    break;
+                case 10: // dex
+                    fields[i].text = character.Dex.ToString();
+                    break;
+                case 11: // luk
+                    fields[i].text = character.Luk.ToString();
+                    break;
+            }
+        }
     }
 }
