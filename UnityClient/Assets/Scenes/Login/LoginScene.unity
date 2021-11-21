@@ -1386,6 +1386,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   usernameField: {fileID: 533442016}
   passwordField: {fileID: 1645345287}
+  background: {fileID: 735391685}
 --- !u!4 &2119480616
 Transform:
   m_ObjectHideFlags: 0

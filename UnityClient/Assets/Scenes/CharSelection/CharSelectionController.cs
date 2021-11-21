@@ -1,5 +1,4 @@
-﻿using ROIO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,6 +9,7 @@ public class CharSelectionController : MonoBehaviour {
 
     public GridLayoutGroup GridLayout;
     public GameObject charSelectionItem;
+    public RawImage background;
     public GameObject MapUIPrefab;
     public EventSystem EventSystem;
 
@@ -28,7 +28,7 @@ public class CharSelectionController : MonoBehaviour {
     }
 
     void Start() {
-        Background.SetLoginBackground();
+        background.SetLoginBackground();
         currentCharactersInfo = NetworkClient.State.CurrentCharactersInfo;
         NetworkClient.HookPacket(HC.NOTIFY_ZONESVR2.HEADER, OnCharacterSelectionAccepted);
         NetworkClient.HookPacket(HC.ACCEPT_MAKECHAR.HEADER, OnMakeCharAccepted);

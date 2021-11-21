@@ -645,6 +645,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ProgressText: {fileID: 1007529409}
   Slider: {fileID: 637838353}
+  background: {fileID: 49636783}
 --- !u!4 &1937245280
 Transform:
   m_ObjectHideFlags: 0

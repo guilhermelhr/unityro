@@ -1,5 +1,4 @@
-﻿using ROIO;
-using System;
+﻿using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,6 +8,7 @@ public class CharServerSelectionController : MonoBehaviour {
 
     public GameObject LinearLayout;
     public GameObject CharServerListItem;
+    public RawImage background;
 
     private NetworkClient NetworkClient;
 
@@ -20,7 +20,7 @@ public class CharServerSelectionController : MonoBehaviour {
 
     // Start is called before the first frame update
     private void Start() {
-        Background.SetLoginBackground();
+        background.SetLoginBackground();
         
         // Disconnect from Login Server
         NetworkClient.Disconnect();
