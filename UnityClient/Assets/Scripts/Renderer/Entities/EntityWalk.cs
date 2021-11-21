@@ -92,7 +92,7 @@ public class EntityWalk : MonoBehaviour {
     public void StopMoving() {
         Entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
         isWalking = false;
-        nodes.Clear();
+        nodes?.Clear();
     }
 
     private IEnumerator OnWalkEnd() {

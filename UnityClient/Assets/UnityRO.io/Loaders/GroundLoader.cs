@@ -4,16 +4,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ROIO.Loaders
-{
-    public class GroundLoader
-    {
-        public static GND Load(MemoryStreamReader data)
-        {
+namespace ROIO.Loaders {
+    public class GroundLoader {
+        public static GND Load(MemoryStreamReader data) {
             string header = data.ReadBinaryString(4);
 
-            if (!string.Equals(header, GND.Header))
-            {
+            if (!string.Equals(header, GND.Header)) {
                 throw new Exception("GroundLoader.Load: Header (" + header + ") is not \"GRGN\"");
             }
 
@@ -35,20 +31,17 @@ namespace ROIO.Loaders
             return gnd;
         }
 
-        private static void ParseTextures(GND gnd, MemoryStreamReader data)
-        {
+        private static void ParseTextures(GND gnd, MemoryStreamReader data) {
             uint textureCount = data.ReadUInt();
             uint texturePathLength = data.ReadUInt();
             int[] lookupList = new int[textureCount];
             List<string> textures = new List<string>();
 
-            for (int i = 0; i < textureCount; i++)
-            {
+            for (int i = 0; i < textureCount; i++) {
                 string texture = data.ReadBinaryString(texturePathLength);
                 int pos = textures.IndexOf(texture);
 
-                if (pos == -1)
-                {
+                if (pos == -1) {
                     textures.Add(texture);
                     pos = textures.Count - 1;
                 }
@@ -60,16 +53,14 @@ namespace ROIO.Loaders
             gnd.textureLookupList = lookupList;
         }
 
-        private static void ParseLightmaps(GND gnd, MemoryStreamReader data)
-        {
+        private static void ParseLightmaps(GND gnd, MemoryStreamReader data) {
             uint lightmapCount = data.ReadUInt();
             int lightmapWidth = data.ReadInt();
             int lightmapHeight = data.ReadInt();
             int gridSizeCell = data.ReadInt();
             int perCell = lightmapWidth * lightmapHeight * gridSizeCell;
 
-            if (perCell != 64)
-            {
+            if (perCell != 64) {
                 throw new Exception("Non supported lightmap");
             }
 
@@ -79,16 +70,14 @@ namespace ROIO.Loaders
             //lightmap.perCell = perCell;
             lightmap.data = new byte[lightmapCount][];
 
-            for (int i = 0; i < lightmapCount; i++)
-            {
+            for (int i = 0; i < lightmapCount; i++) {
                 lightmap.data[i] = new byte[256];
                 data.Read(lightmap.data[i], 0, 256);
             }
             //data.Read(lightmap.data, 0, lightmap.data.Length);
         }
 
-        private static GND.Tile[] ParseTiles(GND gnd, MemoryStreamReader data)
-        {
+        private static GND.Tile[] ParseTiles(GND gnd, MemoryStreamReader data) {
             uint count = data.ReadUInt();
             GND.Tile[] tiles = new GND.Tile[count];
 
@@ -101,40 +90,36 @@ namespace ROIO.Loaders
             var ATLAS_PX_U = 1 / 258f;
             var ATLAS_PX_V = 1 / 258f;
 
-            for (int i = 0; i < count; i++)
-            {
+            for (int i = 0; i < count; i++) {
                 var tile = tiles[i] = new GND.Tile();
                 tile.textureStart = new Vector4(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
                 tile.textureEnd = new Vector4(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
                 tile.texture = data.ReadUShort();
                 tile.light = data.ReadUShort();
-                var r = (byte)data.ReadByte();
-                var g = (byte)data.ReadByte();
-                var b = (byte)data.ReadByte();
-                var a = (byte)data.ReadByte();
+                var r = (byte) data.ReadByte();
+                var g = (byte) data.ReadByte();
+                var b = (byte) data.ReadByte();
+                var a = (byte) data.ReadByte();
                 tile.color = new byte[] { r, g, b, a };
-                tile.texture = (ushort)gnd.textureLookupList[tile.texture];
+                tile.texture = (ushort) gnd.textureLookupList[tile.texture];
 
                 var start = tile.texture % ATLAS_COLS;
                 var end = Math.Floor(tile.texture / ATLAS_COLS);
 
-                for (int j = 0; j < 4; j++)
-                {
-                    tile.textureStart[j] = (float)((start + tile.textureStart[j] * (1 - ATLAS_PX_U * 2) + ATLAS_PX_U) * ATLAS_FACTOR_U / ATLAS_COLS);
-                    tile.textureEnd[j] = (float)((end + tile.textureEnd[j] * (1 - ATLAS_PX_V * 2) + ATLAS_PX_V) * ATLAS_FACTOR_V / ATLAS_ROWS);
+                for (int j = 0; j < 4; j++) {
+                    tile.textureStart[j] = (float) ((start + tile.textureStart[j] * (1 - ATLAS_PX_U * 2) + ATLAS_PX_U) * ATLAS_FACTOR_U / ATLAS_COLS);
+                    tile.textureEnd[j] = (float) ((end + tile.textureEnd[j] * (1 - ATLAS_PX_V * 2) + ATLAS_PX_V) * ATLAS_FACTOR_V / ATLAS_ROWS);
                 }
             }
 
             return tiles;
         }
 
-        private static GND.Surface[] ParseSurfaces(GND gnd, MemoryStreamReader data)
-        {
+        private static GND.Surface[] ParseSurfaces(GND gnd, MemoryStreamReader data) {
             var count = gnd.width * gnd.height;
             GND.Surface[] surfaces = new GND.Surface[count];
 
-            for (int i = 0; i < count; i++)
-            {
+            for (int i = 0; i < count; i++) {
                 var surface = surfaces[i] = new GND.Surface();
                 surface.height = new Vector4(data.ReadFloat() / 5, data.ReadFloat() / 5, data.ReadFloat() / 5, data.ReadFloat() / 5);
                 surface.tileUp = data.ReadInt();
@@ -145,8 +130,7 @@ namespace ROIO.Loaders
             return surfaces;
         }
 
-        private static Vector3[][] GetSmoothNormal(GND gnd)
-        {
+        private static Vector3[][] GetSmoothNormal(GND gnd) {
             Vector3 a = new Vector3();
             Vector3 b = new Vector3();
             Vector3 c = new Vector3();
@@ -157,18 +141,23 @@ namespace ROIO.Loaders
             var emptyVec = new Vector3();
 
             //calculate normal for each cell
-            for (int y = 0; y < gnd.height; y++)
-            {
-                for (int x = 0; x < gnd.width; x++)
-                {
+            for (int y = 0; y < gnd.height; y++) {
+                for (int x = 0; x < gnd.width; x++) {
                     var cell = gnd.surfaces[x + y * gnd.width];
 
-                    if (cell.tileUp > -1)
-                    {
-                        a[0] = (x + 0) * 2; a[1] = cell.height[0]; a[2] = (y + 0) * 2;
-                        b[0] = (x + 1) * 2; b[1] = cell.height[1]; b[2] = (y + 0) * 2;
-                        c[0] = (x + 1) * 2; c[1] = cell.height[3]; c[2] = (y + 1) * 2;
-                        d[0] = (x + 0) * 2; d[1] = cell.height[2]; d[2] = (y + 1) * 2;
+                    if (cell.tileUp > -1) {
+                        a[0] = (x + 0) * 2;
+                        a[1] = cell.height[0];
+                        a[2] = (y + 0) * 2;
+                        b[0] = (x + 1) * 2;
+                        b[1] = cell.height[1];
+                        b[2] = (y + 0) * 2;
+                        c[0] = (x + 1) * 2;
+                        c[1] = cell.height[3];
+                        c[2] = (y + 1) * 2;
+                        d[0] = (x + 0) * 2;
+                        d[1] = cell.height[2];
+                        d[2] = (y + 1) * 2;
 
                         tmp[x + y * gnd.width] = Conversions.CalcNormal(a, b, c, d);
                     }
@@ -176,14 +165,11 @@ namespace ROIO.Loaders
             }
 
             //smooth normals
-            for (int y = 0; y < gnd.height; y++)
-            {
-                for (int x = 0; x < gnd.width; x++)
-                {
+            for (int y = 0; y < gnd.height; y++) {
+                for (int x = 0; x < gnd.width; x++) {
                     var n = normals[x + y * gnd.width] = new Vector3[] { Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };
 
-                    for (byte i = 0; i < 4; i++)
-                    {
+                    for (byte i = 0; i < 4; i++) {
                         int b1 = i & 1;
                         int b2 = (i & 2) >> 1;
                         int xor = b1 ^ b2;
@@ -199,18 +185,13 @@ namespace ROIO.Loaders
             return normals;
         }
 
-        private static Texture2D CreateLightmapImage(GND gnd)
-        {
+        private static RoImage CreateLightmapImage(GND gnd) {
             List<byte> image = new List<byte>();
 
-            for (int gndY = 0; gndY < gnd.height; gndY++)
-            {
-                for (int lightmapY = 0; lightmapY < 8; lightmapY++)
-                {
-                    for (int gndX = 0; gndX < gnd.width; gndX++)
-                    {
-                        for (int lightmapX = 0; lightmapX < 8; lightmapX++)
-                        {
+            for (int gndY = 0; gndY < gnd.height; gndY++) {
+                for (int lightmapY = 0; lightmapY < 8; lightmapY++) {
+                    for (int gndX = 0; gndX < gnd.width; gndX++) {
+                        for (int lightmapX = 0; lightmapX < 8; lightmapX++) {
                             byte[] color = GetLightmapColor(gnd, gndX, gndY, lightmapX, lightmapY);
                             byte alpha = GetLightmapBrightness(gnd, gndX, gndY, lightmapX, lightmapY);
                             image.AddRange(color);
@@ -220,54 +201,47 @@ namespace ROIO.Loaders
                 }
             }
 
-            Texture2D t = new Texture2D((int)(gnd.width * 8), (int)(gnd.height * 8), TextureFormat.RGBA32, false);
-            t.LoadRawTextureData(image.ToArray());
-            t.Apply();
-
-            //System.IO.File.WriteAllBytes(Application.dataPath + "/" + MapSelector.CurrentMap + "-LightmapImage.png", t.EncodeToPNG());
-
-            return t;
+            return new RoImage {
+                width = (int) (gnd.width * 8),
+                height = (int) (gnd.height * 8),
+                format = TextureFormat.RGBA32,
+                mipChain = false,
+                data = image.ToArray()
+            };
         }
 
-        private static Texture2D CreateTilesColorImage(GND gnd)
-        {
+        private static RoImage CreateTilesColorImage(GND gnd) {
             byte[] data = new byte[gnd.width * gnd.height * 4];
 
-            for (int y = 0; y < gnd.height; y++)
-            {
-                for (int x = 0; x < gnd.width; x++)
-                {
+            for (int y = 0; y < gnd.height; y++) {
+                for (int x = 0; x < gnd.width; x++) {
                     var cell = gnd.surfaces[x + y * gnd.width];
 
                     // Check tile up
-                    if (cell.tileUp > -1)
-                    {
+                    if (cell.tileUp > -1) {
                         var color = gnd.tiles[cell.tileUp].color;
                         color.CopyTo(data, (x + y * gnd.width) * 4);
                     }
                 }
             }
 
-            Texture2D t = new Texture2D((int)gnd.width, (int)gnd.height, TextureFormat.RGBA32, false);
-            t.LoadRawTextureData(data);
-            t.Apply();
-
-            //System.IO.File.WriteAllBytes(Application.dataPath + "/" + MapSelector.CurrentMap + "-TilesColorImage.png", t.EncodeToPNG());
-
-            return t;
+            return new RoImage {
+                width = (int) gnd.width,
+                height = (int) gnd.height,
+                format = TextureFormat.RGBA32,
+                mipChain = false,
+                data = data
+            };
         }
 
-        private static byte GetLightmapBrightness(GND gnd, int x, int y, int lightmapX, int lightmapY)
-        {
-            if (x < 0 || y < 0 || x >= gnd.width || y >= gnd.height)
-            {
+        private static byte GetLightmapBrightness(GND gnd, int x, int y, int lightmapX, int lightmapY) {
+            if (x < 0 || y < 0 || x >= gnd.width || y >= gnd.height) {
                 return 0;
             }
 
             var cell = gnd.surfaces[x + y * gnd.width];
-            int tileId = (int)cell.tileUp;
-            if (tileId == -1)
-            {
+            int tileId = (int) cell.tileUp;
+            if (tileId == -1) {
                 return 0;
             }
 
@@ -277,17 +251,14 @@ namespace ROIO.Loaders
             return lightmap[lightmapX + 8 * lightmapY];
         }
 
-        private static byte[] GetLightmapColor(GND gnd, int x, int y, int lightmapX, int lightmapY)
-        {
-            if (x < 0 || y < 0 || x >= gnd.width || y >= gnd.height)
-            {
+        private static byte[] GetLightmapColor(GND gnd, int x, int y, int lightmapX, int lightmapY) {
+            if (x < 0 || y < 0 || x >= gnd.width || y >= gnd.height) {
                 return new byte[] { 0, 0, 0 };
             }
 
             var cell = gnd.surfaces[x + y * gnd.width];
-            int tileId = (int)cell.tileUp;
-            if (tileId == -1)
-            {
+            int tileId = (int) cell.tileUp;
+            if (tileId == -1) {
                 return new byte[] { 0, 0, 0 };
             }
 
@@ -295,16 +266,13 @@ namespace ROIO.Loaders
             byte[] lightmap = gnd.lightmap.data[tile.light];
 
             bool rasterize = true;
-            if (rasterize)
-            {
+            if (rasterize) {
                 return new byte[] {
                 (byte) (lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 0] >> 4 << 4),
                 (byte) (lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 1] >> 4 << 4),
                 (byte) (lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 2] >> 4 << 4)
             };
-            }
-            else
-            {
+            } else {
                 return new byte[] {
                 lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 0],
                 lightmap[64 + (lightmapX + 8 * lightmapY) * 3 + 1],
@@ -313,29 +281,25 @@ namespace ROIO.Loaders
             }
         }
 
-        public static GND.Mesh Compile(GND gnd, float WATER_LEVEL, float WATER_HEIGHT)
-        {
+        public static GND.Mesh Compile(GND gnd, float WATER_LEVEL, float WATER_HEIGHT) {
             var normals = GetSmoothNormal(gnd);
 
             var meshData = new List<float>();
             var waterMeshData = new List<float>();
 
-            for (int y = 0; y < gnd.height; y++)
-            {
-                for (int x = 0; x < gnd.width; x++)
-                {
+            for (int y = 0; y < gnd.height; y++) {
+                for (int x = 0; x < gnd.width; x++) {
 
                     var cellA = gnd.surfaces[x + y * gnd.width];
                     var h_a = cellA.height;
 
-                    float lu1 = x / (float)gnd.width;
-                    float lu2 = (x + 1) / (float)gnd.width;
-                    float lv1 = y / (float)gnd.height;
-                    float lv2 = (y + 1) / (float)gnd.height;
+                    float lu1 = x / (float) gnd.width;
+                    float lu2 = (x + 1) / (float) gnd.width;
+                    float lv1 = y / (float) gnd.height;
+                    float lv2 = (y + 1) / (float) gnd.height;
 
                     // Check tile up
-                    if (cellA.tileUp > -1)
-                    {
+                    if (cellA.tileUp > -1) {
                         var tile = gnd.tiles[cellA.tileUp];
 
                         // Check if has texture
@@ -354,18 +318,15 @@ namespace ROIO.Loaders
                         if (h_a[0] > WATER_LEVEL - WATER_HEIGHT ||
                             h_a[1] > WATER_LEVEL - WATER_HEIGHT ||
                             h_a[2] > WATER_LEVEL - WATER_HEIGHT ||
-                            h_a[3] > WATER_LEVEL - WATER_HEIGHT)
-                        {
+                            h_a[3] > WATER_LEVEL - WATER_HEIGHT) {
 
                             float o = 5f;
                             var texx = (x + 1) % o / o;
-                            if (texx == 0)
-                            {
+                            if (texx == 0) {
                                 texx = 1;
                             }
                             var texy = (y + 1) % o / o;
-                            if (texy == 0)
-                            {
+                            if (texy == 0) {
                                 texy = 1;
                             }
                             waterMeshData.AddRange(new float[] {
@@ -381,8 +342,7 @@ namespace ROIO.Loaders
                     }
 
                     // Check tile front
-                    if (cellA.tileFront > -1 && y + 1 < gnd.height)
-                    {
+                    if (cellA.tileFront > -1 && y + 1 < gnd.height) {
                         var tile = gnd.tiles[cellA.tileFront];
 
                         var cellB = gnd.surfaces[x + (y + 1) * gnd.width];
@@ -399,8 +359,7 @@ namespace ROIO.Loaders
                     }
 
                     // Check tile right
-                    if (cellA.tileRight > -1 && x + 1 < gnd.width)
-                    {
+                    if (cellA.tileRight > -1 && x + 1 < gnd.width) {
                         var tile = gnd.tiles[cellA.tileRight];
 
                         var cellB = gnd.surfaces[x + 1 + y * gnd.width];
