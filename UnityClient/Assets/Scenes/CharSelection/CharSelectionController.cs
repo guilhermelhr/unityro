@@ -11,6 +11,7 @@ public class CharSelectionController : MonoBehaviour {
     public GridLayoutGroup GridLayout;
     public GameObject charSelectionItem;
     public GameObject textPanel;
+    public RawImage background;
     public GameObject MapUIPrefab;
     public EventSystem EventSystem;
 
@@ -29,6 +30,7 @@ public class CharSelectionController : MonoBehaviour {
     }
 
     void Start() {
+        background.SetLoginBackground();
         currentCharactersInfo = NetworkClient.State.CurrentCharactersInfo;
         NetworkClient.HookPacket(HC.NOTIFY_ZONESVR2.HEADER, OnCharacterSelectionAccepted);
         NetworkClient.HookPacket(HC.ACCEPT_MAKECHAR.HEADER, OnMakeCharAccepted);
