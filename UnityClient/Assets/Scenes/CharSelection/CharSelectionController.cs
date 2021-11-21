@@ -139,49 +139,48 @@ public class CharSelectionController : MonoBehaviour {
     
     private void SetTextFields(CharacterData character) {
         Text[] fields = textPanel.GetComponentsInChildren<Text>();
-        int i = 0;
-        foreach (Text field in fields) {
+        int numChildren = fields.Length;
+        for (int i = 0; i < numChildren; i++) {
             switch (i) {
                 case 0: // map
-                    field.text = character.MapName; // @todo get map name
+                    fields[i].text = character.MapName; // @todo get map name
                     break;
                 case 1: // job
-                    field.text =
+                    fields[i].text =
                         CultureInfo.InvariantCulture.TextInfo.ToTitleCase(
                             JobHelper.GetJobName(character.Job, character.Sex));
                     break;
                 case 2: // lv.
-                    field.text = character.BaseLevel.ToString();
+                    fields[i].text = character.BaseLevel.ToString();
                     break;
                 case 3: // exp
-                    field.text = character.Exp.ToString();
+                    fields[i].text = character.Exp.ToString();
                     break;
                 case 4: // hp
-                    field.text = character.MaxHP.ToString();
+                    fields[i].text = character.MaxHP.ToString();
                     break;
                 case 5: // sp
-                    field.text = character.MaxSP.ToString();
+                    fields[i].text = character.MaxSP.ToString();
                     break;
                 case 6: // str
-                    field.text = character.Str.ToString();
+                    fields[i].text = character.Str.ToString();
                     break;
                 case 7: // agi
-                    field.text = character.Agi.ToString();
+                    fields[i].text = character.Agi.ToString();
                     break;
                 case 8: // vit
-                    field.text = character.Vit.ToString();
+                    fields[i].text = character.Vit.ToString();
                     break;
                 case 9: // int
-                    field.text = character.Int.ToString();
+                    fields[i].text = character.Int.ToString();
                     break;
                 case 10: // dex
-                    field.text = character.Dex.ToString();
+                    fields[i].text = character.Dex.ToString();
                     break;
                 case 11: // luk
-                    field.text = character.Luk.ToString();
+                    fields[i].text = character.Luk.ToString();
                     break;
             }
-            i++;
         }
     }
 }
