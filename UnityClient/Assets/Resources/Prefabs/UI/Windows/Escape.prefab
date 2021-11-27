@@ -2005,7 +2005,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 946398322837079130}
         m_TargetAssemblyTypeName: EscapeWindowController, UnityRO
-        m_MethodName: Cancel
+        m_MethodName: Hide
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
