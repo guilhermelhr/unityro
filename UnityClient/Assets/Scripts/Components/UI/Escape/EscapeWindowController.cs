@@ -27,6 +27,8 @@ public class EscapeWindowController : DraggableUIWindow, IEscapeWindowController
 
     public void ReturnToSavePoint() {
         new CZ.RESTART(0).Send();
+        DisableReturnToSavePoint();
+        Hide();
     }
 
     public void ReturnToCharSelection() {
