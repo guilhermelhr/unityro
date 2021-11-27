@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapUiController : MonoBehaviour {
 
@@ -114,15 +115,19 @@ public class MapUiController : MonoBehaviour {
                 ChatBox.DisplayMessage(502, ChatMessageType.ERROR);
             }
             else {
-                // @todo
-                // StatusIcons.clean();
-                // ChatBox.clean();
-                // ShortCut.clean();
-                // PartyFriends.clean();
-                // MapRenderer.free();
-                // Renderer.stop();
-                // onRestart();
+                // @todo ?
+                // clear StatusIcons
+                // clear ChatBox
+                // clear ShortCut
+                // clear PartyFriends
+                // clear renderers
+                OnRestart();
             }
         }
+    }
+
+    public void OnRestart() {
+        // @todo this keeps the entire UI on the screen
+        // SceneManager.LoadSceneAsync("CharSelectionScene");
     }
 }

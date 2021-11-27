@@ -3,6 +3,12 @@ using UnityEngine.UI;
 
 public class EscapeWindowController : DraggableUIWindow, IEscapeWindowController {
 
+    [SerializeField]
+    private GameObject ResurrectButton;
+    
+    [SerializeField]
+    private GameObject ReturnToSavePointButton;
+
     private EntityControl EntityControl;
     private Toggle CurrentToggle;
 
@@ -31,7 +37,19 @@ public class EscapeWindowController : DraggableUIWindow, IEscapeWindowController
         Application.Quit();
     }
 
-    public void Cancel() {
+    public void EnableReturnToSavePoint() {
+        ReturnToSavePointButton.SetActive(true);
+    }
+
+    public void DisableReturnToSavePoint() {
+        ReturnToSavePointButton.SetActive(false);
+    }
+
+    public void Show() {
+        gameObject.SetActive(true);
+    }
+
+    public void Hide() {
         gameObject.SetActive(false);
     }
 }
