@@ -108,7 +108,6 @@ public class MapController : MonoBehaviour {
             
             // If it's our main character update Escape ui
             if (entity.AID == Session.CurrentSession.AccountID) {
-                UIController.EscapeWindow.DisableReturnToSavePoint();
                 UIController.EscapeWindow.Hide();
             }
         }
@@ -165,8 +164,8 @@ public class MapController : MonoBehaviour {
 
             // Show escape menu
             if (pkt.AID == Session.CurrentSession.AccountID && pkt.Type == 1) {
+                UIController.EscapeWindow.BuildButtons(true);
                 UIController.EscapeWindow.Show();
-                UIController.EscapeWindow.EnableReturnToSavePoint();
             }
         }
     }

@@ -6,16 +6,6 @@
     
     void ToggleGraphicUI();
     
-    void ReturnToSavePoint();
-    
-    void ReturnToCharSelection();
-    
-    void Exit();
-    
-    void EnableReturnToSavePoint();
-    
-    void DisableReturnToSavePoint();
-    
     void Show();
     
     void Hide();
