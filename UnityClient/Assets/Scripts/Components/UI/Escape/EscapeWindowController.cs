@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -28,15 +27,6 @@ public class EscapeWindowController : DraggableUIWindow, IEscapeWindowController
         BuildButtons();
     }
     
-    public void Resurrect() {
-    }
-
-    public void ToggleSoundUI() {
-    }
-
-    public void ToggleGraphicUI() {
-    }
-    
     public void Show() {
         gameObject.SetActive(true);
     }
@@ -55,13 +45,13 @@ public class EscapeWindowController : DraggableUIWindow, IEscapeWindowController
 
         if (isPlayerDead) {
             BuildButton("Return to Save Point", () => {
-                new CZ.RESTART(0).Send();
+                new CZ.RESTART(CZ.RESTART.TYPE_SAVE_POINT).Send();
                 BuildButtons();
                 Hide();
             });
         }
 
-        BuildButton("Character select", () => new CZ.RESTART(1).Send());
+        BuildButton("Character select", () => new CZ.RESTART(CZ.RESTART.TYPE_CHAR_SELECT).Send());
         BuildButton("Exit game", () => Application.Quit());
         BuildButton("Cancel", () => Hide());
 

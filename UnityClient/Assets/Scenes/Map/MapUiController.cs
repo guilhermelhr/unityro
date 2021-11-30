@@ -109,8 +109,7 @@ public class MapUiController : MonoBehaviour {
     }
 
     public void OnRestartAnswer(ushort cmd, int size, InPacket packet) {
-        if (packet is ZC.RESTART_ACK) {
-            var pkt = packet as ZC.RESTART_ACK;
+        if (packet is ZC.RESTART_ACK pkt) {
             if (pkt.type == 0) {
                 ChatBox.DisplayMessage(502, ChatMessageType.ERROR);
             }
