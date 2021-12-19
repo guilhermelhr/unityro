@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ChatBoxController : MonoBehaviour {
-
+    
     [SerializeField] private InputField MessageInput;
     [SerializeField] private GameObject PMInput;
     [SerializeField] private GameObject LinearLayout;
@@ -63,11 +63,41 @@ public class ChatBoxController : MonoBehaviour {
         MessageInput.text = "";
     }
 
-    public void DisplayMessage(int messageID, int messageType) {
+    public void DisplayMessage(int messageID, ChatMessageType messageType) {
         var prefab = Instantiate(TextLinePrefab);
         var uiText = prefab.GetComponentInChildren<TextMeshProUGUI>();
+        ChatMessageType typePublicAndSelf = ChatMessageType.PUBLIC & ChatMessageType.SELF;
+        
         uiText.text = (string)Tables.MsgStringTable[$"{messageID}"] ?? $"{messageID}";
-        uiText.color = Color.white;
+        if ((messageType & typePublicAndSelf) == typePublicAndSelf) {
+            uiText.color = Color.green;
+        }
+        else if ((messageType & ChatMessageType.PARTY) == ChatMessageType.PARTY) {
+            uiText.color = (messageType & ChatMessageType.SELF) == ChatMessageType.SELF 
+                ? Color.yellow 
+                : Color.white;
+        }
+        else if ((messageType & ChatMessageType.GUILD) == ChatMessageType.GUILD) {
+            uiText.color = Color.cyan;
+        }
+        else if ((messageType & ChatMessageType.PRIVATE) == ChatMessageType.PRIVATE) {
+            uiText.color = Color.yellow;
+        }
+        else if ((messageType & ChatMessageType.ERROR) == ChatMessageType.ERROR) {
+            uiText.color = Color.red;
+        }
+        else if ((messageType & ChatMessageType.INFO) == ChatMessageType.INFO) {
+            uiText.color = Color.yellow;
+        }
+        else if ((messageType & ChatMessageType.BLUE) == ChatMessageType.BLUE) {
+            uiText.color = Color.blue;
+        }
+        else if ((messageType & ChatMessageType.ADMIN) == ChatMessageType.ADMIN) {
+            uiText.color = Color.yellow;
+        }
+        else {
+            uiText.color = Color.white;
+        }
 
         prefab.transform.SetParent(LinearLayout.transform, false);
     }

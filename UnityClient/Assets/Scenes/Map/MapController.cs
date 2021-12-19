@@ -105,6 +105,11 @@ public class MapController : MonoBehaviour {
         if (packet is ZC.RESURRECTION RESURRECTION) {
             var entity = EntityManager.GetEntity(RESURRECTION.GID);
             entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
+            
+            // If it's our main character update Escape ui
+            if (entity.AID == Session.CurrentSession.AccountID) {
+                UIController.EscapeWindow.Hide();
+            }
         }
     }
 
@@ -156,6 +161,12 @@ public class MapController : MonoBehaviour {
         if (packet is ZC.NOTIFY_VANISH) {
             var pkt = packet as ZC.NOTIFY_VANISH;
             EntityManager.VanishEntity(pkt.AID, pkt.Type);
+
+            // Show escape menu
+            if (pkt.AID == Session.CurrentSession.AccountID && pkt.Type == 1) {
+                UIController.EscapeWindow.BuildButtons(true);
+                UIController.EscapeWindow.Show();
+            }
         }
     }
 

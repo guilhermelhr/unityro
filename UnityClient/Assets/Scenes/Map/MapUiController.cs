@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapUiController : MonoBehaviour {
 
@@ -15,6 +16,7 @@ public class MapUiController : MonoBehaviour {
     [SerializeField] public SkillWindowController SkillWindow;
     [SerializeField] public ChatBoxController ChatBox;
     [SerializeField] public NpcShopTypeSelectorController ShopDealType;
+    [SerializeField] public EscapeWindowController EscapeWindow;
     [SerializeField] private NpcShopController ShopController; 
 
     private NetworkClient NetworkClient;
@@ -34,6 +36,7 @@ public class MapUiController : MonoBehaviour {
         NetworkClient.HookPacket(ZC.SAY_DIALOG.HEADER, NpcMenu.SetMenu);
         NetworkClient.HookPacket(ZC.SELECT_DEALTYPE.HEADER, ShopDealType.DisplayDealTypeSelector);
         NetworkClient.HookPacket(ZC.PC_PURCHASE_ITEMLIST.HEADER, ShopController.DisplayShop);
+        NetworkClient.HookPacket(ZC.RESTART_ACK.HEADER, OnRestartAnswer);
 
         NpcMenu.OnNpcMenuSelected = OnNpcMenuSelected;
     }
@@ -51,7 +54,6 @@ public class MapUiController : MonoBehaviour {
         switch (Event.current.type) {
             case EventType.KeyDown:
                 if (Event.current.modifiers == EventModifiers.Alt) {
-
                     switch (Event.current.keyCode) {
                         case KeyCode.Q:
                             EquipmentWindow.ToggleActive();
@@ -69,6 +71,9 @@ public class MapUiController : MonoBehaviour {
                             break;
                     }
                 }
+                if (Event.current.keyCode == KeyCode.Escape) {
+                    EscapeWindow.ToggleActive();
+                } 
                 break;
             default:
                 break;
@@ -101,5 +106,27 @@ public class MapUiController : MonoBehaviour {
 
     public void HideTooltip() {
         Tooltip.SetText(null, Vector3.zero);
+    }
+
+    public void OnRestartAnswer(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.RESTART_ACK pkt) {
+            if (pkt.type == 0) {
+                ChatBox.DisplayMessage(502, ChatMessageType.ERROR);
+            }
+            else {
+                // @todo ?
+                // clear StatusIcons
+                // clear ChatBox
+                // clear ShortCut
+                // clear PartyFriends
+                // clear renderers
+                OnRestart();
+            }
+        }
+    }
+
+    public void OnRestart() {
+        // @todo this keeps the entire UI on the screen
+        // SceneManager.LoadSceneAsync("CharSelectionScene");
     }
 }
