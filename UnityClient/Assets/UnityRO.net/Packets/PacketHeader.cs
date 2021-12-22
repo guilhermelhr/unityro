@@ -1,5 +1,11 @@
 ﻿public enum PacketHeader : ushort {
 
+    #region ANNOTATIONS
+    //0x = Indicating that it is a hexadecimal number
+    //Ex: 0x69 = 0x[Hexadecimal] 6[Binary: 0110] 9[Binary: 1001]
+    //Binary to decimal => [0110, 1001] = [105]
+    #endregion
+
     #region MISC
     PING = 0x187,
     #endregion
