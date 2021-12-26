@@ -22,8 +22,8 @@ namespace ROIO.Models.FileTypes
             public uint height;
             public string[] textures;
 
-            public Texture2D lightmap;
-            public Texture2D tileColor;
+            public RoImage lightmap;
+            public RoImage tileColor;
             public byte[] shadowMap;
 
             public float[] mesh;

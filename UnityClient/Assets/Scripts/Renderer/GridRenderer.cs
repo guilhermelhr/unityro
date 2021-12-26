@@ -32,6 +32,10 @@ public class GridRenderer : MonoBehaviour {
     }
 
     private void Update() {
+        if (!GameManager.IsMapReady) {
+            return;
+        }
+
         if (gridIcon == null) {
             gridIcon = (Texture2D) FileManager.Load("data/texture/grid.tga");
         }

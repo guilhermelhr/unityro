@@ -106,20 +106,6 @@ namespace ROIO {
             if (ext == "grf") {
                 return File.OpenRead(file);
             } else {
-
-                switch (ext) {
-                    case "jpg":
-                    case "jpeg":
-                    case "png":
-                    case "bmp":
-                    case "tga":
-                        var img = Resources.Load<Texture2D>(bundledTexturePath);
-                        if (img != null) {
-                            return img;
-                        }
-                        break;
-                }
-
                 using (var br = ReadSync(file)) {
                     if (br == null) {
                         throw new Exception($"Could not load file: {file}");

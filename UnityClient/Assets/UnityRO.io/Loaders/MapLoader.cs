@@ -1,8 +1,8 @@
 ﻿using ROIO.Models.FileTypes;
+using ROIO.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Threading.Tasks;
 
 namespace ROIO.Loaders {
     /// <summary>
@@ -12,198 +12,85 @@ namespace ROIO.Loaders {
     /// Based on ROBrowser by Vincent Thibault (robrowser.com)
     /// </summary>
     public class MapLoader {
-        public const int BATCH_SIZE = 20;
-        private float progress = 0;
-        public static Action<int> OnProgress = null;
 
-        public float Progress {
-            get {
-                return progress;
-            }
-
-            set {
-                var p = Math.Min(100, value);
-                if ((int) p != (int) progress && OnProgress != null) {
-                    OnProgress.Invoke((int) p);
-                }
-                progress = p;
-            }
+        public async Task Load(string mapname, Action<string, string, object> callback) {
+            await LoadWorld(mapname, callback);
         }
 
-        public IEnumerator Load(string mapname, Action<string, string, object> callback) {
-            Progress = 0;
-
-            RSW world = LoadWorld(mapname, callback);
-            GAT altitude = LoadAltitude(mapname, callback);
-            GND ground = LoadGround(mapname, world, callback);
-
-            yield return LoadModels(mapname, world.modelDescriptors, callback);
-        }
-
-        private RSW LoadWorld(string mapname, Action<string, string, object> callback) {
-            // Load RSW
+        private async Task LoadWorld(string mapname, Action<string, string, object> callback) {
             string rswPath = "data/" + GetFilePath(mapname);
-            RSW world = FileManager.Load(rswPath) as RSW;
+            RSW world = await Task.Run(() => FileManager.Load(rswPath) as RSW);
             if (world == null) {
                 throw new Exception("Could not load rsw for " + mapname);
             }
-
-            Progress += 1;
             callback.Invoke(mapname, "MAP_WORLD", world);
 
-            return world;
+            LoadAltitude(mapname, callback);
+            await LoadGround(mapname, world, callback);
+
         }
 
-        private GAT LoadAltitude(string mapname, Action<string, string, object> callback) {
+        private async void LoadAltitude(string mapname, Action<string, string, object> callback) {
             string gatPath = "data/" + GetFilePath(WorldLoader.files.gat);
-            GAT altitude = FileManager.Load(gatPath) as GAT;
+            GAT altitude = await Task.Run(() => FileManager.Load(gatPath) as GAT);
             if (altitude == null) {
                 throw new Exception("Could not load gat for " + mapname);
             }
 
-            Progress += 1;
             callback.Invoke(mapname, "MAP_ALTITUDE", altitude);
-
-            return altitude;
         }
 
-        private GND LoadGround(string mapname, RSW world, Action<string, string, object> callback) {
+        private async Task LoadGround(string mapname, RSW world, Action<string, string, object> callback) {
             string gndPath = "data/" + GetFilePath(WorldLoader.files.gnd);
-            GND ground = FileManager.Load(gndPath) as GND;
+            GND ground = await Task.Run(() => FileManager.Load(gndPath) as GND);
             if (ground == null) {
                 throw new Exception("Could not load gnd for " + mapname);
             }
+            callback.Invoke(mapname, "MAP_GROUND_SIZE", new UnityEngine.Vector2(ground.width, ground.height));
 
-            GND.Mesh compiledGround = GroundLoader.Compile(ground, world.water.level, world.water.waveHeight);
-            LoadGroundTexture(world, compiledGround);
-
-            Progress += 1;
+            LoadModels(mapname, world.modelDescriptors, callback);
+            GND.Mesh compiledGround = await CompileGroundMesh(mapname, ground, world, callback);
             callback.Invoke(mapname, "MAP_GROUND", compiledGround);
-
-            return ground;
         }
 
-        private IEnumerator LoadModels(string mapname, List<RSW.ModelDescriptor> modelDescriptors, Action<string, string, object> callback) {
-            /**
-             * Divide by 3 because of each loop in which we increase progress
-             */
-            float remainingProgress = 100 - Progress;
-            float modelProgress = remainingProgress / modelDescriptors.Count / 3;
+        private async Task<GND.Mesh> CompileGroundMesh(string mapname, GND ground, RSW world, Action<string, string, object> callback) {
+            GND.Mesh compiledGround = await Task.Run(() => GroundLoader.Compile(ground, world.water.level, world.water.waveHeight));
+            await LoadGroundTexture(world, compiledGround);
+
+            return compiledGround;
+        }
+
+        private void LoadModels(string mapname, List<RSW.ModelDescriptor> modelDescriptors, Action<string, string, object> callback) {
+            HashSet<RSM> objectsSet = new HashSet<RSM>();
 
             for (int i = 0; i < modelDescriptors.Count; i++) {
-                var model = modelDescriptors[i];
-                model.filename = "data/model/" + model.filename;
-
-                FileManager.Load(model.filename);
-                Progress += modelProgress;
-
-                if (i % BATCH_SIZE == 0)
-                    yield return new WaitForEndOfFrame();
-            }
-
-            //create model instances
-            HashSet<RSM> objectsSet = new HashSet<RSM>();
-            for (int i = 0; i < modelDescriptors.Count; ++i) {
-                RSM model = (RSM) FileManager.Load(modelDescriptors[i].filename);
+                RSM model = FileManager.Load("data/model/" + modelDescriptors[i].filename) as RSM;
                 if (model != null) {
                     model.CreateInstance(modelDescriptors[i]);
                     objectsSet.Add(model);
                 }
-                Progress += modelProgress;
-
-                if (i % BATCH_SIZE == 0)
-                    yield return new WaitForEndOfFrame();
             }
+
             FileCache.ClearAllWithExt("rsm");
-            RSM[] objects = new RSM[objectsSet.Count];
-            objectsSet.CopyTo(objects);
+            RSM[] models = new RSM[objectsSet.Count];
+            objectsSet.CopyTo(models);
 
-            yield return CompileModels(objects, modelProgress, (compiledModels) => {
-                callback.Invoke(mapname, "MAP_MODELS", compiledModels);
-            });
+            CompileModels(mapname, models, callback);
         }
 
-        private IEnumerator CompileModels(RSM[] objects, float progressStep, Action<List<RSM.CompiledModel>> OnComplete) {
-            /**
-             * Calculate progress again because rsm objects
-             * are way less than model descriptors and divide by 2
-             * beucase we still have the render loading
-             */
-            float remainingProgress = 100 - Progress;
-            float modelProgress = remainingProgress / objects.Length / 2;
+        private async void CompileModels(string mapname, RSM[] objects, Action<string, string, object> callback) {
+            List<Task<RSM.CompiledModel>> tasks = new List<Task<RSM.CompiledModel>>();
 
-            List<RSM.CompiledModel> models = new List<RSM.CompiledModel>();
-            for (int i = 0; i < objects.Length; i++) {
-                var compiledModel = ModelLoader.Compile(objects[i]);
-                models.Add(compiledModel);
-
-                Progress += modelProgress;
-                if (i % 5 == 0)
-                    yield return new WaitForEndOfFrame();
+            foreach (var model in objects) {
+                var t = Task.Run(() => ModelLoader.Compile(model));
+                tasks.Add(t);
             }
 
-            OnComplete(models);
-
-            yield return models;
+            RSM.CompiledModel[] compiledModels = await Task.WhenAll(tasks);
+            callback.Invoke(mapname, "MAP_MODELS", compiledModels);
         }
 
-        private IEnumerator LoadModelTexture(RSM.CompiledModel model) {
-            HashSet<string> textures = new HashSet<string>();
-            foreach (var nodeMesh in model.nodesData) {
-                //load its textures
-                foreach (var textureId in nodeMesh.Keys) {
-                    var texture = "data/texture/" + model.rsm.textures[textureId];
-                    //load texture
-                    if (!textures.Contains(texture)) {
-                        textures.Add(texture);
-                        FileManager.Load(texture);
-                        yield return new WaitForEndOfFrame();
-                    }
-
-                    if (textures.Count == model.rsm.textures.Length) {
-                        //we found every possible texture, no need to keep looking for new ones
-                        yield break;
-                    }
-                }
-            }
-
-            yield return null;
-        }
-
-        private void LoadModelsTextures(List<RSM.CompiledModel> compiledModels) {
-            HashSet<string> textures = new HashSet<string>();
-
-            //enqueue textures
-            FileManager.InitBatch();
-
-            //for each model
-            foreach (var model in compiledModels) {
-                //and each of its nodes
-                foreach (var nodeMesh in model.nodesData) {
-                    //load its textures
-                    foreach (var textureId in nodeMesh.Keys) {
-                        var texture = "data/texture/" + model.rsm.textures[textureId];
-                        //load texture
-                        if (!textures.Contains(texture)) {
-                            textures.Add(texture);
-                            FileManager.Load(texture);
-                        }
-
-                        if (textures.Count == model.rsm.textures.Length) {
-                            //we found every possible texture, no need to keep looking for new ones
-                            FileManager.EndBatch();
-
-                            return;
-                        }
-                    }
-                }
-            }
-
-            //load textures
-            FileManager.EndBatch();
-        }
-
-        private void LoadGroundTexture(RSW world, GND.Mesh ground) {
+        private async Task LoadGroundTexture(RSW world, GND.Mesh ground) {
             LinkedList<string> textures = new LinkedList<string>();
 
             FileManager.InitBatch();
@@ -224,7 +111,7 @@ namespace ROIO.Loaders {
                 FileManager.Load(textures.Last.Value);
             }
 
-            FileManager.EndBatch();
+            await Task.Run(() => FileManager.EndBatch());
 
             //splice water textures from ground textures
             List<string> waterTextures = new List<string>();

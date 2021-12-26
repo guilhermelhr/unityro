@@ -1,5 +1,11 @@
 ﻿public enum PacketHeader : ushort {
 
+    #region ANNOTATIONS
+    //0x = Indicating that it is a hexadecimal number
+    //Ex: 0x69 = 0x[Hexadecimal] 6[Binary: 0110] 9[Binary: 1001]
+    //Binary to decimal => [0110, 1001] = [105]
+    #endregion
+
     #region MISC
     PING = 0x187,
     #endregion
@@ -203,6 +209,7 @@
     ZC_PC_SELL_ITEMLIST = 0xc7,
     ZC_PC_PURCHASE_RESULT = 0xca,
     ZC_PC_SELL_RESULT = 0xcb,
+    ZC_QUEST_NOTIFY_EFFECT = 0x446,
     #endregion
 
     //ZC_INVENTORY_ITEMLIST_EQUIP = 0xa0d,
@@ -757,7 +764,6 @@
     //CZ_SKILL_SELECT_RESPONSE = 0x443,
     //ZC_SIMPLE_CASH_POINT_ITEMLIST = 0x444,
     //CZ_SIMPLE_BUY_CASH_POINT_ITEM = 0x445,
-    //ZC_QUEST_NOTIFY_EFFECT = 0x446,
     //CZ_BLOCKING_PLAY_CANCEL = 0x447,
     //HC_CHARACTER_LIST = 0x448,
     //ZC_HACKSH_ERROR_MSG = 0x449,

@@ -2,6 +2,7 @@
 using ROIO;
 using ROIO.Loaders;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -26,8 +27,10 @@ public class GameManager : MonoBehaviour {
     #endregion
 
     public static Action OnGrfLoaded;
+    public static Action OnMapLoaded;
 
     public Camera MainCamera { get; private set; }
+    public bool IsMapReady => MapRenderer.Ready;
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
 
     private Configuration Configs;
@@ -90,28 +93,42 @@ public class GameManager : MonoBehaviour {
         MainCamera = Camera.main;
     }
 
-    public void BeginMapLoading(string mapName) {
-        if (!MapRenderer.Ready && MapLoader.Progress != 0)
-            return;
-        SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
+    public async Task BeginMapLoading(string mapName) {
+        // if (!MapRenderer.Ready)
+        //     return;
+
+        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         EntityManager.ClearEntities();
-        StartCoroutine(
-            MapLoader.Load(mapName + ".rsw", MapRenderer.OnComplete)
-        );
+        var stopWatch = new System.Diagnostics.Stopwatch();
+        stopWatch.Restart();
+        await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
+        stopWatch.Stop();
+
+        Debug.Log($"Map loaded in {stopWatch.Elapsed.TotalSeconds} seconds");
+        SceneManager.UnloadSceneAsync("LoadingScene");
+        OnMapLoaded?.Invoke();
+    }
+
+    public async Task<long> BenchmarkMapLoading(string mapName) {
+        MapRenderer.Clear();
+        EntityManager.ClearEntities();
+        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+        var stopWatch = new System.Diagnostics.Stopwatch();
+        stopWatch.Restart();
+        await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
+        stopWatch.Stop();
+
+        Debug.Log($"Map loaded in {stopWatch.Elapsed.TotalSeconds} seconds");
+        SceneManager.UnloadSceneAsync("LoadingScene");
+
+        return stopWatch.ElapsedMilliseconds;
     }
 
     //TODO Get rid of these
     #region Statics
     private static GameManager Instance;
-    public static float GetMapLoaderProgress() => Instance.MapLoader.Progress;
-    public static void IncreaseMapLoadingProgress(float val) {
-        Instance.MapLoader.Progress += val;
-    }
-    public static bool IsMapRendererReady() => Instance.MapRenderer.Ready;
-    public static void ResetMapLoadingProgress() {
-        Instance.MapLoader.Progress = 0;
-    }
+
     #endregion
 
     private void InitManagers() {

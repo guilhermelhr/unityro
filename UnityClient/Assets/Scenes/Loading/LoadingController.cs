@@ -1,29 +1,26 @@
-﻿using ROIO.Loaders;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class LoadingController : MonoBehaviour {
 
     public Text ProgressText;
     public Slider Slider;
+    public RawImage background;
 
     private void Awake() {
-        MapLoader.OnProgress += OnProgress;
+        MapRenderer.OnProgress += OnProgress;
     }
 
-    private void OnMapLoaded() {
-        MapLoader.OnProgress -= OnProgress;
-        SceneManager.UnloadSceneAsync("LoadingScene");
+    private void Start() {
+        background.SetLoading();
     }
 
-    private void OnProgress(int progress) {
+    private void OnDestroy() {
+        MapRenderer.OnProgress -= OnProgress;
+    }
+
+    private void OnProgress(float progress) {
         Slider.value = progress;
-        ProgressText.text = $"{progress}%";
-
-        if (progress == 100 && GameManager.IsMapRendererReady()) {
-            GameManager.ResetMapLoadingProgress();
-            OnMapLoaded();
-        }
+        ProgressText.text = $"{(int)(progress * 100)}%";
     }
 }

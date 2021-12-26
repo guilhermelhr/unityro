@@ -91,8 +91,8 @@ public class Ground {
         RenderTexture.active = null;
         RenderTexture.ReleaseTemporary(renderTexture);
 
-        lightmap = compiledMesh.lightmap;
-        tintmap = compiledMesh.tileColor;
+        lightmap = compiledMesh.lightmap.ConvertToTexture2D();
+        tintmap = compiledMesh.tileColor.ConvertToTexture2D();
     }
 
     public void BuildMesh(GND.Mesh compiledMesh) {

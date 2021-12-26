@@ -16,15 +16,15 @@ public class CharacterCellController : MonoBehaviour, IPointerClickHandler {
     public void BindData(CharacterData data) {
         this.data = data;
 
-        this.characterName.text = data.Name;
+        characterName.text = data.Name;
 
-        var player = new GameObject(data.Name);
+        GameObject player = new GameObject(data.Name);
         player.layer = LayerMask.NameToLayer("Characters");
         player.transform.SetParent(this.transform);
         player.transform.localScale = new Vector3(30f, 30f, 1f);
-        player.transform.localPosition = new Vector3(-15f, -40f, 0f);
+        player.transform.localPosition = new Vector3(0, -40f, 0f);
 
-        var entity = player.AddComponent<Entity>();
+        Entity entity = player.AddComponent<Entity>();
         entity.Init(data, LayerMask.NameToLayer("Characters"), null, true);
         entity.SetReady(true, true);
     }
