@@ -5,7 +5,7 @@
     PC = 0,
     DISGUISED = 1,
     MOB = 5,
-    NPC = 6,
+    NPC = 12,
     PET = 7,
     HOM = 8,
     MERC = 9,
