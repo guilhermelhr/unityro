@@ -1,0 +1,5 @@
+{
+    "root": "C:/",
+    "grf": ["rdata.grf", "data.grf"],
+    "system": "System/"
+}
