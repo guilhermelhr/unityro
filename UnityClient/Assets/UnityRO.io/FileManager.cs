@@ -101,13 +101,23 @@ namespace ROIO {
         private static object DoLoad(string file, string ext) {
             var extension = Path.GetExtension(file);
             var nameWithoutExtension = file.Substring(0, file.IndexOf(extension));
-            var bundledTexturePath = Path.Combine("Assets", "Resources", "Textures", nameWithoutExtension);
+            var bundledTexturePath = Path.Combine("Textures", nameWithoutExtension);
 
             if (ext == "grf") {
                 return File.OpenRead(file);
             } else {
                 using (var br = ReadSync(file)) {
                     if (br == null) {
+                        // try fallback to exported data folder
+                        switch (ext) {
+                            case "jpg":
+                            case "jpeg":
+                            case "png":
+                            case "bmp":
+                            case "tga":
+                                return Resources.Load(bundledTexturePath);
+                        }
+
                         throw new Exception($"Could not load file: {file}");
                     }
 
