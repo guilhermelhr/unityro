@@ -14,7 +14,7 @@ public partial class ZC {
         public void Read(MemoryStreamReader br, int size) {
             entityData = new EntitySpawnData();
 
-            entityData.objecttype = (EntityType)br.ReadByte();
+            entityData.objecttype = br.ReadByte().GetEntityType();
 
             entityData.AID = br.ReadUInt();
             entityData.GID = br.ReadUInt();
