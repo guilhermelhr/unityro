@@ -170,7 +170,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 280, y: 17}
+  m_SizeDelta: {x: 256, y: 16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5965722340574088094
 CanvasRenderer:
@@ -200,7 +200,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 2126e7810993fa548a807385206b624d, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -1236,7 +1236,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 892368194358352699}
   m_HandleRect: {fileID: 7155350352925302693}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1702,7 +1702,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 280, y: 17}
+  m_SizeDelta: {x: 256, y: 16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2297865460821234674
 CanvasRenderer:
@@ -1732,7 +1732,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 2126e7810993fa548a807385206b624d, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -2122,6 +2122,7 @@ MonoBehaviour:
   CartScrollView: {fileID: 4631105618800997126}
   ShopItemPrefab: {fileID: 4693485359565361936, guid: 8b8a305d92050b44d8668b1732f399bc, type: 3}
   TotalPriceLabel: {fileID: 6926779088142050279}
+  QuantityInput: {fileID: 8820309179899197942, guid: 1feedc44f54b3b14f8c84f26400d9179, type: 3}
 --- !u!1 &8514786579838561201
 GameObject:
   m_ObjectHideFlags: 0

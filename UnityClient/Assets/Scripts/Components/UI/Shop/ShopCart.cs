@@ -6,9 +6,17 @@ using UnityEngine.EventSystems;
 
 public class ShopCart : MonoBehaviour, IDropHandler {
 
-    [SerializeField] private GameObject CartScrollView;
-    [SerializeField] private CartItem ShopItemPrefab;
-    [SerializeField] private TextMeshProUGUI TotalPriceLabel;
+    [SerializeField] 
+    private GameObject CartScrollView;
+
+    [SerializeField]
+    private CartItem ShopItemPrefab;
+    
+    [SerializeField]
+    private TextMeshProUGUI TotalPriceLabel;
+
+    [SerializeField]
+    private NumberInput QuantityInput;
 
     private List<CartItem> CurrentCartItems;
 
@@ -16,27 +24,34 @@ public class ShopCart : MonoBehaviour, IDropHandler {
         CurrentCartItems = new List<CartItem>();
     }
 
-    public void OnDrop(PointerEventData eventData) {
+    public async void OnDrop(PointerEventData eventData) {
         var droppedItem = eventData.pointerDrag?.GetComponent<ShopItem>();
         if (droppedItem != null) {
 
+            var quantity = 0;
             var itemType = (ItemType) droppedItem.ItemShopInfo.type;
             var isStackable = itemType != ItemType.WEAPON &&
                 itemType != ItemType.EQUIP &&
                 itemType != ItemType.PETEGG &&
                 itemType != ItemType.PETEQUIP;
 
+            if (isStackable) {
+                var numberInput = Instantiate(QuantityInput);
+                numberInput.transform.SetParent(gameObject.transform);
+                quantity = await numberInput.AwaitConfirmation();
+                Destroy(numberInput.gameObject);
+            }
+
             // TODO: Check for type & isStackable & vending type
             // TODO: Check if there's only one item to buy or if we're selling with the select all toggle
-            // TODO: display amount input
 
-            AddItemToCart(droppedItem);
+            AddItemToCart(droppedItem, quantity);
         }
     }
 
-    private void AddItemToCart(ShopItem droppedItem) {
+    private void AddItemToCart(ShopItem droppedItem, int quantity) {
         var shopItem = Instantiate(ShopItemPrefab, CartScrollView.transform);
-        shopItem.SetItemShopInfo(droppedItem.ItemShopInfo);
+        shopItem.SetItemShopInfo(droppedItem.ItemShopInfo, quantity);
         CurrentCartItems.Add(shopItem);
         SetPriceLabel();
     }
@@ -48,6 +63,6 @@ public class ShopCart : MonoBehaviour, IDropHandler {
     }
 
     private void SetPriceLabel() {
-        TotalPriceLabel.text = $"Total Price : {CurrentCartItems.Sum(it => it.ItemShopInfo.discount)} Zeny";
+        TotalPriceLabel.text = $"Total Price : {CurrentCartItems.Sum(it => it.ItemShopInfo.discount * it.Quantity)} Zeny";
     }
 }

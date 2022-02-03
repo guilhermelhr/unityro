@@ -11,15 +11,15 @@ public class NumberInput : MonoBehaviour {
     [SerializeField]
     private Button button;
 
-    public async Task<int> AwaitResult() {
-
+    public async Task<int> AwaitConfirmation() {
         var hasClicked = false;
-        button.onClick.AddListener(delegate { hasClicked = true; });
-        await new Task(() => {
-            while(!hasClicked) {
-                continue;
-            }
+        button.onClick.AddListener(delegate {
+            hasClicked = true;
         });
+
+        while (!hasClicked) {
+            await Task.Delay(1);
+        }
 
         return int.Parse(inputField.text);
     }

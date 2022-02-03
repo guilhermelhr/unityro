@@ -12,11 +12,13 @@ public class CartItem : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI ItemPrice;
 
     public ItemNPCShopInfo ItemShopInfo { get; private set; }
-    
+    public int Quantity { get; private set; }
+
     private Item Item;
 
-    public void SetItemShopInfo(ItemNPCShopInfo itemShopInfo) {
+    public void SetItemShopInfo(ItemNPCShopInfo itemShopInfo, int quantity) {
         ItemShopInfo = itemShopInfo;
+        Quantity = quantity;
 
         Item = DBManager.GetItem(itemShopInfo.itemID);
         try {

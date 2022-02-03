@@ -3,9 +3,14 @@ using UnityEngine;
 
 public class NpcShopController : DraggableUIWindow {
 
-    [SerializeField] private GameObject CatalogScrollView;
-    [SerializeField] private ShopItem ShopItemPrefab;
-    [SerializeField] private ShopCart ShopCart;
+    [SerializeField]
+    private GameObject CatalogScrollView;
+    
+    [SerializeField]
+    private ShopItem ShopItemPrefab;
+    
+    [SerializeField] 
+    private ShopCart ShopCart;
 
     private List<ShopItem> CurrentShopItems;
 
