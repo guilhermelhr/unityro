@@ -44,6 +44,7 @@ namespace ROIO
 
                 MapTableStruct mts = (MapTableStruct)MapTable[args[1]];
                 mts.name = Convert.ToString(args[2]);
+                MapTable[args[1]] = mts;
             }
         }
 
@@ -58,6 +59,7 @@ namespace ROIO
 
                 MapTableStruct mts = (MapTableStruct)MapTable[args[1]];
                 mts.mp3 = Convert.ToString(args[2]);
+                MapTable[args[1]] = mts;
             }
         }
 
