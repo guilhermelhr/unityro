@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +11,10 @@ public class PopupController : MonoBehaviour {
     public void DisplayPopup(Texture2D texture, string label) {
         image.texture = texture;
         this.label.text = label;
+        var size = this.label.GetPreferredValues(label);
+        var oldSize = (this.label.transform as RectTransform).sizeDelta;
+        (this.label.transform as RectTransform).sizeDelta = new Vector2(size.x, oldSize.y);
+
 
         gameObject.SetActive(true);
         StartCoroutine(TearDown());

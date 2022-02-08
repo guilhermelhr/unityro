@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ChatBoxController : MonoBehaviour {
 
-    [SerializeField] private InputField MessageInput;
-    [SerializeField] private GameObject PMInput;
+    [SerializeField] private TMP_InputField MessageInput;
+    [SerializeField] private TMP_InputField PMInput;
     [SerializeField] private GameObject LinearLayout;
     [SerializeField] private GameObject TextLinePrefab;
 
@@ -63,6 +62,8 @@ public class ChatBoxController : MonoBehaviour {
 
         new CZ.REQUEST_CHAT(message).Send();
         MessageInput.text = "";
+        MessageInput.ActivateInputField();
+        MessageInput.Select();
     }
 
     public void DisplayMessage(int messageID, ChatMessageType messageType) {

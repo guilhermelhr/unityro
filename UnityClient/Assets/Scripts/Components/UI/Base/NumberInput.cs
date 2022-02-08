@@ -14,17 +14,31 @@ public class NumberInput : MonoBehaviour {
     [SerializeField]
     private TextMeshProUGUI lblTitle;
 
-    public void SetTitle(string title) {
+    private bool hasConfirmed = false;
+
+    private void LateUpdate() {
+        if (Input.GetKeyDown(KeyCode.Return)) {
+            hasConfirmed = true;
+        }
+    }
+
+    public void SetTitle(string title, int defaultValue = 0) {
         lblTitle.text = title;
+
+        if (defaultValue > 0) {
+            inputField.text = $"{defaultValue}";
+        }
+        inputField.ActivateInputField();
+        inputField.Select();
     }
 
     public async Task<int> AwaitConfirmation() {
-        var hasClicked = false;
+        hasConfirmed = false;
         btnConfirm.onClick.AddListener(delegate {
-            hasClicked = true;
+            hasConfirmed = true;
         });
 
-        while (!hasClicked) {
+        while (!hasConfirmed) {
             await Task.Delay(1);
         }
 

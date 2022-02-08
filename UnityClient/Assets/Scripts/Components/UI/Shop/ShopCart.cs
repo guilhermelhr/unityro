@@ -102,7 +102,7 @@ public class ShopCart : MonoBehaviour, IDropHandler {
     private async Task<int> FindQuantity(ShopItem droppedItem) {
         QuantityInput = Instantiate(QuantityInputPrefab);
         QuantityInput.transform.SetParent(gameObject.transform);
-        QuantityInput.SetTitle(droppedItem.GetItemName());
+        QuantityInput.SetTitle(droppedItem.GetItemName(), 1);
         var quantity = await QuantityInput.AwaitConfirmation();
 
         return quantity;
