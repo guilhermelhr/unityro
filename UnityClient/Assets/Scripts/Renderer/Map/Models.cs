@@ -71,16 +71,8 @@ public class Models {
                     var mr = nodeObj.AddComponent<MeshRenderer>();
                     if (meshData.twoSided) {
                         mr.material = material2s;
-                        if (textureFile.EndsWith("tga")) {
-                            mr.material.shader = Resources.Load("2SidedAlpha") as Shader;
-                            mr.material.renderQueue += 1;
-                        }
                     } else {
                         mr.material = material;
-                        if (textureFile.EndsWith("tga")) {
-                            mr.material.shader = Resources.Load("ModelShaderAlpha") as Shader;
-                            mr.material.renderQueue += 1;
-                        }
                     }
 
                     var properties = nodeObj.AddComponent<NodeProperties>();
