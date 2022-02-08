@@ -32,6 +32,7 @@ public class ChatBoxController : MonoBehaviour {
             uiText.color = Color.green;
 
             prefab.transform.SetParent(LinearLayout.transform, false);
+            EntityManager.GetEntity(Session.CurrentSession.Entity.GetEntityGID()).DisplayChatBubble(pkt.Message);
         } else if (packet is ZC.NOTIFY_CHAT) {
             var pkt = packet as ZC.NOTIFY_CHAT;
 
