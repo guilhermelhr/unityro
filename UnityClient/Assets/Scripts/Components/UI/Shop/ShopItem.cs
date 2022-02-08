@@ -7,12 +7,20 @@ using static ZC.PC_PURCHASE_ITEMLIST;
 
 public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler {
 
-    [SerializeField] private RawImage ItemImage;
-    [SerializeField] private TextMeshProUGUI ItemName;
-    [SerializeField] private TextMeshProUGUI ItemPrice;
+    [SerializeField]
+    private RawImage ItemImage;
+
+    [SerializeField]
+    private TextMeshProUGUI ItemName;
+
+    [SerializeField]
+    private TextMeshProUGUI ItemPrice;
+
+    [SerializeField]
+    private TextMeshProUGUI ItemQuantity;
 
     public ItemNPCShopInfo ItemShopInfo { get; private set; }
-    
+
     private Item Item;
     private Canvas Canvas;
     private RectTransform ItemDragImageTransform;
@@ -34,11 +42,15 @@ public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         ItemPrice.text = $"{itemShopInfo.discount}Z";
     }
 
+    public string GetItemName() {
+        return Item.identifiedDisplayName;
+    }
+
     public void OnBeginDrag(PointerEventData eventData) {
         var ItemDragImage = new GameObject("ShopItemDrag");
         ItemDragImage.transform.SetParent(Canvas.transform, false);
         ItemDragImage.transform.SetAsLastSibling();
-        
+
         var image = ItemDragImage.AddComponent<RawImage>();
         image.texture = ItemImage.texture;
         image.SetNativeSize();

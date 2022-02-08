@@ -547,19 +547,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 306188950643519709}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4336742099170368785}
-        m_TargetAssemblyTypeName: NpcShopController, UnityRO
-        m_MethodName: Cancel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &306188950643519709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2122,7 +2110,10 @@ MonoBehaviour:
   CartScrollView: {fileID: 4631105618800997126}
   ShopItemPrefab: {fileID: 4693485359565361936, guid: 8b8a305d92050b44d8668b1732f399bc, type: 3}
   TotalPriceLabel: {fileID: 6926779088142050279}
+  ShopController: {fileID: 4336742099170368785}
   QuantityInput: {fileID: 8820309179899197942, guid: 1feedc44f54b3b14f8c84f26400d9179, type: 3}
+  SubmitButton: {fileID: 5475260309925505946}
+  CancelButton: {fileID: 9066887199576853671}
 --- !u!1 &8514786579838561201
 GameObject:
   m_ObjectHideFlags: 0

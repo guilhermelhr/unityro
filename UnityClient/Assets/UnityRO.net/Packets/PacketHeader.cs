@@ -99,6 +99,7 @@
     CZ_REQUEST_ACT2 = 0x437,
     CZ_UPGRADE_SKILLLEVEL = 0x112,
     CZ_USE_SKILL2 = 0x438,
+    CZ_NPC_TRADE_QUIT = 0x09d4,
     #endregion
 
     #region ZC

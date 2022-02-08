@@ -9,11 +9,18 @@ public class NumberInput : MonoBehaviour {
     private TMP_InputField inputField;
 
     [SerializeField]
-    private Button button;
+    private Button btnConfirm;
+
+    [SerializeField]
+    private TextMeshProUGUI lblTitle;
+
+    public void SetTitle(string title) {
+        lblTitle.text = title;
+    }
 
     public async Task<int> AwaitConfirmation() {
         var hasClicked = false;
-        button.onClick.AddListener(delegate {
+        btnConfirm.onClick.AddListener(delegate {
             hasClicked = true;
         });
 

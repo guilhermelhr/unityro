@@ -1,15 +1,22 @@
 ﻿using ROIO;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static ZC.PC_PURCHASE_ITEMLIST;
 
 public class CartItem : MonoBehaviour {
 
-    [SerializeField] private RawImage ItemImage;
-    [SerializeField] private TextMeshProUGUI ItemName;
-    [SerializeField] private TextMeshProUGUI ItemPrice;
+    [SerializeField] 
+    private RawImage ItemImage;
+
+    [SerializeField] 
+    private TextMeshProUGUI ItemName;
+
+    [SerializeField] 
+    private TextMeshProUGUI ItemPrice;
+
+    [SerializeField]
+    private TextMeshProUGUI ItemQuantity;
 
     public ItemNPCShopInfo ItemShopInfo { get; private set; }
     public int Quantity { get; private set; }
@@ -26,7 +33,17 @@ public class CartItem : MonoBehaviour {
         } catch {
 
         }
+        SetInfo();
+    }
+
+    private void SetInfo() {
         ItemName.text = Item.identifiedDisplayName;
-        ItemPrice.text = $"{itemShopInfo.discount}Z";
+        ItemPrice.text = $"{ItemShopInfo.discount}Z";
+        ItemQuantity.text = $"{Quantity}";
+    }
+
+    public void IncreaseQuantityBy(int quantity) {
+        Quantity += quantity;
+        SetInfo();
     }
 }

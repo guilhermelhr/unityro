@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ChatBoxController : MonoBehaviour {
-    
+
     [SerializeField] private InputField MessageInput;
     [SerializeField] private GameObject PMInput;
     [SerializeField] private GameObject LinearLayout;
@@ -48,7 +48,7 @@ public class ChatBoxController : MonoBehaviour {
 
             var prefab = Instantiate(TextLinePrefab);
             var uiText = prefab.GetComponentInChildren<TextMeshProUGUI>();
-            uiText.text = (string)Tables.MsgStringTable[pkt.MessageID] ?? $"{pkt.MessageID}";
+            uiText.text = (string) Tables.MsgStringTable[pkt.MessageID] ?? $"{pkt.MessageID}";
             uiText.color = Color.white;
 
             prefab.transform.SetParent(LinearLayout.transform, false);
@@ -57,7 +57,8 @@ public class ChatBoxController : MonoBehaviour {
 
     public void SendChatMessage() {
         var message = MessageInput.text;
-        if (message.Length == 0) return;
+        if (message.Length == 0)
+            return;
 
         new CZ.REQUEST_CHAT(message).Send();
         MessageInput.text = "";
@@ -66,40 +67,38 @@ public class ChatBoxController : MonoBehaviour {
     public void DisplayMessage(int messageID, ChatMessageType messageType) {
         var prefab = Instantiate(TextLinePrefab);
         var uiText = prefab.GetComponentInChildren<TextMeshProUGUI>();
-        ChatMessageType typePublicAndSelf = ChatMessageType.PUBLIC & ChatMessageType.SELF;
-        
-        uiText.text = (string)Tables.MsgStringTable[$"{messageID}"] ?? $"{messageID}";
-        if ((messageType & typePublicAndSelf) == typePublicAndSelf) {
-            uiText.color = Color.green;
-        }
-        else if ((messageType & ChatMessageType.PARTY) == ChatMessageType.PARTY) {
-            uiText.color = (messageType & ChatMessageType.SELF) == ChatMessageType.SELF 
-                ? Color.yellow 
-                : Color.white;
-        }
-        else if ((messageType & ChatMessageType.GUILD) == ChatMessageType.GUILD) {
-            uiText.color = Color.cyan;
-        }
-        else if ((messageType & ChatMessageType.PRIVATE) == ChatMessageType.PRIVATE) {
-            uiText.color = Color.yellow;
-        }
-        else if ((messageType & ChatMessageType.ERROR) == ChatMessageType.ERROR) {
-            uiText.color = Color.red;
-        }
-        else if ((messageType & ChatMessageType.INFO) == ChatMessageType.INFO) {
-            uiText.color = Color.yellow;
-        }
-        else if ((messageType & ChatMessageType.BLUE) == ChatMessageType.BLUE) {
-            uiText.color = Color.blue;
-        }
-        else if ((messageType & ChatMessageType.ADMIN) == ChatMessageType.ADMIN) {
-            uiText.color = Color.yellow;
-        }
-        else {
-            uiText.color = Color.white;
-        }
+
+        uiText.text = (string) Tables.MsgStringTable[$"{messageID}"] ?? $"{messageID}";
+        uiText.color = GetTextColor(messageType);
 
         prefab.transform.SetParent(LinearLayout.transform, false);
+    }
+
+    private Color32 GetTextColor(ChatMessageType messageType) {
+        var intMessageType = (int) messageType;
+        Color color;
+
+        if ((messageType & ChatMessageType.PUBLIC) > 0 && (messageType & ChatMessageType.SELF) > 0) {
+            color = Color.green;
+        } else if ((messageType & ChatMessageType.PARTY) > 0) {
+            color = (messageType & ChatMessageType.SELF) > 0 ? Color.yellow : Color.white;
+        } else if ((messageType & ChatMessageType.GUILD) > 0) {
+            ColorUtility.TryParseHtmlString("#B4FFB4", out color);
+        } else if ((messageType & ChatMessageType.PRIVATE) > 0) {
+            color = Color.yellow;
+        } else if ((messageType & ChatMessageType.ERROR) > 0) {
+            color = Color.red;
+        } else if ((messageType & ChatMessageType.INFO) > 0) {
+            color = Color.yellow;
+        } else if ((messageType & ChatMessageType.BLUE) > 0) {
+            color = Color.cyan;
+        } else if ((messageType & ChatMessageType.ADMIN) > 0) {
+            color = Color.yellow;
+        } else {
+            color = Color.white;
+        }
+
+        return color;
     }
 
     // Start is called before the first frame update

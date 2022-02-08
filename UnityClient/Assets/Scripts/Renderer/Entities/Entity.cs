@@ -572,6 +572,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
                 MapUiController.Instance.SkillWindow.UpdateSkillPoints();
                 break;
 
+            case EntityStatus.SP_ZENY:
+                Status.zeny = value;
+                break;
+
             default:
                 break;
         }

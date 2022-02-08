@@ -1,5 +1,5 @@
 {
-    "root": "C:/",
-    "grf": ["rdata.grf", "data.grf"],
+    "root": "D:/Projetos/ragnarok/test/",
+    "grf": ["rdata.grf", "bro_data.grf"],
     "system": "System/"
 }
