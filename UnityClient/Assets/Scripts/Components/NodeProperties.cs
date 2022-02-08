@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.IO;
+using ROIO;
 
 public class NodeProperties : MonoBehaviour
 {
@@ -23,7 +24,9 @@ public class NodeProperties : MonoBehaviour
     }
 
     private IEnumerator LoadTexture() {
-        var request = Resources.LoadAsync<Texture2D>(Path.Combine("Textures", "data", "texture", textureName.Split('.')[0]));
+        var extension = Path.GetExtension(textureName);
+        var nameWithoutExtension = textureName.Substring(0, textureName.IndexOf(extension));
+        var request = Resources.LoadAsync<Texture2D>(Path.Combine("Textures", "data", "texture", nameWithoutExtension));
 
         while(!request.isDone) {
             yield return 0;
