@@ -32,13 +32,13 @@ public class ItemManager : MonoBehaviour {
 
     private void OnEquipAmmo(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.EQUIP_ARROW EQUIP_ARROW) {
-            (Session.CurrentSession.Entity as Entity).Inventory.EquipItem(EQUIP_ARROW.Index, (int)EquipLocation.AMMO);
+            (Session.CurrentSession.Entity as Entity).Inventory.EquipItem(EQUIP_ARROW.Index, (int) EquipLocation.AMMO);
         }
     }
 
     private void OnInventoryRemoveItem(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.DELETE_ITEM_FROM_BODY DELETE_ITEM_FROM_BODY) {
-            var item = (Session.CurrentSession.Entity as Entity).Inventory.RemoveItem((short)DELETE_ITEM_FROM_BODY.Index, (short)DELETE_ITEM_FROM_BODY.Count);
+            var item = (Session.CurrentSession.Entity as Entity).Inventory.RemoveItem((short) DELETE_ITEM_FROM_BODY.Index, (short) DELETE_ITEM_FROM_BODY.Count);
             if (item.amount <= 1) {
                 MapUiController.Instance.EquipmentWindow.UnequipAmmo();
             }
@@ -63,7 +63,7 @@ public class ItemManager : MonoBehaviour {
                 (Session.CurrentSession.Entity as Entity).Inventory.EquipItem(ACK_WEAR_EQUIP_V5.index, ACK_WEAR_EQUIP_V5.equipLocation);
                 MapUiController.Instance.UpdateEquipment();
             } else {
-                MapController.Instance.UIController.ChatBox.DisplayMessage(372,0);
+                MapController.Instance.UIController.ChatBox.DisplayMessage(372, 0);
             }
         }
     }
@@ -86,13 +86,15 @@ public class ItemManager : MonoBehaviour {
             list = pkt.Inventory;
         }
 
-        if (list.IsEmpty()) return;
+        if (list.IsEmpty())
+            return;
 
         // TODO apply a diff here
         // TODO find out how favorite tab works
         foreach (var itemInfo in list) {
             var item = DBManager.GetItem(itemInfo.ItemID);
-            if (item == null) continue;
+            if (item == null)
+                continue;
             var res = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D;
             var collection = FileManager.Load(DBManager.GetItemCollectionPath(item, itemInfo.IsIdentified)) as Texture2D;
 
@@ -106,7 +108,7 @@ public class ItemManager : MonoBehaviour {
     }
 
     private InventoryType FindItemTab(ItemInfo item) {
-        switch ((ItemType)item.itemType) {
+        switch ((ItemType) item.itemType) {
             case ItemType.HEALING:
             case ItemType.USABLE:
             case ItemType.USABLE_SKILL:
@@ -136,15 +138,14 @@ public class ItemManager : MonoBehaviour {
     }
 
     private void OnItemPickup(ushort cmd, int size, InPacket packet) {
-        if (packet is ZC.ITEM_PICKUP_ACK7) {
-            var pkt = packet as ZC.ITEM_PICKUP_ACK7;
+        if (packet is ZC.ITEM_PICKUP_ACK7 ITEM_PICKUP_ACK7) {
 
-            if (pkt.result != 0) {
+            if (ITEM_PICKUP_ACK7.result != 0) {
                 Debug.Log("Failed to pick item");
                 return;
             }
 
-            var itemInfo = pkt.itemInfo;
+            var itemInfo = ITEM_PICKUP_ACK7.itemInfo;
 
             Item item = DBManager.GetItem(itemInfo.ItemID);
             itemInfo.item = item;
@@ -156,6 +157,11 @@ public class ItemManager : MonoBehaviour {
 
             (Session.CurrentSession.Entity as Entity).Inventory.AddItem(itemInfo);
             MapController.Instance.UIController.UpdateEquipment();
+
+            MapController.Instance.UIController.ChatBox.DisplayMessage(153, ChatMessageType.BLUE,
+                new KeyValuePair<string, string>("%s", itemInfo.IsIdentified ? item.identifiedDisplayName : item.unidentifiedDisplayName),
+                new KeyValuePair<string, string>("%d", ITEM_PICKUP_ACK7.itemInfo.amount.ToString())
+            );
 
             DisplayPopup(itemInfo);
         }
@@ -172,12 +178,12 @@ public class ItemManager : MonoBehaviour {
 
             var x = pkt.x - 0.5 + pkt.subX / 12;
             var z = pkt.y - 0.5 + pkt.subY / 12;
-            var y = PathFinding.GetCellHeight((int)x, (int)z) + 5.0;
+            var y = PathFinding.GetCellHeight((int) x, (int) z) + 5.0;
 
             EntityManager.SpawnItem(new ItemSpawnInfo() {
                 AID = pkt.id,
                 mapID = pkt.mapID,
-                Position = new Vector3((float)x, (float)y, (float)z),
+                Position = new Vector3((float) x, (float) y, (float) z),
                 amount = pkt.amount,
                 IsIdentified = pkt.identified == 1,
                 dropEffectMode = pkt.dropEffectMode,
@@ -187,12 +193,12 @@ public class ItemManager : MonoBehaviour {
         } else if (packet is ZC.ITEM_ENTRY ITEM_ENTRY) {
             var x = ITEM_ENTRY.x - 0.5 + ITEM_ENTRY.subX / 12;
             var z = ITEM_ENTRY.y - 0.5 + ITEM_ENTRY.subY / 12;
-            var y = PathFinding.GetCellHeight((int)x, (int)z) + 1.0;
+            var y = PathFinding.GetCellHeight((int) x, (int) z) + 1.0;
 
             EntityManager.SpawnItem(new ItemSpawnInfo() {
                 AID = ITEM_ENTRY.id,
                 mapID = ITEM_ENTRY.mapID,
-                Position = new Vector3((float)x, (float)y, (float)z),
+                Position = new Vector3((float) x, (float) y, (float) z),
                 amount = ITEM_ENTRY.amount,
                 IsIdentified = ITEM_ENTRY.identified == 1,
                 animate = false
