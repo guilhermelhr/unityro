@@ -76,6 +76,20 @@ public class NpcShopController : DraggableUIWindow {
         }
     }
 
+    internal void OnSellResult(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.PC_SELL_RESULT PC_SELL_RESULT) {
+            ChatBoxController ChatBox = MapUiController.Instance.ChatBox;
+
+            ClearAndClose();
+
+            if (PC_SELL_RESULT.Result == 0) { // success
+                ChatBox.DisplayMessage(54, ChatMessageType.BLUE);
+            } else {
+                ChatBox.DisplayMessage(57, ChatMessageType.ERROR);
+            }
+        }
+    }
+
     public void Cancel() {
         ClearAndClose();
 
@@ -103,13 +117,24 @@ public class NpcShopController : DraggableUIWindow {
     }
 
     internal void SubmitCart(List<CartItem> currentCartItems) {
-        var packetItems = currentCartItems
-            .Select(it =>
-                new CZ.PC_PURCHASE_ITEMLIST.PC_PURCHASE_ITEMLIST_sub { Amount = (short) it.Quantity, ItemId = it.ItemShopInfo.itemID }
-            ).ToList();
+        if (ShopType == NpcShopType.BUY) {
+            var packetItems = currentCartItems
+                .Select(it =>
+                    new CZ.PC_PURCHASE_ITEMLIST.PC_PURCHASE_ITEMLIST_sub { Amount = (short) it.Quantity, ItemId = it.ItemShopInfo.itemID }
+                ).ToList();
 
-        new CZ.PC_PURCHASE_ITEMLIST {
-            items = packetItems
-        }.Send();
+            new CZ.PC_PURCHASE_ITEMLIST {
+                items = packetItems
+            }.Send();
+        } else if (ShopType == NpcShopType.SELL) {
+            var packetItems = currentCartItems
+                .Select(it =>
+                    new CZ.PC_SELL_ITEMLIST.PC_SELL_ITEMLIST_sub { Amount = (short) it.Quantity, InventoryIndex = (short) it.ItemShopInfo.inventoryIndex }
+                ).ToList();
+
+            new CZ.PC_SELL_ITEMLIST {
+                items = packetItems
+            }.Send();
+        }
     }
 }

@@ -37,6 +37,7 @@ public class MapUiController : MonoBehaviour {
         NetworkClient.HookPacket(ZC.PC_PURCHASE_ITEMLIST.HEADER, ShopController.DisplayShop);
         NetworkClient.HookPacket(ZC.PC_SELL_ITEMLIST.HEADER, ShopController.DisplayShop);
         NetworkClient.HookPacket(ZC.PC_PURCHASE_RESULT.HEADER, ShopController.OnPurchaseResult);
+        NetworkClient.HookPacket(ZC.PC_SELL_RESULT.HEADER, ShopController.OnSellResult);
         NetworkClient.HookPacket(ZC.RESTART_ACK.HEADER, OnRestartAnswer);
 
         NpcMenu.OnNpcMenuSelected = OnNpcMenuSelected;
