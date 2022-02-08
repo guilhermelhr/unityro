@@ -2,7 +2,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static ZC.PC_PURCHASE_ITEMLIST;
 
 public class CartItem : MonoBehaviour {
 
@@ -38,7 +37,7 @@ public class CartItem : MonoBehaviour {
 
     private void SetInfo() {
         ItemName.text = Item.identifiedDisplayName;
-        ItemPrice.text = $"{ItemShopInfo.discount}Z";
+        ItemPrice.text = $"{ItemShopInfo.specialPrice}Z";
         ItemQuantity.text = $"{Quantity}";
     }
 

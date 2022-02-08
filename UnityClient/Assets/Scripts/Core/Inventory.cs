@@ -4,9 +4,15 @@ using System.Linq;
 public class Inventory {
 
     private Dictionary<int, ItemInfo> Items = new Dictionary<int, ItemInfo>();
-
     public bool IsEmpty => Items.Count == 0;
     public List<ItemInfo> ItemList => Items.Values.ToList();
+
+    public ItemInfo GetItem(int inventoryIndex) {
+        ItemInfo item = null;
+        Items.TryGetValue(inventoryIndex, out item);
+
+        return item;
+    }
 
     public void AddItem(ItemInfo item) {
         Items.TryGetValue(item.index, out var it);

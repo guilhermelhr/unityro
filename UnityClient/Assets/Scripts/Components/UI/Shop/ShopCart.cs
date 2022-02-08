@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,7 +21,7 @@ public class ShopCart : MonoBehaviour, IDropHandler {
     private NpcShopController ShopController;
 
     [SerializeField]
-    private NumberInput QuantityInput;
+    private NumberInput QuantityInputPrefab;
 
     [SerializeField]
     private Button SubmitButton;
@@ -30,12 +31,13 @@ public class ShopCart : MonoBehaviour, IDropHandler {
 
     private List<CartItem> CurrentCartItems;
     private NpcShopType ShopType;
+    private NumberInput QuantityInput;
 
     internal void SetShopType(NpcShopType shopType) {
         ShopType = shopType;
     }
 
-    private int TotalPrice => CurrentCartItems.Sum(it => it.ItemShopInfo.discount * it.Quantity);
+    private int TotalPrice => CurrentCartItems.Sum(it => it.ItemShopInfo.specialPrice * it.Quantity);
 
     private void Awake() {
         CurrentCartItems = new List<CartItem>();
@@ -59,22 +61,10 @@ public class ShopCart : MonoBehaviour, IDropHandler {
                 itemType != ItemType.PETEQUIP;
 
             if (isStackable) {
-                var numberInput = Instantiate(QuantityInput);
-                numberInput.transform.SetParent(gameObject.transform);
-                numberInput.SetTitle(droppedItem.GetItemName());
-                var quantity = await numberInput.AwaitConfirmation();
-                Destroy(numberInput.gameObject);
-               
-                if (entity.GetBaseStatus().zeny < TotalPrice + (quantity * droppedItem.ItemShopInfo.discount)) {
-                    MapUiController.Instance.ChatBox.DisplayMessage(55, ChatMessageType.ERROR);
-                    return;
-                }
-                
-                if (cartItem != null) {
-                    cartItem.IncreaseQuantityBy(quantity);
-                    SetPriceLabel();
-                } else {
-                    AddItemToCart(droppedItem, quantity);
+                if (ShopType == NpcShopType.BUY) {
+                    await ProcessBuyStackable(droppedItem, entity, cartItem);
+                } else if (ShopType == NpcShopType.SELL) {
+                    await ProcessSellStackable(droppedItem, cartItem);
                 }
             } else {
                 if (cartItem == null) {
@@ -82,8 +72,56 @@ public class ShopCart : MonoBehaviour, IDropHandler {
                 }
             }
 
-            // TODO: Check for type & isStackable & vending type
             // TODO: Check if there's only one item to buy or if we're selling with the select all toggle
+        }
+    }
+
+    private async Task ProcessSellStackable(ShopItem droppedItem, CartItem cartItem) {
+        // TODO: consider sell all checkbox
+        var quantity = await FindQuantity(droppedItem);
+        Destroy(QuantityInput.gameObject);
+
+        var updatedQuantity = (cartItem?.Quantity ?? 0) + quantity;
+        if (updatedQuantity > droppedItem.Quantity) {
+            // TODO error message
+            return;
+        }
+
+        if (updatedQuantity == droppedItem.Quantity) {
+            ShopController.RemoveItem(droppedItem);
+        }
+
+        if (cartItem != null) {
+            cartItem.IncreaseQuantityBy(quantity);
+            SetPriceLabel();
+        } else {
+            AddItemToCart(droppedItem, quantity);
+        }
+    }
+
+    private async Task<int> FindQuantity(ShopItem droppedItem) {
+        QuantityInput = Instantiate(QuantityInputPrefab);
+        QuantityInput.transform.SetParent(gameObject.transform);
+        QuantityInput.SetTitle(droppedItem.GetItemName());
+        var quantity = await QuantityInput.AwaitConfirmation();
+
+        return quantity;
+    }
+
+    private async Task ProcessBuyStackable(ShopItem droppedItem, Entity entity, CartItem cartItem) {
+        var quantity = await FindQuantity(droppedItem);
+        Destroy(QuantityInput.gameObject);
+
+        if (entity.GetBaseStatus().zeny < TotalPrice + (quantity * droppedItem.ItemShopInfo.specialPrice)) {
+            MapUiController.Instance.ChatBox.DisplayMessage(55, ChatMessageType.ERROR);
+            return;
+        }
+
+        if (cartItem != null) {
+            cartItem.IncreaseQuantityBy(quantity);
+            SetPriceLabel();
+        } else {
+            AddItemToCart(droppedItem, quantity);
         }
     }
 

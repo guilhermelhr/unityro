@@ -159,21 +159,38 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public void Init(CharacterData data, int rendererLayer, EntityCanvas canvas, bool isFromCharacterSelection = false) {
         Canvas = canvas;
         Type = EntityType.PC;
-        GID = (uint) data.GID;
 
-        Status.walkSpeed = data.Speed;
-        Status.hair = data.Hair;
+        GID = (uint) data.GID;
         Status.base_exp = (uint) data.Exp;
-        Status.base_level = (uint) data.BaseLevel;
+        Status.zeny = data.Zeny;
         Status.job_exp = (uint) data.JobExp;
         Status.job_level = (uint) data.JobLevel;
-        Status.sp = data.SP;
-        Status.max_sp = data.MaxSP;
-        Status.jobId = data.Job;
-        Status.sex = (byte) data.Sex;
+        //body state?
+        //health state?
+        //option?
+        //karma?
+        //manner
+        Status.StatusPoints = (uint) data.StatusPoint;
+
         Status.hp = data.HP;
         Status.max_hp = data.MaxHP;
+        Status.sp = data.SP;
+        Status.max_sp = data.MaxSP;
+        Status.walkSpeed = data.Speed;
+        Status.jobId = data.Job;
+        Status.hair = data.Hair;
+        Status.base_level = (uint) data.BaseLevel;
+        Status.SkillPoints = (uint) data.SkillPoint;
+        
         Status.name = data.Name;
+        Status.str = data.Str;
+        Status.agi = data.Agi;
+        Status.vit = data.Vit;
+        Status.int_ = data.Int;
+        Status.dex = data.Dex;
+        Status.luk = data.Luk;
+
+        Status.sex = (byte) data.Sex;
 
         EquipInfo = new EntityEquipInfo {
             Weapon = data.Weapon,

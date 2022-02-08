@@ -3,7 +3,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static ZC.PC_PURCHASE_ITEMLIST;
 
 public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler {
 
@@ -21,7 +20,9 @@ public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
 
     public ItemNPCShopInfo ItemShopInfo { get; private set; }
 
-    private Item Item;
+    public int Quantity { get; private set; }
+    public Item Item { get; private set; }
+
     private Canvas Canvas;
     private RectTransform ItemDragImageTransform;
 
@@ -29,17 +30,40 @@ public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         Canvas = Canvas.FindMainCanvas();
     }
 
-    public void SetItemShopInfo(ItemNPCShopInfo itemShopInfo) {
+    public void SetItemShopInfo(ItemNPCShopInfo itemShopInfo, NpcShopType shopType) {
         ItemShopInfo = itemShopInfo;
 
-        Item = DBManager.GetItem(itemShopInfo.itemID);
-        try {
-            ItemImage.texture = FileManager.Load(DBManager.GetItemResPath(itemShopInfo.itemID, true)) as Texture2D;
-        } catch {
+        if (shopType == NpcShopType.BUY) {
+            Item = DBManager.GetItem(itemShopInfo.itemID);
+            try {
+                ItemImage.texture = FileManager.Load(DBManager.GetItemResPath(itemShopInfo.itemID, true)) as Texture2D;
+            } catch {
+                Debug.LogError($"Could not load texture of item {itemShopInfo.itemID}");
+                return;
+            }
+        } else if (shopType == NpcShopType.SELL) {
+            var itemInfo = (Session.CurrentSession.Entity as Entity).Inventory.GetItem(itemShopInfo.inventoryIndex);
 
+            if (itemInfo == null) {
+                Debug.LogError($"Could not find item on inventory index {itemShopInfo.inventoryIndex}");
+                return;
+            }
+
+            itemShopInfo.itemID = itemInfo.ItemID;
+            try {
+                ItemImage.texture = FileManager.Load(DBManager.GetItemResPath(itemInfo.ItemID, true)) as Texture2D;
+            } catch {
+                Debug.LogError($"Could not load texture of item {itemInfo.ItemID}");
+                return;
+            }
+
+            Item = itemInfo.item;
+            Quantity = itemInfo.amount;
         }
+
         ItemName.text = Item.identifiedDisplayName;
-        ItemPrice.text = $"{itemShopInfo.discount}Z";
+        ItemPrice.text = $"{itemShopInfo.specialPrice}Z";
+        ItemQuantity.text = shopType == NpcShopType.BUY ? null : $"{Quantity}";
     }
 
     public string GetItemName() {

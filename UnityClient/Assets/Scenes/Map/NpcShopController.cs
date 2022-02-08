@@ -25,7 +25,17 @@ public class NpcShopController : DraggableUIWindow {
 
             foreach (var item in PC_PURCHASE_ITEMLIST.ItemList) {
                 var shopItem = Instantiate(ShopItemPrefab, CatalogScrollView.transform);
-                shopItem.SetItemShopInfo(item);
+                shopItem.SetItemShopInfo(item, ShopType);
+                CurrentShopItems.Add(shopItem);
+            }
+        } else if (packet is ZC.PC_SELL_ITEMLIST PC_SELL_ITEMLIST) {
+            ShopType = NpcShopType.SELL;
+            CurrentShopItems = new List<ShopItem>();
+            ShopCart.SetShopType(ShopType);
+
+            foreach (var item in PC_SELL_ITEMLIST.ItemList) {
+                var shopItem = Instantiate(ShopItemPrefab, CatalogScrollView.transform);
+                shopItem.SetItemShopInfo(item, ShopType);
                 CurrentShopItems.Add(shopItem);
             }
         }
@@ -70,6 +80,19 @@ public class NpcShopController : DraggableUIWindow {
         ClearAndClose();
 
         new CZ.NPC_TRADE_QUIT().Send();
+    }
+
+    internal void RemoveItem(ShopItem droppedItem) {
+        var itemShopInfoList = CurrentShopItems.Where(it => it.Item.id != droppedItem.Item.id).Select(it => it.ItemShopInfo).ToList();
+
+        CurrentShopItems.ForEach(it => Destroy(it.gameObject));
+        CurrentShopItems.Clear();
+
+        foreach (var item in itemShopInfoList) {
+            var shopItem = Instantiate(ShopItemPrefab, CatalogScrollView.transform);
+            shopItem.SetItemShopInfo(item, ShopType);
+            CurrentShopItems.Add(shopItem);
+        }
     }
 
     private void ClearAndClose() {
