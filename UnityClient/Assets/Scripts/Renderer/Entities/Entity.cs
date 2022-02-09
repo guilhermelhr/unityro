@@ -246,6 +246,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         // Add more options such as sex etc
 
         if (Type == EntityType.WARP) {
+            body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
             var warp = body.AddComponent<MapWarpEffect>();
             warp.StartWarp(body);
             return;

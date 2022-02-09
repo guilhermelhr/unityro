@@ -1,6 +1,6 @@
 ﻿namespace ROIO.Models
 {
-    struct MapTableStruct
+    public struct MapTableStruct
     {
         public string name;
         public string mp3;

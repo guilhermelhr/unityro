@@ -5,12 +5,9 @@ namespace ROIO {
         public string root;
         public List<string> grf;
         public string system;
-    }
+        public string bgm;
 
-    public static class ConfigurationExtensions {
-
-        public static string GetSystemPath(this Configuration configuration) {
-            return $"{configuration.root}{configuration.system}";
-        }
+        public string SystemPath => $"{root}{system}";
+        public string BgmPath => $"{root}{bgm}";
     }
 }

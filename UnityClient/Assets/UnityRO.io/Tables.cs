@@ -2,16 +2,16 @@
 using ROIO.Models;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ROIO
 {
     public static class Tables
     {
 
-        public static Hashtable MapTable = new Hashtable();
+        public static Dictionary<string, MapTableStruct> MapTable = new Dictionary<string, MapTableStruct>();
         public static Hashtable ResNameTable = new Hashtable();
         public static Hashtable MsgStringTable = new Hashtable();
-
         public static void Init()
         {
             InitMsgStringTable();
@@ -37,14 +37,15 @@ namespace ROIO
         {
             foreach (object[] args in TableLoader.LoadTable("data/mapnametable.txt", 2))
             {
-                if (!MapTable.ContainsKey(args[1]))
+                var key = Convert.ToString(args[1]);
+                if (!MapTable.ContainsKey(key))
                 {
-                    MapTable.Add(args[1], new MapTableStruct());
+                    MapTable.Add(key, new MapTableStruct());
                 }
 
-                MapTableStruct mts = (MapTableStruct)MapTable[args[1]];
+                MapTableStruct mts = MapTable[key];
                 mts.name = Convert.ToString(args[2]);
-                MapTable[args[1]] = mts;
+                MapTable[key] = mts;
             }
         }
 
@@ -52,14 +53,15 @@ namespace ROIO
         {
             foreach (object[] args in TableLoader.LoadTable("data/mp3nametable.txt", 2))
             {
-                if (!MapTable.ContainsKey(args[1]))
+                var key = Convert.ToString(args[1]);
+                if (!MapTable.ContainsKey(key))
                 {
-                    MapTable.Add(args[1], new MapTableStruct());
+                    MapTable.Add(key, new MapTableStruct());
                 }
 
-                MapTableStruct mts = (MapTableStruct)MapTable[args[1]];
-                mts.mp3 = Convert.ToString(args[2]);
-                MapTable[args[1]] = mts;
+                MapTableStruct mts = MapTable[key];
+                mts.mp3 = System.IO.Path.GetFileName(args[2].ToString());
+                MapTable[key] = mts;
             }
         }
 

@@ -2,6 +2,7 @@
 using ROIO;
 using ROIO.Loaders;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour {
 
     private MapLoader MapLoader;
     private MapRenderer MapRenderer;
+    private AudioSource AudioSource;
 
     #region Components
     private EntityManager EntityManager;
@@ -38,6 +40,9 @@ public class GameManager : MonoBehaviour {
     private void Awake() {
         if (MainCamera == null) {
             MainCamera = Camera.main;
+        }
+        if (AudioSource == null) {
+            AudioSource = gameObject.AddComponent<AudioSource>();
         }
 
         DontDestroyOnLoad(this);
@@ -93,21 +98,27 @@ public class GameManager : MonoBehaviour {
         MainCamera = Camera.main;
     }
 
-    public async Task BeginMapLoading(string mapName) {
-        // if (!MapRenderer.Ready)
-        //     return;
+    public async void PlayBgm(string name) {
+        var request = Resources.LoadAsync<AudioClip>(Path.Combine("Audio", "BGM", Path.GetFileNameWithoutExtension(name)));
 
+        while(!request.isDone) {
+            await Task.Yield();
+        }
+
+        AudioSource.clip = request.asset as AudioClip;
+        AudioSource.Play();
+    }
+
+    public async Task BeginMapLoading(string mapName) {
         SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         EntityManager.ClearEntities();
-        var stopWatch = new System.Diagnostics.Stopwatch();
-        stopWatch.Restart();
         await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
-        stopWatch.Stop();
 
-        Debug.Log($"Map loaded in {stopWatch.Elapsed.TotalSeconds} seconds");
         SceneManager.UnloadSceneAsync("LoadingScene");
         OnMapLoaded?.Invoke();
+
+        PlayBgm(Tables.MapTable[$"{mapName}.rsw"].mp3);
     }
 
     public async Task<long> BenchmarkMapLoading(string mapName) {

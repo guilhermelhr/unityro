@@ -334,7 +334,7 @@ public class ItemTable {
     public static void LoadItemDb(Configuration configs) {
         Script script = new Script();
         script.Options.ScriptLoader = new CustomScriptLoader();
-        script.DoFile(configs.GetSystemPath() + "itemInfo.lua");
+        script.DoFile(configs.SystemPath + "itemInfo.lua");
         Table table = (Table)script.Globals["tbl"];
 
         foreach (var key in table.Keys) {

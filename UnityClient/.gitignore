@@ -89,3 +89,5 @@ crashlytics-build.properties
 
 /[Aa]ssets/[Rr]esources/[Pp]refabs/[Dd]ata/*
 /[Aa]ssets/[Rr]esources/[Pp]refabs/[Dd]ata.meta
+/Assets/Resources/Audio/BGM/*.mp3
+/Assets/Resources/Audio/BGM/*.mp3.meta
