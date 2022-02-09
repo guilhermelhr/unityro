@@ -64,22 +64,12 @@ public class DataUtility {
                     break;
                 }
 
-                var path = (entry.Key as string).Trim();
-                if (!path.StartsWith("data/texture/")) {
+                string completePath = ExtractFile((entry.Key as string).Trim());
+
+                if (completePath == null) {
                     file++;
                     continue;
                 }
-                var bytes = FileManager.ReadSync(path).ToArray();
-                var filename = Path.GetFileName(path);
-                var extension = Path.GetExtension(filename).ToLowerInvariant();
-                var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
-
-                string assetPath = Path.Combine("Assets", "Resources", "Textures", dir);
-
-                Directory.CreateDirectory(assetPath);
-
-                var completePath = Path.Combine(assetPath, filename);
-                File.WriteAllBytes(completePath, bytes);
 
                 if (file % 50 == 0) {
                     AssetDatabase.ImportAsset(completePath);
@@ -93,6 +83,35 @@ public class DataUtility {
 
         EditorUtility.ClearProgressBar();
         EditorApplication.ExitPlaymode();
+    }
+
+    [MenuItem("UnityRO/Utils/Extract/Extract Test Texture")]
+    static void ExtractTestTexture() {
+        var config = ConfigurationLoader.Init();
+        FileManager.LoadGRF(config.root, config.grf);
+        string completePath = ExtractFile("data/texture/³ª¹«ÀâÃÊ²É/newtree_02.bmp");
+        AssetDatabase.ImportAsset(completePath);
+    }
+
+    private static string ExtractFile(string path) {
+        if (!path.StartsWith("data/texture/")) {
+            return null;
+        }
+        var filename = Path.GetFileName(path);
+        var filenameWithoutExtension = Path.GetFileNameWithoutExtension(path);
+        var extension = Path.GetExtension(filename).ToLowerInvariant();
+        var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
+
+        string assetPath = Path.Combine("Assets", "Resources", "Textures", dir);
+
+        Directory.CreateDirectory(assetPath);
+
+        var texture = FileManager.Load(path) as Texture2D;
+        texture.alphaIsTransparency = true;
+        var bytes = texture.EncodeToPNG();
+        var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".png");
+        File.WriteAllBytes(completePath, bytes);
+        return completePath;
     }
 
     // WIP

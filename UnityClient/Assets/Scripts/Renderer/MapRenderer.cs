@@ -121,16 +121,9 @@ public class MapRenderer {
 
         foreach (var light in world.lights) {
             var lightObj = new GameObject(light.name);
+            var lightContainer = lightObj.AddComponent<LightContainer>();
             lightObj.transform.SetParent(lightsParent.transform);
-            Light lightComponent = lightObj.AddComponent<Light>();
-#if UNITY_EDITOR
-            lightComponent.lightmapBakeType = LightmapBakeType.Baked;
-#endif
-
-            lightComponent.color = new Color(light.color[0], light.color[1], light.color[2]);
-            lightComponent.range = light.range;
-            Vector3 position = new Vector3(light.pos[0] + width, -light.pos[1], light.pos[2] + height);
-            lightObj.transform.position = position;
+            lightContainer.SetLightProps(light, height, width);
         }
     }
 
