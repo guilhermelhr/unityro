@@ -93,6 +93,21 @@ public class DataUtility {
         AssetDatabase.ImportAsset(completePath);
     }
 
+    [MenuItem("UnityRO/Utils/Bundle/Create AssetBundle")]
+    static void BundleAssets() {
+        AssetBundleBuild[] bundleMap = new AssetBundleBuild[1];
+
+        bundleMap[0].assetBundleName = "texturesBundle";
+        var texturePath = Path.Combine(Application.dataPath, "Resources", "Textures");
+        var textures = Directory.GetFiles(texturePath, "*.*", SearchOption.AllDirectories)
+            .Where(it => Path.HasExtension(it) && !it.Contains(".meta"))
+            .Select(it => it.Replace(Application.dataPath, "Assets"))
+            .ToArray();
+        bundleMap[0].assetNames = textures;
+
+        BuildPipeline.BuildAssetBundles("Assets/StreamingAssets", bundleMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);
+    }
+
     private static string ExtractFile(string path) {
         if (!path.StartsWith("data/texture/")) {
             return null;
