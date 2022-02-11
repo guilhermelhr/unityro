@@ -1,12 +1,17 @@
 using ROIO;
+using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
+[InitializeOnLoadAttribute]
 public class DataUtility {
 
     [MenuItem("UnityRO/Utils/Extract/Entire data")]
@@ -108,6 +113,67 @@ public class DataUtility {
         BuildPipeline.BuildAssetBundles("Assets/StreamingAssets", bundleMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);
     }
 
+    // WIP
+    [MenuItem("UnityRO/Utils/Prefabs/Create Maps Prefabs")]
+    static void CreateMapPrefabs() {
+        var gameManager = Selection.activeGameObject.GetComponent<GameManager>();
+        var map = FindMap();
+
+        if (map != null) {
+            SaveMap(map, gameManager);
+        }
+    }
+
+    [MenuItem("UnityRO/Utils/Prepare/Models")]
+    static void PrepareModels() {
+        EditorSceneManager.OpenScene("Assets/Scenes/UtilityScenes/ModelsScene.unity");
+        EditorApplication.EnterPlaymode();
+    }
+
+    [MenuItem("UnityRO/Utils/Extract/Models")]
+    public static void ExtractModels() {
+        var mapObject = FindMap().GetComponent<ModelsSceneManager>();
+        ExtractModelsFromMap(mapObject.gameObject);
+    }
+
+    private static void ExtractModelsFromMap(GameObject mapObject) {
+        var originalMeshes = mapObject.transform.FindRecursive("_Originals");
+
+        for (int i = 0; i < originalMeshes.transform.childCount; i++) {
+            var mesh = originalMeshes.transform.GetChild(i);
+            mesh.gameObject.SetActive(true);
+
+            var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
+            var meshPath = Path.Combine("Assets", "Resources", "Meshes", meshPathWithoutExtension);
+            Directory.CreateDirectory(meshPath);
+
+            var filters = mesh.GetComponentsInChildren<MeshFilter>();
+            var renderers = mesh.GetComponentsInChildren<MeshRenderer>();
+            for (int k = 0; k < filters.Length; k++) {
+                var filter = filters[k];
+                var material = renderers[k].material;
+
+                var progress = k * 1f / filters.Length;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Saving meshes - {progress * 100}%", progress)) {
+                    break;
+                }
+
+                AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name}.mat"));
+                AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name}.asset"));
+                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
+                PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
+
+                mesh.gameObject.SetActive(false);
+            }
+
+            meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
+            PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
+        }
+
+        EditorUtility.ClearProgressBar();
+        EditorApplication.ExitPlaymode();
+    }
+
     private static string ExtractFile(string path) {
         if (!path.StartsWith("data/texture/")) {
             return null;
@@ -129,51 +195,49 @@ public class DataUtility {
         return completePath;
     }
 
-    // WIP
-    [MenuItem("UnityRO/Utils/Prefabs/Create Maps Prefabs")]
-    static void CreateMapPrefabs() {
-        var gameManager = Selection.activeGameObject.GetComponent<GameManager>();
-        var map = FindMap();
-
-        if (map != null) {
-            SaveMap(map, gameManager);
-        }
-    }
-
     private static void SaveMap(GameObject mapObject, GameManager gameManager) {
         string mapName = Path.GetFileNameWithoutExtension(mapObject.name);
-        string localPath = Path.Combine("Assets", "Resources", "Prefabs", "Data", "Maps", mapName);
+        string localPath = Path.Combine("Assets", "Resources", "Prefabs", "Data", "Maps");
         Directory.CreateDirectory(localPath);
 
-        var filters = mapObject.GetComponentsInChildren<MeshFilter>();
-        var renderers = mapObject.GetComponentsInChildren<MeshRenderer>();
-        for (int i = 0; i < filters.Length; i++) {
-            var filter = filters[i];
-            var renderer = renderers[i];
+        var originalMeshes = mapObject.transform.FindRecursive("_Originals");
 
-            var progress = i * 1f / filters.Length;
-            if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Saving meshes - {progress * 100}%", progress)) {
-                break;
+        for (int i = 0; i < originalMeshes.transform.childCount; i++) {
+            var mesh = originalMeshes.transform.GetChild(i);
+            mesh.gameObject.SetActive(true);
+            var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
+            var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "models", meshPathWithoutExtension);
+            Directory.CreateDirectory(meshPath);
+
+            var filters = mesh.GetComponentsInChildren<MeshFilter>();
+            var renderers = mesh.GetComponentsInChildren<MeshRenderer>();
+            for (int k = 0; k < filters.Length; k++) {
+                var filter = filters[k];
+                var material = renderers[k].material;
+
+                var progress = k * 1f / filters.Length;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Saving meshes - {progress * 100}%", progress)) {
+                    break;
+                }
+
+                AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name}.mat"));
+                AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name}.asset"));
+                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
+                PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
             }
 
-            try {
-                var material = renderer.material;
-                AssetDatabase.CreateAsset(material, Path.Combine(localPath, $"material_{i}.mat"));
-            } catch (Exception e) {
-                Debug.LogError(e);
-            }
-
-            AssetDatabase.CreateAsset(filter.mesh, Path.Combine(localPath, $"filter_{i}.asset"));
+            meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
+            PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
         }
 
-        localPath = AssetDatabase.GenerateUniqueAssetPath(localPath + ".prefab");
+        localPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(localPath, $"{mapName}.prefab"));
         PrefabUtility.SaveAsPrefabAssetAndConnect(mapObject, localPath, InteractionMode.UserAction);
         EditorUtility.ClearProgressBar();
         EditorApplication.ExitPlaymode();
     }
 
     private static GameObject FindMap() {
-        return UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects().ToList().Find(go => go.tag == "Map");
+        return SceneManager.GetActiveScene().GetRootGameObjects().ToList().Find(go => go.tag == "Map");
     }
 
     [MenuItem("UnityRO/Utils/Prefabs/Create Maps Prefabs", true)]

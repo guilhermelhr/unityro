@@ -208,5 +208,8 @@ namespace ROIO.Models.FileTypes
         {
             instances.Add(model);
         }
+
+        //utility vars
+        public string filename;
     }
 }

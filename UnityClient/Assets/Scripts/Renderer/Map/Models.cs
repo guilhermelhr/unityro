@@ -26,17 +26,22 @@ public class Models {
     }
 
     public IEnumerator BuildMeshes(Action<float> OnProgress) {
-        GameObject parent = new GameObject("_Models");
-        parent.transform.parent = MapRenderer.mapParent.transform;
+        GameObject modelsParent = new GameObject("_Models");
+        GameObject originals = new GameObject("_Originals");
+        GameObject copies = new GameObject("_Copies");
+        modelsParent.transform.SetParent(MapRenderer.mapParent.transform);
+        originals.transform.SetParent(modelsParent.transform);
+        copies.transform.SetParent(modelsParent.transform);
+
         Dictionary<int, AnimProperties> anims = new Dictionary<int, AnimProperties>();
         int nodeId = 0;
 
         for (var index = 0; index < models.Count; index++) {
-            OnProgress.Invoke(index / (float)models.Count);
-            
+            OnProgress.Invoke(index / (float) models.Count);
+
             RSM.CompiledModel model = models[index];
-            GameObject modelObj = new GameObject(model.rsm.name);
-            modelObj.transform.parent = parent.transform;
+            GameObject modelObj = new GameObject(model.rsm.filename);
+            modelObj.transform.SetParent(originals.transform);
 
             foreach (var nodeData in model.nodesData) {
                 foreach (var meshesByTexture in nodeData) {
@@ -61,7 +66,7 @@ public class Models {
                     //mesh.normals = meshData.normals.ToArray();
                     mesh.uv = meshData.uv.ToArray();
 
-                    GameObject nodeObj = new GameObject(node.name);
+                    GameObject nodeObj = new GameObject($"{node.name}_{nodeId}");
                     nodeObj.transform.parent = modelObj.transform;
 
                     string textureFile = model.rsm.textures[textureId];
@@ -112,6 +117,7 @@ public class Models {
             modelObj.SetActive(false);
 
             //instantiate model
+            //todo create prefabs 
             for (int i = 0; i < model.rsm.instances.Count; i++) {
                 GameObject instanceObj;
                 if (i == model.rsm.instances.Count - 1) {
@@ -119,10 +125,9 @@ public class Models {
                     instanceObj = modelObj;
                 } else {
                     instanceObj = UnityEngine.Object.Instantiate(modelObj);
+                    instanceObj.transform.SetParent(copies.transform);
+                    instanceObj.name += "[" + i + "]";
                 }
-
-                instanceObj.transform.parent = parent.transform;
-                instanceObj.name += "[" + i + "]";
 
                 RSW.ModelDescriptor descriptor = model.rsm.instances[i];
 

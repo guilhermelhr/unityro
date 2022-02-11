@@ -67,6 +67,7 @@ namespace ROIO.Loaders {
                 RSM model = FileManager.Load("data/model/" + modelDescriptors[i].filename) as RSM;
                 if (model != null) {
                     model.CreateInstance(modelDescriptors[i]);
+                    model.filename = modelDescriptors[i].filename;
                     objectsSet.Add(model);
                 }
             }
