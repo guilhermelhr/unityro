@@ -34,8 +34,7 @@ public class ModelsSceneManager : MonoBehaviour {
 
         StartCoroutine(new Models(compiledModels).BuildMeshes(delegate (float progress) {
             var p = (int) (progress * 100) + 1;
-            Debug.Log($"Progress: {p}%");
-            if (p >= 100) {
+            if (p >= 99) {
                 EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Models");
             }
         }));
