@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2491198924488351054}
-  - component: {fileID: 2633761153983157808}
   - component: {fileID: 3167618847927520808}
   - component: {fileID: 5165792731094662471}
   - component: {fileID: 5062216441205029266}
   - component: {fileID: 7255031418366587284}
+  - component: {fileID: 6308045816338071544}
   m_Layer: 5
   m_Name: Damage
   m_TagString: Untagged
@@ -40,19 +40,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 3.5}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2633761153983157808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6716218986333011097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d01e9a1fe727d4bea92b905ec72f6244, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textMesh: {fileID: 7255031418366587284}
 --- !u!114 &3167618847927520808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,3 +196,20 @@ MonoBehaviour:
   _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
+--- !u!114 &6308045816338071544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6716218986333011097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d01e9a1fe727d4bea92b905ec72f6244, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textMesh: {fileID: 7255031418366587284}
+  _startingAngle: 20
+  angleMultiplier: 270
+  yMultiplier: 0.25
+  xMultiplier: 0.05
