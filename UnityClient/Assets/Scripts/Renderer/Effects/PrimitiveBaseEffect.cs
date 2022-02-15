@@ -91,7 +91,7 @@ namespace Assets.Scripts.Effects {
 
             if (FollowTarget != null) {
                 var position = FollowTarget.transform.localPosition;
-                transform.localPosition = new Vector3(position.x + 0.5f, position.y, position.z + 0.5f);
+                transform.localPosition = new Vector3(position.x, position.y, position.z);
             }
 
 
