@@ -49,14 +49,6 @@ public class DamageRenderer : MonoBehaviour {
             transform.position += Vector3.up * Time.deltaTime * 7;
         }
 
-        //} else if ((CurrentType & DamageType.HEAL) > 0) {
-
-        //} else if ((CurrentType & DamageType.MISS) > 0) {
-        //    perc = (float) ((GameManager.Tick - start) / 800);
-        //    scale = 0.5f;
-        //    transform.position += Vector3.up * Time.deltaTime * 7;
-        //}
-
         var color = textMesh.color;
         color[3] -= 0.3f * Time.deltaTime;
         textMesh.color = color;
