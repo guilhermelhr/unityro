@@ -1,4 +1,4 @@
-﻿using ROIO;
+using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
@@ -38,6 +38,10 @@ public class EntityViewer : MonoBehaviour {
     private long AnimationStart;
     private int ActionId = -1;
     private double previousFrame = 0;
+
+    private double motionSpeed = 4;
+    private bool isAnimationFinished;
+    private double loopCountToAnimationFinish = 1;
 
     private MeshCollider meshCollider;
     private Material SpriteMaterial;
@@ -239,54 +243,72 @@ public class EntityViewer : MonoBehaviour {
     private int GetCurrentFrame(long tm) {
         var isIdle = CurrentMotion.Motion == SpriteMotion.Idle || CurrentMotion.Motion == SpriteMotion.Sit;
         double animCount = currentAction.frames.Length;
-        long delay = GetDelay();
-        if (delay <= 0) {
-            delay = (int) currentAction.delay;
-        }
-        var headDir = 0;
-        double frame;
+        // long delay = GetDelay();
+        // if (delay <= 0) {
+        //     delay = (int) currentAction.delay;
+        // }
+        // var headDir = 0;
+        // double frame;
 
         if (ViewerType == ViewerType.BODY && Entity.Type == EntityType.PC && isIdle) {
             return Entity.HeadDir;
         }
 
-        if ((ViewerType == ViewerType.HEAD ||
-            ViewerType == ViewerType.HEAD_TOP ||
-            ViewerType == ViewerType.HEAD_MID ||
-            ViewerType == ViewerType.HEAD_BOTTOM) && isIdle) {
-            animCount = Math.Floor(animCount / 3);
-            headDir = Entity.HeadDir;
-        }
+        // if ((ViewerType == ViewerType.HEAD ||
+        //     ViewerType == ViewerType.HEAD_TOP ||
+        //     ViewerType == ViewerType.HEAD_MID ||
+        //     ViewerType == ViewerType.HEAD_BOTTOM) && isIdle) {
+        //     animCount = Math.Floor(animCount / 3);
+        //     headDir = Entity.HeadDir;
+        // }
+
+        // if (AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
+        //     frame = Math.Floor((double) (tm / delay));
+        //     frame %= animCount;
+        //     frame += animCount * headDir;
+        //     frame += previousFrame;
+        //     frame %= animCount;
+
+        //     return (int) frame;
+        // }
+
+        // frame = Math.Min(tm / delay | 0, animCount);
+        // frame += (animCount * headDir);
+        // frame += previousFrame;
+
+        // if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
+        //     previousFrame = frame = animCount - 1;
+
+        //     if (CurrentMotion.delay > 0 && GameManager.Tick < CurrentMotion.delay) {
+        //         if (NextMotion.HasValue) {
+        //             StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float) (CurrentMotion.delay - GameManager.Tick) / 1000f));
+        //         }
+        //     } else {
+        //         if (NextMotion.HasValue) {
+        //             ChangeMotion(NextMotion.Value);
+        //         }
+        //     }
+        // }
+
+        var stateCnt = tm / 24f;
+        double currentMotion = 0;
 
         if (AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
-            frame = Math.Floor((double) (tm / delay));
-            frame %= animCount;
-            frame += animCount * headDir;
-            frame += previousFrame;
-            frame %= animCount;
+            var motionCount = animCount;
+            currentMotion = (int)(stateCnt/motionSpeed)%animCount;
+            var loopCount = (stateCnt/motionSpeed)/motionCount;
 
-            return (int) frame;
-        }
-
-        frame = Math.Min(tm / delay | 0, animCount);
-        frame += (animCount * headDir);
-        frame += previousFrame;
-
-        if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
-            previousFrame = frame = animCount - 1;
-
-            if (CurrentMotion.delay > 0 && GameManager.Tick < CurrentMotion.delay) {
-                if (NextMotion.HasValue) {
-                    StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float) (CurrentMotion.delay - GameManager.Tick) / 1000f));
-                }
-            } else {
-                if (NextMotion.HasValue) {
-                    ChangeMotion(NextMotion.Value);
+            if (loopCount >= 1) {
+                currentMotion = currentMotion-1;
+                if (loopCount >= loopCountToAnimationFinish) {
+                    isAnimationFinished = true;
                 }
             }
+        } else {
+            currentMotion = (int)(stateCnt/motionSpeed % animCount);
         }
 
-        return (int) Math.Min(frame, animCount - 1);
+        return (int)currentMotion;
     }
 
     private IEnumerator ChangeMotionAfter(MotionRequest motion, float time) {
@@ -296,20 +318,21 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private int GetDelay() {
-        if (ViewerType == ViewerType.BODY && CurrentMotion.Motion == SpriteMotion.Walk) {
-            return (int) (currentAction.delay / 150 * Entity.Status.walkSpeed);
-        }
+        // if (ViewerType == ViewerType.BODY && CurrentMotion.Motion == SpriteMotion.Walk) {
+        //     return (int) (currentAction.delay / 150 * Entity.Status.walkSpeed);
+        // }
 
-        if (CurrentMotion.Motion == SpriteMotion.Attack ||
-            CurrentMotion.Motion == SpriteMotion.Attack1 ||
-            CurrentMotion.Motion == SpriteMotion.Attack2 ||
-            CurrentMotion.Motion == SpriteMotion.Attack3) {
-            var delay = (int) (currentAction.delay * (Entity.Status.attackSpeed / AVERAGE_ATTACK_SPEED));
+        // if (CurrentMotion.Motion == SpriteMotion.Attack ||
+        //     CurrentMotion.Motion == SpriteMotion.Attack1 ||
+        //     CurrentMotion.Motion == SpriteMotion.Attack2 ||
+        //     CurrentMotion.Motion == SpriteMotion.Attack3) {
+        //     var delay = (int) (currentAction.delay * (Entity.Status.attackSpeed / AVERAGE_ATTACK_SPEED));
 
-            return (delay > 0) ? delay : Entity.Status.attackSpeed / currentAction.FrameCount;
-        }
+        //     return (delay > 0) ? delay : Entity.Status.attackSpeed / currentAction.FrameCount;
+        // }
 
-        return (int) currentAction.delay;
+        // return (int) currentAction.delay;
+        if (delay)
     }
 
     private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
@@ -355,6 +378,9 @@ public class EntityViewer : MonoBehaviour {
         ActionId = newAction;
         AnimationStart = GameManager.Tick;
         previousFrame = 0;
+        motionSpeed = 1;
+
+        motionSpeed = GetDelay();
 
         foreach (var child in Children) {
             child.ChangeMotion(motion, nextMotion);
