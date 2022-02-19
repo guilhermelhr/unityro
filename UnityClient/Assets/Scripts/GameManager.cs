@@ -64,14 +64,21 @@ public class GameManager : MonoBehaviour {
         InitManagers();
         MaybeInitOfflineUtils();
 
-        MapRenderer = new MapRenderer(this, PathFinder, SoundMixerGroup, WorldLight);
+        InitMapRenderer();
         MapLoader = new MapLoader();
     }
 
     void FixedUpdate() {
+        if (MapRenderer == null) {
+            InitMapRenderer();
+        }
         if (MapRenderer.Ready) {
             MapRenderer.FixedUpdate();
         }
+    }
+
+    private void InitMapRenderer() {
+        MapRenderer = new MapRenderer(this, PathFinder, SoundMixerGroup, WorldLight);
     }
 
     void Update() {

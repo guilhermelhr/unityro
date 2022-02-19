@@ -30,7 +30,7 @@ public class OfflineUtility : MonoBehaviour {
             Job = 0,
             Name = "Player",
             GID = 20001,
-            Weapon = 1,
+            Weapon = 0,
             Speed = 150,
             Hair = 1,
             MaxHP = 100,
@@ -39,7 +39,7 @@ public class OfflineUtility : MonoBehaviour {
             SP = 50
         });
         entity.transform.position = new Vector3(150, 0, 150);
-        entity.SetAttackSpeed(135);
+        entity.SetAttackSpeed(480);
         Session.StartSession(new Session(entity, 0));
 
         CharacterCamera charCam = FindObjectOfType<CharacterCamera>();

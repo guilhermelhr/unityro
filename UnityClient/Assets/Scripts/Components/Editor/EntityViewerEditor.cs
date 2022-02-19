@@ -19,6 +19,11 @@ public class EntityViewerEditor : Editor {
                 );
             }
         }
+
+
+        if (GUILayout.Button("Set attack speed")) {
+            component.SetMotionSpeedMultipler(450);
+        }
     }
 }
 #endif
