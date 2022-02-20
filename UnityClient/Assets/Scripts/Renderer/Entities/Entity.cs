@@ -747,9 +747,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
     }
 
-    public void LookTo(Vector3 position) {
-        var offset = new Vector2Int((int) position.x, (int) position.z) - new Vector2Int((int) transform.position.x, (int) transform.position.z);
-        Direction = PathFinder.GetDirectionForOffset(offset);
+    public void LookTo(Vector3 targetPosition) {
+        Direction = PathFinder.GetDirectionForOffset(targetPosition, transform.position);
     }
 
     /**

@@ -324,6 +324,16 @@ public class EntityViewer : MonoBehaviour {
             var attackActions = new SpriteMotion[] { SpriteMotion.Attack1, SpriteMotion.Attack2, SpriteMotion.Attack3 };
             var action = DBManager.GetWeaponAction((Job) Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.Weapon);
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, attackActions[action]);
+
+            /**
+             * Seems like og client makes entity look diagonally up
+             * when attacking from the sides
+             */
+            if (Entity.Direction == Direction.East) {
+                Entity.Direction = Direction.NorthEast;
+            } else if (Entity.Direction == Direction.West) {
+                Entity.Direction = Direction.NorthWest;
+            }
         } else {
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
         }
