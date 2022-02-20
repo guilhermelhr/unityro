@@ -272,6 +272,10 @@ public class EntityViewer : MonoBehaviour {
             currentMotion = (int)(stateCnt / motionSpeed % animCount);
         }
 
+        if (currentMotion <= 0) {
+            currentMotion = 0;
+        }
+
         return (int)currentMotion;
     }
 

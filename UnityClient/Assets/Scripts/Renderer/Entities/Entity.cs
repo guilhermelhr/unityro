@@ -259,7 +259,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             return;
         }
 
-        //InitHead(rendererLayer, bodyViewer);
+        InitHead(rendererLayer, bodyViewer);
         MaybeInitLayer(rendererLayer, bodyViewer, data.Weapon, ViewerType.WEAPON);
         MaybeInitLayer(rendererLayer, bodyViewer, data.Shield, ViewerType.SHIELD, 1);
         MaybeInitLayer(rendererLayer, bodyViewer, data.HeadTop, ViewerType.HEAD_TOP);
