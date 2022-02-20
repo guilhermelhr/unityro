@@ -417,8 +417,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             if (srcEntity != null) {
                 NOTIFY_SKILL2.attackMT = Math.Min(450, NOTIFY_SKILL2.attackMT);
                 NOTIFY_SKILL2.attackMT = Math.Max(1, NOTIFY_SKILL2.attackMT);
-                srcEntity.SetAttackSpeed((ushort) NOTIFY_SKILL2.attackMT);
-
+                
                 if (srcEntity.Type != EntityType.MOB) {
                     // SET DIALOG BOX
                     // srcEntity.dialog.set( ( (SkillInfo[pkt.SKID] && SkillInfo[pkt.SKID].SkillName ) || 'Unknown Skill' ) + ' !!' );
@@ -434,6 +433,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
                         delay = 0
                     }
                 );
+                srcEntity.SetAttackSpeed((ushort) NOTIFY_SKILL2.attackMT);
             }
 
             if (dstEntity != null) {
@@ -731,11 +731,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
             srcEntity.LookTo(dstEntity.transform.position);
         }
 
-        srcEntity.SetAttackSpeed(pkt.sourceSpeed);
         srcEntity.ChangeMotion(
             new EntityViewer.MotionRequest { Motion = SpriteMotion.Attack },
             new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = GameManager.Tick + pkt.sourceSpeed }
         );
+        srcEntity.SetAttackSpeed(pkt.sourceSpeed);
     }
 
     private void OnUseSkillResult(ushort cmd, int size, InPacket packet) {

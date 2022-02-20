@@ -269,7 +269,6 @@ public class EntityViewer : MonoBehaviour {
                 }
             }
         } else {
-            Debug.LogWarning($"stateCnt: {stateCnt} Motion Speed: {motionSpeed} Multipler: {motionSpeedMultiplier} AnimCount: {animCount} Current Motion: {currentMotion}");
             currentMotion = (int)(stateCnt / motionSpeed % animCount);
         }
 
@@ -283,7 +282,9 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private float GetDelay() {
-        if (currentAction.delay >= 100f) {
+        if (currentAction == null) {
+            return 4f;
+        } else if (currentAction.delay >= 100f) {
             return 4f;
         } else {
             return currentAction.delay;
@@ -333,6 +334,7 @@ public class EntityViewer : MonoBehaviour {
         ActionId = newAction;
         AnimationStart = GameManager.Tick;
         previousFrame = 0;
+        motionSpeedMultiplier = 1;
         isAnimationFinished = false;
 
         motionSpeed = GetDelay();
@@ -347,11 +349,14 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void SetMotionSpeedMultipler(int attackMT) {
+        //if (weapon is bow)
         if (attackMT > MAX_ATTACK_SPEED) {
             attackMT = MAX_ATTACK_SPEED;
         }
+        //endif
 
         motionSpeedMultiplier = (float)attackMT / AVERAGE_ATTACK_SPEED;
+        motionSpeed *= motionSpeedMultiplier;
     }
 
     private void InitShadow() {
