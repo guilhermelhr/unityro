@@ -12,8 +12,6 @@ class CastingEffect : MonoBehaviour {
     private PrimitiveCylinderEffect prim;
 
     public static void StartCasting(float duration, string texture, GameObject followTarget) {
-        Debug.Log("Start casting animation");
-
         var go = new GameObject("CastingEffect");
         var cast = go.AddComponent<CastingEffect>();
 
