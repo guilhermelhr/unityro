@@ -3,6 +3,7 @@ using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -39,6 +40,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
     private EntityCanvas Canvas;
     private Camera MainCamera;
     private LayerMask EntityMask;
+    private List<DamageRenderer> DamageNumbers;
 
     private void Awake() {
         DamagePrefab = (GameObject) Resources.Load("Prefabs/Damage");
@@ -46,6 +48,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         EntityManager = FindObjectOfType<EntityManager>();
         PathFinder = FindObjectOfType<PathFinder>();
         EntityMask = LayerMask.GetMask("NPC", "Monsters", "Characters");
+        DamageNumbers = new List<DamageRenderer>();
 
         if (AudioSource == null) {
             AudioSource = gameObject.AddComponent<AudioSource>();
@@ -181,7 +184,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.hair = data.Hair;
         Status.base_level = (uint) data.BaseLevel;
         Status.SkillPoints = (uint) data.SkillPoint;
-        
+
         Status.name = data.Name;
         Status.str = data.Str;
         Status.agi = data.Agi;
@@ -755,7 +758,25 @@ public class Entity : MonoBehaviour, INetworkEntity {
      */
     public void Damage(float amount, double tick, DamageType? damageType = null) {
         var damageRenderer = Instantiate(DamagePrefab).GetComponent<DamageRenderer>();
-        damageRenderer.Display(amount, tick, damageType, this);
+        var delay = damageRenderer.Display(amount, tick, damageType, this);
+
+        if ((damageType & DamageType.COMBO) > 0) {
+            var combos = DamageNumbers.FindAll(it => (it.CurrentType & DamageType.COMBO) > 0);
+            combos.ForEach(it => Destroy(it.gameObject));
+            DamageNumbers.RemoveAll(it => (it.CurrentType & DamageType.COMBO) > 0);
+        }
+
+        DamageNumbers.Add(damageRenderer);
+        StartCoroutine(DestroyDamageRendererAfterDelay(damageRenderer, delay));
+    }
+
+    private IEnumerator DestroyDamageRendererAfterDelay(DamageRenderer renderer, float delay) {
+        yield return new WaitForSeconds(delay);
+        if (DamageNumbers.Contains(renderer)) {
+            Destroy(renderer.gameObject);
+            DamageNumbers.Remove(renderer);
+        }
+        yield return null;
     }
 
     internal void RequestMove(int x, int y, int dir) {
