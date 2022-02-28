@@ -16,7 +16,7 @@ public class LoginController : MonoBehaviour {
         
         NetworkClient = FindObjectOfType<NetworkClient>();
 
-        NetworkClient.ChangeServer("127.0.0.1", 6900);
+        NetworkClient.ChangeServer("192.168.0.3", 6900);
         NetworkClient.HookPacket(AC.ACCEPT_LOGIN3.HEADER, this.OnLoginResponse);
         usernameField.text = "danilo3";
     }

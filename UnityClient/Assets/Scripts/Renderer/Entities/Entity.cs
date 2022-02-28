@@ -790,4 +790,29 @@ public class Entity : MonoBehaviour, INetworkEntity {
         MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadBottom, ViewerType.HEAD_BOTTOM);
         EntityViewer.Init(reloadSprites: true);
     }
+
+    public int GetDirectionToDegrees()
+    {
+        switch (Direction)
+        {
+            case Direction.South:
+                return 180;
+            case Direction.SouthWest:
+                return 225;
+            case Direction.West:
+                return 270;
+            case Direction.NorthWest:
+                return 315;
+            case Direction.North:
+                return 0;
+            case Direction.NorthEast:
+                return 45;
+            case Direction.East:
+                return 90;
+            case Direction.SouthEast:
+                return 135;
+            default:
+                return 180;
+        }
+    }
 }

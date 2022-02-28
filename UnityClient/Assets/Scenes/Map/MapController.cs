@@ -11,6 +11,7 @@ public class MapController : MonoBehaviour {
     [SerializeField] private Light worldLight;
 
     public MapUiController UIController;
+    public GameEventUI MiniMapController; //Adicionado
 
     private NetworkClient NetworkClient;
     private GameManager GameManager;
@@ -23,6 +24,7 @@ public class MapController : MonoBehaviour {
         }
 
         UIController = FindObjectOfType<MapUiController>();
+        MiniMapController = FindObjectOfType<GameEventUI>(); //Adicionado
         NetworkClient = FindObjectOfType<NetworkClient>();
         GameManager = FindObjectOfType<GameManager>();
         EntityManager = FindObjectOfType<EntityManager>();
