@@ -1,5 +1,6 @@
 using ROIO;
 using System;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,8 @@ public class Minimap : MonoBehaviour
 
     private const int DEFAULT_ZOOM_INDEX = 0;
 
+    private string currentMap;
+
     private float m_fMapPicRealWidht = 0.0f;
     private float m_fMapPicRealHeight = 0.0f;
 
@@ -45,8 +48,22 @@ public class Minimap : MonoBehaviour
     {
         InitializeUI();
 
-        GameEventUI.EventUpdateCurrentMiniMap += OnEventUpdateMap;
+        //GameEventUI.EventUpdateCurrentMiniMap += OnEventUpdateMap;
         GameEventUI.EventUpdateCoordinateMiniMap += OnEventUpdateCoordinateMiniMap;
+    }
+
+    private void Start()
+    {
+        _playerIndicator.texture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/map_arrow.bmp") as Texture2D;
+        Session.OnMapChanged += OnEventUpdateMap;
+    }
+
+    private void Update()
+    {
+        if(currentMap != null && _mapBase.texture == null)
+        {
+            OnEventUpdateMap(currentMap);
+        }
     }
 
     void LateUpdate()
@@ -59,7 +76,7 @@ public class Minimap : MonoBehaviour
 
     void OnDestroy()
     {
-        GameEventUI.EventUpdateCurrentMiniMap -= OnEventUpdateMap;
+        //GameEventUI.EventUpdateCurrentMiniMap -= OnEventUpdateMap;
         GameEventUI.EventUpdateCoordinateMiniMap -= OnEventUpdateCoordinateMiniMap;
     }
 
@@ -70,13 +87,19 @@ public class Minimap : MonoBehaviour
         _btnMinus.onClick.RemoveAllListeners();
         _btnMinus.onClick.AddListener(OnClickMiniMapMinus);
 
-        _playerIndicator.texture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/map_arrow.bmp") as Texture2D;
+        /*
+        Debug.Log("PASSEI AQUI");
+        var arrow = FileManager.Load($"{DBManager.INTERFACE_PATH}map/map_arrow.bmp") as Texture2D;
+        _playerIndicator.texture = arrow;
+        Debug.Log("PLAYER INDICATOR SET");
+        */
     }
 
-    private void OnEventUpdateMap()
+    private void OnEventUpdateMap(string mapName)
     {
         var player = Session.CurrentSession.Entity as Entity;
-        var map = Session.CurrentSession.CurrentMap;
+        currentMap = Path.GetFileNameWithoutExtension(mapName);
+        //var map = Session.CurrentSession.CurrentMap;
 
         if(player == null)
         {
@@ -84,7 +107,7 @@ public class Minimap : MonoBehaviour
             return;
         }
 
-        if(map == null)
+        if(currentMap == null)
         {
             Debug.LogError("MapName is null");
             return;
@@ -92,7 +115,7 @@ public class Minimap : MonoBehaviour
 
         var position = player.transform.position;
 
-        var texture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/{map}.bmp") as Texture2D;
+        var texture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/{currentMap}.bmp") as Texture2D;
         _mapBase.texture = texture;
 
         // Reset de Zoom

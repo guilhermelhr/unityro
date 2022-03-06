@@ -655,7 +655,7 @@ MonoBehaviour:
   _btnMinus: {fileID: 4036448070076734741}
   _btnMinimize: {fileID: 8387390053951712679}
   _coordinates: {fileID: 5844097314136359228}
-  _playerIndicator: {fileID: 0}
+  _playerIndicator: {fileID: 8175937591567261134}
   m_nZoom: 0
   m_fOffSetX: 0
   m_fOffSetY: 0

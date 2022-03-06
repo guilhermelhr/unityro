@@ -23,8 +23,6 @@ public class GridRenderer : MonoBehaviour {
 
         GameManager = FindObjectOfType<GameManager>();
         PathFinder = FindObjectOfType<PathFinder>();
-
-        //transform.localPosition = new Vector3(0.5f, 0f, 0.5f);
     }
 
     public void Start() {

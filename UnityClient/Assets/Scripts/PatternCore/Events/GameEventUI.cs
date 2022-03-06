@@ -1,19 +1,23 @@
 ﻿using System;
 using UnityEngine;
 
-public class GameEventUI : SingletonDontDestroy<GameEventUI>
+public class GameEventUI : SingletonMonoBehavior<GameEventUI>
 {
-    public static event Action EventUpdateCurrentMiniMap;
-    public static event Action EventUpdateCoordinateMiniMap;
+    public static Action EventUpdateCurrentMiniMap;
+    public static Action EventUpdateCoordinateMiniMap;
 
     protected override void Awake()
     {
         base.Awake();
     }
 
-    private void Update()
+    private void Start()
     {
         EventUpdateCurrentMiniMap?.Invoke();
+    }
+
+    private void Update()
+    {
         EventUpdateCoordinateMiniMap?.Invoke();
     }
 }
