@@ -22,6 +22,9 @@ public class Minimap : MonoBehaviour
     [SerializeField] private int m_nCenterX = 0;
     [SerializeField] private int m_nCenterY = 0;
 
+    private Texture2D MapThumbTexture;
+    private Texture2D PlayerIndicatorTexture;
+
     private const int DEFAULT_ZOOM_INDEX = 0;
 
     private string currentMap;
@@ -54,16 +57,19 @@ public class Minimap : MonoBehaviour
 
     private void Start()
     {
-        _playerIndicator.texture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/map_arrow.bmp") as Texture2D;
+        PlayerIndicatorTexture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/map_arrow.bmp") as Texture2D;
+        _playerIndicator.texture = PlayerIndicatorTexture;
         Session.OnMapChanged += OnEventUpdateMap;
     }
 
     private void Update()
     {
+        /*
         if(currentMap != null && _mapBase.texture == null)
         {
             OnEventUpdateMap(currentMap);
         }
+        */
     }
 
     void LateUpdate()
@@ -78,6 +84,7 @@ public class Minimap : MonoBehaviour
     {
         //GameEventUI.EventUpdateCurrentMiniMap -= OnEventUpdateMap;
         GameEventUI.EventUpdateCoordinateMiniMap -= OnEventUpdateCoordinateMiniMap;
+        Session.OnMapChanged -= OnEventUpdateMap;
     }
 
     void InitializeUI()
@@ -115,8 +122,8 @@ public class Minimap : MonoBehaviour
 
         var position = player.transform.position;
 
-        var texture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/{currentMap}.bmp") as Texture2D;
-        _mapBase.texture = texture;
+        MapThumbTexture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/{currentMap}.bmp") as Texture2D;
+        _mapBase.texture = MapThumbTexture;
 
         // Reset de Zoom
         m_nZoom = DEFAULT_ZOOM_INDEX;
@@ -134,12 +141,12 @@ public class Minimap : MonoBehaviour
     private void OnEventUpdateCoordinateMiniMap()
     {
         var player = Session.CurrentSession.Entity as Entity;
-        SetCoordinateMiniMap(player.transform.position.x, player.transform.position.y);
+        SetCoordinateMiniMap(player.transform.position.x, player.transform.position.z);
     }
 
-    private void SetCoordinateMiniMap(float x, float y)
+    private void SetCoordinateMiniMap(float x, float z)
     {
-        _coordinates.text = $"{(int)x} {(int)y}";
+        _coordinates.text = $"{(int)x} {(int)z}";
     }
 
     private void UpdatePlayerArrow()

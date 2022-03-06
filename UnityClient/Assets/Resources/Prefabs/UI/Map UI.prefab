@@ -627,6 +627,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HotkeyBar
       objectReference: {fileID: 0}
+    - target: {fileID: 7790693438974142024, guid: f4f089f242e01d042b83a62fbe1da6d3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9108083482420084656, guid: f4f089f242e01d042b83a62fbe1da6d3, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1009,11 +1013,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5846416391948838094, guid: 7faaac5b9aaa7324c8f2c74c4e40413c, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5846416391948838094, guid: 7faaac5b9aaa7324c8f2c74c4e40413c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5846416391948838094, guid: 7faaac5b9aaa7324c8f2c74c4e40413c, type: 3}
       propertyPath: m_AnchorMin.y
@@ -1030,6 +1034,10 @@ PrefabInstance:
     - target: {fileID: 5846416392466237706, guid: 7faaac5b9aaa7324c8f2c74c4e40413c, type: 3}
       propertyPath: m_Name
       value: ChatBox
+      objectReference: {fileID: 0}
+    - target: {fileID: 5846416392466237706, guid: 7faaac5b9aaa7324c8f2c74c4e40413c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5846416392466237707, guid: 7faaac5b9aaa7324c8f2c74c4e40413c, type: 3}
       propertyPath: m_Pivot.x
@@ -1125,7 +1133,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5846416393355209943, guid: 7faaac5b9aaa7324c8f2c74c4e40413c, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5846416393543796949, guid: 7faaac5b9aaa7324c8f2c74c4e40413c, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3788,9 +3796,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5602318628702151008}
     m_Modifications:
+    - target: {fileID: 618733067811230946, guid: d6b020824244cfa4cab641784ff3f286, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1599274389323076166, guid: d6b020824244cfa4cab641784ff3f286, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3851326990435014917, guid: d6b020824244cfa4cab641784ff3f286, type: 3}
       propertyPath: m_Name
       value: Minimap
+      objectReference: {fileID: 0}
+    - target: {fileID: 3851326990435014917, guid: d6b020824244cfa4cab641784ff3f286, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5227313680413583705, guid: d6b020824244cfa4cab641784ff3f286, type: 3}
       propertyPath: m_IsActive
