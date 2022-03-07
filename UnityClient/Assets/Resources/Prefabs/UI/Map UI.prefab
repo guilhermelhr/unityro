@@ -3804,6 +3804,14 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1923972943814623742, guid: d6b020824244cfa4cab641784ff3f286, type: 3}
+      propertyPath: m_nZoom
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1923972943814623742, guid: d6b020824244cfa4cab641784ff3f286, type: 3}
+      propertyPath: m_nCenterX
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3851326990435014917, guid: d6b020824244cfa4cab641784ff3f286, type: 3}
       propertyPath: m_Name
       value: Minimap

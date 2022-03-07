@@ -59,17 +59,15 @@ public class Minimap : MonoBehaviour
     {
         PlayerIndicatorTexture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/map_arrow.bmp") as Texture2D;
         _playerIndicator.texture = PlayerIndicatorTexture;
-        Session.OnMapChanged += OnEventUpdateMap;
+        GameManager.OnMapLoaded += OnEventUpdateMap;
     }
 
     private void Update()
     {
-        /*
         if(currentMap != null && _mapBase.texture == null)
         {
-            OnEventUpdateMap(currentMap);
+            OnEventUpdateMap();
         }
-        */
     }
 
     void LateUpdate()
@@ -84,7 +82,7 @@ public class Minimap : MonoBehaviour
     {
         //GameEventUI.EventUpdateCurrentMiniMap -= OnEventUpdateMap;
         GameEventUI.EventUpdateCoordinateMiniMap -= OnEventUpdateCoordinateMiniMap;
-        Session.OnMapChanged -= OnEventUpdateMap;
+        GameManager.OnMapLoaded -= OnEventUpdateMap;
     }
 
     void InitializeUI()
@@ -102,11 +100,10 @@ public class Minimap : MonoBehaviour
         */
     }
 
-    private void OnEventUpdateMap(string mapName)
+    private void OnEventUpdateMap()
     {
         var player = Session.CurrentSession.Entity as Entity;
-        currentMap = Path.GetFileNameWithoutExtension(mapName);
-        //var map = Session.CurrentSession.CurrentMap;
+        currentMap = Session.CurrentSession.CurrentMap;
 
         if(player == null)
         {
@@ -128,13 +125,16 @@ public class Minimap : MonoBehaviour
         // Reset de Zoom
         m_nZoom = DEFAULT_ZOOM_INDEX;
 
+        m_fMapPicRealWidht = _mapBase.rectTransform.rect.width;
+        m_fMapPicRealHeight = _mapBase.rectTransform.rect.height;
+
         m_f1MaskWidth = _mask.rectTransform.sizeDelta.x;
         m_f1MaskHeight = _mask.rectTransform.sizeDelta.y;
 
         m_nMapWidth = (int)MapRenderer.width;
         m_nMapHeight = (int)MapRenderer.height;
 
-        SetCoordinateMiniMap(position.x, position.y);
+        SetCoordinateMiniMap(position.x, position.z);
         UpdateMiniMapOffSet(true);
     }
 
@@ -162,10 +162,15 @@ public class Minimap : MonoBehaviour
         // Get the current position of the player
         var playerPosition = player.transform.position;
 
+        if(playerPosition.x == 0 && playerPosition.z == 0)
+        {
+            return;
+        }
+
         // MiniMap point
         int minimapPointX = 0;
         int minimapPointY = 0;
-        ConvertMapXYToMiniMapXY((int)playerPosition.x, (int)playerPosition.y,
+        ConvertMapXYToMiniMapXY((int)playerPosition.x, (int)playerPosition.z,
             ref minimapPointX, ref minimapPointY);
 
         // Update the player arrow in the minimap
@@ -178,7 +183,7 @@ public class Minimap : MonoBehaviour
         int vtW = 0;
         int vtH = 0;
 
-        ConvertMapXYToMiniMapXY((int) playerPosition.x, (int) playerPosition.y,
+        ConvertMapXYToMiniMapXY((int) playerPosition.x, (int) playerPosition.z,
             ref vtW, ref vtH);
         SetCenterPoint(vtW, vtH);
         UpdateMiniMapOffSet(false);
@@ -203,7 +208,7 @@ public class Minimap : MonoBehaviour
 
         ConvertMapXYToMiniMapXY(
             (int)player.transform.position.x,
-            (int)player.transform.position.y,
+            (int)player.transform.position.z,
             ref w1, ref h1);
 
         if (zoomState)
@@ -286,6 +291,6 @@ public class Minimap : MonoBehaviour
     }
 
     private float ConvertRealPixelPointY(float f1Y) {
-        return f1Y * m_fZoomValue[m_nZoom] + m_fOffSetX;
+        return f1Y * m_fZoomValue[m_nZoom] + m_fOffSetY;
     }
 }
