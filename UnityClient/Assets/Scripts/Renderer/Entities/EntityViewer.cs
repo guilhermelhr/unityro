@@ -3,6 +3,7 @@ using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -28,6 +29,7 @@ public class EntityViewer : MonoBehaviour {
     private Dictionary<int, SpriteRenderer> Layers = new Dictionary<int, SpriteRenderer>();
     private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
 
+    private PaletteData CurrentPaletteData;
     private Sprite[] sprites;
     private ACT currentACT;
     private SPR currentSPR;
@@ -46,7 +48,7 @@ public class EntityViewer : MonoBehaviour {
         currentSPR = spr;
         currentACT = act;
 
-        currentSPR.SwitchToRGBA();
+        //currentSPR.SwitchToRGBA();
         sprites = currentSPR.GetSprites();
     }
 
@@ -58,6 +60,11 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public void Init(bool reloadSprites = false) {
+        CurrentPaletteData = new PaletteData {
+            hairColor = Entity.Status.hair_color,
+            hair = Entity.Status.hair,
+            clothesColor = Entity.Status.clothes_color
+        };
         meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
 
         if (Entity.Type == EntityType.WARP) {
@@ -66,6 +73,7 @@ public class EntityViewer : MonoBehaviour {
 
         if (currentSPR == null || reloadSprites) {
             string path = "";
+            string palettePath = "";
 
             switch (ViewerType) {
                 case ViewerType.BODY:
@@ -73,25 +81,28 @@ public class EntityViewer : MonoBehaviour {
                     break;
                 case ViewerType.HEAD:
                     path = DBManager.GetHeadPath(Entity.Status.jobId, Entity.Status.hair, Entity.Status.sex);
+                    if (Entity.Status.hair_color > 0) {
+                        palettePath = DBManager.GetHeadPalPath(Entity.Status.hair, Entity.Status.hair_color, Entity.Status.sex);
+                    }
                     break;
                 case ViewerType.WEAPON:
-                    currentViewID = Entity.EquipInfo.Weapon;
+                    currentViewID = Entity.EquipInfo.Weapon.ViewID;
                     path = DBManager.GetWeaponPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
                     break;
                 case ViewerType.SHIELD:
-                    currentViewID = Entity.EquipInfo.Weapon;
+                    currentViewID = Entity.EquipInfo.Shield.ViewID;
                     path = DBManager.GetShieldPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_TOP:
-                    currentViewID = Entity.EquipInfo.HeadTop;
+                    currentViewID = Entity.EquipInfo.HeadTop.ViewID;
                     path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_MID:
-                    currentViewID = Entity.EquipInfo.HeadMid;
+                    currentViewID = Entity.EquipInfo.HeadMid.ViewID;
                     path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_BOTTOM:
-                    currentViewID = Entity.EquipInfo.HeadBottom;
+                    currentViewID = Entity.EquipInfo.HeadBottom.ViewID;
                     path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
             }
@@ -112,7 +123,23 @@ public class EntityViewer : MonoBehaviour {
                 currentSPR = FileManager.Load(path + ".spr") as SPR;
                 currentACT = FileManager.Load(path + ".act") as ACT;
 
-                currentSPR.SwitchToRGBA();
+                if (palettePath.Length > 0) {
+                    try {
+                        var currentPalette = FileManager.Load(palettePath) as byte[];
+                        if (currentPalette != null && currentPalette.Length > 0) {
+                            currentSPR.SwitchToRGBA(currentPalette);
+                        }
+                    } catch (Exception e) {
+                        currentSPR.SwitchToRGBA();
+                        Debug.LogError(e);
+                        Debug.LogError($"Could not load palettes for: {palettePath}");
+                    }
+                } else {
+                    currentSPR.SwitchToRGBA();
+                }
+
+                //currentSPR.SwitchToRGBA();
+                currentSPR.Compile();
                 sprites = currentSPR.GetSprites();
             } catch {
                 Debug.LogError($"Could not load sprites for: {path}");
@@ -143,6 +170,12 @@ public class EntityViewer : MonoBehaviour {
                 return;
             }
         }
+        
+        if (CheckForEntityViewsUpdates()) {
+            Init(reloadSprites: true);
+            return;
+        }
+
         var cameraDirection = (int) (CharacterCamera.ROCamera?.Direction ?? 0);
         var entityDirection = (int) Entity.Direction + 8;
         currentActionIndex = (ActionId + (cameraDirection + entityDirection) % 8) % currentACT.actions.Length;
@@ -156,18 +189,32 @@ public class EntityViewer : MonoBehaviour {
         UpdateAnchorPoints();
     }
 
+    private bool CheckForEntityViewsUpdates() {
+        if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD) {
+            return FindCurrentViewID() != currentViewID;
+        }
+
+        if (Entity.Status.hair != CurrentPaletteData.hair ||
+            Entity.Status.hair_color != CurrentPaletteData.hairColor ||
+            Entity.Status.clothes_color != CurrentPaletteData.clothesColor) {
+            return true;
+        }
+
+        return false;
+    }
+
     private int FindCurrentViewID() {
         switch (ViewerType) {
             case ViewerType.WEAPON:
-                return Entity.EquipInfo.Weapon;
+                return Entity.EquipInfo.Weapon.ViewID;
             case ViewerType.SHIELD:
-                return Entity.EquipInfo.Shield;
+                return Entity.EquipInfo.Shield.ViewID;
             case ViewerType.HEAD_TOP:
-                return Entity.EquipInfo.HeadTop;
+                return Entity.EquipInfo.HeadTop.ViewID;
             case ViewerType.HEAD_MID:
-                return Entity.EquipInfo.HeadMid;
+                return Entity.EquipInfo.HeadMid.ViewID;
             case ViewerType.HEAD_BOTTOM:
-                return Entity.EquipInfo.HeadBottom;
+                return Entity.EquipInfo.HeadBottom.ViewID;
             default:
                 return -1;
         }
@@ -343,7 +390,7 @@ public class EntityViewer : MonoBehaviour {
         int newAction;
         if (motion.Motion == SpriteMotion.Attack) {
             var attackActions = new SpriteMotion[] { SpriteMotion.Attack1, SpriteMotion.Attack2, SpriteMotion.Attack3 };
-            var action = DBManager.GetWeaponAction((Job) Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.Weapon);
+            var action = DBManager.GetWeaponAction((Job) Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.Weapon, Entity.EquipInfo.Shield);
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, attackActions[action]);
         } else {
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
@@ -376,6 +423,7 @@ public class EntityViewer : MonoBehaviour {
         SPR sprite = FileManager.Load("data/sprite/shadow.spr") as SPR;
 
         sprite.SwitchToRGBA();
+        sprite.Compile();
 
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite.GetSprites()[0];
@@ -395,5 +443,11 @@ public class EntityViewer : MonoBehaviour {
     public struct MotionRequest {
         public SpriteMotion Motion;
         public double delay;
+    }
+
+    public struct PaletteData {
+        public int hair;
+        public int hairColor;
+        public int clothesColor;
     }
 }

@@ -142,8 +142,6 @@ namespace ROIO {
 
                         case "spr":
                             SPR spr = SpriteLoader.Load(br);
-                            spr.SwitchToRGBA();
-                            spr.Compile();
                             spr.filename = file;
                             return spr;
                         case "str":
@@ -172,6 +170,8 @@ namespace ROIO {
                             break;
                         case "json":
                             return JObject.Parse(Encoding.UTF8.GetString(br.ToArray()));
+                        case "pal":
+                            return br.ToArray();
                         default:
                             throw new Exception($"Unsuported file format: {ext} for file {file}");
                     }

@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour {
         }
 
         AudioSource.clip = request.asset as AudioClip;
-        AudioSource.Play();
+        //AudioSource.Play();
     }
 
     public async Task BeginMapLoading(string mapName) {

@@ -130,13 +130,16 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.char_id = GID;
         Status.account_id = AID;
 
+        Status.hair_color = data.HairColor;
+        Status.clothes_color = data.ClothesColor;
+
         EquipInfo = new EntityEquipInfo {
-            Weapon = (short) data.Weapon,
-            Shield = (short) data.Shield,
-            HeadTop = (short) data.Accessory2,
-            HeadBottom = (short) data.Accessory,
-            HeadMid = (short) data.Accessory3,
-            Robe = (short) data.Robe
+            Weapon = new EquipmentInfo { ViewID = (short) data.Weapon },
+            Shield = new EquipmentInfo { ViewID = (short) data.Shield },
+            HeadTop = new EquipmentInfo { ViewID = (short) data.Accessory2 },
+            HeadBottom = new EquipmentInfo { ViewID = (short) data.Accessory },
+            HeadMid = new EquipmentInfo { ViewID = (short) data.Accessory3 },
+            Robe = new EquipmentInfo { ViewID = (short) data.Robe }
         };
 
         gameObject.transform.position = new Vector3(data.PosDir[0], PathFinder.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
@@ -185,6 +188,9 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.base_level = (uint) data.BaseLevel;
         Status.SkillPoints = (uint) data.SkillPoint;
 
+        Status.hair_color = data.HairColor;
+        Status.clothes_color = data.ClothesColor;
+
         Status.name = data.Name;
         Status.str = data.Str;
         Status.agi = data.Agi;
@@ -196,12 +202,12 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.sex = (byte) data.Sex;
 
         EquipInfo = new EntityEquipInfo {
-            Weapon = data.Weapon,
-            Shield = data.Shield,
-            HeadTop = data.Accessory2,
-            HeadBottom = data.Accessory,
-            HeadMid = data.Accessory3,
-            Robe = (short) data.Robe
+            Weapon = new EquipmentInfo { ViewID = (short) data.Weapon },
+            Shield = new EquipmentInfo { ViewID = (short) data.Shield },
+            HeadTop = new EquipmentInfo { ViewID = (short) data.Accessory2 },
+            HeadBottom = new EquipmentInfo { ViewID = (short) data.Accessory },
+            HeadMid = new EquipmentInfo { ViewID = (short) data.Accessory3 },
+            Robe = new EquipmentInfo { ViewID = (short) data.Robe }
         };
 
         SetupViewer(EquipInfo, rendererLayer);
@@ -260,11 +266,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
 
         InitHead(rendererLayer, bodyViewer);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.Weapon, ViewerType.WEAPON);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.Shield, ViewerType.SHIELD, 1);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadTop, ViewerType.HEAD_TOP);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadMid, ViewerType.HEAD_MID);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadBottom, ViewerType.HEAD_BOTTOM);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.Weapon.ViewID, ViewerType.WEAPON);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.Shield.ViewID, ViewerType.SHIELD, 1);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadTop.ViewID, ViewerType.HEAD_TOP);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadMid.ViewID, ViewerType.HEAD_MID);
+        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadBottom.ViewID, ViewerType.HEAD_BOTTOM);
     }
 
     private void SetupCanvas() {
@@ -347,11 +353,15 @@ public class Entity : MonoBehaviour, INetworkEntity {
         yield return null;
     }
 
-    internal void OnSpriteChange(int type, short value, short value2) {
+    internal void OnSpriteChange(ZC.SPRITE_CHANGE2.LookType type, short value, short value2) {
         switch (type) {
-            case 0:
+            case ZC.SPRITE_CHANGE2.LookType.LOOK_BASE:
                 Status.jobId = value;
                 // update info window
+                break;
+            case ZC.SPRITE_CHANGE2.LookType.LOOK_WEAPON:
+
+
                 break;
             default:
                 break;
@@ -804,11 +814,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     public void UpdateSprites() {
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Weapon, ViewerType.WEAPON);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Shield, ViewerType.SHIELD);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadTop, ViewerType.HEAD_TOP);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadMid, ViewerType.HEAD_MID);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadBottom, ViewerType.HEAD_BOTTOM);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Weapon.ViewID, ViewerType.WEAPON);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Shield.ViewID, ViewerType.SHIELD);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadTop.ViewID, ViewerType.HEAD_TOP);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadMid.ViewID, ViewerType.HEAD_MID);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadBottom.ViewID, ViewerType.HEAD_BOTTOM);
         EntityViewer.Init(reloadSprites: true);
     }
 }
