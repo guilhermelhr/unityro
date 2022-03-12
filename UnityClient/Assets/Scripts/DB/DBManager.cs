@@ -177,6 +177,11 @@ public class DBManager {
         return $"data/palette/¸Ó¸®/¸Ó¸®{id}_{SexTable[sex]}_{palId}.pal";
     }
 
+    public static string GetBodyPalPath(int job, int palId, int sex) {
+        var isPC = ClassTable.TryGetValue(job.ToString(), out var jobPath);
+        return $"data/palette/¸ö/{jobPath}_{SexTable[sex]}_{palId}.pal";
+    }
+
     public static string GetShieldPath(int id, int job, int sex) {
         if (id == 0) {
             return null;

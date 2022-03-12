@@ -66,7 +66,7 @@ namespace ROIO {
             }
         }
 
-        public static object Load(string file) {
+        public static object Load(string file, bool ignoreCache = false) {
             file = file.Trim();
             file = file.Replace("\\", "/");
 
@@ -79,8 +79,9 @@ namespace ROIO {
 
             if (!string.IsNullOrEmpty(file)) {
                 string ext = rext.Match(file).Value.Substring(1).ToLower();
+
                 if (!string.IsNullOrEmpty(ext)) {
-                    if (FileCache.Has(file)) {
+                    if (FileCache.Has(file) && !ignoreCache) {
                         return FileCache.Get(file, ext);
                     } else {
                         object data = DoLoad(file, ext);

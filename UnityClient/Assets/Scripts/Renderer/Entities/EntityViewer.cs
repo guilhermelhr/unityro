@@ -78,6 +78,9 @@ public class EntityViewer : MonoBehaviour {
             switch (ViewerType) {
                 case ViewerType.BODY:
                     path = DBManager.GetBodyPath(Entity.Status.jobId, Entity.Status.sex);
+                    if (Entity.Status.clothes_color > 0) {
+                        palettePath = DBManager.GetBodyPalPath(Entity.Status.jobId, Entity.Status.clothes_color, Entity.Status.sex);
+                    }
                     break;
                 case ViewerType.HEAD:
                     path = DBManager.GetHeadPath(Entity.Status.jobId, Entity.Status.hair, Entity.Status.sex);
@@ -120,8 +123,8 @@ public class EntityViewer : MonoBehaviour {
             }
 
             try {
-                currentSPR = FileManager.Load(path + ".spr") as SPR;
-                currentACT = FileManager.Load(path + ".act") as ACT;
+                currentSPR = FileManager.Load(path + ".spr", true) as SPR;
+                currentACT = FileManager.Load(path + ".act", true) as ACT;
 
                 if (palettePath.Length > 0) {
                     try {
@@ -138,7 +141,6 @@ public class EntityViewer : MonoBehaviour {
                     currentSPR.SwitchToRGBA();
                 }
 
-                //currentSPR.SwitchToRGBA();
                 currentSPR.Compile();
                 sprites = currentSPR.GetSprites();
             } catch {
