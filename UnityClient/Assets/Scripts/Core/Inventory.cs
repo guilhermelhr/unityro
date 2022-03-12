@@ -59,7 +59,8 @@ public class Inventory {
 
     public void UpdateItem(short index, short count) {
         Items.TryGetValue(index, out ItemInfo item);
-        if (item == null) return;
+        if (item == null)
+            return;
 
         item.amount = count;
 
@@ -71,43 +72,72 @@ public class Inventory {
 
     public void TakeOffItem(int index, int equipLocation) {
         Items.TryGetValue(index, out ItemInfo item);
-        if (item == null) return;
+        if (item == null)
+            return;
         var entity = Session.CurrentSession.Entity as Entity;
 
         item.wearState = 0;
 
-        if ((equipLocation & (int)EquipLocation.HEAD_TOP) > 0) entity.EquipInfo.HeadTop = 0;
-        if ((equipLocation & (int)EquipLocation.HEAD_MID) > 0) entity.EquipInfo.HeadMid = 0;
-        if ((equipLocation & (int)EquipLocation.HEAD_BOTTOM) > 0) entity.EquipInfo.HeadBottom = 0;
-        if ((equipLocation & (int)EquipLocation.GARMENT) > 0) entity.EquipInfo.Robe = 0;
-        if ((equipLocation & (int)EquipLocation.WEAPON) > 0) entity.EquipInfo.Weapon = 0;
-        if ((equipLocation & (int)EquipLocation.SHIELD) > 0) entity.EquipInfo.Shield = 0;
+        if ((equipLocation & (int) EquipmentLocation.HEAD_TOP) > 0)
+            entity.EquipInfo.HeadTop = null;
+        if ((equipLocation & (int) EquipmentLocation.HEAD_MID) > 0)
+            entity.EquipInfo.HeadMid = null;
+        if ((equipLocation & (int) EquipmentLocation.HEAD_BOTTOM) > 0)
+            entity.EquipInfo.HeadBottom = null;
+        if ((equipLocation & (int) EquipmentLocation.GARMENT) > 0)
+            entity.EquipInfo.Robe = null;
+        if ((equipLocation & (int) EquipmentLocation.WEAPON) > 0)
+            entity.EquipInfo.Weapon = null;
+        if ((equipLocation & (int) EquipmentLocation.SHIELD) > 0)
+            entity.EquipInfo.Shield = null;
     }
 
-    public void EquipItem(short index, int equipLocation) {
+    public void EquipItem(short index, int equipLocation, short viewID) {
         Items.TryGetValue(index, out ItemInfo item);
-        if (item == null) return;
-        var viewID = (short)item.item.ClassNum;
+        if (item == null || viewID != item.viewID)
+            return;
+
         var entity = Session.CurrentSession.Entity as Entity;
 
-        if ((equipLocation & (int)EquipLocation.HEAD_TOP) > 0) entity.EquipInfo.HeadTop = viewID;
-        if ((equipLocation & (int)EquipLocation.HEAD_MID) > 0) entity.EquipInfo.HeadMid = viewID;
-        if ((equipLocation & (int)EquipLocation.HEAD_BOTTOM) > 0) entity.EquipInfo.HeadBottom = viewID;
-        if ((equipLocation & (int)EquipLocation.GARMENT) > 0) entity.EquipInfo.Robe = viewID;
-
-        if ((equipLocation & (int)EquipLocation.WEAPON) > 0) {
-            entity.EquipInfo.Weapon = viewID;
-        } else if ((equipLocation & (int)EquipLocation.SHIELD) > 0) {
-            entity.EquipInfo.Shield = viewID;
-        }
+        UpdateEntityEquipInfo(equipLocation, viewID, entity);
 
         item.wearState = equipLocation;
 
-        if (item.itemType == (int)ItemType.AMMO) {
+        if (item.itemType == (int) ItemType.AMMO) {
             MapUiController.Instance.EquipmentWindow.EquipAmmo(item);
         } else {
-            Session.CurrentSession.Entity.UpdateSprites();
+            entity.UpdateSprites();
             MapUiController.Instance.UpdateEquipment();
+        }
+    }
+
+    public void UpdateEntityEquipInfo(int equipLocation, short viewID, Entity entity) {
+        if ((equipLocation & (int) EquipmentLocation.HEAD_TOP) > 0)
+            entity.EquipInfo.HeadTop = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.HEAD_TOP };
+        if ((equipLocation & (int) EquipmentLocation.HEAD_MID) > 0)
+            entity.EquipInfo.HeadMid = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.HEAD_MID };
+        if ((equipLocation & (int) EquipmentLocation.HEAD_BOTTOM) > 0)
+            entity.EquipInfo.HeadBottom = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.HEAD_BOTTOM };
+        if ((equipLocation & (int) EquipmentLocation.GARMENT) > 0)
+            entity.EquipInfo.Robe = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.GARMENT };
+
+        if (IsLocation(equipLocation, EquipmentLocation.SHIELD) && !IsLocation(equipLocation, EquipmentLocation.WEAPON)) { //shield only
+            entity.EquipInfo.Shield = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.SHIELD };
+        } else if (IsLocation(equipLocation, EquipmentLocation.SHIELD) && IsLocation(equipLocation, EquipmentLocation.WEAPON)) { //two handed weapons (bow etc)
+            entity.EquipInfo.Shield = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.SHIELD };
+            entity.EquipInfo.Weapon = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.WEAPON };
+        } else if (IsLocation(equipLocation, EquipmentLocation.SHIELD) || IsLocation(equipLocation, EquipmentLocation.WEAPON)) {
+            /**
+             * If item can be equipped in any hand, we first check for the right hand
+             * then we always switch the others on the left hand
+             */
+            if (entity.EquipInfo.Weapon != null) {
+                entity.EquipInfo.Shield = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.SHIELD };
+            } else {
+                entity.EquipInfo.Weapon = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.WEAPON };
+            }
+        } else {
+            entity.EquipInfo.Weapon = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.WEAPON };
         }
     }
 
@@ -130,4 +160,6 @@ public class Inventory {
             index = index
         }.Send();
     }
+
+    public static bool IsLocation(int location, EquipmentLocation isThis) => (location & (int) isThis) > 0;
 }

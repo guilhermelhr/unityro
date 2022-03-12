@@ -7,20 +7,26 @@ public class NormalEquipmentWindow : MonoBehaviour {
     public List<UIEquipSlot> slots;
 
     public void UpdateEquipment() {
-        var inventory = (Session.CurrentSession.Entity as Entity).Inventory;
+        var entity = (Session.CurrentSession.Entity as Entity);
+        var inventory = entity.Inventory;
         if (inventory == null || inventory.IsEmpty) return;
 
-        Dictionary<EquipLocation, UIEquipSlot> slotDictionary = slots.ToDictionary(it => it.location);
-        Dictionary<int, ItemInfo> equippedItems = inventory.ItemList.Where(IsItemEquipped).ToDictionary(it => it.location);
+        Dictionary<EquipmentLocation, UIEquipSlot> slotDictionary = slots.ToDictionary(it => it.location);
+        Dictionary<int, ItemInfo> equippedItemsDict = inventory.ItemList.Where(IsItemEquipped).ToDictionary(it => it.location);
 
         slotDictionary.Values.ToList().ForEach(slot => slot.SetItem(null));
-        foreach (var itemKey in equippedItems.Keys) {
+        foreach (var itemKey in equippedItemsDict.Keys) {
+            var item = equippedItemsDict[itemKey];
+            inventory.UpdateEntityEquipInfo(item.wearState, item.viewID, entity);
+
             foreach(var slotKey in slotDictionary.Keys) {
                 if ((itemKey & (int)slotKey) > 0) { 
-                    slotDictionary[slotKey].SetItem(equippedItems[itemKey]);
+                    slotDictionary[slotKey].SetItem(equippedItemsDict[itemKey]);
                 }
             }
         }
+
+        entity.UpdateSprites();
     }
 
     private bool IsItemEquipped(ItemInfo it) {
@@ -30,10 +36,10 @@ public class NormalEquipmentWindow : MonoBehaviour {
     }
 
     internal void UnequipAmmo() {
-        slots.Find(it => it.location == EquipLocation.AMMO).SetItem(null);
+        slots.Find(it => it.location == EquipmentLocation.AMMO).SetItem(null);
     }
 
     public void EquipAmmo(ItemInfo item) {
-        slots.Find(it => it.location == EquipLocation.AMMO).SetItem(item);
+        slots.Find(it => it.location == EquipmentLocation.AMMO).SetItem(item);
     }
 }

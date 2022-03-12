@@ -41,6 +41,9 @@ public class CursorRenderer : MonoBehaviour {
 
         tick = Time.deltaTime;
 
+        spr.SwitchToRGBA();
+        spr.Compile();
+
         FlipTextures();
         SetAction(CursorAction.DEFAULT, true);
     }

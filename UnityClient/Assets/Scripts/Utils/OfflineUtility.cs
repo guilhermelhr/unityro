@@ -19,7 +19,7 @@ public class OfflineUtility : MonoBehaviour {
     }
 
     void Start() {
-        GameManager.BeginMapLoading(MapName);
+        //GameManager.BeginMapLoading(MapName);
         SpawnCharacter();
         MapLoadingTimes = new List<long>();
     }
@@ -33,6 +33,8 @@ public class OfflineUtility : MonoBehaviour {
             Weapon = 0,
             Speed = 150,
             Hair = 1,
+            HairColor = 4,
+            ClothesColor = 2,
             MaxHP = 100,
             HP = 100,
             MaxSP = 50,

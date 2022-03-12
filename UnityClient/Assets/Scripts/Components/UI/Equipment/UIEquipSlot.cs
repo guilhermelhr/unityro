@@ -6,7 +6,7 @@ public class UIEquipSlot : GenericUIItem {
 
     public RawImage icon;
     public TextMeshProUGUI itemName;
-    public EquipLocation location;
+    public EquipmentLocation location;
 
     public void SetItem(ItemInfo itemInfo) {
         this.itemInfo = itemInfo;
