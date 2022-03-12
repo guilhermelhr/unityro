@@ -1,16 +1,11 @@
 ﻿using System;
 
 [Serializable]
-public class EntityEquipInfo {
-    public EquipmentInfo Weapon; 
-    public EquipmentInfo Shield; 
-    public EquipmentInfo HeadTop; 
-    public EquipmentInfo HeadBottom; 
-    public EquipmentInfo HeadMid; 
-    public EquipmentInfo Robe; 
-} 
-
-public class EquipmentInfo {
-    public short ViewID;
-    public EquipmentLocation EquipmentLocation;
+public struct EntityEquipInfo {
+    public short Weapon; 
+    public short Shield; 
+    public short HeadTop; 
+    public short HeadBottom; 
+    public short HeadMid; 
+    public short Robe; 
 }

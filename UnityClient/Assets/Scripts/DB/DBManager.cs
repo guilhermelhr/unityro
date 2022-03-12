@@ -44,9 +44,9 @@ public class DBManager {
         return $"{INTERFACE_PATH}collection/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.bmp";
     }
 
-    public static int GetWeaponAction(Job job, int sex, EquipmentInfo weapon, EquipmentInfo shield) {
+    public static int GetWeaponAction(Job job, int sex, int weapon, int shield) {
         var jobValue = $"{(ushort) job}";
-        var weaponViewId = $"{GetItemViewID(weapon.ViewID)}";
+        var weaponViewId = $"{GetItemViewID(weapon)}";
 
         try {
             var jobActionValue = WeaponActions[jobValue];
@@ -61,7 +61,7 @@ public class DBManager {
     }
 
     public static int GetWeaponType(int itemID) {
-        var type = WeaponType.INVALID;
+        var type = WeaponType.WEAPONTYPE_NONE;
         if (itemID == 0) {
             type = WeaponType.WEAPONTYPE_NONE;
         } else if (itemID >= 1100 && itemID <= 1199) {

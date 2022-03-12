@@ -89,23 +89,23 @@ public class EntityViewer : MonoBehaviour {
                     }
                     break;
                 case ViewerType.WEAPON:
-                    currentViewID = Entity.EquipInfo.Weapon.ViewID;
+                    currentViewID = Entity.EquipInfo.Weapon;
                     path = DBManager.GetWeaponPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
                     break;
                 case ViewerType.SHIELD:
-                    currentViewID = Entity.EquipInfo.Shield.ViewID;
+                    currentViewID = Entity.EquipInfo.Shield;
                     path = DBManager.GetShieldPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_TOP:
-                    currentViewID = Entity.EquipInfo.HeadTop.ViewID;
+                    currentViewID = Entity.EquipInfo.HeadTop;
                     path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_MID:
-                    currentViewID = Entity.EquipInfo.HeadMid.ViewID;
+                    currentViewID = Entity.EquipInfo.HeadMid;
                     path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_BOTTOM:
-                    currentViewID = Entity.EquipInfo.HeadBottom.ViewID;
+                    currentViewID = Entity.EquipInfo.HeadBottom;
                     path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
             }
@@ -208,15 +208,15 @@ public class EntityViewer : MonoBehaviour {
     private int FindCurrentViewID() {
         switch (ViewerType) {
             case ViewerType.WEAPON:
-                return Entity.EquipInfo.Weapon.ViewID;
+                return Entity.EquipInfo.Weapon;
             case ViewerType.SHIELD:
-                return Entity.EquipInfo.Shield.ViewID;
+                return Entity.EquipInfo.Shield;
             case ViewerType.HEAD_TOP:
-                return Entity.EquipInfo.HeadTop.ViewID;
+                return Entity.EquipInfo.HeadTop;
             case ViewerType.HEAD_MID:
-                return Entity.EquipInfo.HeadMid.ViewID;
+                return Entity.EquipInfo.HeadMid;
             case ViewerType.HEAD_BOTTOM:
-                return Entity.EquipInfo.HeadBottom.ViewID;
+                return Entity.EquipInfo.HeadBottom;
             default:
                 return -1;
         }
