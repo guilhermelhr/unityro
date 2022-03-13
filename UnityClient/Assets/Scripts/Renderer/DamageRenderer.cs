@@ -30,8 +30,12 @@ public class DamageRenderer : MonoBehaviour {
     float angle => MathHelper.ToRadians(_startingAngle);
 
     void Update() {
+        Ready = start < GameManager.Tick;
+
         if (!Ready)
             return;
+
+        textMesh.enabled = Ready;
 
         float perc = (float) ((GameManager.Tick - start) / Delay);
 
@@ -64,7 +68,7 @@ public class DamageRenderer : MonoBehaviour {
         }
 
         var color = new Color();
-        color[3] = 1.0f;
+        color[3] = 0f;
         Delay = 1500;
         start = tick;
 
@@ -86,7 +90,7 @@ public class DamageRenderer : MonoBehaviour {
         }
 
         textMesh.color = color;
-        Ready = true;
+        Ready = false;
 
         stringBuilder.Append("<cspace=0.4>");
 
@@ -106,7 +110,7 @@ public class DamageRenderer : MonoBehaviour {
 
         textMesh.text = stringBuilder.ToString();
         stringBuilder.Clear();
-
+        textMesh.enabled = false;
         return Delay / 1000f;
     }
 }

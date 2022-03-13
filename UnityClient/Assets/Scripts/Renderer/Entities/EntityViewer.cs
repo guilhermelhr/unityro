@@ -285,12 +285,6 @@ public class EntityViewer : MonoBehaviour {
         return (int)currentMotion;
     }
 
-    private IEnumerator ChangeMotionAfter(MotionRequest motion, float time) {
-        yield return new WaitForSeconds(time);
-
-        ChangeMotion(motion);
-    }
-
     private float GetDelay() {
         if (currentAction == null) {
             return 4f;
