@@ -1,6 +1,4 @@
 ﻿using ROIO.Utils;
-using System;
-using System.IO;
 
 public partial class ZC {
 
@@ -30,7 +28,7 @@ public partial class ZC {
             entityData.head = br.ReadUShort();
 
             entityData.Weapon = br.ReadUInt();
-            entityData.Accessory = br.ReadUShort();
+            entityData.HeadBottom = (short) br.ReadUShort();
             entityData.moveStartTime = br.ReadUInt();
             entityData.Shield = br.ReadUInt();
 
@@ -38,14 +36,14 @@ public partial class ZC {
              * might represent emblem/guild_id1/guild_id0
              * rA clif.cpp #1102
              */
-            entityData.Accessory2 = br.ReadUShort();
-            entityData.Accessory3 = br.ReadUShort();
+            entityData.HeadTop = (short) br.ReadUShort();
+            entityData.HeadMid = (short) br.ReadUShort();
 
             entityData.HairColor = br.ReadShort();
             entityData.ClothesColor = br.ReadShort();
             entityData.headDir = br.ReadShort();
 
-            entityData.Robe = br.ReadUShort();
+            entityData.Garment = (short) br.ReadUShort();
 
             entityData.GUID = br.ReadUInt();
 

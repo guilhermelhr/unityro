@@ -44,9 +44,9 @@ public class DBManager {
         return $"{INTERFACE_PATH}collection/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.bmp";
     }
 
-    public static int GetWeaponAction(Job job, int sex, int weapon) {
+    public static int GetWeaponAction(Job job, int sex, EquipInfo weapon, EquipInfo shield) {
         var jobValue = $"{(ushort) job}";
-        var weaponViewId = $"{GetItemViewID(weapon)}";
+        var weaponViewId = $"{GetItemViewID(weapon.ViewID)}";
 
         try {
             var jobActionValue = WeaponActions[jobValue];

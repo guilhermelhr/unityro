@@ -26,10 +26,10 @@ public class CharacterData {
 
     public short Weapon;
     public short Shield;
-    public short Accessory;
-    public short Accessory2;
-    public short Accessory3;
-    public int Robe;
+    public short HeadBottom;
+    public short HeadTop;
+    public short HeadMid;
+    public int Garment;
 
     public short HairColor;
     public short ClothesColor;
@@ -82,10 +82,10 @@ public class CharacterData {
         cd.Weapon = br.ReadShort();
         cd.BaseLevel = br.ReadShort();
         cd.SkillPoint = br.ReadShort();
-        cd.Accessory = br.ReadShort();
+        cd.HeadBottom = br.ReadShort();
         cd.Shield = br.ReadShort();
-        cd.Accessory2 = br.ReadShort();
-        cd.Accessory3 = br.ReadShort();
+        cd.HeadTop = br.ReadShort();
+        cd.HeadMid = br.ReadShort();
         cd.HairColor = br.ReadShort();
         cd.ClothesColor = br.ReadShort();
 
@@ -104,7 +104,7 @@ public class CharacterData {
         cd.MapName = br.ReadBinaryString(16);
 
         cd.DeleteDate = br.ReadInt();
-        cd.Robe = br.ReadInt();
+        cd.Garment = br.ReadInt();
         cd.Moves = br.ReadInt();
         cd.AddOns = br.ReadInt();
 

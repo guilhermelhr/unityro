@@ -12,7 +12,7 @@ public class NormalEquipmentWindow : MonoBehaviour {
         if (inventory == null || inventory.IsEmpty) return;
 
         Dictionary<EquipmentLocation, UIEquipSlot> slotDictionary = slots.ToDictionary(it => it.location);
-        Dictionary<int, ItemInfo> equippedItemsDict = inventory.ItemList.Where(IsItemEquipped).ToDictionary(it => it.location);
+        Dictionary<EquipmentLocation, ItemInfo> equippedItemsDict = inventory.ItemList.Where(IsItemEquipped).ToDictionary(it => (EquipmentLocation)it.wearState);
 
         slotDictionary.Values.ToList().ForEach(slot => slot.SetItem(null));
         foreach (var itemKey in equippedItemsDict.Keys) {
@@ -20,8 +20,8 @@ public class NormalEquipmentWindow : MonoBehaviour {
             inventory.UpdateEntityEquipInfo(item.wearState, item.viewID, entity);
 
             foreach(var slotKey in slotDictionary.Keys) {
-                if ((itemKey & (int)slotKey) > 0) { 
-                    slotDictionary[slotKey].SetItem(equippedItemsDict[itemKey]);
+                if (slotKey.HasFlag(itemKey)) { 
+                    slotDictionary[slotKey].SetItem(item);
                 }
             }
         }

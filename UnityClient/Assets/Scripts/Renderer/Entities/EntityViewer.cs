@@ -80,24 +80,30 @@ public class EntityViewer : MonoBehaviour {
                 case ViewerType.HEAD:
                     path = DBManager.GetHeadPath(Entity.Status.jobId, Entity.Status.hair, Entity.Status.sex);
                     break;
-                case ViewerType.WEAPON:
-                    currentViewID = Entity.EquipInfo.Weapon;
+                case ViewerType.HAND_RIGHT:
+                    currentViewID = Entity.EquipInfo.RightHand.ViewID;
                     path = DBManager.GetWeaponPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
                     break;
-                case ViewerType.SHIELD:
-                    currentViewID = Entity.EquipInfo.Weapon;
-                    path = DBManager.GetShieldPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
+                case ViewerType.HAND_LEFT:
+                    currentViewID = Entity.EquipInfo.LeftHand.ViewID;
+
+                    if (EquipmentLocation.HAND_LEFT.HasFlag(Entity.EquipInfo.LeftHand.Location) && !EquipmentLocation.HAND_RIGHT.HasFlag(Entity.EquipInfo.RightHand.Location)) { //shield only
+                        path = DBManager.GetShieldPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
+                    } else {
+                        path = DBManager.GetWeaponPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
+                    }
+
                     break;
                 case ViewerType.HEAD_TOP:
-                    currentViewID = Entity.EquipInfo.HeadTop;
+                    currentViewID = Entity.EquipInfo.HeadTop.ViewID;
                     path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_MID:
-                    currentViewID = Entity.EquipInfo.HeadMid;
+                    currentViewID = Entity.EquipInfo.HeadMid.ViewID;
                     path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_BOTTOM:
-                    currentViewID = Entity.EquipInfo.HeadBottom;
+                    currentViewID = Entity.EquipInfo.HeadBottom.ViewID;
                     path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
                     break;
             }
@@ -169,23 +175,23 @@ public class EntityViewer : MonoBehaviour {
 
     private int FindCurrentViewID() {
         switch (ViewerType) {
-            case ViewerType.WEAPON:
-                return Entity.EquipInfo.Weapon;
-            case ViewerType.SHIELD:
-                return Entity.EquipInfo.Shield;
+            case ViewerType.HAND_RIGHT:
+                return Entity.EquipInfo.RightHand.ViewID;
+            case ViewerType.HAND_LEFT:
+                return Entity.EquipInfo.LeftHand.ViewID;
             case ViewerType.HEAD_TOP:
-                return Entity.EquipInfo.HeadTop;
+                return Entity.EquipInfo.HeadTop.ViewID;
             case ViewerType.HEAD_MID:
-                return Entity.EquipInfo.HeadMid;
+                return Entity.EquipInfo.HeadMid.ViewID;
             case ViewerType.HEAD_BOTTOM:
-                return Entity.EquipInfo.HeadBottom;
+                return Entity.EquipInfo.HeadBottom.ViewID;
             default:
                 return -1;
         }
     }
 
     private void UpdateAnchorPoints() {
-        if (Parent != null && ViewerType != ViewerType.WEAPON) {
+        if (Parent != null && ViewerType != ViewerType.HAND_RIGHT) {
             var parentAnchor = Parent.GetAnimationAnchor();
             var ourAnchor = GetAnimationAnchor();
 
@@ -326,7 +332,8 @@ public class EntityViewer : MonoBehaviour {
         int newAction;
         if (motion.Motion == SpriteMotion.Attack) {
             var attackActions = new SpriteMotion[] { SpriteMotion.Attack1, SpriteMotion.Attack2, SpriteMotion.Attack3 };
-            var action = DBManager.GetWeaponAction((Job) Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.Weapon);
+            var action = DBManager.GetWeaponAction((Job) Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.RightHand, Entity.EquipInfo.LeftHand);
+
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, attackActions[action]);
 
             /**

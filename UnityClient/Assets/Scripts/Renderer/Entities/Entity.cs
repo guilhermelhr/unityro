@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static ZC.SPRITE_CHANGE2;
 
 public class Entity : MonoBehaviour, INetworkEntity {
 
@@ -131,12 +132,12 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.account_id = AID;
 
         EquipInfo = new EntityEquipInfo {
-            Weapon = (short) data.Weapon,
-            Shield = (short) data.Shield,
-            HeadTop = (short) data.Accessory2,
-            HeadBottom = (short) data.Accessory,
-            HeadMid = (short) data.Accessory3,
-            Robe = (short) data.Robe
+            RightHand = new EquipInfo { ViewID = (short) data.Weapon, Location = EquipmentLocation.HAND_RIGHT },
+            LeftHand = new EquipInfo { ViewID = (short) data.Shield, Location = EquipmentLocation.HAND_LEFT },
+            HeadTop = new EquipInfo { ViewID = data.HeadTop, Location = EquipmentLocation.HEAD_TOP },
+            HeadBottom = new EquipInfo { ViewID = data.HeadBottom, Location = EquipmentLocation.HEAD_BOTTOM },
+            HeadMid = new EquipInfo { ViewID = data.HeadMid, Location = EquipmentLocation.HEAD_MID },
+            Gargment = new EquipInfo { ViewID = (short) data.Garment, Location = EquipmentLocation.GARMENT }
         };
 
         gameObject.transform.position = new Vector3(data.PosDir[0], PathFinder.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
@@ -196,12 +197,12 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.sex = (byte) data.Sex;
 
         EquipInfo = new EntityEquipInfo {
-            Weapon = data.Weapon,
-            Shield = data.Shield,
-            HeadTop = data.Accessory2,
-            HeadBottom = data.Accessory,
-            HeadMid = data.Accessory3,
-            Robe = (short) data.Robe
+            RightHand = new EquipInfo { ViewID = data.Weapon, Location = EquipmentLocation.HAND_RIGHT },
+            LeftHand = new EquipInfo { ViewID = data.Shield, Location = EquipmentLocation.HAND_LEFT },
+            HeadTop = new EquipInfo { ViewID = data.HeadTop, Location = EquipmentLocation.HEAD_TOP },
+            HeadBottom = new EquipInfo { ViewID = data.HeadBottom, Location = EquipmentLocation.HEAD_BOTTOM },
+            HeadMid = new EquipInfo { ViewID = data.HeadMid, Location = EquipmentLocation.HEAD_MID },
+            Gargment = new EquipInfo { ViewID = (short) data.Garment, Location = EquipmentLocation.GARMENT }
         };
 
         SetupViewer(EquipInfo, rendererLayer);
@@ -260,11 +261,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
 
         InitHead(rendererLayer, bodyViewer);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.Weapon, ViewerType.WEAPON);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.Shield, ViewerType.SHIELD, 1);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadTop, ViewerType.HEAD_TOP);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadMid, ViewerType.HEAD_MID);
-        MaybeInitLayer(rendererLayer, bodyViewer, data.HeadBottom, ViewerType.HEAD_BOTTOM);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.RightHand?.ViewID ?? -1, ViewerType.HAND_RIGHT);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.LeftHand?.ViewID ?? -1, ViewerType.HAND_LEFT, 1);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadTop?.ViewID ?? -1, ViewerType.HEAD_TOP);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadMid?.ViewID ?? -1, ViewerType.HEAD_MID);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadBottom?.ViewID ?? -1, ViewerType.HEAD_BOTTOM);
     }
 
     private void SetupCanvas() {
@@ -317,8 +318,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
             layerViewer.ViewerType = viewerType;
 
             bodyViewer.Children.Add(layerViewer);
-        } else if (viewId == 0) {
+        } else if (viewId == -1) {
             viewer?.gameObject.SetActive(false);
+        } else {
+            viewer?.gameObject.SetActive(true);
         }
     }
 
@@ -347,11 +350,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
         yield return null;
     }
 
-    internal void OnSpriteChange(int type, short value, short value2) {
+    internal void OnSpriteChange(LookType type, short value, short value2) {
         switch (type) {
-            case 0:
+            case LookType.LOOK_BASE:
                 Status.jobId = value;
-                // update info window
+                //todo update info window
                 break;
             default:
                 break;
@@ -417,7 +420,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             if (srcEntity != null) {
                 NOTIFY_SKILL2.attackMT = Math.Min(450, NOTIFY_SKILL2.attackMT);
                 NOTIFY_SKILL2.attackMT = Math.Max(1, NOTIFY_SKILL2.attackMT);
-                
+
                 if (srcEntity.Type != EntityType.MOB) {
                     // SET DIALOG BOX
                     // srcEntity.dialog.set( ( (SkillInfo[pkt.SKID] && SkillInfo[pkt.SKID].SkillName ) || 'Unknown Skill' ) + ' !!' );
@@ -804,11 +807,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     public void UpdateSprites() {
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Weapon, ViewerType.WEAPON);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Shield, ViewerType.SHIELD);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadTop, ViewerType.HEAD_TOP);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadMid, ViewerType.HEAD_MID);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadBottom, ViewerType.HEAD_BOTTOM);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.RightHand?.ViewID ?? -1, ViewerType.HAND_RIGHT);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.LeftHand?.ViewID ?? -1, ViewerType.HAND_LEFT, 1);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadTop?.ViewID ?? -1, ViewerType.HEAD_TOP);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadMid?.ViewID ?? -1, ViewerType.HEAD_MID);
+        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadBottom?.ViewID ?? -1, ViewerType.HEAD_BOTTOM);
         EntityViewer.Init(reloadSprites: true);
     }
 }

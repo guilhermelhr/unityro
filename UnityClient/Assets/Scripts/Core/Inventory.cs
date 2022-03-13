@@ -71,25 +71,26 @@ public class Inventory {
     }
 
     public void TakeOffItem(int index, int equipLocation) {
-        Items.TryGetValue(index, out ItemInfo item);
-        if (item == null)
+        if (!Items.TryGetValue(index, out ItemInfo item))
             return;
+
+        var equipLocationFlag = (EquipmentLocation) equipLocation;
         var entity = Session.CurrentSession.Entity as Entity;
 
         item.wearState = 0;
 
-        if ((equipLocation & (int) EquipmentLocation.HEAD_TOP) > 0)
+        if (EquipmentLocation.HEAD_TOP.HasFlag(equipLocationFlag))
             entity.EquipInfo.HeadTop = null;
-        if ((equipLocation & (int) EquipmentLocation.HEAD_MID) > 0)
+        if (EquipmentLocation.HEAD_MID.HasFlag(equipLocationFlag))
             entity.EquipInfo.HeadMid = null;
-        if ((equipLocation & (int) EquipmentLocation.HEAD_BOTTOM) > 0)
+        if (EquipmentLocation.HEAD_BOTTOM.HasFlag(equipLocationFlag))
             entity.EquipInfo.HeadBottom = null;
-        if ((equipLocation & (int) EquipmentLocation.GARMENT) > 0)
-            entity.EquipInfo.Robe = null;
-        if ((equipLocation & (int) EquipmentLocation.WEAPON) > 0)
-            entity.EquipInfo.Weapon = null;
-        if ((equipLocation & (int) EquipmentLocation.SHIELD) > 0)
-            entity.EquipInfo.Shield = null;
+        if (EquipmentLocation.GARMENT.HasFlag(equipLocationFlag))
+            entity.EquipInfo.Gargment = null;
+        if (EquipmentLocation.HAND_RIGHT.HasFlag(equipLocationFlag))
+            entity.EquipInfo.RightHand = null;
+        if (EquipmentLocation.HAND_LEFT.HasFlag(equipLocationFlag))
+            entity.EquipInfo.LeftHand = null;
     }
 
     public void EquipItem(short index, int equipLocation, short viewID) {
@@ -112,32 +113,32 @@ public class Inventory {
     }
 
     public void UpdateEntityEquipInfo(int equipLocation, short viewID, Entity entity) {
-        if ((equipLocation & (int) EquipmentLocation.HEAD_TOP) > 0)
-            entity.EquipInfo.HeadTop = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.HEAD_TOP };
-        if ((equipLocation & (int) EquipmentLocation.HEAD_MID) > 0)
-            entity.EquipInfo.HeadMid = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.HEAD_MID };
-        if ((equipLocation & (int) EquipmentLocation.HEAD_BOTTOM) > 0)
-            entity.EquipInfo.HeadBottom = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.HEAD_BOTTOM };
-        if ((equipLocation & (int) EquipmentLocation.GARMENT) > 0)
-            entity.EquipInfo.Robe = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.GARMENT };
+        var equipLocationFlag = (EquipmentLocation) equipLocation;
 
-        if (IsLocation(equipLocation, EquipmentLocation.SHIELD) && !IsLocation(equipLocation, EquipmentLocation.WEAPON)) { //shield only
-            entity.EquipInfo.Shield = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.SHIELD };
-        } else if (IsLocation(equipLocation, EquipmentLocation.SHIELD) && IsLocation(equipLocation, EquipmentLocation.WEAPON)) { //two handed weapons (bow etc)
-            entity.EquipInfo.Shield = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.SHIELD };
-            entity.EquipInfo.Weapon = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.WEAPON };
-        } else if (IsLocation(equipLocation, EquipmentLocation.SHIELD) || IsLocation(equipLocation, EquipmentLocation.WEAPON)) {
+        if (EquipmentLocation.HEAD_TOP.HasFlag(equipLocationFlag))
+            entity.EquipInfo.HeadTop = new EquipInfo { ViewID = viewID, Location = equipLocationFlag };
+        if (EquipmentLocation.HEAD_MID.HasFlag(equipLocationFlag))
+            entity.EquipInfo.HeadMid = new EquipInfo { ViewID = viewID, Location = equipLocationFlag };
+        if (EquipmentLocation.HEAD_BOTTOM.HasFlag(equipLocationFlag))
+            entity.EquipInfo.HeadBottom = new EquipInfo { ViewID = viewID, Location = equipLocationFlag };
+        if (EquipmentLocation.GARMENT.HasFlag(equipLocationFlag))
+            entity.EquipInfo.Gargment = new EquipInfo { ViewID = viewID, Location = equipLocationFlag };
+
+        if (EquipmentLocation.HAND_LEFT.HasFlag(equipLocationFlag) && !EquipmentLocation.HAND_RIGHT.HasFlag(equipLocationFlag)) { //shield only
+            entity.EquipInfo.LeftHand = new EquipInfo { ViewID = viewID, Location = equipLocationFlag };
+        } else if (EquipmentLocation.HAND_LEFT.HasFlag(equipLocationFlag) && EquipmentLocation.HAND_RIGHT.HasFlag(equipLocationFlag)) { //two handed weapons (bow etc)
+            entity.EquipInfo.LeftHand = new EquipInfo { ViewID = viewID, Location = equipLocationFlag };
+            entity.EquipInfo.RightHand = new EquipInfo { ViewID = viewID, Location = equipLocationFlag };
+        } else if (EquipmentLocation.HAND_LEFT.HasFlag(equipLocationFlag) || EquipmentLocation.HAND_RIGHT.HasFlag(equipLocationFlag)) {
             /**
              * If item can be equipped in any hand, we first check for the right hand
              * then we always switch the others on the left hand
              */
-            if (entity.EquipInfo.Weapon != null) {
-                entity.EquipInfo.Shield = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.SHIELD };
+            if (entity.EquipInfo.RightHand != null) {
+                entity.EquipInfo.LeftHand = new EquipInfo { ViewID = viewID, Location = equipLocationFlag };
             } else {
-                entity.EquipInfo.Weapon = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.WEAPON };
+                entity.EquipInfo.RightHand = new EquipInfo { ViewID = viewID, Location = equipLocationFlag };
             }
-        } else {
-            entity.EquipInfo.Weapon = new EquipmentInfo { ViewID = viewID, EquipmentLocation = EquipmentLocation.WEAPON };
         }
     }
 

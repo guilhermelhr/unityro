@@ -17,10 +17,10 @@
 
 	public uint Weapon;
 	public uint Shield;
-	public ushort Accessory;
-	public ushort Accessory2;
-	public ushort Accessory3;
-	public ushort Robe;
+	public short HeadBottom;
+	public short HeadTop;
+	public short HeadMid;
+	public short Garment;
 
 	public short HairColor;
 	public short ClothesColor;
