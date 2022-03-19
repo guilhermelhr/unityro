@@ -29,15 +29,16 @@ public class EntityViewer : MonoBehaviour {
     private Dictionary<int, SpriteRenderer> Layers = new Dictionary<int, SpriteRenderer>();
     private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
 
-    private Sprite[] sprites;
-    private ACT currentACT;
-    private SPR currentSPR;
-    private ACT.Action currentAction;
+    public Sprite[] sprites { get; private set; }
+    public ACT currentACT { get; private set; }
+    public SPR currentSPR { get; private set; }
+    public ACT.Action currentAction { get; private set; }
+    public int ActionId { get; private set; } = -1;
+
     private int currentActionIndex;
     private int currentViewID;
     private int currentFrame = 0;
     private long AnimationStart;
-    private int ActionId = -1;
     private double previousFrame = 0;
 
     private double motionSpeed = 4;
@@ -266,7 +267,7 @@ public class EntityViewer : MonoBehaviour {
         if (!AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
             var motionCount = animCount;
             currentMotion = (int) (stateCnt / motionSpeed % animCount);
-            var loopCount = (stateCnt/motionSpeed)/motionCount;
+            var loopCount = (stateCnt / motionSpeed) / motionCount;
 
             if (loopCount >= 1) {
                 currentMotion--;
@@ -275,14 +276,14 @@ public class EntityViewer : MonoBehaviour {
                 }
             }
         } else {
-            currentMotion = (int)(stateCnt / motionSpeed % animCount);
+            currentMotion = (int) (stateCnt / motionSpeed % animCount);
         }
 
         if (currentMotion <= 0) {
             currentMotion = 0;
         }
 
-        return (int)currentMotion;
+        return (int) currentMotion;
     }
 
     private float GetDelay() {
@@ -295,7 +296,7 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
+    internal void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
         rotation = Quaternion.Euler(0, 0, -layer.angle);
         scale = new Vector3(layer.scale.x * (layer.isMirror ? -1 : 1), layer.scale.y, 1);
         var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
@@ -370,7 +371,7 @@ public class EntityViewer : MonoBehaviour {
         }
         //endif
 
-        motionSpeedMultiplier = (float)attackMT / AVERAGE_ATTACK_SPEED;
+        motionSpeedMultiplier = (float) attackMT / AVERAGE_ATTACK_SPEED;
         motionSpeed *= motionSpeedMultiplier;
     }
 
