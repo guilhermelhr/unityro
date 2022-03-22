@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public static class MatrixExtensions
 {
@@ -46,5 +47,15 @@ public static class MatrixExtensions
         }
 
         return null;
+    }
+
+    public static List<Transform> GetChildren(this Transform self) {
+        var list = new List<Transform>();
+
+        for (int i = 0; i < self.childCount; i++) {
+            list.Add(self.GetChild(i));
+        }
+
+        return list;
     }
 }

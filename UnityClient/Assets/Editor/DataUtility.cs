@@ -18,6 +18,8 @@ public class DataUtility {
         FileManager.LoadGRF(config.root, config.grf);
         var descriptors = FileManager.GetFileDescriptors();
         try {
+            // This disable Unity's auto update of assets
+            // Making it much faster to batch create files like we're about to do
             AssetDatabase.StartAssetEditing();
 
             var file = 1f;
@@ -49,14 +51,6 @@ public class DataUtility {
             EditorUtility.ClearProgressBar();
             EditorApplication.ExitPlaymode();
         }
-    }
-
-    [MenuItem("UnityRO/Utils/Extract/Extract Test Texture")]
-    static void ExtractTestTexture() {
-        var config = ConfigurationLoader.Init();
-        FileManager.LoadGRF(config.root, config.grf);
-        string completePath = ExtractFile("data/texture/³ª¹«ÀâÃÊ²É/newtree_02.bmp");
-        AssetDatabase.ImportAsset(completePath);
     }
 
     [MenuItem("UnityRO/Utils/Bundle/Create AssetBundle")]
