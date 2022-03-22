@@ -4,6 +4,7 @@ using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Models {
@@ -16,13 +17,27 @@ public class Models {
         this.models = models;
     }
 
+    [Serializable]
     public class AnimProperties {
         //animation
-        internal SortedList<int, Quaternion> rotKeyframes;
-        internal SortedList<int, Vector3> posKeyframes;
-        internal long animLen;
-        internal Quaternion baseRotation;
-        internal bool isChild;
+        [SerializeField]
+        public List<Quaternion> rotKeyframes;
+        [SerializeField]
+        public List<int> rotKeyframesKeys;
+
+        [SerializeField]
+        public List<Vector3> posKeyframes;
+        [SerializeField]
+        public List<int> posKeyframesKeys;
+
+        [SerializeField]
+        public long animLen;
+
+        [SerializeField]
+        public Quaternion baseRotation;
+
+        [SerializeField]
+        public bool isChild;
     }
 
     public IEnumerator BuildMeshes(Action<float> OnProgress) {
@@ -102,8 +117,10 @@ public class Models {
                     if (node.posKeyframes.Count > 0 || node.rotKeyframes.Count > 0) {
                         nodeObj.AddComponent<NodeAnimation>().nodeId = nodeId;
                         anims.Add(nodeId, new AnimProperties() {
-                            posKeyframes = node.posKeyframes,
-                            rotKeyframes = node.rotKeyframes,
+                            posKeyframes = node.posKeyframes.Values.ToList(),
+                            posKeyframesKeys = node.posKeyframes.Keys.ToList(),
+                            rotKeyframes = node.rotKeyframes.Values.ToList(),
+                            rotKeyframesKeys = node.rotKeyframes.Keys.ToList(),
                             animLen = model.rsm.animLen,
                             baseRotation = rotation,
                             isChild = properties.isChild

@@ -156,40 +156,47 @@ public class DataUtility {
         string localPath = Path.Combine("Assets", "Resources", "Prefabs", "Data", "Maps");
         Directory.CreateDirectory(localPath);
 
-        var originalMeshes = mapObject.transform.FindRecursive("_Originals");
+        try {
+            AssetDatabase.StartAssetEditing();
 
-        for (int i = 0; i < originalMeshes.transform.childCount; i++) {
-            var mesh = originalMeshes.transform.GetChild(i);
-            mesh.gameObject.SetActive(true);
-            var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
-            var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "models", meshPathWithoutExtension);
-            Directory.CreateDirectory(meshPath);
+            var originalMeshes = mapObject.transform.FindRecursive("_Originals");
 
-            var filters = mesh.GetComponentsInChildren<MeshFilter>();
-            var renderers = mesh.GetComponentsInChildren<MeshRenderer>();
-            for (int k = 0; k < filters.Length; k++) {
-                var filter = filters[k];
-                var material = renderers[k].material;
+            for (int i = 0; i < originalMeshes.transform.childCount; i++) {
+                var mesh = originalMeshes.transform.GetChild(i);
+                mesh.gameObject.SetActive(true);
+                var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
+                var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "models", meshPathWithoutExtension);
+                Directory.CreateDirectory(meshPath);
 
-                var progress = k * 1f / filters.Length;
+                var progress = i * 1f / originalMeshes.transform.childCount;
                 if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Saving meshes - {progress * 100}%", progress)) {
                     break;
                 }
 
-                AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name}.mat"));
-                AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name}.asset"));
-                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
-                PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
+                var filters = mesh.GetComponentsInChildren<MeshFilter>();
+                var renderers = mesh.GetComponentsInChildren<MeshRenderer>();
+                for (int k = 0; k < filters.Length; k++) {
+                    var filter = filters[k];
+                    var material = renderers[k].material;
+
+                    AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name}.mat"));
+                    AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name}.asset"));
+                    var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
+                    PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
+                }
+
+                meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
+                PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
             }
 
-            meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
-            PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
+            localPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(localPath, $"{mapName}.prefab"));
+            PrefabUtility.SaveAsPrefabAssetAndConnect(mapObject, localPath, InteractionMode.UserAction);
+        } finally {
+            EditorUtility.ClearProgressBar();
+            AssetDatabase.StopAssetEditing();
+            EditorApplication.ExitPlaymode();
+            EditorApplication.ExitPlaymode();
         }
-
-        localPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(localPath, $"{mapName}.prefab"));
-        PrefabUtility.SaveAsPrefabAssetAndConnect(mapObject, localPath, InteractionMode.UserAction);
-        EditorUtility.ClearProgressBar();
-        EditorApplication.ExitPlaymode();
     }
 
     private static GameObject FindMap() {

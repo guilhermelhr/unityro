@@ -73,7 +73,7 @@ public class Sounds
         float now = Time.realtimeSinceStartup;
 
         foreach(Playing p in playing) {
-            if(p.playAt <= now) {
+            if(p.playAt <= now && p.source != null) {
                 p.source.PlayOneShot(p.clip);
                 p.playAt = now + p.info.cycle;
             }
