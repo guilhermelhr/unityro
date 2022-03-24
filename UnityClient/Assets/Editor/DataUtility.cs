@@ -1,6 +1,7 @@
 using ROIO;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -158,45 +159,184 @@ public class DataUtility {
 
         try {
             AssetDatabase.StartAssetEditing();
+            ExtractOriginalModels(mapObject);
+        } finally {
+            AssetDatabase.StopAssetEditing();
+        }
 
-            var originalMeshes = mapObject.transform.FindRecursive("_Originals");
-
-            for (int i = 0; i < originalMeshes.transform.childCount; i++) {
-                var mesh = originalMeshes.transform.GetChild(i);
-                mesh.gameObject.SetActive(true);
-                var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
-                var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "models", meshPathWithoutExtension);
-                Directory.CreateDirectory(meshPath);
-
-                var progress = i * 1f / originalMeshes.transform.childCount;
-                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Saving meshes - {progress * 100}%", progress)) {
-                    break;
-                }
-
-                var filters = mesh.GetComponentsInChildren<MeshFilter>();
-                var renderers = mesh.GetComponentsInChildren<MeshRenderer>();
-                for (int k = 0; k < filters.Length; k++) {
-                    var filter = filters[k];
-                    var material = renderers[k].material;
-
-                    AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name}.mat"));
-                    AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name}.asset"));
-                    var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
-                    PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
-                }
-
-                meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
-                PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
-            }
+        try {
+            ExtractGround(mapObject);
+            ExtractWater(mapObject);
+            ExtractClonedModels(mapObject);
 
             localPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(localPath, $"{mapName}.prefab"));
             PrefabUtility.SaveAsPrefabAssetAndConnect(mapObject, localPath, InteractionMode.UserAction);
         } finally {
             EditorUtility.ClearProgressBar();
-            AssetDatabase.StopAssetEditing();
-            EditorApplication.ExitPlaymode();
             EditorApplication.ExitPlaymode();
         }
+    }
+
+    private static void ExtractWater(GameObject mapObject) {
+        var groundMeshes = mapObject.transform.FindRecursive("_Water");
+        for (int i = 0; i < groundMeshes.transform.childCount; i++) {
+            var mesh = groundMeshes.transform.GetChild(i);
+            mesh.gameObject.SetActive(true);
+            var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "water", mapObject.name, $"_{i}");
+            Directory.CreateDirectory(meshPath);
+
+            var progress = i * 1f / groundMeshes.transform.childCount;
+            if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Saving water meshes - {progress * 100}%", progress)) {
+                break;
+            }
+
+            var filters = mesh.GetComponentsInChildren<MeshFilter>();
+            var renderers = mesh.GetComponentsInChildren<MeshRenderer>();
+            for (int k = 0; k < filters.Length; k++) {
+                var filter = filters[k];
+                var material = renderers[k].material;
+                var mainTex = material.GetTexture("_MainTex") as Texture2D;
+
+                if (mainTex != null) {
+                    var path = Path.Combine(meshPath, "texture.png");
+                    var bytes = mainTex.EncodeToPNG();
+                    File.WriteAllBytes(path, bytes);
+
+                    AssetDatabase.ImportAsset(path);
+                    var tex = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)) as Texture2D;
+                    material.SetTexture("_MainTex", tex);
+                }
+
+                AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name}.mat"));
+                AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name}.asset"));
+                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
+                PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
+            }
+        }
+    }
+
+    private static void ExtractGround(GameObject mapObject) {
+        var groundMeshes = mapObject.transform.FindRecursive("_Ground");
+        for (int i = 0; i < groundMeshes.transform.childCount; i++) {
+            var mesh = groundMeshes.transform.GetChild(i);
+            mesh.gameObject.SetActive(true);
+            var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "ground", mapObject.name, $"_{i}");
+            Directory.CreateDirectory(meshPath);
+
+            var progress = i * 1f / groundMeshes.transform.childCount;
+            if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Saving ground meshes - {progress * 100}%", progress)) {
+                break;
+            }
+
+            var filters = mesh.GetComponentsInChildren<MeshFilter>();
+            var renderers = mesh.GetComponentsInChildren<MeshRenderer>();
+            for (int k = 0; k < filters.Length; k++) {
+                var filter = filters[k];
+                var material = renderers[k].material;
+
+                var mainTex = material.GetTexture("_MainTex") as Texture2D;
+                var lightmapTex = material.GetTexture("_Lightmap") as Texture2D;
+                var tintmapTex = material.GetTexture("_Tintmap") as Texture2D;
+
+                if (mainTex != null) {
+                    var path = Path.Combine(meshPath, "texture.png");
+                    var bytes = mainTex.EncodeToPNG();
+                    File.WriteAllBytes(path, bytes);
+
+                    AssetDatabase.ImportAsset(path);
+                    var tex = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)) as Texture2D;
+                    material.SetTexture("_MainTex", tex);
+                }
+                if (lightmapTex != null) {
+                    var path = Path.Combine(meshPath, "lightmap.png");
+                    var bytes = lightmapTex.EncodeToPNG();
+                    File.WriteAllBytes(path, bytes);
+
+                    AssetDatabase.ImportAsset(path);
+                    var tex = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)) as Texture2D;
+                    material.SetTexture("_Lightmap", tex);
+                }
+                if (tintmapTex != null) {
+                    var path = Path.Combine(meshPath, "tintmap.png");
+                    var bytes = tintmapTex.EncodeToPNG();
+                    File.WriteAllBytes(path, bytes);
+
+                    AssetDatabase.ImportAsset(path);
+                    var tex = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)) as Texture2D;
+                    material.SetTexture("_Tintmap", tex);
+                }
+
+                AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name}.mat"));
+                AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name}.asset"));
+
+                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
+                PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
+            }
+        }
+    }
+
+    private static void ExtractOriginalModels(GameObject mapObject) {
+        var originalMeshes = mapObject.transform.FindRecursive("_Originals");
+
+        for (int i = 0; i < originalMeshes.transform.childCount; i++) {
+            var mesh = originalMeshes.transform.GetChild(i);
+            mesh.gameObject.SetActive(true);
+            var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
+            var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "models", meshPathWithoutExtension);
+            Directory.CreateDirectory(meshPath);
+
+            var progress = i * 1f / originalMeshes.transform.childCount;
+            if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Saving model meshes - {progress * 100}%", progress)) {
+                break;
+            }
+
+            var filters = mesh.GetComponentsInChildren<MeshFilter>();
+            var renderers = mesh.GetComponentsInChildren<MeshRenderer>();
+            for (int k = 0; k < filters.Length; k++) {
+                var filter = filters[k];
+                var material = renderers[k].material;
+
+                AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name}.mat"));
+                AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name}.asset"));
+                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
+                PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
+            }
+
+            meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
+            PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
+        }
+    }
+
+    private static void ExtractClonedModels(GameObject mapObject) {
+        var models = mapObject.transform.FindRecursive("_Models");
+        var clonedMeshes = mapObject.transform.FindRecursive("_Copies");
+        var originalMeshes = mapObject.transform.FindRecursive("_Originals");
+        var originalPrefabs = new Dictionary<string, GameObject>();
+
+        // Query for the original prefabs
+        for (int i = 0; i < originalMeshes.transform.childCount; i++) {
+            var mesh = originalMeshes.transform.GetChild(i);
+            var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
+            var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "models", meshPathWithoutExtension);
+
+            var prefab = AssetDatabase.LoadAssetAtPath(meshPath + ".prefab", typeof(GameObject)) as GameObject;
+            originalPrefabs.Add(meshPathWithoutExtension, prefab);
+        }
+
+        var cloned = new GameObject("_Cloned");
+        cloned.transform.SetParent(models.transform);
+
+        for (int i = 0; i < clonedMeshes.transform.childCount; i++) {
+            var mesh = clonedMeshes.transform.GetChild(i);
+            var originalMeshName = mesh.name.Substring(0, mesh.name.IndexOf("(Clone)"));
+            var meshPathWithoutExtension = mesh.name.Substring(0, originalMeshName.IndexOf(Path.GetExtension(originalMeshName)));
+
+            var prefab = PrefabUtility.InstantiatePrefab(originalPrefabs[meshPathWithoutExtension], cloned.transform) as GameObject;
+            prefab.transform.SetPositionAndRotation(mesh.transform.position, mesh.transform.rotation);
+            prefab.transform.localScale = mesh.transform.localScale;
+        }
+
+        GameObject.DestroyImmediate(clonedMeshes.gameObject);
     }
 
     private static GameObject FindMap() {
