@@ -19,6 +19,7 @@ namespace Assets.Scripts.Renderer {
         private void Start() {
             WorldLight = gameObject.AddComponent<Light>();
             WorldLight.type = LightType.Directional;
+            WorldLight.shadows = LightShadows.Soft;
 
             Vector3 lightRotation = new Vector3(LightInfo.longitude, LightInfo.latitude, 0);
             WorldLight.transform.rotation = Quaternion.identity;
