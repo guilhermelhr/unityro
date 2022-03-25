@@ -17,7 +17,7 @@ namespace Assets.Scripts.Renderer.Map {
         private Light WorldLight;
 
         private void Start() {
-            WorldLight = gameObject.AddComponent<Light>();
+            WorldLight = gameObject.GetOrAddComponent<Light>();
             WorldLight.type = LightType.Directional;
             WorldLight.shadows = LightShadows.Soft;
             WorldLight.shadowStrength = 0.6f;
