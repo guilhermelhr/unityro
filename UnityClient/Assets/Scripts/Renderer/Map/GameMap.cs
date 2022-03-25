@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Renderer {
+namespace Assets.Scripts.Renderer.Map {
 
     [Serializable]
     public class GameMap : MonoBehaviour {
@@ -20,6 +20,8 @@ namespace Assets.Scripts.Renderer {
             WorldLight = gameObject.AddComponent<Light>();
             WorldLight.type = LightType.Directional;
             WorldLight.shadows = LightShadows.Soft;
+            WorldLight.shadowStrength = 0.6f;
+            WorldLight.intensity = 0.75f;
 
             Vector3 lightRotation = new Vector3(LightInfo.longitude, LightInfo.latitude, 0);
             WorldLight.transform.rotation = Quaternion.identity;

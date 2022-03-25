@@ -1,8 +1,7 @@
-﻿using Assets.Scripts.Renderer;
+﻿using Assets.Scripts.Renderer.Map;
 using ROIO;
 using ROIO.Models.FileTypes;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -26,7 +25,7 @@ public class MapRenderer {
 
     private Altitude altitude;
     private RSW world;
-    private Water water;
+    private WaterBuilder water;
     private Models models;
     private Sounds sounds = new Sounds();
     private Sky sky;
@@ -178,7 +177,7 @@ public class MapRenderer {
         ground.Render();
 
         if (mesh.waterVertCount > 0) {
-            water = new Water();
+            water = new WaterBuilder();
             water.InitTextures(mesh, world.water);
             water.BuildMesh(mesh);
         }
@@ -209,7 +208,7 @@ public class MapRenderer {
 
     public void PostRender() {
         if (water != null) {
-            water.Render();
+            //water.Render();
         }
     }
 
@@ -217,8 +216,6 @@ public class MapRenderer {
         if (sky != null) {
             sky.Render();
         }
-
-        models.Render();
     }
 
     public void FixedUpdate() {

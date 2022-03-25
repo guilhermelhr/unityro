@@ -191,8 +191,4 @@ public class Models {
         yield return null;
         anims.Clear();
     }
-
-    public void Render() {
-
-    }
 }
