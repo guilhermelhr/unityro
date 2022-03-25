@@ -32,6 +32,11 @@ public class GridRenderer : MonoBehaviour {
     }
 
     private void Update() {
+        if (PathFinder == null) {
+            PathFinder = FindObjectOfType<PathFinder>();
+            return;
+        }
+
         if (gridIcon == null) {
             gridIcon = (Texture2D) FileManager.Load("data/texture/grid.tga");
         }

@@ -8,7 +8,7 @@ public class OfflineUtility : MonoBehaviour {
     private GameManager GameManager;
     private EntityManager EntityManager;
 
-    public string MapName = "izlude";
+    public string MapName = "payon";
     public List<long> MapLoadingTimes;
 
     private void Awake() {
@@ -17,7 +17,7 @@ public class OfflineUtility : MonoBehaviour {
     }
 
     void Start() {
-        //GameManager.BeginMapLoading(MapName);
+        GameManager.BeginMapLoading(MapName);
         SpawnCharacter();
         MapLoadingTimes = new List<long>();
     }
@@ -36,7 +36,7 @@ public class OfflineUtility : MonoBehaviour {
             MaxSP = 50,
             SP = 50
         });
-        entity.transform.position = new Vector3(150, 0, 150);
+        entity.transform.position = new Vector3(150, 16, 150);
         entity.SetAttackSpeed(135);
         Session.StartSession(new Session(entity, 0));
 
