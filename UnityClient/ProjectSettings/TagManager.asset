@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Map
   - MainCanvas
+  - WorldLight
   layers:
   - Default
   - TransparentFX

@@ -13,6 +13,8 @@ using UnityEngine.SceneManagement;
 [InitializeOnLoadAttribute]
 public class DataUtility {
 
+    private static string GENERATED_RESOURCES_PATH = Path.Combine("Assets", "_Generated", "Resources");
+
     [MenuItem("UnityRO/Utils/Extract/Textures")]
     static void ExtractTextures() {
         var config = ConfigurationLoader.Init();
@@ -27,7 +29,7 @@ public class DataUtility {
             foreach (DictionaryEntry entry in descriptors) {
                 try {
                     var progress = file / descriptors.Count;
-                    if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting data (this is going to take 40 mins+) - {progress * 100}%", progress)) {
+                    if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting textures - {progress * 100}%", progress)) {
                         break;
                     }
 
@@ -36,10 +38,6 @@ public class DataUtility {
                     if (completePath == null) {
                         file++;
                         continue;
-                    }
-
-                    if (file % 50 == 0) {
-                        AssetDatabase.ImportAsset(completePath);
                     }
 
                     file++;
@@ -59,7 +57,7 @@ public class DataUtility {
         AssetBundleBuild[] bundleMap = new AssetBundleBuild[1];
 
         bundleMap[0].assetBundleName = "texturesBundle";
-        var texturePath = Path.Combine(Application.dataPath, "Resources", "Textures");
+        var texturePath = Path.Combine(Application.dataPath, GENERATED_RESOURCES_PATH, "Textures");
         var textures = Directory.GetFiles(texturePath, "*.*", SearchOption.AllDirectories)
             .Where(it => Path.HasExtension(it) && !it.Contains(".meta"))
             .Select(it => it.Replace(Application.dataPath, "Assets"))
@@ -105,7 +103,7 @@ public class DataUtility {
 
                 var meshFileName = Path.GetFileNameWithoutExtension(mesh.name);
                 var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
-                var meshPath = Path.Combine("Assets", "Resources", "Meshes", meshPathWithoutExtension);
+                var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, "Meshes", meshPathWithoutExtension);
                 Directory.CreateDirectory(meshPath);
 
                 var filters = mesh.GetComponentsInChildren<MeshFilter>();
@@ -140,11 +138,14 @@ public class DataUtility {
         var extension = Path.GetExtension(filename).ToLowerInvariant();
         var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
 
-        string assetPath = Path.Combine("Assets", "Resources", "Textures", dir);
+        string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, "Textures", dir);
 
         Directory.CreateDirectory(assetPath);
 
         var texture = FileManager.Load(path) as Texture2D;
+        if (texture == null) {
+            return null;
+        }
         texture.alphaIsTransparency = true;
         var bytes = texture.EncodeToPNG();
         var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".png");
@@ -154,7 +155,7 @@ public class DataUtility {
 
     private static void SaveMap(GameObject mapObject, GameManager gameManager) {
         string mapName = Path.GetFileNameWithoutExtension(mapObject.name);
-        string localPath = Path.Combine("Assets", "Resources", "Prefabs", "Data", "Maps");
+        string localPath = Path.Combine(GENERATED_RESOURCES_PATH, "Prefabs", "Maps");
         Directory.CreateDirectory(localPath);
 
         try {
@@ -182,7 +183,7 @@ public class DataUtility {
         for (int i = 0; i < groundMeshes.transform.childCount; i++) {
             var mesh = groundMeshes.transform.GetChild(i);
             mesh.gameObject.SetActive(true);
-            var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "water", mapObject.name, $"_{i}");
+            var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, "Meshes", "Water", mapObject.name, $"_{i}");
             Directory.CreateDirectory(meshPath);
 
             var progress = i * 1f / groundMeshes.transform.childCount;
@@ -220,7 +221,7 @@ public class DataUtility {
         for (int i = 0; i < groundMeshes.transform.childCount; i++) {
             var mesh = groundMeshes.transform.GetChild(i);
             mesh.gameObject.SetActive(true);
-            var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "ground", mapObject.name, $"_{i}");
+            var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, "Meshes", "Ground", mapObject.name, $"_{i}");
             Directory.CreateDirectory(meshPath);
 
             var progress = i * 1f / groundMeshes.transform.childCount;
@@ -282,7 +283,7 @@ public class DataUtility {
             var mesh = originalMeshes.transform.GetChild(i);
             mesh.gameObject.SetActive(true);
             var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
-            var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "models", meshPathWithoutExtension);
+            var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, "Meshes", "data", "models", meshPathWithoutExtension);
             Directory.CreateDirectory(meshPath);
 
             var progress = i * 1f / originalMeshes.transform.childCount;
@@ -317,7 +318,7 @@ public class DataUtility {
         for (int i = 0; i < originalMeshes.transform.childCount; i++) {
             var mesh = originalMeshes.transform.GetChild(i);
             var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
-            var meshPath = Path.Combine("Assets", "Resources", "Meshes", "data", "models", meshPathWithoutExtension);
+            var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, "Meshes", "data", "models", meshPathWithoutExtension);
 
             var prefab = AssetDatabase.LoadAssetAtPath(meshPath + ".prefab", typeof(GameObject)) as GameObject;
             originalPrefabs.Add(meshPathWithoutExtension, prefab);

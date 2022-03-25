@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ROIO.Models.FileTypes
@@ -37,16 +38,17 @@ namespace ROIO.Models.FileTypes
             }
         }
 
+        [Serializable]
         public class WaterInfo
         {
-            public int textureSize = 256;
-            public float level;
-            public int type;
-            public float waveHeight;
-            public float waveSpeed;
-            public float wavePitch;
-            public int animSpeed;
-            public string[] images;
+            [SerializeField] public int textureSize = 256;
+            [SerializeField] public float level;
+            [SerializeField] public int type;
+            [SerializeField] public float waveHeight;
+            [SerializeField] public float waveSpeed;
+            [SerializeField] public float wavePitch;
+            [SerializeField] public int animSpeed;
+            [SerializeField] public string[] images;
 
             public WaterInfo(float level, int type, float waveHeight, float waveSpeed, float wavePitch, int animSpeed, string[] images)
             {
@@ -60,14 +62,15 @@ namespace ROIO.Models.FileTypes
             }
         }
 
+        [Serializable]
         public class LightInfo
         {
-            public int longitude;
-            public int latitude;
-            public float[] diffuse;
-            public float[] ambient;
-            public float intensity;
-            public Vector3 direction;
+            [SerializeField] public int longitude;
+            [SerializeField] public int latitude;
+            [SerializeField] public float[] diffuse;
+            [SerializeField] public float[] ambient;
+            [SerializeField] public float intensity;
+            [SerializeField] public Vector3 direction;
 
             public LightInfo(int longitude, int latitude, float[] diffuse, float[] ambient, float intensity, Vector3 direction)
             {
@@ -93,34 +96,37 @@ namespace ROIO.Models.FileTypes
             public float[] scale;
         }
 
+        [Serializable]
         public class Light
         {
-            public string name;
-            public float[] pos;
-            public float[] color;
-            public float range;
+            [SerializeField] public string name;
+            [SerializeField] public float[] pos;
+            [SerializeField] public float[] color;
+            [SerializeField] public float range;
         }
 
+        [Serializable]
         public class Sound
         {
-            public string name;
-            public string file;
-            public float[] pos;
-            public float vol;
-            public int width;
-            public int height;
-            public float range;
-            public float cycle;
-            public float tick;
+            [SerializeField] public string name;
+            [SerializeField] public string file;
+            [SerializeField] public float[] pos;
+            [SerializeField] public float vol;
+            [SerializeField] public int width;
+            [SerializeField] public int height;
+            [SerializeField] public float range;
+            [SerializeField] public float cycle;
+            [SerializeField] public float tick;
         }
 
+        [Serializable]
         public class Effect
         {
-            public string name;
-            public float[] pos;
-            public int id;
-            public float delay;
-            public float[] param;
+            [SerializeField] public string name;
+            [SerializeField] public float[] pos;
+            [SerializeField] public int id;
+            [SerializeField] public float delay;
+            [SerializeField] public float[] param;
         }
     }
 }

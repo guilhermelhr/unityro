@@ -1,4 +1,5 @@
-﻿using ROIO;
+﻿using Assets.Scripts.Renderer;
+using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections.Generic;
@@ -64,6 +65,7 @@ public class MapRenderer {
         if (mapParent == null) {
             mapParent = new GameObject(mapname);
             mapParent.tag = "Map";
+            mapParent.AddComponent<GameMap>();
         }
 
         var stopwatch = new System.Diagnostics.Stopwatch();
@@ -73,9 +75,13 @@ public class MapRenderer {
                 var size = (Vector2) data;
                 width = (uint) size.x;
                 height = (uint) size.y;
+
+                mapParent.GetComponent<GameMap>().SetMapSize((int) size.x, (int) size.y);
                 break;
             case "MAP_WORLD":
                 OnWorldComplete(data as RSW);
+
+                mapParent.GetComponent<GameMap>().SetMapLightInfo((data as RSW).light);
                 break;
             case "MAP_ALTITUDE":
                 OnAltitudeComplete(data as GAT);

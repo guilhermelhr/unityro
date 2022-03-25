@@ -10,10 +10,13 @@ using UnityEngine;
 /// @author Guilherme Hernandez
 /// Based on ROBrowser by Vincent Thibault (robrowser.com)
 /// </summary>
+
+[Serializable]
 public class Altitude {
     private static int MAX_INTERSECT_COUNT = 150;
     public GAT gat { get; private set; }
 
+    [SerializeField]
     private List<PathNode> nodes;
     private PathFinder PathFinder;
 
@@ -21,13 +24,10 @@ public class Altitude {
         this.gat = gat;
         PathFinder = pathFinder;
 
-        init(gat);
-    }
-
-    private void init(GAT gat) {
         GenerateNodes();
         PathFinder.LoadMap(this);
     }
+
     private void GenerateNodes() {
         nodes = new List<PathNode>();
         for (int z = 0; z < getHeight(); z++) {
@@ -65,7 +65,7 @@ public class Altitude {
     /// <param name="y">y position</param>
     /// <returns>cell data</returns>
     public GAT.Cell GetCell(double x, double y) {
-        uint index = (uint)(Math.Floor(x) + Math.Floor(y) * gat.width);
+        uint index = (uint) (Math.Floor(x) + Math.Floor(y) * gat.width);
 
         return gat.cells[index];
     }
@@ -77,7 +77,7 @@ public class Altitude {
     /// <param name="y">y position</param>
     /// <returns>cell type</returns>
     public byte GetCellType(double x, double y) {
-        return (byte)GetCell(x, y).type;
+        return (byte) GetCell(x, y).type;
     }
 
     /// <summary>
@@ -175,14 +175,14 @@ public class Altitude {
 
         //DIFF robrowser does a switch here to "avoid memory allocation" that seems very redundant to me
         float[] buffer = new float[size * size * 30];
-        int middle = (int)Math.Floor(size / 2f);
-        int pos_x = (int)Math.Floor(dpos_x);
-        int pos_y = (int)Math.Floor(dpos_y);
+        int middle = (int) Math.Floor(size / 2f);
+        int pos_x = (int) Math.Floor(dpos_x);
+        int pos_y = (int) Math.Floor(dpos_y);
 
         int i = 0;
         for (int x = -middle; x <= middle; x++) {
             for (int y = -middle; y <= middle; y++, i += 30) {
-                int index = ((pos_x + x) + (pos_y + y) * (int)gat.width);
+                int index = ((pos_x + x) + (pos_y + y) * (int) gat.width);
 
                 // Triangle 1
                 buffer[i + 0] = pos_x + x + 0;
@@ -228,5 +228,5 @@ public class Altitude {
     }
 
     public bool IsCellWalkable(int x, int y) =>
-        gat.cells[x + (y * getWidth())].type == ((byte)GAT.TYPE.WALKABLE | (byte)GAT.TYPE.SNIPABLE);
+        gat.cells[x + (y * getWidth())].type == ((byte) GAT.TYPE.WALKABLE | (byte) GAT.TYPE.SNIPABLE);
 }
