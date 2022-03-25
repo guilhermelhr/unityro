@@ -25,14 +25,12 @@ public class GameManager : MonoBehaviour {
 
     #region Components
     private EntityManager EntityManager;
-    private PathFinder PathFinder;
     #endregion
 
     public static Action OnGrfLoaded;
     public static Action OnMapLoaded;
 
     public Camera MainCamera { get; private set; }
-    public bool IsMapReady => MapRenderer.Ready;
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
 
     private Configuration Configs;
@@ -64,7 +62,7 @@ public class GameManager : MonoBehaviour {
         InitManagers();
         MaybeInitOfflineUtils();
 
-        MapRenderer = new MapRenderer(this, PathFinder, SoundMixerGroup, WorldLight);
+        MapRenderer = new MapRenderer(this, SoundMixerGroup, WorldLight);
         MapLoader = new MapLoader();
     }
 
@@ -146,7 +144,6 @@ public class GameManager : MonoBehaviour {
         new GameObject("ThreadManager").AddComponent<ThreadManager>();
         new GameObject("NetworkClient").AddComponent<NetworkClient>();
         EntityManager = new GameObject("EntityManager").AddComponent<EntityManager>();
-        PathFinder = new GameObject("PathFinder").AddComponent<PathFinder>();
         new GameObject("CursorRenderer").AddComponent<CursorRenderer>();
         new GameObject("GridRenderer").AddComponent<GridRenderer>();
         new GameObject("ItemManager").AddComponent<ItemManager>();

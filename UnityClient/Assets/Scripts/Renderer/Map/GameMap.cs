@@ -14,14 +14,18 @@ namespace Assets.Scripts.Renderer.Map {
         [SerializeField]
         private RSW.LightInfo LightInfo;
 
+        [SerializeField]
+        private Altitude Altitude;
+
         private Light WorldLight;
+        private PathFinder PathFinder;
 
         private void Start() {
             WorldLight = gameObject.GetOrAddComponent<Light>();
             WorldLight.type = LightType.Directional;
             WorldLight.shadows = LightShadows.Soft;
             WorldLight.shadowStrength = 0.6f;
-            WorldLight.intensity = 0.75f;
+            WorldLight.intensity = LightInfo.intensity;
 
             Vector3 lightRotation = new Vector3(LightInfo.longitude, LightInfo.latitude, 0);
             WorldLight.transform.rotation = Quaternion.identity;
@@ -34,6 +38,9 @@ namespace Assets.Scripts.Renderer.Map {
             RenderSettings.ambientLight = ambient * LightInfo.intensity;
 
             WorldLight.color = diffuse;
+
+            PathFinder = gameObject.GetOrAddComponent<PathFinder>();
+            PathFinder.LoadMap(Altitude);
         }
 
         public void SetMapSize(int width, int height) {
@@ -42,6 +49,11 @@ namespace Assets.Scripts.Renderer.Map {
 
         public void SetMapLightInfo(RSW.LightInfo lightInfo) {
             LightInfo = lightInfo;
+        }
+
+        public void SetMapAltitude(Altitude altitude) {
+            Altitude = altitude;
+            PathFinder.LoadMap(Altitude);
         }
     }
 }

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityRO.GameCamera;
 
@@ -10,7 +8,7 @@ public class OfflineUtility : MonoBehaviour {
     private GameManager GameManager;
     private EntityManager EntityManager;
 
-    public string MapName = "prontera";
+    public string MapName = "izlude";
     public List<long> MapLoadingTimes;
 
     private void Awake() {
@@ -19,7 +17,7 @@ public class OfflineUtility : MonoBehaviour {
     }
 
     void Start() {
-        GameManager.BeginMapLoading(MapName);
+        //GameManager.BeginMapLoading(MapName);
         SpawnCharacter();
         MapLoadingTimes = new List<long>();
     }

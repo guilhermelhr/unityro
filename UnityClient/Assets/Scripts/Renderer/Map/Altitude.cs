@@ -13,19 +13,19 @@ using UnityEngine;
 
 [Serializable]
 public class Altitude {
+
     private static int MAX_INTERSECT_COUNT = 150;
-    public GAT gat { get; private set; }
+
+    [SerializeField]
+    public GAT gat;
 
     [SerializeField]
     private List<PathNode> nodes;
-    private PathFinder PathFinder;
 
-    public Altitude(GAT gat, PathFinder pathFinder) {
+    public Altitude(GAT gat) {
         this.gat = gat;
-        PathFinder = pathFinder;
 
         GenerateNodes();
-        PathFinder.LoadMap(this);
     }
 
     private void GenerateNodes() {
@@ -56,7 +56,10 @@ public class Altitude {
         return gat.width * gat.height;
     }
 
-    public List<PathNode> GetNodes() => nodes;
+    public List<PathNode> GetNodes() {
+        GenerateNodes();
+        return nodes;
+    }
 
     /// <summary>
     /// Get cell data
@@ -76,9 +79,7 @@ public class Altitude {
     /// <param name="x">x position</param>
     /// <param name="y">y position</param>
     /// <returns>cell type</returns>
-    public byte GetCellType(double x, double y) {
-        return (byte) GetCell(x, y).type;
-    }
+    public byte GetCellType(double x, double y) => GetCell(x, y).type;
 
     /// <summary>
     /// Return cell height

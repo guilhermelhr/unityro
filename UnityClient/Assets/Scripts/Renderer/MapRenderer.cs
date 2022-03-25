@@ -33,18 +33,16 @@ public class MapRenderer {
     private bool worldCompleted, altitudeCompleted, groundCompleted, modelsCompleted;
 
     private GameManager GameManager;
-    private PathFinder PathFinder;
 
     public bool Ready {
         get { return worldCompleted && altitudeCompleted && groundCompleted && modelsCompleted; }
     }
 
     // TODO this PathFinder here probably can be somewhere else
-    public MapRenderer(GameManager gameManager, PathFinder pathFinder, AudioMixerGroup audioMixerGroup, Light worldLight) {
+    public MapRenderer(GameManager gameManager,  AudioMixerGroup audioMixerGroup, Light worldLight) {
         SoundsMixerGroup = audioMixerGroup;
         WorldLight = worldLight;
         GameManager = gameManager;
-        PathFinder = pathFinder;
     }
 
     /*public class Fog {
@@ -79,8 +77,6 @@ public class MapRenderer {
                 break;
             case "MAP_WORLD":
                 OnWorldComplete(data as RSW);
-
-                mapParent.GetComponent<GameMap>().SetMapLightInfo((data as RSW).light);
                 break;
             case "MAP_ALTITUDE":
                 OnAltitudeComplete(data as GAT);
@@ -156,6 +152,8 @@ public class MapRenderer {
         WorldLight.color = diffuse;
 
         worldCompleted = true;
+
+        mapParent.GetComponent<GameMap>().SetMapLightInfo(world.light);
     }
 
     /// <summary>
@@ -164,7 +162,9 @@ public class MapRenderer {
     /// <param name="gat"></param>
     private void OnAltitudeComplete(GAT gat) {
         altitudeCompleted = true;
-        altitude = new Altitude(gat, PathFinder);
+        altitude = new Altitude(gat);
+
+        mapParent.GetComponent<GameMap>().SetMapAltitude(altitude);
     }
 
     private void OnGroundComplete(GND.Mesh mesh) {
