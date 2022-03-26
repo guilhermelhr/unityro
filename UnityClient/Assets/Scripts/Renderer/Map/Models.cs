@@ -48,7 +48,6 @@ public class Models {
         originals.transform.SetParent(modelsParent.transform);
         copies.transform.SetParent(modelsParent.transform);
 
-        Dictionary<int, AnimProperties> anims = new Dictionary<int, AnimProperties>();
         int nodeId = 0;
 
         for (var index = 0; index < models.Count; index++) {
@@ -115,8 +114,9 @@ public class Models {
                     properties.parentName = node.parentName;
 
                     if (node.posKeyframes.Count > 0 || node.rotKeyframes.Count > 0) {
-                        nodeObj.AddComponent<NodeAnimation>().nodeId = nodeId;
-                        anims.Add(nodeId, new AnimProperties() {
+                        var nodeAnimation = nodeObj.AddComponent<NodeAnimation>();
+                        nodeAnimation.nodeId = nodeId;
+                        var props = new AnimProperties() {
                             posKeyframes = node.posKeyframes.Values.ToList(),
                             posKeyframesKeys = node.posKeyframes.Keys.ToList(),
                             rotKeyframes = node.rotKeyframes.Values.ToList(),
@@ -124,7 +124,8 @@ public class Models {
                             animLen = model.rsm.animLen,
                             baseRotation = rotation,
                             isChild = properties.isChild
-                        });
+                        };
+                        nodeAnimation.Initialize(props);
                     }
 
                     nodeId++;
@@ -134,7 +135,6 @@ public class Models {
             modelObj.SetActive(false);
 
             //instantiate model
-            //todo create prefabs 
             for (int i = 0; i < model.rsm.instances.Count; i++) {
                 GameObject instanceObj;
                 if (i == model.rsm.instances.Count - 1) {
@@ -175,13 +175,6 @@ public class Models {
                     }
                 }
 
-                //setup animations
-                var animComponents = instanceObj.GetComponentsInChildren<NodeAnimation>();
-                foreach (var animComponent in animComponents) {
-                    var properties = anims[animComponent.nodeId];
-                    animComponent.Initialize(properties);
-                }
-
                 instanceObj.SetActive(true);
             }
 
@@ -189,6 +182,5 @@ public class Models {
         }
 
         yield return null;
-        anims.Clear();
     }
 }
