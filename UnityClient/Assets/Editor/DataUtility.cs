@@ -114,8 +114,6 @@ public class DataUtility {
 
                     AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{meshFileName}_{filter.gameObject.name}_{i}.mat"));
                     AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{meshFileName}_{filter.gameObject.name}_{i}.asset"));
-                    var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
-                    PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
                 }
 
                 meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
@@ -129,13 +127,39 @@ public class DataUtility {
         }
     }
 
+    [MenuItem("UnityRO/Utils/Extract/Selected model")]
+    static void ExtractCurrentlySelectedMesh() {
+        var mesh = Selection.activeGameObject;
+
+        ExtractMesh(mesh);
+    }
+
+    private static void ExtractMesh(GameObject mesh) {
+        var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
+        var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, "Meshes", "data", "model", meshPathWithoutExtension);
+        Directory.CreateDirectory(meshPath);
+
+        var nodes = mesh.GetComponentsInChildren<NodeProperties>();
+        foreach (var node in nodes) {
+            var filter = node.GetComponent<MeshFilter>();
+            var material = node.GetComponent<MeshRenderer>().material;
+
+            var nodeName = node.mainName.Length == 0 ? "node" : node.mainName;
+            var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{nodeName}_{node.nodeId}.asset"));
+            AssetDatabase.CreateAsset(filter.mesh, partPath);
+            AssetDatabase.AddObjectToAsset(material, partPath);
+        }
+
+        meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
+        PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
+    }
+
     private static string ExtractFile(string path) {
         if (!path.StartsWith("data/texture/")) {
             return null;
         }
         var filename = Path.GetFileName(path);
         var filenameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-        var extension = Path.GetExtension(filename).ToLowerInvariant();
         var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
 
         string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, "Textures", dir);
@@ -280,31 +304,22 @@ public class DataUtility {
         var originalMeshes = mapObject.transform.FindRecursive("_Originals");
 
         for (int i = 0; i < originalMeshes.transform.childCount; i++) {
-            var mesh = originalMeshes.transform.GetChild(i);
-            mesh.gameObject.SetActive(true);
-            var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
-            var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, "Meshes", "data", "models", meshPathWithoutExtension);
-            Directory.CreateDirectory(meshPath);
-
             var progress = i * 1f / originalMeshes.transform.childCount;
             if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Saving model meshes - {progress * 100}%", progress)) {
                 break;
             }
 
-            var filters = mesh.GetComponentsInChildren<MeshFilter>();
-            var renderers = mesh.GetComponentsInChildren<MeshRenderer>();
-            for (int k = 0; k < filters.Length; k++) {
-                var filter = filters[k];
-                var material = renderers[k].material;
+            var mesh = originalMeshes.transform.GetChild(i);
+            mesh.gameObject.SetActive(true);
+            var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
+            var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, "Meshes", "data", "model", meshPathWithoutExtension);
+            Directory.CreateDirectory(meshPath);
 
-                AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name}.mat"));
-                AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name}.asset"));
-                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
-                PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
+            try {
+                ExtractMesh(mesh.gameObject);
+            } catch {
+                Debug.LogError($"Error extracting model {mesh.gameObject.name}");
             }
-
-            meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
-            PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
         }
     }
 
@@ -318,7 +333,7 @@ public class DataUtility {
         for (int i = 0; i < originalMeshes.transform.childCount; i++) {
             var mesh = originalMeshes.transform.GetChild(i);
             var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
-            var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, "Meshes", "data", "models", meshPathWithoutExtension);
+            var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, "Meshes", "data", "model", meshPathWithoutExtension);
 
             var prefab = AssetDatabase.LoadAssetAtPath(meshPath + ".prefab", typeof(GameObject)) as GameObject;
             originalPrefabs.Add(meshPathWithoutExtension, prefab);
@@ -347,6 +362,11 @@ public class DataUtility {
     [MenuItem("UnityRO/Utils/Prefabs/Create Maps Prefabs", true)]
     static bool ValidateCreateMapPrefabs() {
         return Selection.activeGameObject != null && !EditorUtility.IsPersistent(Selection.activeGameObject) && Selection.activeGameObject.GetComponent<GameManager>() != null;
+    }
+
+    [MenuItem("UnityRO/Utils/Extract/Selected model", true)]
+    static bool ValidateExtractCurrentlySelectedMesh() {
+        return Selection.activeGameObject != null && !EditorUtility.IsPersistent(Selection.activeGameObject);
     }
 }
 #endif

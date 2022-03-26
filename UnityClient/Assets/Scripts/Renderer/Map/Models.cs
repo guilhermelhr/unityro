@@ -81,7 +81,7 @@ public class Models {
                     //mesh.normals = meshData.normals.ToArray();
                     mesh.uv = meshData.uv.ToArray();
 
-                    GameObject nodeObj = new GameObject($"{node.name}_{nodeId}");
+                    GameObject nodeObj = new GameObject(node.name.Length == 0 ? $"node_{nodeId}" : node.name);
                     nodeObj.transform.parent = modelObj.transform;
 
                     string textureFile = model.rsm.textures[textureId];
