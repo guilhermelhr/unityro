@@ -1,5 +1,9 @@
+using ROIO;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityRO.GameCamera;
 
@@ -8,8 +12,9 @@ public class OfflineUtility : MonoBehaviour {
     private GameManager GameManager;
     private EntityManager EntityManager;
 
-    public string MapName = "payon";
+    public string MapName = "abbey01";
     public List<long> MapLoadingTimes;
+    public List<string> MapNames;
 
     private void Awake() {
         GameManager = FindObjectOfType<GameManager>();
@@ -17,9 +22,24 @@ public class OfflineUtility : MonoBehaviour {
     }
 
     void Start() {
-        GameManager.BeginMapLoading(MapName);
+        //GameManager.BeginMapLoading(MapName);
         SpawnCharacter();
         MapLoadingTimes = new List<long>();
+        MapNames = new List<string>();
+
+        var descriptors = FileManager.GetFileDescriptors();
+        foreach (var key in descriptors.Keys) {
+            if (Path.GetExtension(key.ToString()) == ".rsw") {
+                MapNames.Add(key.ToString().Replace("data/", "").Replace(".rsw", ""));
+            }
+        }
+
+        MapNames.Sort();
+    }
+
+    internal void SelectNextMap() {
+        MapName = MapNames.Last();
+        MapNames.Remove(MapName);
     }
 
     void SpawnCharacter() {
@@ -49,7 +69,7 @@ public class OfflineUtility : MonoBehaviour {
         //mob.SetReady(true);
     }
 
-    public async void LoadMap() {
+    public async Task LoadMap() {
         var time = await GameManager.BenchmarkMapLoading(MapName);
         MapLoadingTimes.Add(time);
         Debug.Log($"Average map loading times {MapLoadingTimes.Average() / 1000f}");

@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Sky
 {
-    private Material material = (Material) Resources.Load("SpriteMaterial", typeof(Material));
+    private Material material = (Material) Resources.Load("Materials/Sprites/SpriteMaterial", typeof(Material));
 
     private const int CLOUD_TEXTURE_COUNT = 7;
     private const int MAX_CLOUDS = 200; //from roBrowser

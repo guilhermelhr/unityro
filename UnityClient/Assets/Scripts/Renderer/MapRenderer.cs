@@ -89,7 +89,7 @@ public class MapRenderer {
                 break;
         }
         stopwatch.Stop();
-        Debug.Log(id + " oncomplete time: " + stopwatch.Elapsed.TotalSeconds);
+        //Debug.Log(id + " oncomplete time: " + stopwatch.Elapsed.TotalSeconds);
 
         if (Ready) {
             OnMapComplete(mapname);
@@ -238,7 +238,8 @@ public class MapRenderer {
 
         //destroy map
         if (mapParent != null) {
-            UnityEngine.Object.Destroy(mapParent);
+            //UnityEngine.Object.Destroy(mapParent);
+            mapParent.gameObject.SetActive(false);
             mapParent = null;
         }
 
