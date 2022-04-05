@@ -66,7 +66,7 @@ namespace ROIO {
             }
         }
 
-        public static object Load(string file) {
+        public static object Load(string file, bool ignoreCache = false) {
             file = file.Trim();
             file = file.Replace("\\", "/");
 
@@ -79,8 +79,9 @@ namespace ROIO {
 
             if (!string.IsNullOrEmpty(file)) {
                 string ext = rext.Match(file).Value.Substring(1).ToLower();
+
                 if (!string.IsNullOrEmpty(ext)) {
-                    if (FileCache.Has(file)) {
+                    if (FileCache.Has(file) && !ignoreCache) {
                         return FileCache.Get(file, ext);
                     } else {
                         object data = DoLoad(file, ext);
@@ -142,8 +143,6 @@ namespace ROIO {
 
                         case "spr":
                             SPR spr = SpriteLoader.Load(br);
-                            spr.SwitchToRGBA();
-                            spr.Compile();
                             spr.filename = file;
                             return spr;
                         case "str":
@@ -172,6 +171,8 @@ namespace ROIO {
                             break;
                         case "json":
                             return JObject.Parse(Encoding.UTF8.GetString(br.ToArray()));
+                        case "pal":
+                            return br.ToArray();
                         default:
                             throw new Exception($"Unsuported file format: {ext} for file {file}");
                     }
