@@ -79,6 +79,14 @@ namespace ROIO.Models.FileTypes {
         }
 
         public void SwitchToRGBA() {
+            SwitchToRGBA(new byte[] { });
+        }
+
+        public void SwitchToRGBA(byte[] currentPalette) {
+            if (currentPalette.Length > 0) {
+                palette = currentPalette;
+            }
+
             for (int i = 0; i < indexedCount; i++) {
                 var frame = frames[i];
 

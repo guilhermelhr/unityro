@@ -44,7 +44,7 @@ public class DBManager {
         return $"{INTERFACE_PATH}collection/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.bmp";
     }
 
-    public static int GetWeaponAction(Job job, int sex, int weapon) {
+    public static int GetWeaponAction(Job job, int sex, int weapon, int shield) {
         var jobValue = $"{(ushort) job}";
         var weaponViewId = $"{GetItemViewID(weapon)}";
 
@@ -58,6 +58,55 @@ public class DBManager {
         } catch {
             return 1;
         }
+    }
+
+    public static int GetWeaponType(int itemID) {
+        var type = WeaponType.WEAPONTYPE_NONE;
+        if (itemID == 0) {
+            type = WeaponType.WEAPONTYPE_NONE;
+        } else if (itemID >= 1100 && itemID <= 1199) {
+            type = WeaponType.WEAPONTYPE_SWORD;
+        } else if (itemID >= 1901 && itemID < 1999) {
+            type = WeaponType.WEAPONTYPE_INSTRUMENT;
+        } else if (itemID >= 1201 && itemID <= 1299) {
+            type = WeaponType.WEAPONTYPE_SHORTSWORD;
+        } else if (itemID >= 1350 && itemID <= 1399) {
+            type = WeaponType.WEAPONTYPE_AXE;
+        } else if (itemID >= 1301 && itemID <= 1349) {
+            type = WeaponType.WEAPONTYPE_TWOHANDAXE;
+        } else if (itemID >= 1450 && itemID <= 1499) {
+            type = WeaponType.WEAPONTYPE_SPEAR;
+        } else if (itemID >= 1401 && itemID <= 1449) {
+            type = WeaponType.WEAPONTYPE_TWOHANDSPEAR;
+        } else if (itemID >= 1501 && itemID <= 1599) {
+            type = WeaponType.WEAPONTYPE_MACE;
+        } else if (itemID >= 1601 && itemID <= 1699) {
+            type = WeaponType.WEAPONTYPE_ROD;
+        } else if (itemID >= 1701 && itemID <= 1749) {
+            type = WeaponType.WEAPONTYPE_BOW;
+        } else if (itemID >= 1801 && itemID <= 1899) {
+            type = WeaponType.WEAPONTYPE_CATARRH;
+        } else if (itemID >= 2001 && itemID <= 2099) {
+            type = WeaponType.WEAPONTYPE_TWOHANDSWORD;
+        } else if (itemID >= 1800 && itemID < 1900) {
+            type = WeaponType.WEAPONTYPE_KNUKLE;
+        } else if (itemID >= 1900 && itemID < 1950) {
+            type = WeaponType.WEAPONTYPE_INSTRUMENT;
+        } else if (itemID >= 1950 && itemID < 2000) {
+            type = WeaponType.WEAPONTYPE_WHIP;
+        } else if (itemID >= 2000 && itemID < 2100) {
+            type = WeaponType.WPCLASS_TWOHANDROD;
+        } else if (itemID >= 13150 && itemID < 13200) {
+            type = WeaponType.WPCLASS_GUN_RIFLE;
+        } else if (itemID >= 13000 && itemID < 13100) {
+            type = WeaponType.WEAPONTYPE_SHORTSWORD;
+        } else if (itemID >= 13100 && itemID < 13150) {
+            type = WeaponType.WPCLASS_GUN_HANDGUN;
+        } else if (itemID >= 13300 && itemID < 13400) {
+            type = WeaponType.WPCLASS_SYURIKEN;
+        }
+
+        return (int) type;
     }
 
     public static int GetItemViewID(int itemId) {
@@ -122,6 +171,15 @@ public class DBManager {
         }
 
         return $"data/sprite/ÀÎ°£Á·/¸Ó¸®Åë/{SexTable[sex]}/{headId}_{SexTable[sex]}";
+    }
+
+    public static string GetHeadPalPath(int id, int palId, int sex) {
+        return $"data/palette/¸Ó¸®/¸Ó¸®{id}_{SexTable[sex]}_{palId}.pal";
+    }
+
+    public static string GetBodyPalPath(int job, int palId, int sex) {
+        var isPC = ClassTable.TryGetValue(job.ToString(), out var jobPath);
+        return $"data/palette/¸ö/{jobPath}_{SexTable[sex]}_{palId}.pal";
     }
 
     public static string GetShieldPath(int id, int job, int sex) {

@@ -15,7 +15,6 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public Action OnParameterUpdated;
     public Action AfterMoveAction;
-
     public EntityType Type = EntityType.UNKNOWN;
     public EntityViewer EntityViewer;
     public Direction Direction = 0;
@@ -130,6 +129,9 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.char_id = GID;
         Status.account_id = AID;
 
+        Status.hair_color = data.HairColor;
+        Status.clothes_color = data.ClothesColor;
+
         EquipInfo = new EntityEquipInfo {
             Weapon = (short) data.Weapon,
             Shield = (short) data.Shield,
@@ -185,6 +187,9 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.base_level = (uint) data.BaseLevel;
         Status.SkillPoints = (uint) data.SkillPoint;
 
+        Status.hair_color = data.HairColor;
+        Status.clothes_color = data.ClothesColor;
+
         Status.name = data.Name;
         Status.str = data.Str;
         Status.agi = data.Agi;
@@ -196,11 +201,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.sex = (byte) data.Sex;
 
         EquipInfo = new EntityEquipInfo {
-            Weapon = data.Weapon,
-            Shield = data.Shield,
-            HeadTop = data.Accessory2,
-            HeadBottom = data.Accessory,
-            HeadMid = data.Accessory3,
+            Weapon = (short) data.Weapon,
+            Shield = (short) data.Shield,
+            HeadTop = (short) data.Accessory2,
+            HeadBottom = (short) data.Accessory,
+            HeadMid = (short) data.Accessory3,
             Robe = (short) data.Robe
         };
 
@@ -347,11 +352,15 @@ public class Entity : MonoBehaviour, INetworkEntity {
         yield return null;
     }
 
-    internal void OnSpriteChange(int type, short value, short value2) {
+    internal void OnSpriteChange(ZC.SPRITE_CHANGE2.LookType type, short value, short value2) {
         switch (type) {
-            case 0:
+            case ZC.SPRITE_CHANGE2.LookType.LOOK_BASE:
                 Status.jobId = value;
                 // update info window
+                break;
+            case ZC.SPRITE_CHANGE2.LookType.LOOK_WEAPON:
+
+
                 break;
             default:
                 break;
