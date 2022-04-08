@@ -16,9 +16,6 @@ namespace Assets.Scripts.Renderer.Sprite {
             UnityEngine.Sprite[] sprites = new UnityEngine.Sprite[rects.Length];
             for (int i = 0; i < rects.Length; i++) {
                 Rect rect = rects[i];
-                /**
-                 * This anchor offset is a hack
-                 */
                 sprites[i] = UnityEngine.Sprite.Create(atlas, rect, Vector2.zero, SPR.PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect);
             }
 
