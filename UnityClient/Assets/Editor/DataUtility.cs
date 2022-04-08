@@ -1,4 +1,6 @@
+using Assets.Scripts.Renderer.Sprite;
 using ROIO;
+using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -53,6 +55,77 @@ public class DataUtility {
         }
     }
 
+    [MenuItem("UnityRO/Utils/Extract/Sprites")]
+    static void ExtractSprites() {
+        var config = ConfigurationLoader.Init();
+        FileManager.LoadGRF(config.root, config.grf);
+        var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/sprite").ToList();
+        var sprDescriptors = descriptors.Where(t => Path.GetExtension(t) == ".spr").ToList();
+        var actDescriptors = descriptors.Where(t => Path.GetExtension(t) == ".act").ToList();
+        try {
+            // This disable Unity's auto update of assets
+            // Making it much faster to batch create files like we're about to do
+            AssetDatabase.StartAssetEditing();
+
+            for (int i = 0; i < sprDescriptors.Count; i++) {
+                var progress = i * 1f / sprDescriptors.Count;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting sprites - {progress * 100}%", progress)) {
+                    break;
+                }
+
+                var sprPath = sprDescriptors[i];
+                var actPath = actDescriptors[i];
+
+                var filename = Path.GetFileName(sprPath);
+                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(sprPath);
+                var dir = sprPath.Substring(0, sprPath.IndexOf(filename)).Replace("/", "\\");
+
+                string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, "Sprites", dir);
+
+                Directory.CreateDirectory(assetPath);
+
+                var spr = FileManager.Load(sprPath) as SPR;
+                spr.SwitchToRGBA();
+                spr.Compile();
+
+                var sprites = spr.GetSprites();
+                var textures = sprites.Select(it => it.texture).ToArray();
+                if (spr == null) {
+                    continue;
+                }
+
+                var atlas = new Texture2D(2, 2);
+                atlas.name = $"{filenameWithoutExtension}_atlas";
+                var rects = atlas.PackTextures(textures, 2, 2048, false);
+                atlas.filterMode = FilterMode.Point;
+                File.WriteAllBytes(Path.Combine(assetPath, $"{filenameWithoutExtension}.png"), atlas.EncodeToPNG());
+
+                var act = FileManager.Load(actPath) as ACT;
+                var spriteData = ScriptableObject.CreateInstance<SpriteData>();
+
+                spriteData.act = act;
+                spriteData.rects = rects;
+
+                AssetDatabase.CreateAsset(spriteData, Path.Combine(assetPath, $"{filenameWithoutExtension}.asset"));
+            }
+        } finally {
+            AssetDatabase.StopAssetEditing();
+            EditorUtility.ClearProgressBar();
+            EditorApplication.ExitPlaymode();
+        }
+    }
+
+    static List<string> FilterDescriptors(Hashtable descriptors, string filter) {
+        List<string> result = new List<string>();
+        foreach (DictionaryEntry entry in descriptors) {
+            string path = (entry.Key as string).Trim();
+            if (path.StartsWith(filter)) {
+                result.Add(path);
+            }
+        }
+
+        return result;
+    }
     [MenuItem("UnityRO/Utils/Bundle/Create AssetBundle")]
     static void BundleAssets() {
         AssetBundleBuild[] bundleMap = new AssetBundleBuild[1];

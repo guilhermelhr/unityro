@@ -1,4 +1,5 @@
-﻿using ROIO;
+﻿using Assets.Scripts.Renderer.Sprite;
+using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
@@ -126,6 +127,9 @@ public class EntityViewer : MonoBehaviour {
                 currentSPR = FileManager.Load(path + ".spr", true) as SPR;
                 currentACT = FileManager.Load(path + ".act", true) as ACT;
 
+                var spriteData = Resources.Load<SpriteData>(Path.Combine("Sprites", path));
+                var atlas = Resources.Load<Texture2D>(Path.Combine("Sprites", path));
+
                 if (palettePath.Length > 0) {
                     try {
                         var currentPalette = FileManager.Load(palettePath) as byte[];
@@ -142,7 +146,7 @@ public class EntityViewer : MonoBehaviour {
                 }
 
                 currentSPR.Compile();
-                sprites = currentSPR.GetSprites();
+                sprites = spriteData.GetSpritesFromAtlas(atlas);
             } catch {
                 Debug.LogError($"Could not load sprites for: {path}");
                 currentACT = null;
