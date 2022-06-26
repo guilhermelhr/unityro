@@ -26,9 +26,9 @@ public class NodeProperties : MonoBehaviour
     private IEnumerator LoadTexture() {
         var extension = Path.GetExtension(textureName);
         var nameWithoutExtension = textureName.Substring(0, textureName.IndexOf(extension));
-        var request = Resources.LoadAsync<Texture2D>(Path.Combine("Textures", "data", "texture", nameWithoutExtension));
+        var request = Resources.LoadAsync<Texture2D>(Path.Combine("data", "texture", nameWithoutExtension));
 
-        while(!request.isDone) {
+        while (!request.isDone) {
             yield return 0;
         }
 

@@ -22,8 +22,8 @@ public class OfflineUtility : MonoBehaviour {
     }
 
     void Start() {
-        //GameManager.BeginMapLoading(MapName);
-        SpawnCharacter();
+        GameManager.BeginMapLoading(MapName);
+        //SpawnCharacter();
         MapLoadingTimes = new List<long>();
         MapNames = new List<string>();
 

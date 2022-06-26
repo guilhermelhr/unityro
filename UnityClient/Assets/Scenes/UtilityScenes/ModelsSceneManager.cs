@@ -1,7 +1,6 @@
 using ROIO;
 using ROIO.Loaders;
 using ROIO.Models.FileTypes;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +8,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
 public class ModelsSceneManager : MonoBehaviour {
     internal float onProgress;
 
@@ -32,11 +32,21 @@ public class ModelsSceneManager : MonoBehaviour {
             }
         }
 
+        var count = 0;
+
         StartCoroutine(new Models(compiledModels).BuildMeshes(delegate (float progress) {
-            var p = (int) (progress * 100) + 1;
-            if (p >= 99) {
+            count++;
+
+            if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Loading models - {progress * 100}%", progress)) {
+                EditorApplication.ExitPlaymode();
+                EditorUtility.ClearProgressBar();
+            }
+
+            if (count == modelDescriptors.Count) {
+                EditorUtility.ClearProgressBar();
                 EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Models");
             }
         }));
     }
 }
+#endif

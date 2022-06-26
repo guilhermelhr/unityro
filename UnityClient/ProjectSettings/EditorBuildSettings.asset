@@ -26,4 +26,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CharCreation/CharCreationScene.unity
     guid: 66d4804c56d11604b996fe363b5874d8
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 32caf365236b87c4d996603ff73d6e9a, type: 2}

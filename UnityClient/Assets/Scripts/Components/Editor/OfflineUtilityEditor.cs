@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
@@ -23,7 +22,7 @@ public class OfflineUtilityEditor : Editor {
             await component.LoadMap();
             await Task.Delay(2000);
             var map = SceneManager.GetActiveScene().GetRootGameObjects().ToList().Find(go => go.tag == "Map" && go.activeInHierarchy);
-            DataUtility.SaveMap(map, null);
+            MapsUtility.SaveMap(map, null);
         }
     }
 }
