@@ -20,7 +20,7 @@
     "m_Dropdowns": [],
     "m_CategoryData": [
         {
-            "m_Id": "a9ea34389f7a434db8ccba1a6419be83"
+            "m_Id": "ad8c2949354842c7b584f38f906bc947"
         }
     ],
     "m_Nodes": [
@@ -835,8 +835,23 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "ad2f82b64f8840bc881210cd36448762",
+    "m_Id": 4,
+    "m_DisplayName": "R",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "R",
+    "m_StageCapability": 2,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.CategoryData",
-    "m_ObjectId": "a9ea34389f7a434db8ccba1a6419be83",
+    "m_ObjectId": "ad8c2949354842c7b584f38f906bc947",
     "m_Name": "",
     "m_ChildObjectList": [
         {
@@ -852,21 +867,6 @@
             "m_Id": "a518242150bb46ac934421f1a090ed3a"
         }
     ]
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
-    "m_ObjectId": "ad2f82b64f8840bc881210cd36448762",
-    "m_Id": 4,
-    "m_DisplayName": "R",
-    "m_SlotType": 1,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "R",
-    "m_StageCapability": 2,
-    "m_Value": 0.0,
-    "m_DefaultValue": 0.0,
-    "m_Labels": []
 }
 
 {

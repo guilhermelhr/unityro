@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
@@ -46,6 +47,18 @@ public class GameManager : MonoBehaviour {
         DontDestroyOnLoad(this);
 
         Instance = this;
+    }
+
+    private void OnEnable() {
+        RenderPipelineManager.endCameraRendering += OnEndCameraRendering;
+    }
+
+    private void OnDisable() {
+        RenderPipelineManager.endCameraRendering -= OnEndCameraRendering;
+    }
+
+    private void OnEndCameraRendering(ScriptableRenderContext context, Camera camera) {
+        OnPostRender();
     }
 
     void Start() {

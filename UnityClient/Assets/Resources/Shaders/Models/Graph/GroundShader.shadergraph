@@ -17,7 +17,7 @@
     "m_Dropdowns": [],
     "m_CategoryData": [
         {
-            "m_Id": "a34c67fff68449d39defd797496387db"
+            "m_Id": "739c1f14c3084835b0e333115560b9df"
         }
     ],
     "m_Nodes": [
@@ -1365,6 +1365,24 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "739c1f14c3084835b0e333115560b9df",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "6722ca8c5ec4400a84f22f82e352349c"
+        },
+        {
+            "m_Id": "3a90f434c1d947088b67a2f779361d68"
+        },
+        {
+            "m_Id": "0f232d2ee0fd4f84a84f2aa48aabfdc9"
+        }
+    ]
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.BlockNode",
     "m_ObjectId": "781900170886481c84bccee15044491a",
     "m_Group": {
@@ -1647,24 +1665,6 @@
         "m_SerializableColors": []
     },
     "m_SerializedDescriptor": "VertexDescription.Normal"
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
-    "m_ObjectId": "a34c67fff68449d39defd797496387db",
-    "m_Name": "",
-    "m_ChildObjectList": [
-        {
-            "m_Id": "6722ca8c5ec4400a84f22f82e352349c"
-        },
-        {
-            "m_Id": "3a90f434c1d947088b67a2f779361d68"
-        },
-        {
-            "m_Id": "0f232d2ee0fd4f84a84f2aa48aabfdc9"
-        }
-    ]
 }
 
 {
