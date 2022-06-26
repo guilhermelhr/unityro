@@ -116,23 +116,15 @@ public class DataUtility {
         }
     }
 
-    [MenuItem("UnityRO/Utils/Bundle/Create AssetBundle")]
-    static void BundleAssets() {
-        AssetBundleBuild[] bundleMap = new AssetBundleBuild[4];
-
-        bundleMap[0].assetBundleName = "texturesBundle";
-        bundleMap[0].assetNames = GetFilesFromDir(Path.Combine(Application.dataPath, GENERATED_TEXTURES_PATH));
-
-        bundleMap[1].assetBundleName = "spritesBundle";
-        bundleMap[1].assetNames = GetFilesFromDir(Path.Combine(Application.dataPath, GENERATED_SPRITES_PATH));
-
-        bundleMap[2].assetBundleName = "meshesBundle";
-        bundleMap[2].assetNames = GetFilesFromDir(Path.Combine(Application.dataPath, GENERATED_MESHES_PATH));
-
-        bundleMap[3].assetBundleName = "mapsBundle";
-        bundleMap[3].assetNames = GetFilesFromDir(Path.Combine(Application.dataPath, GENERATED_MAPS_PATH));
-
-        BuildPipeline.BuildAssetBundles("Assets/StreamingAssets", bundleMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);
+    [MenuItem("UnityRO/Generate Unity assets")]
+    static void GenerateAddressablesResources() {
+        EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Textures");
+        EditorApplication.ExecuteMenuItem("UnityRO/Utils/Prepare/Models");
+        
+        //TODO
+        // Extract sprites
+        // Extract effects
+        // Generate map prefabs
     }
 
     private static string ExtractFile(string path) {
