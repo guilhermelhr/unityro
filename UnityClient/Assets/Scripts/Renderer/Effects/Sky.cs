@@ -1,12 +1,15 @@
 ﻿
 using ROIO;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
-public class Sky
-{
-    private Material material = (Material) Resources.Load("Materials/Sprites/SpriteMaterial", typeof(Material));
+public class Sky : MonoBehaviour {
+    private Material material;
 
     private const int CLOUD_TEXTURE_COUNT = 7;
     private const int MAX_CLOUDS = 200; //from roBrowser
@@ -33,8 +36,7 @@ public class Sky
         get { return draw; }
     }
 
-    private class Cloud
-    {
+    private class Cloud {
         public Vector3 position;
         public Vector3 direction;
         public float seed;
@@ -48,28 +50,28 @@ public class Sky
         public bool fadeOut;
     }
 
-    public Sky() {
+    private async void Start() {
         clouds = new Cloud[MAX_CLOUDS];
-    }
+        material = (Material) Resources.Load("Materials/Sprites/SpriteMaterial", typeof(Material));
 
-    internal void Initialize(string mapname) {
-        draw = (prefs = WeatherEffect.GetPrefs(mapname)) != null;
-
-        if(draw) {
+        if (draw) {
             cloudsParent = new GameObject("_clouds");
             cloudsParent.transform.parent = MapRenderer.mapParent.transform;
 
             Camera.main.backgroundColor = prefs.skyColor;
 
-            LoadCloudTextures();
-
+            await LoadCloudTextures();
             SetupClouds();
         }
     }
 
+    internal void Initialize(string mapname) {
+        draw = (prefs = WeatherEffect.GetPrefs(mapname)) != null;
+    }
+
     private void SetupClouds() {
-        for(int i = 0; i < MAX_CLOUDS; i++) {
-            if(clouds[i] == null) {
+        for (int i = 0; i < MAX_CLOUDS; i++) {
+            if (clouds[i] == null) {
                 clouds[i] = new Cloud();
                 clouds[i].position = new Vector3();
                 clouds[i].direction = new Vector3();
@@ -85,7 +87,7 @@ public class Sky
             cloud.direction.x = UnityEngine.Random.Range(0.5f * CLOUD_SPEED, CLOUD_SPEED);
             cloud.direction.y = 0; //UnityEngine.Random.Range(-1, 1) / 10;
             cloud.direction.z = UnityEngine.Random.Range(-1, 1) / 10;
-            
+
             //sprite
             cloud.texture = Mathf.FloorToInt(UnityEngine.Random.Range(0, textures.Length));
 
@@ -93,15 +95,12 @@ public class Sky
         }
     }
 
-    private void LoadCloudTextures() {
+    private async Task LoadCloudTextures() {
         textures = new Texture2D[CLOUD_TEXTURE_COUNT];
-        for(int i = 0; i < textures.Length; i++) {
-            var filename = "data/texture/effect/cloud" + (i + 1) + ".tga";
-            var texture = FileManager.Load(filename) as Texture2D;
+        for (int i = 0; i < textures.Length; i++) {
+            var filename = $"data/texture/effect/cloud{i + 1}.png";
+            var texture = await Addressables.LoadAssetAsync<Texture2D>(filename);
             textures[i] = texture;
-
-            //dont keep textures cached
-            FileCache.Remove(filename);
         }
     }
 
@@ -144,22 +143,22 @@ public class Sky
         return obj;
     }
 
-    public void FixedUpdate() {
+    void FixedUpdate() {
         bounds = GetBounds();
     }
 
-    internal void Render() {
-        if(bounds == null) {
+    void Update() {
+        if (bounds == null) {
             bounds = GetBounds();
         }
 
         float now = Time.realtimeSinceStartup;
 
-        for(int i = 0; i < clouds.Length; i++) {
+        for (int i = 0; i < clouds.Length; i++) {
             Cloud cloud = clouds[i];
-            if(cloud != null) {
+            if (cloud != null) {
                 //cloud is visible
-                if(cloud.obj == null) {
+                if (cloud.obj == null) {
                     //create gameobject and set texture
                     cloud.obj = CreateGameObject(i);
                     cloud.mr = cloud.obj.GetComponent<MeshRenderer>();
@@ -178,10 +177,10 @@ public class Sky
 
                 float alpha;
                 //fade out
-                if(cloud.fadeOut) {
+                if (cloud.fadeOut) {
                     alpha = Mathf.Clamp01(Mathf.Abs(cloud.fadeOutAt - now) / FADEOUT_DURATION);
 
-                    if(now > cloud.fadeOutAt) {
+                    if (now > cloud.fadeOutAt) {
                         cloud.fadeOut = false;
                         cloudsVisible++;
                         cloud.spawnTime = now;
@@ -189,7 +188,7 @@ public class Sky
                         cloud.position.z = UnityEngine.Random.Range(bounds[2] - BOUNDS_PADDING / 2, bounds[3] + BOUNDS_PADDING / 2);
                     }
                 } else {
-                    if(!IsInsideBounds(cloud.position)) {
+                    if (!IsInsideBounds(cloud.position)) {
                         cloud.fadeOut = true;
                         cloud.fadeOutAt = now;
                         cloudsVisible--;
@@ -206,8 +205,10 @@ public class Sky
     }
 
     private bool IsInsideBounds(Vector3 position) {
-        return position.x >= bounds[0] - BOUNDS_PADDING && position.x <= bounds[1] + BOUNDS_PADDING
-            && position.z >= bounds[2] - BOUNDS_PADDING && position.z <= bounds[3] + BOUNDS_PADDING;
+        return position.x >= bounds[0] - BOUNDS_PADDING
+            && position.x <= bounds[1] + BOUNDS_PADDING
+            && position.z >= bounds[2] - BOUNDS_PADDING
+            && position.z <= bounds[3] + BOUNDS_PADDING;
     }
 
     //return the intersection between the camera frustum and a 3D plane at y=CLOUDS_HEIGHT
@@ -224,9 +225,9 @@ public class Sky
 
         float minX, minZ, maxX, maxZ;
         minX = bottomLeft.x;
-        minX = topLeft.x < minX? topLeft.x : minX;
-        minX = topRight.x < minX? topRight.x : minX;
-        minX = bottomRight.x < minX? bottomRight.x : minX;
+        minX = topLeft.x < minX ? topLeft.x : minX;
+        minX = topRight.x < minX ? topRight.x : minX;
+        minX = bottomRight.x < minX ? bottomRight.x : minX;
 
         maxX = bottomLeft.x;
         maxX = topLeft.x > maxX ? topLeft.x : maxX;
@@ -250,16 +251,11 @@ public class Sky
         return ray.origin + (((ray.origin.y - height) / -ray.direction.y) * ray.direction);
     }
 
-    internal void Clear() {
-        if(draw) {
+    private void OnDestroy() {
+        if (draw) {
             GameObject.Destroy(cloudsParent);
-
-            //destroy textures if they were loaded
-            for(int i = 0; i < textures.Length; i++) {
-                GameObject.Destroy(textures[i]);
-            }
-
+            textures = null;
             clouds = null;
         }
-    }    
+    }
 }

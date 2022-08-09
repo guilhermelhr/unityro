@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Effects;
-using ROIO;
+﻿using ROIO;
 using ROIO.Loaders;
 using System;
 using System.IO;
@@ -61,7 +60,7 @@ public class GameManager : MonoBehaviour {
         OnPostRender();
     }
 
-    void Start() {
+    async void Start() {
         Configs = ConfigurationLoader.Init();
 
         LoadGrf();
@@ -88,10 +87,6 @@ public class GameManager : MonoBehaviour {
     void Update() {
         if (MainCamera == null) {
             MainCamera = Camera.main;
-        }
-
-        if (MapRenderer.Ready) {
-            MapRenderer.Render();
         }
     }
 

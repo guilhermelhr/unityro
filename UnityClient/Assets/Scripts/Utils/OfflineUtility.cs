@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityRO.GameCamera;
 
 public class OfflineUtility : MonoBehaviour {
@@ -12,21 +13,23 @@ public class OfflineUtility : MonoBehaviour {
     private GameManager GameManager;
     private EntityManager EntityManager;
 
-    public string MapName = "abbey01";
+    public string MapName = "airplane";
     public List<long> MapLoadingTimes;
     public List<string> MapNames;
 
-    private void Awake() {
+    private async void Awake() {
         GameManager = FindObjectOfType<GameManager>();
         EntityManager = FindObjectOfType<EntityManager>();
+
+        await Addressables.InitializeAsync();
     }
 
     void Start() {
-        GameManager.BeginMapLoading(MapName);
         //SpawnCharacter();
         MapLoadingTimes = new List<long>();
         MapNames = new List<string>();
 
+        GameManager.BeginMapLoading(MapName);
         var descriptors = FileManager.GetFileDescriptors();
         foreach (var key in descriptors.Keys) {
             if (Path.GetExtension(key.ToString()) == ".rsw") {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-#if UNITY_EDITOR
 [InitializeOnLoadAttribute]
 public class MapsUtility {
 
@@ -52,7 +52,7 @@ public class MapsUtility {
 
     public static void SaveMap(GameObject mapObject, GameManager gameManager) {
         string mapName = Path.GetFileNameWithoutExtension(mapObject.name);
-        string localPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "Prefabs", "Maps");
+        string localPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "Maps");
         Directory.CreateDirectory(localPath);
 
         try {
@@ -67,8 +67,8 @@ public class MapsUtility {
             ExtractClonedModels(mapObject);
             AssetDatabase.StopAssetEditing();
 
-            ExtractGround(mapObject);
-            ExtractWater(mapObject);
+            ExtractGround(mapObject, mapName);
+            ExtractWater(mapObject, mapName);
 
             localPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(localPath, $"{mapName}.prefab"));
             UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(mapObject, localPath, InteractionMode.UserAction);
@@ -77,7 +77,7 @@ public class MapsUtility {
         }
     }
 
-    private static void ExtractWater(GameObject mapObject) {
+    private static void ExtractWater(GameObject mapObject, string mapName) {
         var waterMeshes = mapObject.transform.FindRecursive("_Water");
         if (waterMeshes == null) {
             return;
@@ -85,7 +85,7 @@ public class MapsUtility {
         for (int i = 0; i < waterMeshes.transform.childCount; i++) {
             var mesh = waterMeshes.transform.GetChild(i);
             mesh.gameObject.SetActive(true);
-            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "model", "water", mapObject.name, $"_{i}");
+            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "Maps", mapName, "water", $"_{i}");
             Directory.CreateDirectory(meshPath);
 
             var progress = i * 1f / waterMeshes.transform.childCount;
@@ -110,20 +110,20 @@ public class MapsUtility {
                     material.SetTexture("_MainTex", tex);
                 }
 
-                AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name}.mat"));
-                AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name}.asset"));
-                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
+                AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.mat"));
+                AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.asset"));
+                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.prefab"));
                 UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
             }
         }
     }
 
-    private static void ExtractGround(GameObject mapObject) {
+    private static void ExtractGround(GameObject mapObject, string mapName) {
         var groundMeshes = mapObject.transform.FindRecursive("_Ground");
         for (int i = 0; i < groundMeshes.transform.childCount; i++) {
             var mesh = groundMeshes.transform.GetChild(i);
             mesh.gameObject.SetActive(true);
-            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "model", "ground", mapObject.name, $"_{i}");
+            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "Maps", mapName, "ground", $"_{i}");
             Directory.CreateDirectory(meshPath);
 
             var progress = i * 1f / groundMeshes.transform.childCount;
@@ -178,11 +178,11 @@ public class MapsUtility {
                     material.SetTexture("_Tintmap", tex);
                 }
 
-                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}_{k}.asset"));
+                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}_{k}.asset"));
                 AssetDatabase.CreateAsset(filter.mesh, partPath);
                 AssetDatabase.AddObjectToAsset(material, partPath);
 
-                var prefabPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name}.prefab"));
+                var prefabPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.prefab"));
                 UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, prefabPath, InteractionMode.UserAction);
             }
         }

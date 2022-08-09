@@ -2,9 +2,13 @@
 using System.Collections;
 using System.IO;
 using ROIO;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Threading.Tasks;
+using Assets.Scripts.Core;
+using System;
 
-public class NodeProperties : MonoBehaviour
-{
+public class NodeProperties : MonoBehaviour {
     //hierarchy
     public int nodeId;
     public string parentName;
@@ -20,18 +24,18 @@ public class NodeProperties : MonoBehaviour
     }
 
     private void Start() {
-        StartCoroutine(LoadTexture());
+        LoadTexture();
     }
 
-    private IEnumerator LoadTexture() {
+    private async void LoadTexture() {
         var extension = Path.GetExtension(textureName);
-        var nameWithoutExtension = textureName.Substring(0, textureName.IndexOf(extension));
-        var request = Resources.LoadAsync<Texture2D>(Path.Combine("data", "texture", nameWithoutExtension));
+        var nameWithoutExtension = textureName.Substring(0, textureName.IndexOf(extension)).SanitizeForAddressables();
+        try {
+            var texture = await Addressables.LoadAssetAsync<Texture2D>($"data/texture/{nameWithoutExtension}.png");
 
-        while (!request.isDone) {
-            yield return 0;
+            GetComponent<MeshRenderer>().material.mainTexture = texture;
+        } catch(Exception ex) {
+            Debug.LogError(ex);
         }
-
-        GetComponent<MeshRenderer>().material.mainTexture = request.asset as Texture2D;
     }
 }

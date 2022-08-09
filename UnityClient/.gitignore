@@ -89,3 +89,4 @@ crashlytics-build.properties
 /Assets/Resources/Audio/BGM/*.mp3
 /Assets/Resources/Audio/BGM/*.mp3.meta
 /Assets/_Generated**/**
+/ServerData/**

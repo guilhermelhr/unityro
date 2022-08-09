@@ -108,8 +108,9 @@ public class MapRenderer {
 
         if (WeatherEffect.HasMap(mapname)) {
             //create sky
-            sky = new Sky();
-            //initialize clouds
+            var skyObject = new GameObject("_sky");
+            skyObject.transform.SetParent(mapParent.transform);
+            sky = skyObject.AddComponent<Sky>();
             sky.Initialize(mapname);
         } else {
             //no weather effects, set sky color to blueish
@@ -212,24 +213,12 @@ public class MapRenderer {
         }
     }
 
-    public void Render() {
-        if (sky != null) {
-            sky.Render();
-        }
-    }
-
     public void FixedUpdate() {
         sounds.Update();
-        if (sky != null) {
-            sky.FixedUpdate();
-        }
     }
 
     public void Clear() {
         sounds.Clear();
-        if (sky != null) {
-            sky.Clear();
-        }
 
         world = null;
         water = null;

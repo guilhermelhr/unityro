@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class Models {
     private List<RSM.CompiledModel> models;
@@ -20,14 +21,15 @@ public class Models {
 
     [Serializable]
     public class AnimProperties {
-        //animation
         [SerializeField]
         public List<Quaternion> rotKeyframes;
+        
         [SerializeField]
         public List<int> rotKeyframesKeys;
-
+        
         [SerializeField]
         public List<Vector3> posKeyframes;
+
         [SerializeField]
         public List<int> posKeyframesKeys;
 
@@ -55,9 +57,12 @@ public class Models {
         for (int index = 0; index < models.Count; index++) {
             RSM.CompiledModel model = models[index];
             var filenameWithoutExtension = model.rsm.filename.Substring(0, model.rsm.filename.IndexOf(".rsm"));
-            var prefab = Resources.Load<GameObject>(Path.Combine("data", "model", filenameWithoutExtension));
-            if (prefab != null) {
-                prefabDict.Add(model.rsm.filename, prefab);
+            var prefabRequest = Addressables.LoadAssetAsync<GameObject>(Path.Combine("data", "model", $"{filenameWithoutExtension}.prefab").SanitizeForAddressables());
+            while(!prefabRequest.IsDone) {
+                yield return prefabRequest;
+            }
+            if (prefabRequest.Result != null) {
+                prefabDict.Add(model.rsm.filename, prefabRequest.Result);
             }
         }
 

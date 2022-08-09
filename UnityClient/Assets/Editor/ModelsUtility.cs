@@ -1,9 +1,9 @@
+#if UNITY_EDITOR
 using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-#if UNITY_EDITOR
 [InitializeOnLoadAttribute]
 public class ModelsUtility {
 
@@ -50,10 +50,7 @@ public class ModelsUtility {
 
                 meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
                 PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
-
-                Debug.Log($"Created model {i + 1} of {count} at {meshPath}");
             }
-
         } finally {
             EditorUtility.ClearProgressBar();
             EditorApplication.ExitPlaymode();

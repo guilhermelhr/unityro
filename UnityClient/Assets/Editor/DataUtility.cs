@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using Assets.Scripts.Renderer.Sprite;
 using ROIO;
 using ROIO.Models.FileTypes;
@@ -9,7 +10,6 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-#if UNITY_EDITOR
 [InitializeOnLoadAttribute]
 public class DataUtility {
 
@@ -23,17 +23,22 @@ public class DataUtility {
     static void ExtractTextures() {
         var config = ConfigurationLoader.Init();
         FileManager.LoadGRF(config.root, config.grf);
-        var descriptors = FileManager.GetFileDescriptors();
+        var descriptorsHashtable = FileManager.GetFileDescriptors();
+        var descriptors = new DictionaryEntry[descriptorsHashtable.Count];
+        descriptorsHashtable.CopyTo(descriptors, 0);
+        var textureExtensions = new string[] { ".jpg", ".jpeg", ".png", ".bmp", ".tga" };
+        var textureDescriptors = descriptors.Where(it => textureExtensions.Contains(Path.GetExtension(it.Key.ToString()))).ToList();
+
         try {
             // This disable Unity's auto update of assets
             // Making it much faster to batch create files like we're about to do
             AssetDatabase.StartAssetEditing();
 
             var file = 1f;
-            foreach (DictionaryEntry entry in descriptors) {
+            foreach (var entry in textureDescriptors) {
                 try {
-                    var progress = file / descriptors.Count;
-                    if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting textures - {progress * 100}%", progress)) {
+                    var progress = file / textureDescriptors.Count;
+                    if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting texture {file} of {textureDescriptors.Count}\t\t{progress * 100}%", progress)) {
                         break;
                     }
 
@@ -53,6 +58,7 @@ public class DataUtility {
             AssetDatabase.StopAssetEditing();
             EditorUtility.ClearProgressBar();
             EditorApplication.ExitPlaymode();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         }
     }
 
@@ -116,15 +122,29 @@ public class DataUtility {
         }
     }
 
-    [MenuItem("UnityRO/Generate Unity assets")]
-    static void GenerateAddressablesResources() {
+    [MenuItem("UnityRO/Generate Assets/1. Extract Assets")]
+    static void ExtractAssets() {
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Textures");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Prepare/Models");
-        
+
+        //var models = Resources.LoadAll(Path.Join("data", "model"));
+        //foreach (var model in models) {
+        //    model.SetAddressableGroup("Models");
+        //}
+
         //TODO
         // Extract sprites
         // Extract effects
         // Generate map prefabs
+    }
+
+    [MenuItem("UnityRO/Generate Assets/2. Create Addressable Assets")]
+    static void CreateAddressableAssets() {
+        var textures = Resources.LoadAll(Path.Join("data", "texture")).ToList();
+        textures.SetAddressableGroup("Textures", "Textures");
+
+        var models = Resources.LoadAll(Path.Join("data", "model")).ToList();
+        models.SetAddressableGroup("Models", "Models");
     }
 
     private static string ExtractFile(string path) {
@@ -132,7 +152,7 @@ public class DataUtility {
             return null;
         }
         var filename = Path.GetFileName(path);
-        var filenameWithoutExtension = Path.GetFileNameWithoutExtension(path);
+        var filenameWithoutExtension = Path.GetFileNameWithoutExtension(path).SanitizeForAddressables();
         var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
 
         string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
@@ -147,6 +167,8 @@ public class DataUtility {
         var bytes = texture.EncodeToPNG();
         var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".png");
         File.WriteAllBytes(completePath, bytes);
+
+
         return completePath;
     }
 
