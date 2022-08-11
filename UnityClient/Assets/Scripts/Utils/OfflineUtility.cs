@@ -13,7 +13,7 @@ public class OfflineUtility : MonoBehaviour {
     private GameManager GameManager;
     private EntityManager EntityManager;
 
-    public string MapName = "airplane";
+    public string MapName = "prontera";
     public List<long> MapLoadingTimes;
     public List<string> MapNames;
 
@@ -25,11 +25,12 @@ public class OfflineUtility : MonoBehaviour {
     }
 
     void Start() {
-        //SpawnCharacter();
         MapLoadingTimes = new List<long>();
         MapNames = new List<string>();
 
-        GameManager.BeginMapLoading(MapName);
+        SpawnCharacter();
+        //GameManager.BeginMapLoading(MapName);
+        
         var descriptors = FileManager.GetFileDescriptors();
         foreach (var key in descriptors.Keys) {
             if (Path.GetExtension(key.ToString()) == ".rsw") {

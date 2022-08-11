@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Effects;
+using Assets.Scripts.Renderer.Sprite;
 using ROIO;
 using ROIO.Models.FileTypes;
 using System;
@@ -107,8 +108,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         NetworkClient.HookPacket(ZC.USESKILL_ACK2.HEADER, OnEntityCastSkill);
     }
 
-    public void Init(SPR spr, ACT act) {
-        EntityViewer.Init(spr, act);
+    public void Init(SpriteData spriteData) {
+        EntityViewer.Init(spriteData);
     }
 
     public void Init(EntitySpawnData data, int rendererLayer, EntityCanvas canvas) {

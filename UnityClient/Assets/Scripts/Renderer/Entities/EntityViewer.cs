@@ -33,7 +33,6 @@ public class EntityViewer : MonoBehaviour {
     private PaletteData CurrentPaletteData;
     private Sprite[] sprites;
     private ACT currentACT;
-    private SPR currentSPR;
     private ACT.Action currentAction;
     private int currentActionIndex;
     private int currentViewID;
@@ -45,19 +44,16 @@ public class EntityViewer : MonoBehaviour {
     private MeshCollider meshCollider;
     private Material SpriteMaterial;
 
-    public void Init(SPR spr, ACT act) {
-        currentSPR = spr;
-        currentACT = act;
-
-        //currentSPR.SwitchToRGBA();
-        sprites = currentSPR.GetSprites();
-    }
-
     public void Start() {
         SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
         Init();
 
         InitShadow();
+    }
+
+    public void Init(SpriteData spriteData) {
+        currentACT = spriteData.act;
+        sprites = spriteData.sprites;
     }
 
     public void Init(bool reloadSprites = false) {
@@ -72,7 +68,7 @@ public class EntityViewer : MonoBehaviour {
             return;
         }
 
-        if (currentSPR == null || reloadSprites) {
+        if (sprites == null || reloadSprites) {
             string path = "";
             string palettePath = "";
 
@@ -113,7 +109,7 @@ public class EntityViewer : MonoBehaviour {
 
             if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD && currentViewID <= 0) {
                 currentACT = null;
-                currentSPR = null;
+                sprites = null;
                 Layers.Values.ToList().ForEach(Renderer => {
                     Destroy(Renderer.gameObject);
                 });
@@ -124,33 +120,34 @@ public class EntityViewer : MonoBehaviour {
             }
 
             try {
-                currentSPR = FileManager.Load(path + ".spr", true) as SPR;
-                currentACT = FileManager.Load(path + ".act", true) as ACT;
+                //currentSPR = FileManager.Load(path + ".spr", true) as SPR;
+                //currentACT = FileManager.Load(path + ".act", true) as ACT;
 
                 var spriteData = Resources.Load<SpriteData>(Path.Combine("Sprites", path));
-                var atlas = Resources.Load<Texture2D>(Path.Combine("Sprites", path));
+                //var atlas = Resources.Load<Texture2D>(Path.Combine("Sprites", path));
 
-                if (palettePath.Length > 0) {
-                    try {
-                        var currentPalette = FileManager.Load(palettePath) as byte[];
-                        if (currentPalette != null && currentPalette.Length > 0) {
-                            currentSPR.SwitchToRGBA(currentPalette);
-                        }
-                    } catch (Exception e) {
-                        currentSPR.SwitchToRGBA();
-                        Debug.LogError(e);
-                        Debug.LogError($"Could not load palettes for: {palettePath}");
-                    }
-                } else {
-                    currentSPR.SwitchToRGBA();
-                }
+                //if (palettePath.Length > 0) {
+                //    try {
+                //        var currentPalette = FileManager.Load(palettePath) as byte[];
+                //        if (currentPalette != null && currentPalette.Length > 0) {
+                //            currentSPR.SwitchToRGBA(currentPalette);
+                //        }
+                //    } catch (Exception e) {
+                //        currentSPR.SwitchToRGBA();
+                //        Debug.LogError(e);
+                //        Debug.LogError($"Could not load palettes for: {palettePath}");
+                //    }
+                //} else {
+                    //currentSPR.SwitchToRGBA();
+                //}
 
-                currentSPR.Compile();
-                sprites = spriteData.GetSpritesFromAtlas(atlas);
+                //currentSPR.Compile();
+
+                sprites = spriteData.sprites;
+                currentACT = spriteData.act;
             } catch {
                 Debug.LogError($"Could not load sprites for: {path}");
                 currentACT = null;
-                currentSPR = null;
             }
         }
 

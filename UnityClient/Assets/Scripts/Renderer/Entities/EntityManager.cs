@@ -1,4 +1,5 @@
-﻿using ROIO;
+﻿using Assets.Scripts.Renderer.Sprite;
+using ROIO;
 using ROIO.Models.FileTypes;
 using System.Collections.Generic;
 using System.IO;
@@ -66,8 +67,7 @@ public class EntityManager : MonoBehaviour {
         Item item = DBManager.GetItem(itemSpawnInfo.AID);
         string itemPath = DBManager.GetItemPath(itemSpawnInfo.AID, itemSpawnInfo.IsIdentified);
 
-        ACT act = FileManager.Load(itemPath + ".act") as ACT;
-        SPR spr = FileManager.Load(itemPath + ".spr") as SPR;
+        SpriteData spriteData = Resources.Load<SpriteData>(Path.Combine("Sprites", itemPath));
 
         var itemGO = new GameObject(item.identifiedDisplayName);
         itemGO.layer = LayerMask.NameToLayer("Items");
@@ -99,7 +99,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.HeadDirection = 0;
         bodyViewer.CurrentMotion = new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle };
 
-        entity.Init(spr, act);
+        entity.Init(spriteData);
         entity.AID = (uint) itemSpawnInfo.mapID;
         entityCache.Add(entity.AID, entity);
         entity.SetReady(true);

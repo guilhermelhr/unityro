@@ -209,18 +209,6 @@ namespace ROIO {
         /// <returns>file or null</returns>
         public static MemoryStreamReader ReadSync(string path) {
 
-            if (Application.isMobilePlatform || Application.platform == RuntimePlatform.WebGLPlayer) {
-                var filePath = Path.Combine(Application.streamingAssetsPath, path);
-                WWW reader = new WWW(filePath);
-                while (!reader.isDone) { };
-
-                if (reader.bytes.Length > 0) {
-                    return new MemoryStreamReader(reader.bytes);
-                } else {
-                    return null;
-                }
-            }
-
             foreach (var grf in GrfList) {
                 GrfFile file = grf.GetDescriptor(path);
                 if (file != null) {

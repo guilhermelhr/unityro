@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using Assets.Scripts.Renderer.Sprite;
 using ROIO;
+using ROIO.Loaders;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
@@ -23,11 +24,7 @@ public class DataUtility {
     static void ExtractTextures() {
         var config = ConfigurationLoader.Init();
         FileManager.LoadGRF(config.root, config.grf);
-        var descriptorsHashtable = FileManager.GetFileDescriptors();
-        var descriptors = new DictionaryEntry[descriptorsHashtable.Count];
-        descriptorsHashtable.CopyTo(descriptors, 0);
-        var textureExtensions = new string[] { ".jpg", ".jpeg", ".png", ".bmp", ".tga" };
-        var textureDescriptors = descriptors.Where(it => textureExtensions.Contains(Path.GetExtension(it.Key.ToString()))).ToList();
+        var textureDescriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/texture").ToList();
 
         try {
             // This disable Unity's auto update of assets
@@ -42,7 +39,7 @@ public class DataUtility {
                         break;
                     }
 
-                    string completePath = ExtractFile((entry.Key as string).Trim());
+                    string completePath = ExtractFile(entry);
 
                     if (completePath == null) {
                         file++;
@@ -66,7 +63,7 @@ public class DataUtility {
     static void ExtractSprites() {
         var config = ConfigurationLoader.Init();
         FileManager.LoadGRF(config.root, config.grf);
-        var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/sprite").ToList();
+        var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/sprite").Take(10).ToList();
         var sprDescriptors = descriptors.Where(t => Path.GetExtension(t) == ".spr").ToList();
         var actDescriptors = descriptors.Where(t => Path.GetExtension(t) == ".act").ToList();
         try {
@@ -76,10 +73,11 @@ public class DataUtility {
 
             for (int i = 0; i < sprDescriptors.Count; i++) {
                 var progress = i * 1f / sprDescriptors.Count;
-                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting sprites - {progress * 100}%", progress)) {
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting sprites {i} of {sprDescriptors.Count}\t\t{progress * 100}%", progress)) {
                     break;
                 }
 
+                var spriteLoader = new CustomSpriteLoader();
                 var sprPath = sprDescriptors[i];
                 var actPath = actDescriptors[i];
 
@@ -88,32 +86,21 @@ public class DataUtility {
                 var dir = sprPath.Substring(0, sprPath.IndexOf(filename)).Replace("/", "\\");
 
                 string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, "Sprites", dir);
-
                 Directory.CreateDirectory(assetPath);
-
-                var spr = FileManager.Load(sprPath) as SPR;
-                spr.SwitchToRGBA();
-                spr.Compile();
-
-                var sprites = spr.GetSprites();
-                var textures = sprites.Select(it => it.texture).ToArray();
-                if (spr == null) {
-                    continue;
-                }
-
-                var atlas = new Texture2D(2, 2);
-                atlas.name = $"{filenameWithoutExtension}_atlas";
-                var rects = atlas.PackTextures(textures, 2, 2048, false);
-                atlas.filterMode = FilterMode.Point;
-                File.WriteAllBytes(Path.Combine(assetPath, $"{filenameWithoutExtension}.png"), atlas.EncodeToPNG());
-
-                var act = FileManager.Load(actPath) as ACT;
                 var spriteData = ScriptableObject.CreateInstance<SpriteData>();
 
-                spriteData.act = act;
-                spriteData.rects = rects;
+                var spriteByteArray = FileManager.ReadSync(sprPath).ToArray();
+                spriteLoader.Load(spriteByteArray, filename);
 
+                var sprites = spriteLoader.Sprites;
+                var act = FileManager.Load(actPath) as ACT;
+                spriteData.act = act;
+                spriteData.sprites = sprites.ToArray();
                 AssetDatabase.CreateAsset(spriteData, Path.Combine(assetPath, $"{filenameWithoutExtension}.asset"));
+
+                foreach (var sprite in sprites) {
+                    AssetDatabase.AddObjectToAsset(sprite, spriteData);
+                }
             }
         } finally {
             AssetDatabase.StopAssetEditing();
@@ -142,7 +129,7 @@ public class DataUtility {
     static void CreateAddressableAssets() {
         var textures = Resources.LoadAll(Path.Join("data", "texture")).ToList();
         textures.SetAddressableGroup("Textures", "Textures");
-
+        
         var models = Resources.LoadAll(Path.Join("data", "model")).ToList();
         models.SetAddressableGroup("Models", "Models");
     }
