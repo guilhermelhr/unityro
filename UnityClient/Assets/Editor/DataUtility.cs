@@ -8,6 +8,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -61,57 +63,171 @@ public class DataUtility {
 
     [MenuItem("UnityRO/Utils/Extract/Sprites")]
     static void ExtractSprites() {
-        var config = ConfigurationLoader.Init();
-        FileManager.LoadGRF(config.root, config.grf);
-        var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/sprite").Take(10).ToList();
-        var sprDescriptors = descriptors.Where(t => Path.GetExtension(t) == ".spr").ToList();
-        var actDescriptors = descriptors.Where(t => Path.GetExtension(t) == ".act").ToList();
         try {
-            // This disable Unity's auto update of assets
-            // Making it much faster to batch create files like we're about to do
-            AssetDatabase.StartAssetEditing();
+            var shouldContinue = true;
+            var config = ConfigurationLoader.Init();
+            FileManager.LoadGRF(config.root, config.grf);
+            var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/sprite/")
+                .Select(it => it[..it.IndexOf(Path.GetExtension(it))].Replace("/", "\\"))
+                .Where(it => it.Length > 0)
+                .Distinct()
+                .ToList();
 
-            for (int i = 0; i < sprDescriptors.Count; i++) {
-                var progress = i * 1f / sprDescriptors.Count;
-                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting sprites {i} of {sprDescriptors.Count}\t\t{progress * 100}%", progress)) {
+            /**
+             * First we bulk create all the assets and the atlas textures
+             * Then we tell Unity to refresh its asset database
+             * After that we go over each sprite and convert its atlas texture to a proper Sprite format 
+             * and slice every subsprite on the atlas
+             */
+
+            #region Extract atlases and acts
+            AssetDatabase.StartAssetEditing();
+            var spriteDataPaths = new List<string>();
+            var spritesList = new List<List<Sprite>>();
+            for (int i = 0; i < descriptors.Count; i++) {
+                var progress = i * 1f / descriptors.Count;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting sprites {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
+                    shouldContinue = false;
                     break;
                 }
 
-                var spriteLoader = new CustomSpriteLoader();
-                var sprPath = sprDescriptors[i];
-                var actPath = actDescriptors[i];
+                try {
+                    var descriptor = descriptors[i];
+                    var sprPath = descriptor + ".spr";
+                    var memoryReader = FileManager.ReadSync(descriptor + ".spr");
 
-                var filename = Path.GetFileName(sprPath);
-                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(sprPath);
-                var dir = sprPath.Substring(0, sprPath.IndexOf(filename)).Replace("/", "\\");
+                    if (memoryReader == null) {
+                        Debug.LogError($"Failed to extract {descriptor}");
+                        continue;
+                    }
 
-                string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, "Sprites", dir);
-                Directory.CreateDirectory(assetPath);
-                var spriteData = ScriptableObject.CreateInstance<SpriteData>();
+                    var spr = memoryReader.ToArray();
+                    var act = FileManager.Load(descriptor + ".act") as ACT;
+                    var sprLoader = new CustomSpriteLoader();
 
-                var spriteByteArray = FileManager.ReadSync(sprPath).ToArray();
-                spriteLoader.Load(spriteByteArray, filename);
+                    var filename = Path.GetFileName(sprPath);
+                    var filenameWithoutExtension = Path.GetFileNameWithoutExtension(sprPath);
+                    var dir = sprPath.Substring(0, sprPath.IndexOf(filename)).Replace("/", "\\");
+                    string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, "Sprites", dir);
 
-                var sprites = spriteLoader.Sprites;
-                var act = FileManager.Load(actPath) as ACT;
-                spriteData.act = act;
-                spriteData.sprites = sprites.ToArray();
-                AssetDatabase.CreateAsset(spriteData, Path.Combine(assetPath, $"{filenameWithoutExtension}.asset"));
+                    Directory.CreateDirectory(assetPath);
 
-                foreach (var sprite in sprites) {
-                    AssetDatabase.AddObjectToAsset(sprite, spriteData);
+                    var spriteData = ScriptableObject.CreateInstance<SpriteData>();
+                    sprLoader.Load(spr, filename);
+                    spriteData.act = act;
+                    spritesList.Add(sprLoader.Sprites);
+
+                    var atlas = sprLoader.Atlas;
+                    atlas.alphaIsTransparency = true;
+                    var bytes = atlas.EncodeToPNG();
+
+                    var spritePath = Path.Combine(assetPath, filenameWithoutExtension);
+
+                    var atlasPath = spritePath + ".png";
+                    File.WriteAllBytes(atlasPath, bytes);
+
+                    var fullAssetPath = spritePath + ".asset";
+                    AssetDatabase.CreateAsset(spriteData, fullAssetPath);
+                    spriteDataPaths.Add(spritePath);
+                } catch (Exception ex) {
+                    Debug.LogError($"Failed extracting sprites {ex}");
                 }
             }
-        } finally {
+
             AssetDatabase.StopAssetEditing();
+            AssetDatabase.Refresh();
+            #endregion
+
+            if (!shouldContinue) {
+                return;
+            }
+
+            #region Post process atlases
+            AssetDatabase.StartAssetEditing();
+
+            var dataList = new List<SpriteData>();
+            for (var i = 0; i < spriteDataPaths.Count; i++) {
+                var progress = i * 1f / spriteDataPaths.Count;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Post processing sprites {i} of {spriteDataPaths.Count}\t\t{progress * 100}%", progress)) {
+                    break;
+                }
+
+                try {
+                    var spritePath = spriteDataPaths[i];
+                    var sprites = spritesList[i];
+
+                    var spriteData = AssetDatabase.LoadAssetAtPath(spritePath + ".asset", typeof(SpriteData)) as SpriteData;
+                    dataList.Add(spriteData);
+
+                    if (spriteData != null) {
+                        TextureImporter importer = AssetImporter.GetAtPath(spritePath + ".png") as TextureImporter;
+                        importer.textureType = TextureImporterType.Sprite;
+                        importer.spriteImportMode = SpriteImportMode.Multiple;
+                        var textureSettings = new TextureImporterSettings();
+                        importer.ReadTextureSettings(textureSettings);
+                        textureSettings.spriteMeshType = SpriteMeshType.FullRect;
+
+                        var sheetMetaData = sprites.Select(it => {
+                            return new SpriteMetaData {
+                                rect = it.rect,
+                                name = it.name
+                            };
+                        }).ToArray();
+
+                        importer.spritesheet = sheetMetaData;
+                        importer.SetTextureSettings(textureSettings);
+                        importer.SaveAndReimport();
+                        //AssetDatabase.WriteImportSettingsIfDirty(spritePath + ".png"); //Doesnt seem to do anything
+                    } else {
+                        Debug.LogError($"Failed to load atlas of {spritePath}");
+                    }
+                } catch (Exception ex) {
+                    Debug.LogError($"Failed post processing sprite {ex}");
+                }
+            }
+
+            AssetDatabase.StopAssetEditing();
+            AssetDatabase.Refresh();
+            #endregion
+
+            #region Assign sprites to SpriteData
+            AssetDatabase.StartAssetEditing();
+
+            for (int i = 0; i < spriteDataPaths.Count; i++) {
+                try {
+                    var spritePath = spriteDataPaths[i];
+                    var spriteData = dataList[i];
+                    var savedSprites = AssetDatabase.LoadAllAssetsAtPath(spritePath + ".png")
+                           .Where(it => it is Sprite)
+                           .Select(it => it as Sprite)
+                           .ToArray();
+                    if (savedSprites.Length > 0) {
+                        spriteData.sprites = savedSprites;
+                    } else {
+                        Debug.LogError($"Failed to load sprites of {spritePath}");
+                    }
+                    EditorUtility.SetDirty(spriteData);
+                } catch (Exception ex) {
+                    Debug.LogError($"Failed wrapping up sprite {ex}");
+                }
+            }
+
+            AssetDatabase.StopAssetEditing();
+            AssetDatabase.Refresh();
+            #endregion
+
+            AssetDatabase.SaveAssets();
+        } catch (Exception ex) {
+            Debug.LogError(ex);
+        } finally {
             EditorUtility.ClearProgressBar();
-            EditorApplication.ExitPlaymode();
         }
     }
 
     [MenuItem("UnityRO/Generate Assets/1. Extract Assets")]
     static void ExtractAssets() {
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Textures");
+        EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Sprites");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Prepare/Models");
 
         //var models = Resources.LoadAll(Path.Join("data", "model"));
@@ -129,7 +245,7 @@ public class DataUtility {
     static void CreateAddressableAssets() {
         var textures = Resources.LoadAll(Path.Join("data", "texture")).ToList();
         textures.SetAddressableGroup("Textures", "Textures");
-        
+
         var models = Resources.LoadAll(Path.Join("data", "model")).ToList();
         models.SetAddressableGroup("Models", "Models");
     }
