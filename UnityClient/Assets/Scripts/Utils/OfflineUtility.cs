@@ -58,7 +58,8 @@ public class OfflineUtility : MonoBehaviour {
             MaxHP = 100,
             HP = 100,
             MaxSP = 50,
-            SP = 50
+            SP = 50,
+            ClothesColor = 1,
         });
         entity.transform.position = new Vector3(150, 16, 150);
         entity.SetAttackSpeed(135);

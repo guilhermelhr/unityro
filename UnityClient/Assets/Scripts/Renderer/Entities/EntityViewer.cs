@@ -43,6 +43,7 @@ public class EntityViewer : MonoBehaviour {
 
     private MeshCollider meshCollider;
     private Material SpriteMaterial;
+    private Texture2D PaletteTexture;
 
     public void Start() {
         SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
@@ -120,28 +121,19 @@ public class EntityViewer : MonoBehaviour {
             }
 
             try {
-                //currentSPR = FileManager.Load(path + ".spr", true) as SPR;
-                //currentACT = FileManager.Load(path + ".act", true) as ACT;
-
                 var spriteData = Resources.Load<SpriteData>(Path.Combine("Sprites", path));
-                //var atlas = Resources.Load<Texture2D>(Path.Combine("Sprites", path));
 
+                // Figure out a way of using palettes with shaders
                 //if (palettePath.Length > 0) {
-                //    try {
-                //        var currentPalette = FileManager.Load(palettePath) as byte[];
-                //        if (currentPalette != null && currentPalette.Length > 0) {
-                //            currentSPR.SwitchToRGBA(currentPalette);
-                //        }
-                //    } catch (Exception e) {
-                //        currentSPR.SwitchToRGBA();
-                //        Debug.LogError(e);
-                //        Debug.LogError($"Could not load palettes for: {palettePath}");
+                //    if (FileManager.Load(palettePath) is byte[] currentPalette) {
+                //        PaletteTexture = new Texture2D(256, 1, TextureFormat.RGBA32, false) {
+                //            filterMode = FilterMode.Point,
+                //            wrapMode = TextureWrapMode.Clamp
+                //        };
+                //        PaletteTexture.LoadRawTextureData(currentPalette);
+                //        PaletteTexture.Apply();
                 //    }
-                //} else {
-                    //currentSPR.SwitchToRGBA();
                 //}
-
-                //currentSPR.Compile();
 
                 sprites = spriteData.sprites;
                 currentACT = spriteData.act;
@@ -173,7 +165,7 @@ public class EntityViewer : MonoBehaviour {
                 return;
             }
         }
-        
+
         if (CheckForEntityViewsUpdates()) {
             Init(reloadSprites: true);
             return;
@@ -258,6 +250,8 @@ public class EntityViewer : MonoBehaviour {
                 var go = new GameObject($"Layer{i}");
                 spriteRenderer = go.AddComponent<SpriteRenderer>();
                 spriteRenderer.transform.SetParent(gameObject.transform, false);
+                SpriteMaterial.SetTexture("_PaletteTex", PaletteTexture);
+
                 spriteRenderer.material = SpriteMaterial;
             }
 
