@@ -196,9 +196,9 @@ public class MapRenderer {
         groundCompleted = true;
     }
 
-    private void OnModelsComplete(RSM.CompiledModel[] compiledModels) {
+    private async void OnModelsComplete(RSM.CompiledModel[] compiledModels) {
         models = new Models(compiledModels.ToList());
-        GameManager.StartCoroutine(models.BuildMeshes(OnMapLoadingProgress));
+        await models.BuildMeshes(OnMapLoadingProgress);
 
         modelsCompleted = true;
     }

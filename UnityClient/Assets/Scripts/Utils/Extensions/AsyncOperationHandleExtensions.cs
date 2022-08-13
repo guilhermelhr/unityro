@@ -20,7 +20,7 @@ public static class AsyncOperationHandleExtensions {
             if (_handle.Status == AsyncOperationStatus.Succeeded) {
                 return _handle.Result;
             }
-            throw _handle.OperationException;
+            return default(T);
         }
 
         public void OnCompleted(Action continuation) {
@@ -45,7 +45,7 @@ public static class AsyncOperationHandleExtensions {
             if (_handle.Status == AsyncOperationStatus.Succeeded) {
                 return _handle.Result;
             }
-            throw _handle.OperationException;
+            return null;
         }
 
         public void OnCompleted(Action continuation) {

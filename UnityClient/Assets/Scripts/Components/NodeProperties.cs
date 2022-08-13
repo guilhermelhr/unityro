@@ -1,12 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System;
 using System.IO;
-using ROIO;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using System.Threading.Tasks;
-using Assets.Scripts.Core;
-using System;
 
 public class NodeProperties : MonoBehaviour {
     //hierarchy
@@ -30,11 +25,18 @@ public class NodeProperties : MonoBehaviour {
     private async void LoadTexture() {
         var extension = Path.GetExtension(textureName);
         var nameWithoutExtension = textureName.Substring(0, textureName.IndexOf(extension)).SanitizeForAddressables();
+
         try {
             var texture = await Addressables.LoadAssetAsync<Texture2D>($"data/texture/{nameWithoutExtension}.png");
+            if (texture == null) {
+                var filename = Path.GetFileNameWithoutExtension(textureName).ToLowerInvariant();
+                var oldPath = Path.GetDirectoryName(textureName);
+                var newPath = $"data/texture/{oldPath}/{filename}.png";
+                texture = await Addressables.LoadAssetAsync<Texture2D>(newPath);
+            }
 
             GetComponent<MeshRenderer>().material.mainTexture = texture;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             Debug.LogError(ex);
         }
     }
