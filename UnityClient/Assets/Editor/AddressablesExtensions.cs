@@ -39,6 +39,11 @@ internal static class AddressablesExtensions {
             var length = "Assets/_Generated/Resources/".Length;
 
             for (int i = 0; i < objs.Count; i++) {
+                var progress = i * 1f / objs.Count;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Assigning to addressables group... {i} of {objs.Count}\t\t{progress * 100}%", progress)) {
+                    break;
+                }
+
                 var obj = objs[i];
                 var assetpath = AssetDatabase.GetAssetPath(obj);
                 var guid = AssetDatabase.AssetPathToGUID(assetpath);
@@ -50,6 +55,7 @@ internal static class AddressablesExtensions {
                 }
                 entriesAdded.Add(e);
             }
+            EditorUtility.ClearProgressBar();
 
             group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, false, true);
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, true, false);

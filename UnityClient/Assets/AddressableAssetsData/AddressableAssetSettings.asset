@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: c8605ae38a3d6d64697916b8f9bafe17
   m_CachedHash:
     serializedVersion: 2
-    Hash: 36c6081d87b1935ee636a38d20f734a1
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
@@ -49,6 +49,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4f834531400ef9f4ba338a2861b40e7c, type: 2}
   - {fileID: 11400000, guid: 9c76007bb74d2ef408f85977a212bc6a, type: 2}
   - {fileID: 11400000, guid: 55be4a93164471240aa0f2098f6cc3da, type: 2}
+  - {fileID: 11400000, guid: 2e58fa9ffd268c14e867b70fbb8b838a, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -93,6 +94,7 @@ MonoBehaviour:
     - Textures
     - Models
     - Maps
+    - Sprites
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 135d4f6c62fed7949a0b9550b0f3efbd, type: 2}

@@ -15,10 +15,7 @@ using UnityEngine;
 public class DataUtility {
 
     public static string GENERATED_RESOURCES_PATH = Path.Combine("Assets", "_Generated", "Resources");
-    public static string GENERATED_TEXTURES_PATH = Path.Combine("_Generated", "Resources", "data", "texture");
-    public static string GENERATED_SPRITES_PATH = Path.Combine("_Generated", "Resources", "data", "sprite");
-    public static string GENERATED_MESHES_PATH = Path.Combine("_Generated", "Resources", "data", "model");
-    public static string GENERATED_MAPS_PATH = Path.Combine("_Generated", "Resources", "Prefabs", "Maps");
+    public static string GENERATED_ADDRESSABLES_PATH = Path.Combine("Assets", "_Generated", "AddressablesAssets");
 
     [MenuItem("UnityRO/Utils/Extract/Textures")]
     static void ExtractTextures() {
@@ -106,7 +103,7 @@ public class DataUtility {
                     var filename = Path.GetFileName(sprPath);
                     var filenameWithoutExtension = Path.GetFileNameWithoutExtension(sprPath);
                     var dir = sprPath.Substring(0, sprPath.IndexOf(filename)).Replace("/", "\\");
-                    string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, "Sprites", dir);
+                    string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
 
                     Directory.CreateDirectory(assetPath);
 
@@ -246,6 +243,22 @@ public class DataUtility {
 
         var models = Resources.LoadAll(Path.Join("data", "model")).ToList();
         models.SetAddressableGroup("Models", "Models");
+
+        var sprites = Resources.LoadAll(Path.Join("data", "sprite"))
+            .Where(it => it is Texture2D || it is SpriteData) // filter out the thousands of sprites we've created
+            .ToList();
+        sprites.SetAddressableGroup("Sprites", "Sprites");
+    }
+
+    [MenuItem("UnityRO/Generate Assets/3. Rename Generated Resources folder")]
+    static void RanameGeneratedResourcesFolder() {
+        /**
+         * This exists because Unity will pack anything under ../Resources/..
+         * So we must rename the folder to any other name other than Resources
+         * (That's what the addressables system does when you drag and drop a file to it)
+         */
+        Directory.Move(GENERATED_RESOURCES_PATH, GENERATED_ADDRESSABLES_PATH);
+        AssetDatabase.Refresh();
     }
 
     private static string ExtractFile(string path) {

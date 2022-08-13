@@ -16,43 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: d704b28aa1e6cb946a8b57b90a4487f1
-  m_SerializeEntries:
-  - m_GUID: 9c8c09b2439000745ab2e2c798192776
-    m_Address: Maps/airplane
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Maps
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e1e016bfe1b42b64ba02835698321973
-    m_Address: Maps/airplane
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Maps
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c6da680a823bfab4f8e88c43821138cb
-    m_Address: Maps/prontera
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Maps
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 740b18d72d8272c4fa488d11c2203a3c
-    m_Address: Maps/prontera
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Maps
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9ea4245c05b042e4ba28489f68f53db5
-    m_Address: Maps/izlude
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Maps
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6c61a044763d4e34a8c822a11d7adee7
-    m_Address: Maps/izlude
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Maps
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c99779a8de5df7a409366194290f8300, type: 2}
   m_SchemaSet:
