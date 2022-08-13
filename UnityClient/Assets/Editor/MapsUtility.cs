@@ -37,7 +37,7 @@ public class MapsUtility {
     static void ExtractCurrentlySelectedMesh() {
         var mesh = Selection.activeGameObject;
 
-        ExtractMesh(mesh);
+        ModelsUtility.ExtractMesh(mesh);
     }
 
     [MenuItem("UnityRO/Utils/Prefabs/Create Current Map Prefab")]
@@ -52,7 +52,7 @@ public class MapsUtility {
 
     public static void SaveMap(GameObject mapObject, GameManager gameManager) {
         string mapName = Path.GetFileNameWithoutExtension(mapObject.name);
-        string localPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "Maps");
+        string localPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "maps");
         Directory.CreateDirectory(localPath);
 
         try {
@@ -85,7 +85,7 @@ public class MapsUtility {
         for (int i = 0; i < waterMeshes.transform.childCount; i++) {
             var mesh = waterMeshes.transform.GetChild(i);
             mesh.gameObject.SetActive(true);
-            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "Maps", mapName, "water", $"_{i}");
+            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "maps", mapName, "water", $"_{i}");
             Directory.CreateDirectory(meshPath);
 
             var progress = i * 1f / waterMeshes.transform.childCount;
@@ -123,7 +123,7 @@ public class MapsUtility {
         for (int i = 0; i < groundMeshes.transform.childCount; i++) {
             var mesh = groundMeshes.transform.GetChild(i);
             mesh.gameObject.SetActive(true);
-            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "Maps", mapName, "ground", $"_{i}");
+            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "maps", mapName, "ground", $"_{i}");
             Directory.CreateDirectory(meshPath);
 
             var progress = i * 1f / groundMeshes.transform.childCount;
@@ -179,8 +179,9 @@ public class MapsUtility {
                 }
 
                 var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}_{k}.asset"));
+                var materialPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}_{k}.mat"));
                 AssetDatabase.CreateAsset(filter.mesh, partPath);
-                AssetDatabase.AddObjectToAsset(material, partPath);
+                AssetDatabase.CreateAsset(material, materialPath);
 
                 var prefabPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.prefab"));
                 UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, prefabPath, InteractionMode.UserAction);
@@ -208,7 +209,7 @@ public class MapsUtility {
             mesh.gameObject.SetActive(true);
 
             try {
-                ExtractMesh(mesh.gameObject, newOriginalParent.transform);
+                ModelsUtility.ExtractMesh(mesh.gameObject, newOriginalParent.transform);
             } catch (Exception e) {
                 Debug.LogError(e);
                 Debug.LogError($"Error extracting model {mesh.gameObject.name}");
@@ -256,41 +257,6 @@ public class MapsUtility {
 
         GameObject.DestroyImmediate(clonedMeshes.gameObject);
         GameObject.DestroyImmediate(originalMeshes.gameObject);
-    }
-
-    public static void ExtractMesh(GameObject mesh, Transform overrideParent = null) {
-        string meshPathWithoutExtension;
-        if (Path.GetExtension(mesh.name) == "") {
-            meshPathWithoutExtension = mesh.name;
-        } else {
-            meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
-        }
-        var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "model", meshPathWithoutExtension);
-        Directory.CreateDirectory(meshPath);
-
-        if (File.Exists(meshPath + ".prefab")) {
-            var prefabObject = AssetDatabase.LoadAssetAtPath(meshPath + ".prefab", typeof(GameObject)) as GameObject;
-            var prefab = UnityEditor.PrefabUtility.InstantiatePrefab(prefabObject, mesh.transform.parent) as GameObject;
-            prefab.transform.SetPositionAndRotation(mesh.transform.position, mesh.transform.rotation);
-            prefab.transform.localScale = mesh.transform.localScale;
-            if (overrideParent != null) {
-                prefab.transform.SetParent(overrideParent);
-            }
-        } else {
-            var nodes = mesh.GetComponentsInChildren<NodeProperties>();
-            foreach (var node in nodes) {
-                var filter = node.GetComponent<MeshFilter>();
-                var material = node.GetComponent<MeshRenderer>().material;
-
-                var nodeName = node.mainName.Length == 0 ? "node" : node.mainName;
-                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{nodeName}_{node.nodeId}.asset"));
-                AssetDatabase.CreateAsset(filter.mesh, partPath);
-                AssetDatabase.AddObjectToAsset(material, partPath);
-            }
-
-            meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
-            PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
-        }
     }
 
     internal static GameObject FindMap() {

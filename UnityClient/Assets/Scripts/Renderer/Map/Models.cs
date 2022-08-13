@@ -23,10 +23,10 @@ public class Models {
     public class AnimProperties {
         [SerializeField]
         public List<Quaternion> rotKeyframes;
-        
+
         [SerializeField]
         public List<int> rotKeyframesKeys;
-        
+
         [SerializeField]
         public List<Vector3> posKeyframes;
 
@@ -58,7 +58,7 @@ public class Models {
             RSM.CompiledModel model = models[index];
             var filenameWithoutExtension = model.rsm.filename.Substring(0, model.rsm.filename.IndexOf(".rsm"));
             var prefabRequest = Addressables.LoadAssetAsync<GameObject>(Path.Combine("data", "model", $"{filenameWithoutExtension}.prefab").SanitizeForAddressables());
-            while(!prefabRequest.IsDone) {
+            while (!prefabRequest.IsDone) {
                 yield return prefabRequest;
             }
             if (prefabRequest.Result != null) {

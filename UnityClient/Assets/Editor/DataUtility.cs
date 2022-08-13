@@ -29,19 +29,26 @@ public class DataUtility {
             AssetDatabase.StartAssetEditing();
 
             var file = 1f;
-            foreach (var entry in textureDescriptors) {
+            foreach (var path in textureDescriptors) {
                 try {
                     var progress = file / textureDescriptors.Count;
                     if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting texture {file} of {textureDescriptors.Count}\t\t{progress * 100}%", progress)) {
                         break;
                     }
 
-                    string completePath = ExtractFile(entry);
+                    var filename = Path.GetFileName(path);
+                    var filenameWithoutExtension = Path.GetFileNameWithoutExtension(path).SanitizeForAddressables();
+                    var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
 
-                    if (completePath == null) {
-                        file++;
-                        continue;
-                    }
+                    string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
+
+                    Directory.CreateDirectory(assetPath);
+
+                    var texture = FileManager.Load(path) as Texture2D;
+                    texture.alphaIsTransparency = true;
+                    var bytes = texture.EncodeToPNG();
+                    var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".png");
+                    File.WriteAllBytes(completePath, bytes);
 
                     file++;
                 } catch (Exception e) {
@@ -225,13 +232,6 @@ public class DataUtility {
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Sprites");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Prepare/Models");
 
-        //var models = Resources.LoadAll(Path.Join("data", "model"));
-        //foreach (var model in models) {
-        //    model.SetAddressableGroup("Models");
-        //}
-
-        //TODO
-        // Extract sprites
         // Extract effects
         // Generate map prefabs
     }
@@ -259,31 +259,6 @@ public class DataUtility {
          */
         Directory.Move(GENERATED_RESOURCES_PATH, GENERATED_ADDRESSABLES_PATH);
         AssetDatabase.Refresh();
-    }
-
-    private static string ExtractFile(string path) {
-        if (!path.StartsWith("data/texture/")) {
-            return null;
-        }
-        var filename = Path.GetFileName(path);
-        var filenameWithoutExtension = Path.GetFileNameWithoutExtension(path).SanitizeForAddressables();
-        var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
-
-        string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
-
-        Directory.CreateDirectory(assetPath);
-
-        var texture = FileManager.Load(path) as Texture2D;
-        if (texture == null) {
-            return null;
-        }
-        texture.alphaIsTransparency = true;
-        var bytes = texture.EncodeToPNG();
-        var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".png");
-        File.WriteAllBytes(completePath, bytes);
-
-
-        return completePath;
     }
 
     private static string[] GetFilesFromDir(string dir) {

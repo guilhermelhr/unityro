@@ -7,7 +7,6 @@ using UnityEngine;
 [InitializeOnLoadAttribute]
 public class ModelsUtility {
 
-    private static string GENERATED_RESOURCES_PATH = Path.Combine("Assets", "_Generated", "Resources");
     [MenuItem("UnityRO/Utils/Prepare/Models")]
     static void PrepareModels() {
         EditorSceneManager.OpenScene("Assets/Scenes/UtilityScenes/ModelsScene.unity");
@@ -30,31 +29,55 @@ public class ModelsUtility {
                 }
 
                 var mesh = originalMeshes.transform.GetChild(i);
-
-                var meshFileName = Path.GetFileNameWithoutExtension(mesh.name);
-                var meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
-                var meshPath = Path.Combine(GENERATED_RESOURCES_PATH, meshPathWithoutExtension);
-                Directory.CreateDirectory(meshPath);
-
-                var filters = mesh.GetComponentsInChildren<MeshFilter>();
-                var renderers = mesh.GetComponentsInChildren<MeshRenderer>();
-                for (int k = 0; k < filters.Length; k++) {
-                    var filter = filters[k];
-                    var material = renderers[k].material;
-
-                    var filterName = filter.gameObject.name.Replace("/", ".").Replace("\\", ".");
-
-                    AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{meshFileName}_{filterName}_{i}_{k}.mat"));
-                    AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{meshFileName}_{filterName}_{i}_{k}.asset"));
-                }
-
-                meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
-                PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
+                ExtractMesh(mesh.gameObject);
             }
         } finally {
             EditorUtility.ClearProgressBar();
             EditorApplication.ExitPlaymode();
             AssetDatabase.StopAssetEditing();
+        }
+    }
+
+    public static void ExtractMesh(GameObject mesh, Transform overrideParent = null) {
+        string meshPathWithoutExtension;
+        if (Path.GetExtension(mesh.name) == "") {
+            meshPathWithoutExtension = mesh.name;
+        } else {
+            meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
+        }
+
+        string meshPath;
+        if (mesh.name.Contains("data/model")) {
+            meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, meshPathWithoutExtension);
+        } else {
+            meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "model", meshPathWithoutExtension);
+        }
+
+        Directory.CreateDirectory(meshPath);
+
+        if (File.Exists(meshPath + ".prefab")) {
+            var prefabObject = AssetDatabase.LoadAssetAtPath(meshPath + ".prefab", typeof(GameObject)) as GameObject;
+            var prefab = UnityEditor.PrefabUtility.InstantiatePrefab(prefabObject, mesh.transform.parent) as GameObject;
+            prefab.transform.SetPositionAndRotation(mesh.transform.position, mesh.transform.rotation);
+            prefab.transform.localScale = mesh.transform.localScale;
+            if (overrideParent != null) {
+                prefab.transform.SetParent(overrideParent);
+            }
+        } else {
+            var nodes = mesh.GetComponentsInChildren<NodeProperties>();
+            foreach (var node in nodes) {
+                var filter = node.GetComponent<MeshFilter>();
+                var material = node.GetComponent<MeshRenderer>().material;
+
+                var nodeName = node.mainName.Length == 0 ? "node" : node.mainName;
+                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{nodeName}_{node.nodeId}.asset"));
+                var materialPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{nodeName}_{node.nodeId}.mat"));
+                AssetDatabase.CreateAsset(filter.mesh, partPath);
+                AssetDatabase.CreateAsset(material, materialPath);
+            }
+
+            meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
+            PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
         }
     }
 }

@@ -28,8 +28,8 @@ public class OfflineUtility : MonoBehaviour {
         MapLoadingTimes = new List<long>();
         MapNames = new List<string>();
 
-        SpawnCharacter();
-        //GameManager.BeginMapLoading(MapName);
+        //SpawnCharacter();
+        GameManager.BeginMapLoading(MapName);
         
         var descriptors = FileManager.GetFileDescriptors();
         foreach (var key in descriptors.Keys) {
