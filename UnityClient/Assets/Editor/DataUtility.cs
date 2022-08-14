@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -226,7 +227,7 @@ public class DataUtility {
         }
     }
 
-    [MenuItem("UnityRO/Generate Assets/1. Extract Assets")]
+    [MenuItem("UnityRO/1. Extract Assets")]
     static void ExtractAssets() {
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Textures");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Sprites");
@@ -236,7 +237,75 @@ public class DataUtility {
         // Generate map prefabs
     }
 
-    [MenuItem("UnityRO/Generate Assets/2. Create Addressable Assets")]
+    [MenuItem("UnityRO/2. Check for missing assets")]
+    static void CheckForMissingAssets() {
+        AssetDatabase.Refresh();
+
+        var config = ConfigurationLoader.Init();
+        FileManager.LoadGRF(config.root, config.grf);
+        var descriptors = FileManager.GetFileDescriptors();
+
+        var textureDescriptors = FilterDescriptors(descriptors, "data/texture")
+            .Select(it => {
+                var dir = Path.GetDirectoryName(it);
+                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(it);
+
+                return Path.Combine(GENERATED_RESOURCES_PATH, dir, filenameWithoutExtension + ".png");
+            }).ToList();
+
+        var modelDescriptors = FilterDescriptors(descriptors, "data/model")
+            .Where(it => Path.GetExtension(it) == ".rsm")
+            .Select(it => {
+                var dir = Path.GetDirectoryName(it);
+                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(it);
+
+                return Path.Combine(GENERATED_RESOURCES_PATH, dir, filenameWithoutExtension + ".prefab");
+            }).ToList();
+
+        var spriteDescriptors = FilterDescriptors(descriptors, "data/sprite")
+            .Select(it => {
+                var dir = Path.GetDirectoryName(it);
+                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(it);
+
+                return Path.Combine(GENERATED_RESOURCES_PATH, dir, filenameWithoutExtension + ".asset");
+            }).ToList();
+
+        List<string> missingTextures = new List<string>(textureDescriptors.Count);
+        Parallel.ForEach(textureDescriptors, (descriptor) => {
+            if (!File.Exists(descriptor)) {
+                lock (missingTextures) {
+                    missingTextures.Add(descriptor);
+                }
+            }
+        });
+
+        File.WriteAllLines("Assets/Logs/missing-textures.txt", missingTextures);
+        Debug.LogError($"{missingTextures.Count} out of {textureDescriptors.Count} textures not found. Full list saved to Assets/Logs/missing-textures.txt");
+
+        List<string> missingModels = new List<string>(modelDescriptors.Count);
+        Parallel.ForEach(modelDescriptors, descriptor => {
+            lock(missingModels) {
+                missingModels.Add(descriptor);
+
+            }
+        });
+
+        File.WriteAllLines("Assets/Logs/missing-models.txt", missingModels);
+        Debug.LogError($"{missingModels.Count} out of {modelDescriptors.Count} models not found. Full list saved to Assets/Logs/missing-models.txt");
+
+        List<string> missingSprites = new List<string>(spriteDescriptors.Count);
+        Parallel.ForEach(spriteDescriptors, (descriptor) => {
+            if (!File.Exists(descriptor)) {
+                lock (missingSprites) {
+                    missingSprites.Add(descriptor);
+                }
+            }
+        });
+        File.WriteAllLines("Assets/Logs/missing-sprites.txt", missingModels);
+        Debug.LogError($"{missingSprites.Count} out of {spriteDescriptors.Count} models not found. Full list saved to Assets/Logs/missing-sprites.txt");
+    }
+
+    [MenuItem("UnityRO/3. Create Addressable Assets")]
     static void CreateAddressableAssets() {
         var textures = Resources.LoadAll(Path.Join("data", "texture")).ToList();
         textures.SetAddressableGroup("Textures", "Textures");
@@ -250,7 +319,8 @@ public class DataUtility {
         sprites.SetAddressableGroup("Sprites", "Sprites");
     }
 
-    [MenuItem("UnityRO/Generate Assets/3. Rename Generated Resources folder")]
+
+    [MenuItem("UnityRO/4. Rename Generated Resources folder")]
     static void RanameGeneratedResourcesFolder() {
         /**
          * This exists because Unity will pack anything under ../Resources/..

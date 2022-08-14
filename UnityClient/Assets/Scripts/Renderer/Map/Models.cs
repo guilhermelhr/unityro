@@ -44,7 +44,7 @@ public class Models {
         public bool isChild;
     }
 
-    public async Task BuildMeshes(Action<float> OnProgress) {
+    public IEnumerator BuildMeshes(Action<float> OnProgress) {
         GameObject modelsParent = new GameObject("_Models");
         GameObject originals = new GameObject("_Originals");
         GameObject copies = new GameObject("_Copies");
@@ -55,19 +55,16 @@ public class Models {
 
         int nodeId = 0;
 
-        var prefabLoadingTasks = new List<Task<GameObject>>();
-        foreach (var model in models) {
+        for (int index = 0; index < models.Count; index++) {
+            RSM.CompiledModel model = models[index];
             var filenameWithoutExtension = model.rsm.filename.Substring(0, model.rsm.filename.IndexOf(".rsm"));
-            var task = Addressables.LoadAssetAsync<GameObject>(Path.Combine("data", "model", $"{filenameWithoutExtension}.prefab").SanitizeForAddressables()).Task;
-            prefabLoadingTasks.Add(task);
-        }
-        var prefabs = await Task.WhenAll(prefabLoadingTasks);
-        for (int i = 0; i < prefabs.Length; i++) {
-            var prefab = prefabs[i];
-            var model = models[i];
 
-            if (prefab != null) {
-                prefabDict.Add(model.rsm.filename, prefab);
+            var prefabRequest = Addressables.LoadAssetAsync<GameObject>(Path.Combine("data", "model", $"{filenameWithoutExtension}.prefab").SanitizeForAddressables());
+            while (!prefabRequest.IsDone) {
+                yield return prefabRequest;
+            }
+            if (prefabRequest.Result != null) {
+                prefabDict.Add(model.rsm.filename, prefabRequest.Result);
             }
         }
 
@@ -130,7 +127,9 @@ public class Models {
 
                 instanceObj.SetActive(true);
             }
+            yield return null;
         }
+        yield return null;
     }
 
     private int CreateOriginalModel(int nodeId, RSM.CompiledModel model, GameObject modelObj) {

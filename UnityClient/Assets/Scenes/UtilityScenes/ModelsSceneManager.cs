@@ -1,6 +1,7 @@
 using ROIO;
 using ROIO.Loaders;
 using ROIO.Models.FileTypes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -13,27 +14,43 @@ public class ModelsSceneManager : MonoBehaviour {
     internal float onProgress;
 
     // Start is called before the first frame update
-    async void Start() {
+    void Start() {
         var config = ConfigurationLoader.Init();
         FileManager.LoadGRF(config.root, config.grf);
         var descriptorsHashtable = FileManager.GetFileDescriptors();
-        var descriptors = new DictionaryEntry[descriptorsHashtable.Count];
-        descriptorsHashtable.CopyTo(descriptors, 0);
-        var modelDescriptors = descriptors.Where(it => Path.GetExtension(it.Key.ToString()) == ".rsm").ToList();
+
+        var modelDescriptors = new List<string>();
+        try {
+            var lines = File.ReadAllLines("Assets/Logs/missing-models.txt");
+            modelDescriptors = lines.Select(it => {
+                var dir = Path.GetDirectoryName(it)["Assets\\_Generated\\Resources\\".Length..];
+                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(it);
+
+                return Path.Combine(dir, filenameWithoutExtension + ".rsm");
+            }).ToList();
+        } catch {
+            var descriptors = new DictionaryEntry[descriptorsHashtable.Count];
+            descriptorsHashtable.CopyTo(descriptors, 0);
+            modelDescriptors = descriptors.Where(it => Path.GetExtension(it.Key.ToString()) == ".rsm").Select(it => it.Key.ToString()).ToList();
+        }
 
         MapRenderer.mapParent = gameObject;
         List<RSM.CompiledModel> compiledModels = new List<RSM.CompiledModel>();
 
         foreach (var descriptor in modelDescriptors) {
-            RSM model = FileManager.Load(descriptor.Key.ToString()) as RSM;
+            RSM model = FileManager.Load(descriptor) as RSM;
             if (model != null) {
-                model.filename = descriptor.Key.ToString();
+                model.filename = descriptor;
                 compiledModels.Add(ModelLoader.Compile(model));
+            } else {
+                Debug.LogError($"Failed to compile {descriptor}");
             }
         }
 
+        Debug.Log($"Finished compiling {compiledModels.Count} of {modelDescriptors.Count} models");
+
         var count = 0;
-        await new Models(compiledModels).BuildMeshes(delegate (float progress) {
+        StartCoroutine(new Models(compiledModels).BuildMeshes(delegate (float progress) {
             count++;
 
             if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Loading models - {progress * 100}%", progress)) {
@@ -45,7 +62,7 @@ public class ModelsSceneManager : MonoBehaviour {
                 EditorUtility.ClearProgressBar();
                 EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Models");
             }
-        });
+        }));
     }
 }
 #endif

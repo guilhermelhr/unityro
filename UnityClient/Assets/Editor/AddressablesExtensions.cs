@@ -1,6 +1,7 @@
 ﻿
 #if UNITY_EDITOR
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
@@ -38,14 +39,16 @@ internal static class AddressablesExtensions {
             var entriesAdded = new List<AddressableAssetEntry>();
             var length = "Assets/_Generated/Resources/".Length;
 
+            AssetDatabase.StartAssetEditing();
             for (int i = 0; i < objs.Count; i++) {
                 var progress = i * 1f / objs.Count;
                 if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Assigning to addressables group... {i} of {objs.Count}\t\t{progress * 100}%", progress)) {
                     break;
                 }
 
+
                 var obj = objs[i];
-                var assetpath = AssetDatabase.GetAssetPath(obj);
+                string assetpath = AssetDatabase.GetAssetPath(obj);
                 var guid = AssetDatabase.AssetPathToGUID(assetpath);
 
                 var e = settings.CreateOrMoveEntry(guid, group, false, false);
@@ -55,10 +58,11 @@ internal static class AddressablesExtensions {
                 }
                 entriesAdded.Add(e);
             }
+            AssetDatabase.StopAssetEditing();
             EditorUtility.ClearProgressBar();
 
-            group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, false, true);
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, true, false);
+            group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryCreated, entriesAdded, true, true);
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryCreated, entriesAdded, true, false);
         }
     }
 }

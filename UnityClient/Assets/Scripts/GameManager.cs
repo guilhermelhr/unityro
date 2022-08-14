@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour {
         OnPostRender();
     }
 
-    async void Start() {
+    void Start() {
         Configs = ConfigurationLoader.Init();
 
         LoadGrf();

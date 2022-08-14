@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -29,7 +30,11 @@ public class ModelsUtility {
                 }
 
                 var mesh = originalMeshes.transform.GetChild(i);
-                ExtractMesh(mesh.gameObject);
+                try {
+                    ExtractMesh(mesh.gameObject);
+                } catch (Exception ex) {
+
+                }
             }
         } finally {
             EditorUtility.ClearProgressBar();
@@ -40,7 +45,7 @@ public class ModelsUtility {
 
     public static void ExtractMesh(GameObject mesh, Transform overrideParent = null) {
         string meshPathWithoutExtension;
-        if (Path.GetExtension(mesh.name) == "") {
+        if (Path.GetExtension(mesh.name).Length == 0) {
             meshPathWithoutExtension = mesh.name;
         } else {
             meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
@@ -64,20 +69,24 @@ public class ModelsUtility {
                 prefab.transform.SetParent(overrideParent);
             }
         } else {
-            var nodes = mesh.GetComponentsInChildren<NodeProperties>();
-            foreach (var node in nodes) {
-                var filter = node.GetComponent<MeshFilter>();
-                var material = node.GetComponent<MeshRenderer>().material;
+            try {
+                var nodes = mesh.GetComponentsInChildren<NodeProperties>();
+                foreach (var node in nodes) {
+                    var filter = node.GetComponent<MeshFilter>();
+                    var material = node.GetComponent<MeshRenderer>().material;
 
-                var nodeName = node.mainName.Length == 0 ? "node" : node.mainName;
-                var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{nodeName}_{node.nodeId}.asset"));
-                var materialPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{nodeName}_{node.nodeId}.mat"));
-                AssetDatabase.CreateAsset(filter.mesh, partPath);
-                AssetDatabase.CreateAsset(material, materialPath);
+                    var nodeName = node.mainName.Length == 0 ? "node" : node.mainName;
+                    var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{nodeName}_{node.nodeId}.asset"));
+                    var materialPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{nodeName}_{node.nodeId}.mat"));
+                    AssetDatabase.CreateAsset(filter.mesh, partPath);
+                    AssetDatabase.CreateAsset(material, materialPath);
+                }
+
+                meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
+                PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
+            } catch(Exception ex) {
+                Debug.LogError($"Failed extracting model {mesh.name}");
             }
-
-            meshPath = AssetDatabase.GenerateUniqueAssetPath(meshPath + ".prefab");
-            PrefabUtility.SaveAsPrefabAssetAndConnect(mesh.gameObject, meshPath, InteractionMode.UserAction);
         }
     }
 }
