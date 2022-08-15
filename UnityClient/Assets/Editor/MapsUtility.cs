@@ -72,6 +72,7 @@ public class MapsUtility {
 
             localPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(localPath, $"{mapName}.prefab"));
             UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(mapObject, localPath, InteractionMode.UserAction);
+            ImportAssetAndApplyAddressableGroup(localPath, typeof(GameObject));
         } finally {
             EditorUtility.ClearProgressBar();
         }
@@ -108,12 +109,21 @@ public class MapsUtility {
                     AssetDatabase.ImportAsset(path);
                     var tex = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)) as Texture2D;
                     material.SetTexture("_MainTex", tex);
+                    tex.SetAddressableGroup("Maps", "Maps");
                 }
 
-                AssetDatabase.CreateAsset(material, Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.mat"));
-                AssetDatabase.CreateAsset(filter.mesh, Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.asset"));
+                var materialPath = Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.mat");
+                AssetDatabase.CreateAsset(material, materialPath);
+                ImportAssetAndApplyAddressableGroup(materialPath, typeof(Material));
+
+
+                var filterPath = Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.asset");
+                AssetDatabase.CreateAsset(filter.mesh, filterPath);
+                ImportAssetAndApplyAddressableGroup(filterPath, typeof(Mesh));
+
                 var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.prefab"));
                 UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, partPath, InteractionMode.UserAction);
+                ImportAssetAndApplyAddressableGroup(partPath, typeof(GameObject));
             }
         }
     }
@@ -152,6 +162,7 @@ public class MapsUtility {
                     AssetDatabase.ImportAsset(path);
                     var tex = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)) as Texture2D;
                     material.SetTexture("_MainTex", tex);
+                    tex.SetAddressableGroup("Maps", "Maps");
                 }
                 if (lightmapTex != null) {
                     if (!lightmapTex.isReadable) {
@@ -164,6 +175,7 @@ public class MapsUtility {
                     AssetDatabase.ImportAsset(path);
                     var tex = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)) as Texture2D;
                     material.SetTexture("_Lightmap", tex);
+                    tex.SetAddressableGroup("Maps", "Maps");
                 }
                 if (tintmapTex != null) {
                     if (!tintmapTex.isReadable) {
@@ -176,6 +188,7 @@ public class MapsUtility {
                     AssetDatabase.ImportAsset(path);
                     var tex = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)) as Texture2D;
                     material.SetTexture("_Tintmap", tex);
+                    tex.SetAddressableGroup("Maps", "Maps");
                 }
 
                 var partPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}_{k}.asset"));
@@ -185,6 +198,10 @@ public class MapsUtility {
 
                 var prefabPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(meshPath, $"{filter.gameObject.name.SanitizeForAddressables()}.prefab"));
                 UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(filter.gameObject, prefabPath, InteractionMode.UserAction);
+
+                ImportAssetAndApplyAddressableGroup(partPath, typeof(Mesh));
+                ImportAssetAndApplyAddressableGroup(materialPath, typeof(Material));
+                ImportAssetAndApplyAddressableGroup(prefabPath, typeof(GameObject));
             }
         }
     }
@@ -265,6 +282,12 @@ public class MapsUtility {
             .GetRootGameObjects()
             .ToList()
             .Find(go => go.tag == "Map" && go.activeInHierarchy);
+    }
+
+    private static void ImportAssetAndApplyAddressableGroup(string path, Type type) {
+        AssetDatabase.ImportAsset(path);
+        var asset = AssetDatabase.LoadAssetAtPath(path, type);
+        asset.SetAddressableGroup("Maps", "Maps");
     }
 
     #region Validators

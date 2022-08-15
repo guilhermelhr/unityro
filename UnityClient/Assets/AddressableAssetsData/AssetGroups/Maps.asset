@@ -16,7 +16,109 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: d704b28aa1e6cb946a8b57b90a4487f1
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 5f0172a3a5f26eb4aa83035529340084
+    m_Address: data/maps/izlude/ground/_0/texture.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c39e09747c0673842b65275b12e41238
+    m_Address: data/maps/izlude/ground/_0/lightmap.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 560bbbb1ff38a57449bf489a86b73598
+    m_Address: data/maps/izlude/ground/_0/tintmap.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b2d6940672be13b4fbdbbeb4cc6746b4
+    m_Address: data/maps/izlude/ground/_0/Ground_0__0.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 44468db4fd6fad844b1d976a946b965a
+    m_Address: data/maps/izlude/ground/_0/Ground_0__0.mat
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5099a7ab69b0c814d8a98c599ff5a503
+    m_Address: data/maps/izlude/ground/_0/Ground_0_.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 80dec433bb164b74d80e13f8b83c5439
+    m_Address: data/maps/izlude/ground/_1/texture.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 04b851b724a7bd34db5d2dc003db0f97
+    m_Address: data/maps/izlude/ground/_1/lightmap.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3077a8ac8571d9746ba4c8fd8bbafc24
+    m_Address: data/maps/izlude/ground/_1/tintmap.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de71312ed6277264aaf48e2ab44f2d33
+    m_Address: data/maps/izlude/ground/_1/Ground_1__0.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e038c0637be7fd4ab7461dc6cb9ef38
+    m_Address: data/maps/izlude/ground/_1/Ground_1__0.mat
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 908a466df3d6d0846b916360670edfe9
+    m_Address: data/maps/izlude/ground/_1/Ground_1_.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b55c6e7a6b110ee49896c02dd7c63b4a
+    m_Address: data/maps/izlude/water/_0/texture.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8d2c2be2d3618e44ebe71b15bd746d3b
+    m_Address: data/maps/izlude/water/_0/Water_0_.mat
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d3316b7ecd3db14d95694aa418c9c1e
+    m_Address: data/maps/izlude/water/_0/Water_0_.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9158b914cbd2a643a99351dc01e5a55
+    m_Address: data/maps/izlude/water/_0/Water_0_.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d81fb663006929a428cf08d3b5cb88a4
+    m_Address: data/maps/izlude.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c99779a8de5df7a409366194290f8300, type: 2}
   m_SchemaSet:

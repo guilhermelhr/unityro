@@ -319,7 +319,6 @@ public class DataUtility {
         sprites.SetAddressableGroup("Sprites", "Sprites");
     }
 
-
     [MenuItem("UnityRO/4. Rename Generated Resources folder")]
     static void RanameGeneratedResourcesFolder() {
         /**

@@ -1,7 +1,6 @@
 ﻿
 #if UNITY_EDITOR
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
@@ -9,7 +8,7 @@ using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 
 internal static class AddressablesExtensions {
-    internal static void SetAddressableGroup(this Object obj, string groupName) {
+    internal static void SetAddressableGroup(this Object obj, string groupName, string labelName) {
         var settings = AddressableAssetSettingsDefaultObject.Settings;
 
         if (settings) {
@@ -19,12 +18,17 @@ internal static class AddressablesExtensions {
 
             var assetpath = AssetDatabase.GetAssetPath(obj);
             var guid = AssetDatabase.AssetPathToGUID(assetpath);
+            var length = "Assets/_Generated/Resources/".Length;
 
             var e = settings.CreateOrMoveEntry(guid, group, false, false);
+            e.SetAddress(e.address[length..], false);
+            if (labelName != null) {
+                e.SetLabel(labelName, true, true, false);
+            }
             var entriesAdded = new List<AddressableAssetEntry> { e };
 
-            group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, false, true);
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, true, false);
+            group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryCreated, entriesAdded, true, true);
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryCreated, entriesAdded, true, false);
         }
     }
 

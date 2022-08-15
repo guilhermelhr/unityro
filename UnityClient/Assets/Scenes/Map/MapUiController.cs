@@ -50,7 +50,7 @@ public class MapUiController : MonoBehaviour {
         details.transform.SetParent(gameObject.transform);
     }
 
-    private void OnGUI() {
+    private void LateUpdate() {
         if (!Event.current.isKey || Event.current.keyCode == KeyCode.None)
             return;
         switch (Event.current.type) {

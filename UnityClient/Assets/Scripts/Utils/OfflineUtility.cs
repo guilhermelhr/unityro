@@ -13,7 +13,7 @@ public class OfflineUtility : MonoBehaviour {
     private GameManager GameManager;
     private EntityManager EntityManager;
 
-    public string MapName = "prontera";
+    public string MapName = "izlude";
     public List<long> MapLoadingTimes;
     public List<string> MapNames;
 
