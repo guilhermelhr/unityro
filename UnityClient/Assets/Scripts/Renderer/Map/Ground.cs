@@ -70,6 +70,7 @@ public class Ground {
         GL.LoadPixelMatrix(0, width, 0, height);
 
         for (int i = 0; i < count; i++) {
+            // TODO remove this
             var texture = FileManager.Load(textures[i]) as Texture2D;
             var x = (float) (i % _width) * 258;
             var y = (float) Math.Floor(i / _width) * 258;

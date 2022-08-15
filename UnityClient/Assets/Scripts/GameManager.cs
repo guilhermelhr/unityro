@@ -119,7 +119,11 @@ public class GameManager : MonoBehaviour {
         SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         EntityManager.ClearEntities();
-        await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
+
+        AsyncMapLoader.GameMap gameMap = await new AsyncMapLoader().Load($"{mapName}.rsw");
+        MapRenderer.OnMapComplete(gameMap);
+
+        //await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
 
         SceneManager.UnloadSceneAsync("LoadingScene");
         OnMapLoaded?.Invoke();

@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Renderer.Map;
 using ROIO;
+using ROIO.Loaders;
 using ROIO.Models.FileTypes;
 using System;
 using System.Linq;
@@ -38,8 +39,7 @@ public class MapRenderer {
         get { return worldCompleted && altitudeCompleted && groundCompleted && modelsCompleted; }
     }
 
-    // TODO this PathFinder here probably can be somewhere else
-    public MapRenderer(GameManager gameManager,  AudioMixerGroup audioMixerGroup, Light worldLight) {
+    public MapRenderer(GameManager gameManager, AudioMixerGroup audioMixerGroup, Light worldLight) {
         SoundsMixerGroup = audioMixerGroup;
         WorldLight = worldLight;
         GameManager = gameManager;
@@ -97,15 +97,21 @@ public class MapRenderer {
     }
 
     private void OnMapComplete(string mapname) {
-        //everything needed was loaded, no need to keep the current cache
-        //FileCache.Report();
         FileCache.ClearAll();
 
+        InitializeSounds();
+        MaybeInitSky(mapname);
+        CreateLightPoints();
+    }
+
+    private void InitializeSounds() {
         //add sounds to playlist (and cache)
         foreach (var sound in world.sounds) {
             sounds.Add(sound, null);
         }
+    }
 
+    private void MaybeInitSky(string mapname) {
         if (WeatherEffect.HasMap(mapname)) {
             //create sky
             var skyObject = new GameObject("_sky");
@@ -116,7 +122,9 @@ public class MapRenderer {
             //no weather effects, set sky color to blueish
             //Camera.main.backgroundColor = new Color(0.4f, 0.6f, 0.8f, 1.0f);
         }
+    }
 
+    private void CreateLightPoints() {
         //add lights
         GameObject lightsParent = new GameObject("_lights");
         lightsParent.transform.parent = mapParent.transform;
@@ -129,32 +137,34 @@ public class MapRenderer {
         }
     }
 
+    internal void OnMapComplete(AsyncMapLoader.GameMap gameMap) {
+        if (mapParent == null) {
+            mapParent = new GameObject(gameMap.Name);
+            mapParent.tag = "Map";
+            mapParent.AddComponent<GameMap>();
+        }
+        var GameMapManager = mapParent.GetComponent<GameMap>();
+        GameMapManager.SetMapLightInfo(gameMap.World.light);
+        GameMapManager.SetMapSize((int) gameMap.Ground.width, (int) gameMap.Ground.height);
+        GameMapManager.SetMapAltitude(new Altitude(gameMap.Altitude));
+
+        OnWorldComplete(gameMap.World);
+        OnGroundComplete(gameMap.CompiledGround);
+        OnAltitudeComplete(gameMap.Altitude);
+        OnModelsComplete(gameMap.CompiledModels);
+
+        InitializeSounds();
+        MaybeInitSky(gameMap.Name);
+        CreateLightPoints();
+    }
+
     /// <summary>
     /// receive parsed world
     /// </summary>
     /// <param name="world"></param>
     private void OnWorldComplete(RSW world) {
         this.world = world;
-
-        //calculate light direction
-        RSW.LightInfo lightInfo = world.light;
-        lightInfo.direction = new Vector3();
-
-        Vector3 lightRotation = new Vector3(lightInfo.longitude, lightInfo.latitude, 0);
-        WorldLight.transform.rotation = Quaternion.identity;
-        WorldLight.transform.Rotate(lightRotation);
-
-        Color ambient = new Color(lightInfo.ambient[0], lightInfo.ambient[1], lightInfo.ambient[2]);
-        Color diffuse = new Color(lightInfo.diffuse[0], lightInfo.diffuse[1], lightInfo.diffuse[2]);
-
-        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-        RenderSettings.ambientLight = ambient * lightInfo.intensity;
-
-        WorldLight.color = diffuse;
-
         worldCompleted = true;
-
-        mapParent.GetComponent<GameMap>().SetMapLightInfo(world.light);
     }
 
     /// <summary>
@@ -164,8 +174,6 @@ public class MapRenderer {
     private void OnAltitudeComplete(GAT gat) {
         altitudeCompleted = true;
         altitude = new Altitude(gat);
-
-        mapParent.GetComponent<GameMap>().SetMapAltitude(altitude);
     }
 
     private void OnGroundComplete(GND.Mesh mesh) {
