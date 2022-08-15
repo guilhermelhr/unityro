@@ -13,7 +13,7 @@ public class OfflineUtility : MonoBehaviour {
     private GameManager GameManager;
     private EntityManager EntityManager;
 
-    public string MapName = "izlude";
+    public string MapName = "prontera";
     public List<long> MapLoadingTimes;
     public List<string> MapNames;
 
@@ -75,8 +75,6 @@ public class OfflineUtility : MonoBehaviour {
     }
 
     public async Task LoadMap() {
-        var time = await GameManager.BenchmarkMapLoading(MapName);
-        MapLoadingTimes.Add(time);
-        Debug.Log($"Average map loading times {MapLoadingTimes.Average() / 1000f}");
+        await GameManager.BeginMapLoading(MapName);
     }
 }

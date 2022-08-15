@@ -27,8 +27,8 @@ internal static class AddressablesExtensions {
             }
             var entriesAdded = new List<AddressableAssetEntry> { e };
 
-            group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryCreated, entriesAdded, true, true);
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryCreated, entriesAdded, true, false);
+            group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, false, true);
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, true, false);
         }
     }
 
@@ -65,8 +65,8 @@ internal static class AddressablesExtensions {
             AssetDatabase.StopAssetEditing();
             EditorUtility.ClearProgressBar();
 
-            group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryCreated, entriesAdded, true, true);
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryCreated, entriesAdded, true, false);
+            group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, false, true);
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, true, false);
         }
     }
 }

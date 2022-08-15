@@ -275,7 +275,9 @@ namespace ROIO.Loaders
         private Texture2D RgbaToTexture(SpriteFrameData frame) {
             var image = new Texture2D(frame.Width, frame.Height, TextureFormat.ARGB32, false);
             image.wrapMode = TextureWrapMode.Clamp;
+#if UNITY_EDITOR
             image.alphaIsTransparency = true;
+#endif
 
             var colors = new Color[frame.Width * frame.Height];
 
@@ -304,7 +306,9 @@ namespace ROIO.Loaders
         private Texture2D IndexedToTexture(SpriteFrameData frame) {
             var image = new Texture2D(frame.Width, frame.Height, TextureFormat.ARGB32, false);
             image.wrapMode = TextureWrapMode.Clamp;
+#if UNITY_EDITOR
             image.alphaIsTransparency = true;
+#endif
 
             var colors = new Color[frame.Width * frame.Height];
 

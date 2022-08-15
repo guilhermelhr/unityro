@@ -4,6 +4,7 @@ using ROIO.Loaders;
 using ROIO.Models.FileTypes;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -24,7 +25,6 @@ public class MapRenderer {
     public Light WorldLight;
     public static uint width, height;
 
-    private Altitude altitude;
     private RSW world;
     private WaterBuilder water;
     private Models models;
@@ -32,8 +32,6 @@ public class MapRenderer {
     private Sky sky;
 
     private bool worldCompleted, altitudeCompleted, groundCompleted, modelsCompleted;
-
-    private GameManager GameManager;
 
     public bool Ready {
         get { return worldCompleted && altitudeCompleted && groundCompleted && modelsCompleted; }
@@ -57,52 +55,6 @@ public class MapRenderer {
     }
 
     public Fog fog = new Fog(false);*/
-
-    public void OnComplete(string mapname, string id, object data) {
-        if (mapParent == null) {
-            mapParent = new GameObject(mapname);
-            mapParent.tag = "Map";
-            mapParent.AddComponent<GameMap>();
-        }
-
-        var stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Restart();
-        switch (id) {
-            case "MAP_GROUND_SIZE":
-                var size = (Vector2) data;
-                width = (uint) size.x;
-                height = (uint) size.y;
-
-                mapParent.GetComponent<GameMap>().SetMapSize((int) size.x, (int) size.y);
-                break;
-            case "MAP_WORLD":
-                OnWorldComplete(data as RSW);
-                break;
-            case "MAP_ALTITUDE":
-                OnAltitudeComplete(data as GAT);
-                break;
-            case "MAP_GROUND":
-                OnGroundComplete(data as GND.Mesh);
-                break;
-            case "MAP_MODELS":
-                OnModelsComplete(data as RSM.CompiledModel[]);
-                break;
-        }
-        stopwatch.Stop();
-        //Debug.Log(id + " oncomplete time: " + stopwatch.Elapsed.TotalSeconds);
-
-        if (Ready) {
-            OnMapComplete(mapname);
-        }
-    }
-
-    private void OnMapComplete(string mapname) {
-        FileCache.ClearAll();
-
-        InitializeSounds();
-        MaybeInitSky(mapname);
-        CreateLightPoints();
-    }
 
     private void InitializeSounds() {
         //add sounds to playlist (and cache)
@@ -137,7 +89,7 @@ public class MapRenderer {
         }
     }
 
-    internal void OnMapComplete(AsyncMapLoader.GameMap gameMap) {
+    internal async Task<GameMap> OnMapComplete(AsyncMapLoader.GameMap gameMap) {
         if (mapParent == null) {
             mapParent = new GameObject(gameMap.Name);
             mapParent.tag = "Map";
@@ -148,14 +100,18 @@ public class MapRenderer {
         GameMapManager.SetMapSize((int) gameMap.Ground.width, (int) gameMap.Ground.height);
         GameMapManager.SetMapAltitude(new Altitude(gameMap.Altitude));
 
+        FileCache.ClearAll();
+
         OnWorldComplete(gameMap.World);
         OnGroundComplete(gameMap.CompiledGround);
         OnAltitudeComplete(gameMap.Altitude);
-        OnModelsComplete(gameMap.CompiledModels);
+        await OnModelsComplete(gameMap.CompiledModels);
 
         InitializeSounds();
         MaybeInitSky(gameMap.Name);
         CreateLightPoints();
+
+        return GameMapManager;
     }
 
     /// <summary>
@@ -173,7 +129,6 @@ public class MapRenderer {
     /// <param name="gat"></param>
     private void OnAltitudeComplete(GAT gat) {
         altitudeCompleted = true;
-        altitude = new Altitude(gat);
     }
 
     private void OnGroundComplete(GND.Mesh mesh) {
@@ -204,9 +159,9 @@ public class MapRenderer {
         groundCompleted = true;
     }
 
-    private void OnModelsComplete(RSM.CompiledModel[] compiledModels) {
+    private async Task OnModelsComplete(RSM.CompiledModel[] compiledModels) {
         models = new Models(compiledModels.ToList());
-        GameManager.StartCoroutine(models.BuildMeshes(OnMapLoadingProgress));
+        await models.BuildMeshes(OnMapLoadingProgress);
 
         modelsCompleted = true;
     }

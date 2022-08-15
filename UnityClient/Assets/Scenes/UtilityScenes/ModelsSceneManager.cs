@@ -14,7 +14,7 @@ public class ModelsSceneManager : MonoBehaviour {
     internal float onProgress;
 
     // Start is called before the first frame update
-    void Start() {
+    async void Start() {
         var config = ConfigurationLoader.Init();
         FileManager.LoadGRF(config.root, config.grf);
         var descriptorsHashtable = FileManager.GetFileDescriptors();
@@ -50,7 +50,7 @@ public class ModelsSceneManager : MonoBehaviour {
         Debug.Log($"Finished compiling {compiledModels.Count} of {modelDescriptors.Count} models");
 
         var count = 0;
-        StartCoroutine(new Models(compiledModels).BuildMeshes(delegate (float progress) {
+        await new Models(compiledModels).BuildMeshes(delegate (float progress) {
             count++;
 
             if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Loading models - {progress * 100}%", progress)) {
@@ -62,7 +62,7 @@ public class ModelsSceneManager : MonoBehaviour {
                 EditorUtility.ClearProgressBar();
                 EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Models");
             }
-        }));
+        });
     }
 }
 #endif

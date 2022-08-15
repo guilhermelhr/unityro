@@ -263,14 +263,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30b1dc80bc8d6d44b9df49892fe41b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraSensitivity: 40
-  climbSpeed: 4
-  normalMoveSpeed: 10
-  speedFactor: 0.25
-  fastMoveFactor: 3
-  posLerp: 1
-  rotLerp: 1
-  speedLerp: 1
 --- !u!1 &366809274
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,6 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -370,8 +363,6 @@ MonoBehaviour:
   OfflineOnly: 1
   SoundMixerGroup: {fileID: 243063458056754506, guid: 80607cd4d5abb9d49824975c92ad1afc, type: 2}
   WorldLight: {fileID: 1425244937}
-  LabelsToPrefetch:
-  - m_LabelString: Textures
 --- !u!4 &1036250386
 Transform:
   m_ObjectHideFlags: 0
@@ -392,7 +383,6 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2714124424983683012, guid: abc5367a666300b4cb949d54f804272e, type: 3}
@@ -448,7 +438,6 @@ PrefabInstance:
       value: PlayerCameraController
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: abc5367a666300b4cb949d54f804272e, type: 3}
 --- !u!1 &1320813656
 GameObject:
@@ -598,7 +587,7 @@ LightingSettings:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Settings.lighting
-  serializedVersion: 5
+  serializedVersion: 4
   m_GIWorkflowMode: 0
   m_EnableBakedLightmaps: 1
   m_EnableRealtimeLightmaps: 1
@@ -638,7 +627,7 @@ LightingSettings:
   m_LightProbeSampleCountMultiplier: 4
   m_PVRBounces: 2
   m_PVRMinBounces: 1
-  m_PVREnvironmentImportanceSampling: 0
+  m_PVREnvironmentMIS: 1
   m_PVRFilteringMode: 2
   m_PVRDenoiserTypeDirect: 0
   m_PVRDenoiserTypeIndirect: 0
@@ -653,4 +642,3 @@ LightingSettings:
   m_PVRFilteringAtrousPositionSigmaIndirect: 2
   m_PVRFilteringAtrousPositionSigmaAO: 1
   m_PVRTiledBaking: 0
-  m_NumRaysToShootPerTexel: -1

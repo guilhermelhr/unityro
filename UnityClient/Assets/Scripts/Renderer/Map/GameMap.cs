@@ -21,9 +21,27 @@ namespace Assets.Scripts.Renderer.Map {
         private PathFinder PathFinder;
 
         private void Start() {
+            InitWorldLight();
+            InitPathFinder();
+        }
+
+        private void InitPathFinder() {
+            PathFinder = gameObject.GetOrAddComponent<PathFinder>();
+            PathFinder.LoadMap(Altitude);
+        }
+
+        private void InitWorldLight() {
             var worldLightGameObject = new GameObject("Light");
             worldLightGameObject.transform.SetParent(gameObject.transform);
             WorldLight = worldLightGameObject.GetOrAddComponent<Light>();
+            SetupWorldLight();
+        }
+
+        private void SetupWorldLight() {
+            if (LightInfo == null) {
+                return;
+            }
+
             WorldLight.type = LightType.Directional;
             WorldLight.shadows = LightShadows.Soft;
             WorldLight.shadowStrength = 0.6f;
@@ -40,9 +58,6 @@ namespace Assets.Scripts.Renderer.Map {
             RenderSettings.ambientLight = ambient * LightInfo.intensity;
 
             WorldLight.color = diffuse;
-
-            PathFinder = gameObject.GetOrAddComponent<PathFinder>();
-            PathFinder.LoadMap(Altitude);
         }
 
         public void SetMapSize(int width, int height) {
@@ -51,6 +66,12 @@ namespace Assets.Scripts.Renderer.Map {
 
         public void SetMapLightInfo(RSW.LightInfo lightInfo) {
             LightInfo = lightInfo;
+
+            if (WorldLight == null) {
+                InitWorldLight();
+            }
+
+            SetupWorldLight();
         }
 
         public void SetMapAltitude(Altitude altitude) {

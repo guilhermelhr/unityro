@@ -14,17 +14,14 @@ public class MapsUtility {
     [MenuItem("UnityRO/Utils/Prefabs/Create Maps Prefabs")]
     static async void CreateMapPrefabs() {
         var gameManager = Selection.activeGameObject.GetComponent<GameManager>();
-        var offlineUtility = gameManager.GetComponent<OfflineUtility>();
+        var mapNames = gameManager.GetComponent<OfflineUtility>().MapNames.ToList();
 
-        foreach (var mapName in offlineUtility.MapNames) {
+        foreach (var mapName in mapNames) {
             try {
-                offlineUtility.MapName = mapName;
-                await offlineUtility.LoadMap();
-                await Task.Delay(2000);
-                var map = FindMap();
+                var map = await gameManager.BeginMapLoading(mapName);
 
                 if (map != null) {
-                    SaveMap(map, gameManager);
+                    SaveMap(map.gameObject, gameManager);
                 }
             } catch {
                 Debug.LogError($"Error saving {mapName}");

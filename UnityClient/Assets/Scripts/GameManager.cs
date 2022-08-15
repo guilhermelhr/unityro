@@ -1,4 +1,5 @@
-﻿using ROIO;
+﻿using Assets.Scripts.Renderer.Map;
+using ROIO;
 using ROIO.Loaders;
 using System;
 using System.IO;
@@ -115,35 +116,19 @@ public class GameManager : MonoBehaviour {
         //AudioSource.Play();
     }
 
-    public async Task BeginMapLoading(string mapName) {
+    public async Task<GameMap> BeginMapLoading(string mapName) {
         SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         MapRenderer.Clear();
         EntityManager.ClearEntities();
 
         AsyncMapLoader.GameMap gameMap = await new AsyncMapLoader().Load($"{mapName}.rsw");
-        MapRenderer.OnMapComplete(gameMap);
-
-        //await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
+        GameMap map = await MapRenderer.OnMapComplete(gameMap);
 
         SceneManager.UnloadSceneAsync("LoadingScene");
         OnMapLoaded?.Invoke();
 
         PlayBgm(Tables.MapTable[$"{mapName}.rsw"].mp3);
-    }
-
-    public async Task<long> BenchmarkMapLoading(string mapName) {
-        MapRenderer.Clear();
-        EntityManager.ClearEntities();
-        //SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
-        var stopWatch = new System.Diagnostics.Stopwatch();
-        stopWatch.Restart();
-        await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
-        stopWatch.Stop();
-
-        //Debug.Log($"Map loaded in {stopWatch.Elapsed.TotalSeconds} seconds");
-        //SceneManager.UnloadSceneAsync("LoadingScene");
-
-        return stopWatch.ElapsedMilliseconds;
+        return map;
     }
 
     //TODO Get rid of these

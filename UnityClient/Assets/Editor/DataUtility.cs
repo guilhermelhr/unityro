@@ -305,14 +305,27 @@ public class DataUtility {
         Debug.LogError($"{missingSprites.Count} out of {spriteDescriptors.Count} models not found. Full list saved to Assets/Logs/missing-sprites.txt");
     }
 
-    [MenuItem("UnityRO/3. Create Addressable Assets")]
-    static void CreateAddressableAssets() {
+    [MenuItem("UnityRO/3. Create Addressable Assets/1. All")]
+    static void CreateAllAddressableAssets() {
+        EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/2. Textures");
+        EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/3. Models");
+        EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/4. Sprites");
+    }
+
+    [MenuItem("UnityRO/3. Create Addressable Assets/2. Textures")]
+    static void CreateTexturesAddressableAssets() {
         var textures = Resources.LoadAll(Path.Join("data", "texture")).ToList();
         textures.SetAddressableGroup("Textures", "Textures");
+    }
 
+    [MenuItem("UnityRO/3. Create Addressable Assets/3. Models")]
+    static void CreateModelsAddressableAssets() {
         var models = Resources.LoadAll(Path.Join("data", "model")).ToList();
         models.SetAddressableGroup("Models", "Models");
+    }
 
+    [MenuItem("UnityRO/3. Create Addressable Assets/4. Sprites")]
+    static void CreateSpritesAddressableAssets() {
         var sprites = Resources.LoadAll(Path.Join("data", "sprite"))
             .Where(it => it is Texture2D || it is SpriteData) // filter out the thousands of sprites we've created
             .ToList();
