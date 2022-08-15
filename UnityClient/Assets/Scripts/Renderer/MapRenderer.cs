@@ -37,10 +37,9 @@ public class MapRenderer {
         get { return worldCompleted && altitudeCompleted && groundCompleted && modelsCompleted; }
     }
 
-    public MapRenderer(GameManager gameManager, AudioMixerGroup audioMixerGroup, Light worldLight) {
+    public MapRenderer(AudioMixerGroup audioMixerGroup, Light worldLight) {
         SoundsMixerGroup = audioMixerGroup;
         WorldLight = worldLight;
-        GameManager = gameManager;
     }
 
     /*public class Fog {

@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour {
         InitManagers();
         MaybeInitOfflineUtils();
 
-        MapRenderer = new MapRenderer(this, SoundMixerGroup, WorldLight);
+        MapRenderer = new MapRenderer(SoundMixerGroup, WorldLight);
         MapLoader = new MapLoader();
     }
 
