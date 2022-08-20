@@ -227,11 +227,134 @@ public class DataUtility {
         }
     }
 
+    [MenuItem("UnityRO/Utils/Extract/Lua Files")]
+    static void ExtractLuaFiles() {
+        /**
+         * These files are the ones I could find on an experiment
+         * where I put a script to log the name of the file when the OG client
+         * was loading. So apparently this is the order they load and these are
+         * the only files being actually used
+         */
+        var files = new string[] {
+            "PetEvolutionCln_true.lub",
+            "achievement_list.lub",
+            "PrivateAirplane_true.lub",
+            "CheckAttendance.lub",
+            "itemInfo_true.lub",
+            "tipbox.lub",
+            "data/luafiles514/lua files/datainfo/changedirectorylist.lub",
+            "data/luafiles514/lua files/msgstring_kr.lub",
+            "data/luafiles514/lua files/datainfo/npcidentity.lub",
+            "data/luafiles514/lua files/datainfo/jobname_f.lub",
+            "data/luafiles514/lua files/datainfo/jobname.lub",
+            "data/luafiles514/lua files/datainfo/petinfo.lub",
+            "data/luafiles514/lua files/datainfo/accessoryid.lub",
+            "data/luafiles514/lua files/datainfo/accname_f.lub",
+            "data/luafiles514/lua files/datainfo/accname.lub",
+            "data/luafiles514/lua files/skillinfoz/jobinheritlist.lub",
+            "data/luafiles514/lua files/skillinfoz/skillid.lub",
+            "data/luafiles514/lua files/skillinfoz/skillinfolist.lub",
+            "data/luafiles514/lua files/skillinfoz/skilldescript.lub",
+            "data/luafiles514/lua files/skillinfoz/skillinfo_f.lub",
+            "data/luafiles514/lua files/skillinfoz/skilltreeview.lub",
+            "data/luafiles514/lua files/stateicon/efstids.lub",
+            "data/luafiles514/lua files/stateicon/stateiconinfo.lub",
+            "data/luafiles514/lua files/stateicon/stateiconinfo_f.lub",
+            "data/luafiles514/lua files/stateicon/stateiconimginfo.lub",
+            "LuaFiles514/OptionInfo.lub",
+            "data/luafiles514/lua files/optioninfo/cmdinfo.lub",
+            "data/luafiles514/lua files/optioninfo/optioninfo_f.lub",
+            "data/luafiles514/lua files/datainfo/spriterobeid.lub",
+            "data/luafiles514/lua files/datainfo/spriterobename_f.lub",
+            "data/luafiles514/lua files/datainfo/spriterobename.lub",
+            "data/luafiles514/lua files/datainfo/npclocationradius.lub",
+            "data/luafiles514/lua files/datainfo/npclocationradius_f.lub",
+            "data/luafiles514/lua files/skilleffectinfo/effectid.lub",
+            "data/luafiles514/lua files/skilleffectinfo/actorstate.lub",
+            "data/luafiles514/lua files/skilleffectinfo/skilleffectinfolist.lub",
+            "data/luafiles514/lua files/skilleffectinfo/skilleffectinfo_f.lub",
+            "data/luafiles514/lua files/datainfo/kaframovemapservicelist.lub",
+            "data/luafiles514/lua files/datainfo/kaframovemapservicelist_f.lub",
+            "data/luafiles514/lua files/navigation/navi_f_krpri.lub",
+            "data/luafiles514/lua files/navigation/navi_map_krpri.lub",
+            "data/luafiles514/lua files/navigation/navi_npc_krpri.lub",
+            "data/luafiles514/lua files/navigation/navi_mob_krpri.lub",
+            "data/luafiles514/lua files/navigation/navi_link_krpri.lub",
+            "data/luafiles514/lua files/navigation/navi_linkdistance_krpri.lub",
+            "data/luafiles514/lua files/navigation/navi_npcdistance_krpri.lub",
+            "data/luafiles514/lua files/navigation/navi_scroll_krpri.lub",
+            "data/luafiles514/lua files/navigation/navi_picknpc_krpri.lub",
+            "data/luafiles514/lua files/datainfo/helpmsgstr.lub",
+            "data/luafiles514/lua files/entryqueue/entryqueuelist.lub",
+            "data/luafiles514/lua files/datainfo/weapontable.lub",
+            "data/luafiles514/lua files/datainfo/weapontable_f.lub",
+            "data/luafiles514/lua files/datainfo/jobidentity.lub",
+            "data/luafiles514/lua files/datainfo/shadowtable.lub",
+            "data/luafiles514/lua files/datainfo/shadowtable_f.lub",
+            "data/luafiles514/lua files/worldviewdata/worldviewdata_language.lub",
+            "data/luafiles514/lua files/worldviewdata/worldviewdata_list.lub",
+            "data/luafiles514/lua files/worldviewdata/worldviewdata_table.lub",
+            "data/luafiles514/lua files/worldviewdata/worldviewdata_f.lub",
+            "data/luafiles514/lua files/worldviewdata/worldviewdata_info.lub",
+            "data/luafiles514/lua files/datainfo/enumvar.lub",
+            "data/luafiles514/lua files/datainfo/addrandomoptionnametable.lub",
+            "data/luafiles514/lua files/datainfo/addrandomoption_f.lub",
+            "data/luafiles514/lua files/dressroom/dress_f.lub",
+            "data/luafiles514/lua files/dressroom/jobdresslist.lub",
+            "data/luafiles514/lua files/datainfo/titletable.lub",
+            "data/luafiles514/lua files/hateffectinfo/hateffectinfo.lub",
+            "data/luafiles514/lua files/signboardlist.lub",
+            "data/luafiles514/lua files/effecttool/forcerendereffect.lub",
+            "data/luafiles514/lua files/datainfo/lapineddukddakbox.lub",
+            "data/luafiles514/lua files/datainfo/LapineUpgradeBox.lub",
+            "data/luafiles514/lua files/transparentItem/transparentItem.lub",
+            "data/luafiles514/lua files/transparentItem/transparentItem_f.lub",
+            "data/luafiles514/lua files/service_brazil/ExternalSettings_br.lub",
+            "data/luafiles514/lua files/datainfo/TB_Layer_Priority.lub",
+            "data/luafiles514/lua files/datainfo/tb_cashshop_banner.lub",
+            "mapInfo_true.lub",
+            "Towninfo.lub",
+            "data/luafiles514/lua files/datainfo/questinfo_f.lub",
+            "RecommendedQuestInfoList_True.lub",
+        };
+
+        try {
+            var config = ConfigurationLoader.Init();
+            FileManager.LoadGRF(config.root, config.grf);
+
+            AssetDatabase.StartAssetEditing();
+
+            foreach (var lua in files) {
+                try {
+                    string luaFileString;
+                    if (lua.StartsWith("data/lua")) {
+                        luaFileString = FileManager.ReadSync(lua, System.Text.Encoding.GetEncoding(1252)).ReadToEnd();
+                    } else {
+                        luaFileString = new StreamReader(Path.Combine(config.SystemPath, lua), System.Text.Encoding.GetEncoding(1252)).ReadToEnd();
+                    }
+                    var path = Path.Combine(GENERATED_RESOURCES_PATH, "lua", Path.GetDirectoryName(lua));
+                    Directory.CreateDirectory(path);
+
+                    File.WriteAllText(Path.Combine(path, Path.GetFileName(lua) + ".txt"), luaFileString);
+                } catch (Exception e) {
+                    Debug.LogError($"Couldnt load file {lua} {e}");
+                }
+            }
+        } finally {
+            AssetDatabase.StopAssetEditing();
+            AssetDatabase.Refresh();
+        }
+    }
+
     [MenuItem("UnityRO/1. Extract Assets")]
     static void ExtractAssets() {
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Textures");
+        //This has to be done here so the models can load their textures
+        CreateTexturesAddressableAssets();
+
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Sprites");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Prepare/Models");
+        EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Lua Files");
 
         // Extract effects
         // Generate map prefabs
@@ -284,9 +407,10 @@ public class DataUtility {
 
         List<string> missingModels = new List<string>(modelDescriptors.Count);
         Parallel.ForEach(modelDescriptors, descriptor => {
-            lock(missingModels) {
-                missingModels.Add(descriptor);
-
+            if (!File.Exists(descriptor)) {
+                lock (missingModels) {
+                    missingModels.Add(descriptor);
+                }
             }
         });
 
@@ -302,14 +426,15 @@ public class DataUtility {
             }
         });
         File.WriteAllLines("Assets/Logs/missing-sprites.txt", missingModels);
-        Debug.LogError($"{missingSprites.Count} out of {spriteDescriptors.Count} models not found. Full list saved to Assets/Logs/missing-sprites.txt");
+        Debug.LogError($"{missingSprites.Count} out of {spriteDescriptors.Count} sprites not found. Full list saved to Assets/Logs/missing-sprites.txt");
     }
 
     [MenuItem("UnityRO/3. Create Addressable Assets/1. All")]
     static void CreateAllAddressableAssets() {
-        EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/2. Textures");
+        //EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/2. Textures");
         EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/3. Models");
         EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/4. Sprites");
+        EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/5. Data Tables");
     }
 
     [MenuItem("UnityRO/3. Create Addressable Assets/2. Textures")]
@@ -330,6 +455,12 @@ public class DataUtility {
             .Where(it => it is Texture2D || it is SpriteData) // filter out the thousands of sprites we've created
             .ToList();
         sprites.SetAddressableGroup("Sprites", "Sprites");
+    }
+
+    [MenuItem("UnityRO/3. Create Addressable Assets/5. Data Tables")]
+    static void CreateDataTablesAddressableAssets() {
+        var files = Resources.LoadAll("lua").ToList();
+        files.SetAddressableGroup("DataTables", "DataTables");
     }
 
     [MenuItem("UnityRO/4. Rename Generated Resources folder")]

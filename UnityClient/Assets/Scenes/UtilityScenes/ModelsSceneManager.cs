@@ -13,26 +13,16 @@ using UnityEngine;
 public class ModelsSceneManager : MonoBehaviour {
     internal float onProgress;
 
+    [SerializeField]
+    private bool ExtractOnlyMissingModels = false;
+
     // Start is called before the first frame update
     async void Start() {
         var config = ConfigurationLoader.Init();
         FileManager.LoadGRF(config.root, config.grf);
         var descriptorsHashtable = FileManager.GetFileDescriptors();
 
-        var modelDescriptors = new List<string>();
-        try {
-            var lines = File.ReadAllLines("Assets/Logs/missing-models.txt");
-            modelDescriptors = lines.Select(it => {
-                var dir = Path.GetDirectoryName(it)["Assets\\_Generated\\Resources\\".Length..];
-                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(it);
-
-                return Path.Combine(dir, filenameWithoutExtension + ".rsm");
-            }).ToList();
-        } catch {
-            var descriptors = new DictionaryEntry[descriptorsHashtable.Count];
-            descriptorsHashtable.CopyTo(descriptors, 0);
-            modelDescriptors = descriptors.Where(it => Path.GetExtension(it.Key.ToString()) == ".rsm").Select(it => it.Key.ToString()).ToList();
-        }
+        var modelDescriptors = FindDescriptors(descriptorsHashtable);
 
         MapRenderer.mapParent = gameObject;
         List<RSM.CompiledModel> compiledModels = new List<RSM.CompiledModel>();
@@ -63,6 +53,45 @@ public class ModelsSceneManager : MonoBehaviour {
                 EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Models");
             }
         });
+    }
+
+    private List<string> FindDescriptors(Hashtable descriptorsHashtable) {
+        List<string> modelDescriptors;
+
+        if (ExtractOnlyMissingModels) {
+            try {
+                modelDescriptors = FindMissingModelsDescriptors();
+            } catch {
+                modelDescriptors = FindAllDescriptors(descriptorsHashtable);
+            }
+        } else {
+            modelDescriptors = FindAllDescriptors(descriptorsHashtable);
+        }
+
+        return modelDescriptors;
+    }
+
+    private List<string> FindAllDescriptors(Hashtable descriptorsHashtable) {
+        List<string> modelDescriptors;
+        var descriptors = new DictionaryEntry[descriptorsHashtable.Count];
+        descriptorsHashtable.CopyTo(descriptors, 0);
+        modelDescriptors = descriptors
+            .Where(it => Path.GetExtension(it.Key.ToString()) == ".rsm")
+            .Select(it => it.Key.ToString())
+            .ToList();
+        return modelDescriptors;
+    }
+
+    private List<string> FindMissingModelsDescriptors() {
+        List<string> modelDescriptors;
+        var lines = File.ReadAllLines("Assets/Logs/missing-models.txt");
+        modelDescriptors = lines.Select(it => {
+            var dir = Path.GetDirectoryName(it)["Assets\\_Generated\\Resources\\".Length..];
+            var filenameWithoutExtension = Path.GetFileNameWithoutExtension(it);
+
+            return Path.Combine(dir, filenameWithoutExtension + ".rsm");
+        }).ToList();
+        return modelDescriptors;
     }
 }
 #endif

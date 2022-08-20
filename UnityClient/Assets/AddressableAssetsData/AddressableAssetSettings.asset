@@ -17,7 +17,7 @@ MonoBehaviour:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
-  m_BuildRemoteCatalog: 0
+  m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
   m_CatalogRequestsTimeout: 0
   m_DisableCatalogUpdateOnStart: 0
@@ -35,9 +35,9 @@ MonoBehaviour:
   m_CheckForContentUpdateRestrictionsOption: 0
   m_MonoScriptBundleCustomNaming: 
   m_RemoteCatalogBuildPath:
-    m_Id: 
+    m_Id: 82bcd6853212fd640922892571e1b5d3
   m_RemoteCatalogLoadPath:
-    m_Id: 
+    m_Id: 3c157dbb8b129934c84ded1c33dc7f4d
   m_ContentStateBuildPathProfileVariableName: <default settings path>
   m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
@@ -50,6 +50,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5b1af86c61843bf49be00af06163c2e8, type: 2}
   - {fileID: 11400000, guid: dc032f06acd7057468453e4eaab61e2b, type: 2}
   - {fileID: 11400000, guid: 96eb713a19ae36c4ba404d6808149278, type: 2}
+  - {fileID: 11400000, guid: e149e7bda7773294aa80b331e6f81bcb, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -95,6 +96,7 @@ MonoBehaviour:
     - Models
     - Maps
     - Sprites
+    - DataTables
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 135d4f6c62fed7949a0b9550b0f3efbd, type: 2}
