@@ -61,16 +61,17 @@ public class GameManager : MonoBehaviour {
         OnPostRender();
     }
 
-    void Start() {
+    async void Start() {
         Configs = ConfigurationLoader.Init();
 
-        LoadGrf();
-        DBManager.Init(Configs);
+        await LoadGrf();
     }
 
-    private void LoadGrf() {
+    private async Task LoadGrf() {
         FileManager.LoadGRF(Configs.root, Configs.grf);
         OnGrfLoaded?.Invoke();
+
+        await DBManager.Init(Configs);
 
         InitManagers();
         MaybeInitOfflineUtils();
@@ -80,6 +81,10 @@ public class GameManager : MonoBehaviour {
     }
 
     void FixedUpdate() {
+        if (MapRenderer == null) {
+            return;
+        }
+
         if (MapRenderer.Ready) {
             MapRenderer.FixedUpdate();
         }
@@ -92,6 +97,10 @@ public class GameManager : MonoBehaviour {
     }
 
     public void OnPostRender() {
+        if (MapRenderer == null) {
+            return;
+        }
+
         if (MapRenderer.Ready) {
             MapRenderer.PostRender();
         }
@@ -108,7 +117,7 @@ public class GameManager : MonoBehaviour {
     public async void PlayBgm(string name) {
         var request = Resources.LoadAsync<AudioClip>(Path.Combine("Audio", "BGM", Path.GetFileNameWithoutExtension(name)));
 
-        while(!request.isDone) {
+        while (!request.isDone) {
             await Task.Yield();
         }
 

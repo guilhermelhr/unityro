@@ -43,25 +43,14 @@ namespace ROIO.Models.FileTypes {
             public ulong mtPreset;
         }
 
-        // TODO
-        // This needs some testing since I removed the atlas generation from
-        // the EffectLoader.cs. There is no point in saving the atlas to disc
-        // since we already have all the other textures, so the atlas can be
-        // created at runtime
         private Texture2D GetOrGenerateAtlas() {
             if (_Atlas != null) {
                 return _Atlas;
             }
 
-            var textures = new List<Texture2D>();
+            var textures = layers.SelectMany(it => it.textures).Distinct().ToList();
             var baseName = Path.GetFileNameWithoutExtension(name);
             var atlasName = $"{baseName.Replace("\\", "_")}_atlas";
-
-            foreach (var layer in layers) {
-                textures.AddRange(layer.textures);
-            }
-
-            textures = textures.Distinct().ToList();
 
             var extraTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
             textures.Add(extraTexture);

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
 using UnityRO.GameCamera;
 
@@ -57,7 +58,7 @@ public class EntityViewer : MonoBehaviour {
         sprites = spriteData.sprites;
     }
 
-    public void Init(bool reloadSprites = false) {
+    public async void Init(bool reloadSprites = false) {
         CurrentPaletteData = new PaletteData {
             hairColor = Entity.Status.hair_color,
             hair = Entity.Status.hair,
@@ -121,7 +122,7 @@ public class EntityViewer : MonoBehaviour {
             }
 
             try {
-                var spriteData = Resources.Load<SpriteData>(Path.Combine("Sprites", path));
+                var spriteData = await Addressables.LoadAssetAsync<SpriteData>(path + ".asset").Task;
 
                 // Figure out a way of using palettes with shaders
                 //if (palettePath.Length > 0) {

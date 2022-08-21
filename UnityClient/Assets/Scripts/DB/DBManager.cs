@@ -1,6 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 using ROIO;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class DBManager {
 
@@ -12,11 +16,16 @@ public class DBManager {
     private static JObject WeaponJobTable;
     private static JObject ClassTable;
 
-    public static void Init(Configuration configs) {
+    public async static Task Init(Configuration configs) {
         new LuaInterface(configs);
-        WeaponActions = FileManager.Load("DataTables/WeaponActions.json") as JObject;
-        WeaponJobTable = FileManager.Load("DataTables/WeaponJobTable.json") as JObject;
-        ClassTable = FileManager.Load("DataTables/ClassTable.json") as JObject;
+
+        var WeaponActionsText = await Addressables.LoadAssetAsync<TextAsset>("WeaponActions").Task;
+        var WeaponJobTableText = await Addressables.LoadAssetAsync<TextAsset>("WeaponJobTable").Task;
+        var ClassTableText = await Addressables.LoadAssetAsync<TextAsset>("ClassTable").Task;
+
+        WeaponActions = JObject.Parse(Encoding.UTF8.GetString(WeaponActionsText.bytes));
+        WeaponJobTable = JObject.Parse(Encoding.UTF8.GetString(WeaponJobTableText.bytes));
+        ClassTable = JObject.Parse(Encoding.UTF8.GetString(ClassTableText.bytes));
     }
 
     public static Item GetItem(int gID) {
