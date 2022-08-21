@@ -99,7 +99,7 @@ public class Sky : MonoBehaviour {
         textures = new Texture2D[CLOUD_TEXTURE_COUNT];
         for (int i = 0; i < textures.Length; i++) {
             var filename = $"data/texture/effect/cloud{i + 1}.png";
-            var texture = await Addressables.LoadAssetAsync<Texture2D>(filename);
+            var texture = await Addressables.LoadAssetAsync<Texture2D>(filename).Task;
             textures[i] = texture;
         }
     }

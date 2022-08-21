@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace ROIO.Models.FileTypes {
 
     public class STR : ScriptableObject {
+        private Texture2D _Atlas;
+        private Rect[] _AtlasRects;
+
         public static string Header = "STRM";
         public ulong version;
         public long fps;
         public long maxKey; //frameCount
         public Layer[] layers;
-        private Texture2D _Atlas;
         public Texture2D Atlas => GetOrGenerateAtlas();
-        public Rect[] AtlasRects;
+        public Rect[] AtlasRects => GetOrGenerateRects();
         public string name;
 
         [Serializable]
@@ -40,28 +43,99 @@ namespace ROIO.Models.FileTypes {
             public ulong mtPreset;
         }
 
+        // TODO
+        // This needs some testing since I removed the atlas generation from
+        // the EffectLoader.cs. There is no point in saving the atlas to disc
+        // since we already have all the other textures, so the atlas can be
+        // created at runtime
         private Texture2D GetOrGenerateAtlas() {
             if (_Atlas != null) {
                 return _Atlas;
             }
 
-            //var baseName = Path.GetFileNameWithoutExtension(name);
-            //var atlasName = $"{baseName.Replace("\\", "_")}_atlas";
+            var textures = new List<Texture2D>();
+            var baseName = Path.GetFileNameWithoutExtension(name);
+            var atlasName = $"{baseName.Replace("\\", "_")}_atlas";
 
-            //var extraTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            //textures.Add(extraTexture);
+            foreach (var layer in layers) {
+                textures.AddRange(layer.textures);
+            }
 
-            //var superTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            //superTexture.name = atlasName;
+            textures = textures.Distinct().ToList();
 
-            //var atlasRects = superTexture.PackTextures(textures.ToArray(), 2, 4096, false);
+            var extraTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            textures.Add(extraTexture);
 
-            //PatchAtlasEdges(superTexture, atlasRects);
+            var superTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            superTexture.name = atlasName;
 
-            //str.AtlasRects = atlasRects;
-            //str.name = baseName;
+            var rects = superTexture.PackTextures(textures.ToArray(), 2, 4096, false);
+            PatchAtlasEdges(superTexture, rects);
 
-            return new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            _Atlas = superTexture;
+            _AtlasRects = rects;
+            name = baseName;
+
+            return _Atlas;
+        }
+
+        private Rect[] GetOrGenerateRects() {
+            if (_AtlasRects != null) {
+                return _AtlasRects;
+            }
+
+            GetOrGenerateAtlas();
+
+            return _AtlasRects;
+        }
+
+        private void PatchAtlasEdges(Texture2D atlas, Rect[] rects) {
+            foreach (var r in rects) {
+                var xMin = Mathf.RoundToInt(Mathf.Lerp(0, atlas.width, r.x));
+                var xMax = Mathf.RoundToInt(Mathf.Lerp(0, atlas.width, r.x + r.width));
+                var yMin = Mathf.RoundToInt(Mathf.Lerp(0, atlas.height, r.y));
+                var yMax = Mathf.RoundToInt(Mathf.Lerp(0, atlas.height, r.y + r.height));
+
+                //bottom left
+                if (xMin > 0 && yMin > 0)
+                    atlas.SetPixel(xMin - 1, yMin - 1, atlas.GetPixel(xMin, yMin));
+
+                //top left
+                if (xMin > 0 && yMax < atlas.height)
+                    atlas.SetPixel(xMin - 1, yMax, atlas.GetPixel(xMin, yMax - 1));
+
+                //bottom right
+                if (xMax < atlas.width && yMin > 0)
+                    atlas.SetPixel(xMax, yMin - 1, atlas.GetPixel(xMax - 1, yMin));
+
+                //top right
+                if (xMax < atlas.width && yMax < atlas.height)
+                    atlas.SetPixel(xMax, yMax, atlas.GetPixel(xMax - 1, yMax - 1));
+
+                //left edge
+                if (xMin > 0) {
+                    var colors = atlas.GetPixels(xMin, yMin, 1, yMax - yMin);
+                    atlas.SetPixels(xMin - 1, yMin, 1, yMax - yMin, colors);
+                }
+
+                //right edge
+                if (xMax < atlas.width) {
+                    var colors = atlas.GetPixels(xMax - 1, yMin, 1, yMax - yMin);
+                    atlas.SetPixels(xMax, yMin, 1, yMax - yMin, colors);
+                }
+
+                //bottom edge
+                if (yMin > 0) {
+                    var colors = atlas.GetPixels(xMin, yMin, xMax - xMin, 1);
+                    atlas.SetPixels(xMin, yMin - 1, xMax - xMin, 1, colors);
+                }
+
+                //top edge
+                if (yMax < atlas.height) {
+                    var colors = atlas.GetPixels(xMin, yMax - 1, xMax - xMin, 1);
+                    atlas.SetPixels(xMin, yMax, xMax - xMin, 1, colors);
+                }
+            }
         }
     }
 }

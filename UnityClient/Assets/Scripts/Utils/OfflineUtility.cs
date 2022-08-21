@@ -1,4 +1,5 @@
 using ROIO;
+using ROIO.Models.FileTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,20 +18,22 @@ public class OfflineUtility : MonoBehaviour {
     public List<long> MapLoadingTimes;
     public List<string> MapNames;
 
+    private Entity offlineEntity;
+
     private async void Awake() {
         GameManager = FindObjectOfType<GameManager>();
         EntityManager = FindObjectOfType<EntityManager>();
 
-        await Addressables.InitializeAsync();
+        await Addressables.InitializeAsync().Task;
     }
 
     void Start() {
         MapLoadingTimes = new List<long>();
         MapNames = new List<string>();
 
-        //SpawnCharacter();
-        GameManager.BeginMapLoading(MapName);
-        
+        SpawnCharacter();
+        //GameManager.BeginMapLoading(MapName);
+
         var descriptors = FileManager.GetFileDescriptors();
         foreach (var key in descriptors.Keys) {
             if (Path.GetExtension(key.ToString()) == ".rsw") {
@@ -41,13 +44,29 @@ public class OfflineUtility : MonoBehaviour {
         MapNames.Sort();
     }
 
+    async void Update() {
+        if (Input.GetKeyUp(KeyCode.F4)) {
+            await LoadEffect();
+        }
+    }
+
+    private async Task LoadEffect() {
+        var str = await Addressables.LoadAssetAsync<STR>("data/texture/effect/magnificat.str").Task;
+        var str2 = FileManager.Load("data/texture/effect/magnificat.str") as STR;
+        if (str != null) {
+            var renderer = new GameObject().AddComponent<StrEffectRenderer>();
+            renderer.transform.SetParent(offlineEntity.transform, false);
+            renderer.Initialize(str);
+        }
+    }
+
     internal void SelectNextMap() {
         MapName = MapNames.Last();
         MapNames.Remove(MapName);
     }
 
     void SpawnCharacter() {
-        var entity = EntityManager.SpawnPlayer(new CharacterData() {
+        offlineEntity = EntityManager.SpawnPlayer(new CharacterData() {
             Sex = 1,
             Job = 0,
             Name = "Player",
@@ -61,14 +80,14 @@ public class OfflineUtility : MonoBehaviour {
             SP = 50,
             ClothesColor = 1,
         });
-        entity.transform.position = new Vector3(150, 16, 150);
-        entity.SetAttackSpeed(135);
-        Session.StartSession(new Session(entity, 0));
+        offlineEntity.transform.position = new Vector3(150, 16, 150);
+        offlineEntity.SetAttackSpeed(135);
+        Session.StartSession(new Session(offlineEntity, 0));
 
         CharacterCamera charCam = FindObjectOfType<CharacterCamera>();
-        charCam.SetTarget(entity.EntityViewer.transform);
+        charCam.SetTarget(offlineEntity.EntityViewer.transform);
 
-        entity.SetReady(true);
+        offlineEntity.SetReady(true);
         //var mob = EntityManager.Spawn(new EntityData() { job = 1002, name = "Poring", GID = 20001, speed = 697, PosDir = new int[] { 0, 0, 0 }, objecttype = EntityType.MOB });
         //mob.transform.position = new Vector3(150, 0, 155);
         //mob.SetReady(true);

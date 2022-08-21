@@ -407,7 +407,7 @@ public class DataUtility {
                         var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
                         var dir = Path.GetDirectoryName(descriptor).Replace("/", "\\");
 
-                        string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, "data", "effect", dir);
+                        string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
                         Directory.CreateDirectory(assetPath);
 
                         var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".asset");
@@ -545,7 +545,9 @@ public class DataUtility {
 
     [MenuItem("UnityRO/3. Create Addressable Assets/6. Effects")]
     static void CreateEffectsAddressableAssets() {
-        var files = Resources.LoadAll(Path.Combine("data", "effect")).ToList();
+        var files = Resources.LoadAll(Path.Combine("data", "texture", "effect"))
+            .Where(it => it is STR)
+            .ToList();
         files.SetAddressableGroup("Effects", "Effects");
     }
 

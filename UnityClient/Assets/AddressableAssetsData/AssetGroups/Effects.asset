@@ -16,7 +16,2449 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 0162abdf6724e68488cb4736e7fc48e7
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 7875e679d8bc24b4c9acd25e8c2e3716
+    m_Address: data/texture/effect/_devil.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 73bcffe6cb7d7734baf503436c42bfd7
+    m_Address: data/texture/effect/ab_offertorium.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e847288bf7bc6d54fafab210fba928ee
+    m_Address: data/texture/effect/ab_offertorium_ring.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd1f2744193251840b29db66a3d77e13
+    m_Address: data/texture/effect/ac_concentration.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c18f4108049ffa146b0b3f1d47fa6fd3
+    m_Address: data/texture/effect/ach_complete/ppring3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0230f6183d592e458c333d3df04adc8
+    m_Address: data/texture/effect/ado.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 601239bdad06d40469b74c02751a5cb5
+    m_Address: data/texture/effect/adrenaline.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3fb986d8054628e4982079908661b690
+    m_Address: data/texture/effect/aimed.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 87f0d1713b7e61844ba649e5c987597d
+    m_Address: data/texture/effect/all_full_throttle.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ec8c4df20131b149b977b27f02ad912
+    m_Address: data/texture/effect/allow.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff582ed5d12689143bdea106b5cec142
+    m_Address: data/texture/effect/angel.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 238782440a497b74899dd0068818dc0c
+    m_Address: data/texture/effect/angel_2nd.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3cbb34b80d116f489b66bc2ac812d86
+    m_Address: data/texture/effect/angelus.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e260179ed497754386bfda41faa0a19
+    m_Address: data/texture/effect/arrowshot.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b5983fd64a4d2748af5021266496ca7
+    m_Address: data/texture/effect/arrowstorm.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d035f02ea7a2e8d4abef25184c94c971
+    m_Address: data/texture/effect/aspersio.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 600f998da7cabf5438fd22f0b9ebb9f2
+    m_Address: data/texture/effect/assasin_poisonreact.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: afbc9de12fbf7664f9b5fd53348bfeb1
+    m_Address: data/texture/effect/assasin_poisonreact_1st.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c0e3a985784da7746a98bd974a5f71a3
+    m_Address: data/texture/effect/asum.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6dbe47c56ee30f045a1d98a5cc13caee
+    m_Address: data/texture/effect/aura.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b72b9bf95b996e64ead5faddf4ff7164
+    m_Address: data/texture/effect/autocounter.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f701c90a30a5d1845930aaea3ed018cf
+    m_Address: data/texture/effect/benedictio.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf021a3919930934e8df46707fbb1b49
+    m_Address: data/texture/effect/bite_scar/bite_scar.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2703876fc41ed545b7279bed0eb56c1
+    m_Address: data/texture/effect/black_hammerfall.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b91cb35a75dcf349887f28ceed33126
+    m_Address: data/texture/effect/black_maxmize.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 669641f0f1c2f7340b066eeada6c8b27
+    m_Address: data/texture/effect/black_sword_mini.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f1edb888ba8d0c547ababcb01c873969
+    m_Address: data/texture/effect/blast mine.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 951897485b2c00f4fb87e052a3d87945
+    m_Address: data/texture/effect/blastmine.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 41d9f766180eaee4cb2793dfd2e07c8e
+    m_Address: data/texture/effect/bowling.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdba5ee197ade8f418aa63431b6fed47
+    m_Address: data/texture/effect/brandish.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 636984ef3450baa40b2d6d4bfcb04c6f
+    m_Address: data/texture/effect/brandish2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8dbfd5df37810254a8ad6bfe6e15b16f
+    m_Address: data/texture/effect/bs_refinefailed.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f8e41329bb257f14db2b124a37125c84
+    m_Address: data/texture/effect/bs_refinesuccess.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 704a4b93f12cd5c40a7c2187b7b6893e
+    m_Address: data/texture/effect/bubble.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 19283b885d3ee664297af342f94f5d46
+    m_Address: data/texture/effect/bubble1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b71a6ab2672b53443b3def75922ed376
+    m_Address: data/texture/effect/bubble1_1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3fff6ecf800f36a4f9b444f9ea37ddc6
+    m_Address: data/texture/effect/bubble2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad3cb1986c302d34d94af6acf4487687
+    m_Address: data/texture/effect/bubble2_1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 943a957672f217c47a0403b1c7b8d396
+    m_Address: data/texture/effect/bubble3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8583ca5dc78660141bb679d54ade7af4
+    m_Address: data/texture/effect/bubble3_1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a19332cd0527a1740af7cca463b1769b
+    m_Address: data/texture/effect/bubble4.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d24479444a02535499d746a25db5aeb0
+    m_Address: data/texture/effect/bubble4_1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 39c25e56e92d61c4ab1bf289029aac1f
+    m_Address: data/texture/effect/cart.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b8f7dd95b724fda468f01921e0107397
+    m_Address: data/texture/effect/cartrevolution.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e0e206edb12a2849a0e4c10077980bb
+    m_Address: data/texture/effect/chainlight.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2d91e10bb7e34444a4452a7e7de90be
+    m_Address: data/texture/effect/changematerial_fa.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a9bef4a75c3dfb4b91a7847db4f1096
+    m_Address: data/texture/effect/changematerial_su.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 39e083bb1a2746a4f92f2c4806728be9
+    m_Address: data/texture/effect/chill.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aef713add18a2844eb281380ef96871a
+    m_Address: data/texture/effect/claymore.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 969fcfa7807d95b4284dcf0294c131ea
+    m_Address: data/texture/effect/cloudh.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: acdb57bd885c48b48936f4fb5faf87ed
+    m_Address: data/texture/effect/concentration.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 846b250e2c0014f429efeaa89b87b729
+    m_Address: data/texture/effect/cook_fail.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ba9fd78fadba17b428853a91a62a6f85
+    m_Address: data/texture/effect/cook_suc.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf36da5942f68104a9e83996c6e157b4
+    m_Address: data/texture/effect/crash earth.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81bfe937c5aa1f44187fdbb5ac22f2b2
+    m_Address: data/texture/effect/crashearth.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fac821eefe0dd14a996b5347501ddfd
+    m_Address: data/texture/effect/crimson_r.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c8fadca614ab654b939ade536e4b224
+    m_Address: data/texture/effect/cross.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d1ae2236458fefc4abfb2f14bf9d5579
+    m_Address: data/texture/effect/cure.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a2d12ce0418ab524e94e1b9e78e04b83
+    m_Address: data/texture/effect/cure_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 813a2f96bf352aa4eac5ae33ee5fae9b
+    m_Address: data/texture/effect/cwound.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cee48920226d2544ba5b7954dcb06d86
+    m_Address: data/texture/effect/dancingblade.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 550adfdfe44279c49917980803f66f70
+    m_Address: data/texture/effect/defense.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94fe28539c4810649be0ca4311a67cfd
+    m_Address: data/texture/effect/deffender.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e884d5499ef3b60468f3c64ae48a1d94
+    m_Address: data/texture/effect/detoxication.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47bb69323e0ec584a99f9e16bbe29774
+    m_Address: data/texture/effect/devil.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f6645de894ab2f4c98c9ad519066892
+    m_Address: data/texture/effect/devil_gas.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 20426490959c33145ac5bf9af379c87d
+    m_Address: data/texture/effect/devotion.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1332e79aa00b6594da313db4e24ac3b1
+    m_Address: data/texture/effect/dfear.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c67d1f375eb36141ac8a748166248fc
+    m_Address: data/texture/effect/dragon_h.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff0784e01b089ec43bac4517ef3ab5c6
+    m_Address: data/texture/effect/dust.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 53cf31904d9afca4aaab5b61a453380d
+    m_Address: data/texture/effect/earthhit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b864ef80fe12bee4cbd7a62f2b5b71b4
+    m_Address: data/texture/effect/efst_angel_fluttering/angel_fluttering.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9f7ad48e61a5b5478e7e90268261a0a
+    m_Address: data/texture/effect/efst_blessing_of_angels/tensi3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 70a50a71ec3033941be4cefdf2f9dc6c
+    m_Address: data/texture/effect/efst_blossom_fluttering/sakura.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d86fa861490425049a3cf27bb5ac8e46
+    m_Address: data/texture/effect/efst_c_blessings_of_soul/blessingsofsoul.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f03f4c6e6fbdcc49a9cfc4a17eb59a1
+    m_Address: data/texture/effect/efst_c_ghost_effect/c_ghost_effect.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99e5311d4ae56fc4d9b4f50bf598aae0
+    m_Address: data/texture/effect/efst_c_magic_heir_tw/moonstar2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a58bbe4db01e85a45a779a4f29c7dc77
+    m_Address: data/texture/effect/efst_c_maple_which_falls_rd/c_maple_which_falls_rd.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6bc3b4edc02e8db429de2d35735671b5
+    m_Address: data/texture/effect/efst_c_popping_poring_aura/c_popping_poring_aura.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab6f073396f7cbf4a9743388aae2c866
+    m_Address: data/texture/effect/efst_c_romance_rose_tw/losttime.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f213cb6ae1b4dc24498c4d52a8f10bac
+    m_Address: data/texture/effect/efst_c_shining_angel_wing/c_shining_angel_wing.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4fa79f6308ec6844eb7caf63f69dab89
+    m_Address: data/texture/effect/efst_decoration_of_music/note_1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d16a3ec75a8a414479a02cd0a810af64
+    m_Address: data/texture/effect/efst_feather_fluttering/feath.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 874bf2785581f264d8797dc18211be7f
+    m_Address: data/texture/effect/efst_floral_waltz/floral_waltz.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99e659160427d0447b2a025a41730fcf
+    m_Address: data/texture/effect/efst_flowersmoke/flowersmoke.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 10ede31ae66867f42b13d8043974c43a
+    m_Address: data/texture/effect/efst_fluffywing/ypen.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: efc7a36ecf646724bbc41508455f64aa
+    m_Address: data/texture/effect/efst_flutter_butterfly/flutter_butterfly.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc7ad133949d0534eb8939851e146bfb
+    m_Address: data/texture/effect/efst_flutterbutterfly_bl/flutter_butterfly.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37390ed26f8f5744face6d8803303360
+    m_Address: data/texture/effect/efst_flutterbutterfly_bl/thubasa2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 00af0690aaedd3640871ec2b2a748926
+    m_Address: data/texture/effect/efst_fstone/fstone.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 17a61436ee5fcaf4bbc4772362d1965d
+    m_Address: data/texture/effect/efst_full_bloomcherry_tree/full_bloomcherry_tree.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db57990e53fc5f14482f4241c4a835a9
+    m_Address: data/texture/effect/efst_gift_of_snow/gift_of_snow.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff75966de42bf654d90d4f4887b9890e
+    m_Address: data/texture/effect/efst_gift_of_snow/yukino2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d83c65c473ec804f8f5d8d6d7c0d98a
+    m_Address: data/texture/effect/efst_glowofnewyear/halo.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 641e95a055a0fa14fb22b807460545ed
+    m_Address: data/texture/effect/efst_gold_shower/coin2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b8ab6917a76d8042b89f2e4d7e4596c
+    m_Address: data/texture/effect/efst_happiness_star/moonstar2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14ff8131eceed3d4ab6928ffd8345f3e
+    m_Address: data/texture/effect/efst_ljosalfar/ljosalfar.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f6e2ef3bdcd804409a2b9f74f14aba3
+    m_Address: data/texture/effect/efst_magical_feather/magical_feather.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: befa2e475258af840a1a2dbfda38a393
+    m_Address: data/texture/effect/efst_magiccircle/mc.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 58df01b870c310f40a42b56b03030d2d
+    m_Address: data/texture/effect/efst_magiccirclerainbow/mc.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2cb7d132e6fa37e4dbb11b004eaaa401
+    m_Address: data/texture/effect/efst_magiccirclerainbow/mcr.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 038d9ee29964e124387bcc537a269d6f
+    m_Address: data/texture/effect/efst_manystars/hikariga.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b3d305c7683bc148a0352ae9d973d89
+    m_Address: data/texture/effect/efst_maple_falls/dandan1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6525ba3502ff6d24e9608f49ebf94850
+    m_Address: data/texture/effect/efst_maple_falls/maple_falls.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37b9ca1116bb55d43b7763798076626f
+    m_Address: data/texture/effect/efst_mermaid_loging/bubblebubble.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f8bce8ffc22f7ff4490130c2a2f94540
+    m_Address: data/texture/effect/efst_mstone/fstone.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 952d6e0917bf1ec438fd36d0d6b7268a
+    m_Address: data/texture/effect/efst_mstone/stoneofint2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed4addf03628426488f554821c2bc4f8
+    m_Address: data/texture/effect/efst_qscaraba/qscaraba.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0c15f3e123facb4a99187a4faf7ce5e
+    m_Address: data/texture/effect/efst_resonatetaego/youmei.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7d2e38909ce1e84b91bb6442d0c6041
+    m_Address: data/texture/effect/efst_time_ accessory/time_ accessory.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97fa44e03acedcc4192f9e69ac9e2d15
+    m_Address: data/texture/effect/efst_time_accessory/time_accessory.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b66abf53f767394f912df75fe83d637
+    m_Address: data/texture/effect/efst_valhalla_idol/odl2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea91f1986c14e334bb62420948735ec1
+    m_Address: data/texture/effect/efst_vip_hair/rainbow_2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6117dcbe34235a64d82e8057708f8c45
+    m_Address: data/texture/effect/enc_earth.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ded782e80c90aff45af8dfd3f5d25ea5
+    m_Address: data/texture/effect/enc_fire.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9293cf0f899b5b046b96a9da8d225289
+    m_Address: data/texture/effect/enc_ice.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa4fe508b63ea944e80e4c02b98b5084
+    m_Address: data/texture/effect/enc_wind.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a5e28dc566de674b92abbd7a7945fe2
+    m_Address: data/texture/effect/energycoat.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e65a6886a1156704793847ddb9fee7f9
+    m_Address: data/texture/effect/enervation.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d3ba70277f05b64baeee9e345cfe04d
+    m_Address: data/texture/effect/eraser_cutter.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 59fc682353d2a6c4d9d68447156796d8
+    m_Address: data/texture/effect/ez_cure.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 688e2ad766bda374cb278f33707bed5f
+    m_Address: data/texture/effect/fire.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db477e2ea10161246889e32db385d70b
+    m_Address: data/texture/effect/fire dragon.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b11206bb21c68ff4aad196ed9dfd888c
+    m_Address: data/texture/effect/firehit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 33230a981d2bf40479a34e41456c03b2
+    m_Address: data/texture/effect/firehit1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7eb2f9730a20a4c4c893c333c8888117
+    m_Address: data/texture/effect/firehit2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee64fab92a197314bbba765b694c4e10
+    m_Address: data/texture/effect/firehit3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 547e7cc2d95884c479cf9c0d78156deb
+    m_Address: data/texture/effect/firepillar.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b73acab4d42b10e41a97f16a031fea79
+    m_Address: data/texture/effect/firepillarbomb.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1a999296c68e58498bf7c3e66f9d154
+    m_Address: data/texture/effect/firewall.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 028565af9e6fb8648b4f67269af6943d
+    m_Address: data/texture/effect/firewall1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b8b3259e86e04af43b32b8c00bf358f7
+    m_Address: data/texture/effect/firewall2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca70ac2cbeaf6824bbf35604c1faf46c
+    m_Address: data/texture/effect/firewall_blue.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc647aba38f967541a4ee4a8681739c5
+    m_Address: data/texture/effect/firewall_per.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b150c3e0089a5444a8114c02b329ec5
+    m_Address: data/texture/effect/firewall_sky.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e2a9973febd626b4883094aa5a7ccd27
+    m_Address: data/texture/effect/flower_leaf.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 707b24f844b945b49a7b5e75b36b5ba1
+    m_Address: data/texture/effect/flower_sesami.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18dc069aff295304cba9a5e46c86ae84
+    m_Address: data/texture/effect/flower_sesami2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0d1c405503b89943a51425f310a9644
+    m_Address: data/texture/effect/flower_sesami3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0479fb6aa20c28742bf85094d6ee8e0e
+    m_Address: data/texture/effect/flower_sesami4.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 59aaefcbf2bbc4049932781351566dc5
+    m_Address: data/texture/effect/food_agi.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c9e2d8cff8287e4584f344b8b044631
+    m_Address: data/texture/effect/food_dex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff2d5021503e0de4b8b214a2587533f5
+    m_Address: data/texture/effect/food_int.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f28117bedd6b54342b2e651d7ab63762
+    m_Address: data/texture/effect/food_luk.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99f89ace2198d1b4f893e3927fd17e6d
+    m_Address: data/texture/effect/food_str.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6769a5c2042a814bbd00939a0d3925f
+    m_Address: data/texture/effect/food_vit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7c4e71eac5e8d33409db134e397a6fc0
+    m_Address: data/texture/effect/freeze.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5fcf741545fd72d44a0f4d901d0b476a
+    m_Address: data/texture/effect/freezed.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3235d98c1b182fa43a93c9bb2c191d0b
+    m_Address: data/texture/effect/freezing.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 52681df000acce042b0741c474a555ee
+    m_Address: data/texture/effect/fruit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 712b7b4c9546a9f4482b4a141f5cb9f4
+    m_Address: data/texture/effect/fruit_.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5ddb86a3df9e1e440b498afbeb6ba097
+    m_Address: data/texture/effect/gaspush.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 783fb868198ade24fad50ffbcb72d8f9
+    m_Address: data/texture/effect/gc_darkcrow.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a5675e7af2f22a45904d9ab30886411
+    m_Address: data/texture/effect/gloria.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a298be6c920aa214f8a0eb1c1e334050
+    m_Address: data/texture/effect/gloria_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d496f2bf2488f224198b634280cdcea6
+    m_Address: data/texture/effect/gn_illusiondoping.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a01bd8b656939b2439a7d000e904c448
+    m_Address: data/texture/effect/groomy.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c6996ea62c270774781113a490a2387d
+    m_Address: data/texture/effect/guardian.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9f7d3ec5cf7b6c843b627854e8afdd23
+    m_Address: data/texture/effect/h_levelup.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8428bdf7bbeb05043b8de1c9e0a8b4ef
+    m_Address: data/texture/effect/hell_in.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3320b923cd2547b4aa7979cca668302c
+    m_Address: data/texture/effect/hit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc0e7d7cece62774c82d6b75143e4a33
+    m_Address: data/texture/effect/holy_cross.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf712d908d8359241830102e5b5e1c7d
+    m_Address: data/texture/effect/holyhit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c7a429fe5f1d0604bb5cd9bf0d75ae1c
+    m_Address: data/texture/effect/homing.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f742f8e674bd66d4b83d22e926ef0d4c
+    m_Address: data/texture/effect/hunter_loud.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40966b6315827ca4db3ac99bf0adb983
+    m_Address: data/texture/effect/hunter_poison.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24a7f6bdd5de4734f9c67ab039f64ae9
+    m_Address: data/texture/effect/hunter_shockwave_blue.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c3c0a5f75d2e174d994b1ab39b2e04b
+    m_Address: data/texture/effect/i_manus.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c53d33712a78a84785ec4a341e59c31
+    m_Address: data/texture/effect/ice_status.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 42107cfae8bd61846821690072b976ff
+    m_Address: data/texture/effect/ice_status_crash.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1bc58d1458f61bf4ba56b4c0d33c5d3a
+    m_Address: data/texture/effect/ice_statusing.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 98c78d83020746446bdb6acf722c7350
+    m_Address: data/texture/effect/icecrash.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f3c0b723c78933840868dfda3942e0e6
+    m_Address: data/texture/effect/icestatusing.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 22b387da189a19043ae4edc41e4931ae
+    m_Address: data/texture/effect/icy.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a23e73553e499f45869fdae511f7532
+    m_Address: data/texture/effect/ignorance.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e9c383ff7cf7f44b90b7f9229cb46e0
+    m_Address: data/texture/effect/impisitio.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29b18f146ec4aaa4a97b80783fac0a71
+    m_Address: data/texture/effect/impositio.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3b70ca823697df4ea91126066a04f6e
+    m_Address: data/texture/effect/invenom.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14d120c0a6467cc4f8a1a1133ac17494
+    m_Address: data/texture/effect/invincibleoff2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4b97445c73a9a624899a82d5c5c2e3da
+    m_Address: data/texture/effect/itempokjuk.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6c192e69bca0554abba6db7c0d51fec
+    m_Address: data/texture/effect/joblvup.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12781a68d31984a4c9ab0c328423caba
+    m_Address: data/texture/effect/jong.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c6271962d58eea246b3c36505eddf472
+    m_Address: data/texture/effect/jong_mini.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3bc5bf1efda17245bc238a6b4baf508
+    m_Address: data/texture/effect/jyumonjikiri.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 39efc43c8d1a87448a52a523e7fb9d7a
+    m_Address: data/texture/effect/keeping.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 113cb8893d0f5e54fa3224b201d6462d
+    m_Address: data/texture/effect/kyrie.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eba718597a52cc74389c8016e2c7d13c
+    m_Address: data/texture/effect/kyrie_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fc0fff1ad08ff044f839a2ac55c3302c
+    m_Address: data/texture/effect/landmine.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc0ce5f59d7aeb6429549c467bb28c61
+    m_Address: data/texture/effect/lauagnus.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 44435889ae41c77469d6a59fe944b2f1
+    m_Address: data/texture/effect/laulamus.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: beeb4907bc2c489469c2e9cb81f5cf4d
+    m_Address: data/texture/effect/lava_slide.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7da377b950559654bab4a246ae0741e5
+    m_Address: data/texture/effect/laziness.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d335a34c0cb1e264ba62722c10b1076f
+    m_Address: data/texture/effect/lexaeterna.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4701c22b0a8d8014394febf7f14d04b3
+    m_Address: data/texture/effect/lexaeterna_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d1beb3db0d2077044ba02dc6e8fb5a9d
+    m_Address: data/texture/effect/lexdivina.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 87ba1824ae53d4147bd2f2e1f4eb46e8
+    m_Address: data/texture/effect/lightning.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 67222c28d5774bb4f9dada5dae5c0434
+    m_Address: data/texture/effect/lord.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 432805c75a1751146af30c38728e534c
+    m_Address: data/texture/effect/lord_of_vermillion/lord_of_vermillion.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c6b9685a0f9c3d4181d14a7c43788bd
+    m_Address: data/texture/effect/loud.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bae1b0fe7c1de3843aaca9db4bc234d3
+    m_Address: data/texture/effect/maemor.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 63f803bf30625024b90f491a4f64abb2
+    m_Address: data/texture/effect/magical.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6724075b6246dde45a6340a162e1e93a
+    m_Address: data/texture/effect/magician_safe.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e58638aeb62e7f419f5022770361f24
+    m_Address: data/texture/effect/magician_strorn.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f97174b56c85f994992c517dc1800740
+    m_Address: data/texture/effect/magni_.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 431e6d05626ad6045bf568a8deeaca7a
+    m_Address: data/texture/effect/magnificat.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 864719f4f0d54e8428c35dc93e7ac21b
+    m_Address: data/texture/effect/magnificat_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 079c097dff6aa2c4d8a7ee2b26901d29
+    m_Address: data/texture/effect/magnus.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af9390110ff92d44aa42a369aa941e81
+    m_Address: data/texture/effect/mapae.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2485f58eb4220104991f583bd7ec07e3
+    m_Address: data/texture/effect/maximize power.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 89e2f03d169c0a54aadfa682f14332e2
+    m_Address: data/texture/effect/maximize_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18b0cb3b5f03d6840bd50520ce8108d1
+    m_Address: data/texture/effect/maximizepower.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b15de98a93501048ada15a7e55aab56
+    m_Address: data/texture/effect/melt.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae79684b7d136364386cf28ba056a1b3
+    m_Address: data/texture/effect/memor_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 02bfbe63156bfe14aa77882a4f38ebf8
+    m_Address: data/texture/effect/mentalbreak.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 215884ccc2cae964a85cc8ed12639036
+    m_Address: data/texture/effect/meteor1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 175b68ebc0469824fb978ceb9fa82def
+    m_Address: data/texture/effect/meteor2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 820a852e3ed2aa94faa5f33c228c1a4d
+    m_Address: data/texture/effect/meteor3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 89340c8670b9ec44b8dc3965ebb4b179
+    m_Address: data/texture/effect/meteor4.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8d58b3e624357ae4db378921d026b2ba
+    m_Address: data/texture/effect/meteorstorm/meteor1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e80d72e68afffdf48ab6c02babc6d57d
+    m_Address: data/texture/effect/meteorstorm/meteor2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c61612fa4a99cf5479c4147ae34c516f
+    m_Address: data/texture/effect/meteorstorm/meteor3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cfbd92973e93ef4ca22fe9192b3a68a
+    m_Address: data/texture/effect/mid_frenzy.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 62252138363a5ac43ac09173848d83d4
+    m_Address: data/texture/effect/mil_shield.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5020162b94e78dc4b97ff20e5ca94860
+    m_Address: data/texture/effect/mobile_ef01.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e25e661502f32e04a90d8435f64b9cee
+    m_Address: data/texture/effect/mobile_ef02.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f913e4579a7714947943585be145f8d9
+    m_Address: data/texture/effect/mobile_ef03.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 928519c2522f7434f9a10211ba879822
+    m_Address: data/texture/effect/moonlight_1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 579f6eb5a13e55f46bd8ff81dc091ba1
+    m_Address: data/texture/effect/moonlight_2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 877598b8d3ec703439c120db07f1f9f3
+    m_Address: data/texture/effect/moonlight_3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b4e39ea8f35a9149afeddc0464391ae
+    m_Address: data/texture/effect/moonstar.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c116684a3d5b7e84f85b3c4ef20556fa
+    m_Address: data/texture/effect/mvp.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1bd05a5c3d8f1844fb34264ca23eb928
+    m_Address: data/texture/effect/nc_magma_eruption.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4bf125ddd2d47414eb7a80aebfe733f1
+    m_Address: data/texture/effect/p_failed.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47d28284a2cd3c8429b87b6c8fdbe7b7
+    m_Address: data/texture/effect/p_success.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3d1ceedf99e880a4a981cbc4227659e6
+    m_Address: data/texture/effect/pierce.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d938473bd33a8c04aa90e227bf0039f7
+    m_Address: data/texture/effect/pneuma1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 20d1ab887cf22b7428925790d1857c24
+    m_Address: data/texture/effect/pneuma2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a40c63c44d54dcf4b874ba320bec2937
+    m_Address: data/texture/effect/pneuma3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 653200dc288633e48822d9708ed79e86
+    m_Address: data/texture/effect/poison.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5d2e68421ece174f97e9e9289703ff6
+    m_Address: data/texture/effect/poison_mist.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d46c5fca35741e4bb56ec03c69dc9e1
+    m_Address: data/texture/effect/poisonreact.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 732b24937877ec349b4629ac2f346335
+    m_Address: data/texture/effect/poisonreact_1st.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 703fe64da07db3d4389327d85216463a
+    m_Address: data/texture/effect/poisonzone.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b34afb222047e394f8b0213083ffae11
+    m_Address: data/texture/effect/pokjuk_jap.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c8a2aa76796e644bb3489b16be3b6f8
+    m_Address: data/texture/effect/pong.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdd9ac9b9420f43478bba5b254ce5a2d
+    m_Address: data/texture/effect/pong1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6ba09d8360b476b44a6bd3f0446de7d8
+    m_Address: data/texture/effect/pong2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 77aed25becc0fa140ad93e5b7ed65f17
+    m_Address: data/texture/effect/pong3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed26b642e70af314386a002e772ad7a6
+    m_Address: data/texture/effect/powerswing.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 28b4d23689053484e91de4dc14c0414e
+    m_Address: data/texture/effect/proboc.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd704eec47ce55548ad824d216bf7d9b
+    m_Address: data/texture/effect/proboke.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 26afb46188e028c4ca82840c8d7b8c75
+    m_Address: data/texture/effect/providence.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0855c5e284e6e534bacf697516c45dcf
+    m_Address: data/texture/effect/provoke.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 657aceb49b42dd645aac858af0b21a1a
+    m_Address: data/texture/effect/quagmire.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65544daca99bf05448b6f77c1e022ee9
+    m_Address: data/texture/effect/quagmire/quagmire.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d7bedc64b8ccd114c8e93f077187d4e9
+    m_Address: data/texture/effect/ramadan.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 764e6f43ba75aa642854894edb8476d9
+    m_Address: data/texture/effect/recovery.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 145ac182a750745428f9990d6886cf3c
+    m_Address: data/texture/effect/red_cross.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a82015b29eed8e84987ff0b8a8db6ade
+    m_Address: data/texture/effect/repair weapon.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b50a81fc1eed7d47ab028892318ab84
+    m_Address: data/texture/effect/repairweapon.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aa12262024f3a7e4198c5566ebbf9bb1
+    m_Address: data/texture/effect/resurrection.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 702059dd1117f9c42b9b76956134f355
+    m_Address: data/texture/effect/resurrection_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8db4e021af0c9c54cac8f4ba1dad58cc
+    m_Address: data/texture/effect/rk_luxanima.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45b6fdfa2d17de64aaf176635e7f44fa
+    m_Address: data/texture/effect/rl_anti_material/anti.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9963a1c217e4ec6498ea3eed6402693d
+    m_Address: data/texture/effect/rl_banishing_buster/vanishing1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 340f16f81d4bf184eac93230a0ef12b2
+    m_Address: data/texture/effect/rl_c_maker/cm.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 990696454e5713147bfdfbc7bc690860
+    m_Address: data/texture/effect/rl_c_maker/deffender.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c7cc6643c6105d4693cd73d367dbc05
+    m_Address: data/texture/effect/rl_d_tail/dtdt.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0214459fbf640824b8a0cbe150392a02
+    m_Address: data/texture/effect/rl_e_chain/eternal.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad51e692565695a4692ff04035951177
+    m_Address: data/texture/effect/rl_explosion/boom.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 541659c464fb4dc4e85299f369790fe9
+    m_Address: data/texture/effect/rl_fallen_angel/penne.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0854d8ea85ce78a4fb8378508bfdc4f4
+    m_Address: data/texture/effect/rl_fire_dance/firedance.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8788c2d134eea3645973d23ec4a59d17
+    m_Address: data/texture/effect/rl_fire_rain/fire_rain.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fcedfe334a0f9704b87adba1a4f77c21
+    m_Address: data/texture/effect/rl_h_mine/mine.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c92d514062ee684680f47926a728013
+    m_Address: data/texture/effect/rl_hamer_god/hogg.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ca56cf410375fa4eafb1c9935cfccf7
+    m_Address: data/texture/effect/rl_hamer_god/hogg2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14846e19538ef304fab4a040fde2227d
+    m_Address: data/texture/effect/rl_heat_barrel/htb.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b135b7d745f17945815bd66de47073c
+    m_Address: data/texture/effect/rl_mess_spiral/s5.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27b6ecc519e757e4b9e88085d6fd52fa
+    m_Address: data/texture/effect/rl_p_alter/platinum.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 420f211e9ecbe8440a079f4e46d4d2f2
+    m_Address: data/texture/effect/rl_quick_draw/qd2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f271c4c2617a3e54590d17fddfc66ffc
+    m_Address: data/texture/effect/rl_richs_coin_a/reachs.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94ef068bd53f1d447a43997734d50c6b
+    m_Address: data/texture/effect/rl_slugshot/slug.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0ff5b000aea7c11419f12539892362ab
+    m_Address: data/texture/effect/rl_storm/s_storm.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1472dc6df7bc08c4782f68cdd9fd5ac4
+    m_Address: data/texture/effect/rune_fail.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dcd81ddf98e96a54aa3f0826bb00747e
+    m_Address: data/texture/effect/rune_success.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c598efcf1e0dfa5418cc10219bb4708f
+    m_Address: data/texture/effect/rwc2011.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 63b24ed9d56d1524789ce1a80dddfedf
+    m_Address: data/texture/effect/rwc2011_2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab5088ccfab64df4a9eaf85fc5cf5d09
+    m_Address: data/texture/effect/safetywall.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7afa4d46b4aaf6844b8397706f2237cc
+    m_Address: data/texture/effect/sanctuary.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: da7a84c90c94c2b468c08f2365eac3da
+    m_Address: data/texture/effect/sandman.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 92b6222c304b74d468d5b994b1154ace
+    m_Address: data/texture/effect/setsudan.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1be121ff9bcc0d94a80b81d149b8dbb1
+    m_Address: data/texture/effect/shield_charge.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6cbc82d070b89694a833c8c56ada7fdc
+    m_Address: data/texture/effect/shockwave.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 646726e36ffaa99438e367152ea58374
+    m_Address: data/texture/effect/shockwavehit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f28917905ceddef4ab930d83d9acae81
+    m_Address: data/texture/effect/silence.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e372c74c1951dbc42bd09b9e5d7139c8
+    m_Address: data/texture/effect/skidtrap.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae4c046a9ca061941adddfcec98d3b58
+    m_Address: data/texture/effect/sleep.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2f623da31186fc4439cf59d129f333b7
+    m_Address: data/texture/effect/slowp.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7cf15499df09ad4459ce4cec13de6b2a
+    m_Address: data/texture/effect/so_elemental_shield.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a228e2b4cb9ccff4286f4a15bd9a35d6
+    m_Address: data/texture/effect/sonic_claw.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a281f338cfa0e942b5d591e41e4c4fa
+    m_Address: data/texture/effect/sonicblow.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f34dbb94be71e4c40b6b7e5bd8c29981
+    m_Address: data/texture/effect/spear_step.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a560620a76318643ae00931688c75d5
+    m_Address: data/texture/effect/spearboomerang.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc4ed852e22abcc458a1cc10a15b4ba6
+    m_Address: data/texture/effect/spearstab.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0e133dfdc05cba4e882449104e3c717
+    m_Address: data/texture/effect/spell.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7c57784c89405a4c9043f4243920aa5
+    m_Address: data/texture/effect/spring.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1321a0698aa5023418dfd99d8639fadc
+    m_Address: data/texture/effect/sr_flashcombo.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1f76da1ce1ea5b4eab20ab44555a6d7
+    m_Address: data/texture/effect/stay2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1046d951694651b45a60046eca760f5f
+    m_Address: data/texture/effect/steal_coin.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fede32accd6bb0840aa83121ae42336c
+    m_Address: data/texture/effect/stonecurse.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0cecbc4ae14aba342b22e0afe4e2a159
+    m_Address: data/texture/effect/storm gust.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5ac335e1e391d30458bab87c66295af1
+    m_Address: data/texture/effect/storm_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a3f6f2d16421b04aa29737e06c0af9c
+    m_Address: data/texture/effect/stormgust.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f944e0adcccf4914987e898ba7d7f311
+    m_Address: data/texture/effect/strangelights.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8bf2ef8b3e1c583499198d9602b9b93e
+    m_Address: data/texture/effect/strip_armor.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47d948f997007594bb674396ba19a790
+    m_Address: data/texture/effect/strip_helm.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a18c5c99fcc9fe2498da39d5316af6dc
+    m_Address: data/texture/effect/strip_shield.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9bbbe762dec2c02469173826d3bc70df
+    m_Address: data/texture/effect/strip_weapon.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d816fe3e55377e4f8af84c05a12e563
+    m_Address: data/texture/effect/stun.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8cd2cad8ef899444a86d886e4dbb5d10
+    m_Address: data/texture/effect/stun_effect.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a9465e733a1fc6044ac0d438b11b69e2
+    m_Address: data/texture/effect/su_arclousedash/su_arclousedash.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3d8be13d1c85b2444bd3ca92654feda1
+    m_Address: data/texture/effect/su_bite/su_bite.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7aa064fcfdd4a01409d6894cbb0ad888
+    m_Address: data/texture/effect/su_bunchofshrimp/su_brunchofshrimp.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bab0a6da2ee8ba9408fa22b090e9b235
+    m_Address: data/texture/effect/su_bunchofshrimp/su_bunchofshrimp.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c783a9b95b418224c82286713fa09a54
+    m_Address: data/texture/effect/su_chattering/su_chattering.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9ec45da5c4f7c744a2d37e3f57c32c6
+    m_Address: data/texture/effect/su_cn_meteor/su_cn_meteor0.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1e59cc4fe61d7849ae4db91bfd3e855
+    m_Address: data/texture/effect/su_freshshrimp/su_freshshrimp.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f32084931ab510d4f94ecc1cae9e01c0
+    m_Address: data/texture/effect/su_grooming/su_grooming.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0ee8f92ac36610c4e86567731fdc432a
+    m_Address: data/texture/effect/su_hiss/su_hiss.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3bc6e305f547da64781d288be7081df8
+    m_Address: data/texture/effect/su_lunaticcarrotbeat/su_lunaticcarrotbeat.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: abb999024c516d940980a05ebed7b8c0
+    m_Address: data/texture/effect/su_lunaticcarrotbeat/su_lunaticcarrotbeat0.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0867f8aecbe2b814d98a4d76c116ca0d
+    m_Address: data/texture/effect/su_lunaticcarrotbeat/su_lunaticcarrotbeat1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4ed754b5d27ca874ea63507954ea1cf6
+    m_Address: data/texture/effect/su_lunaticcarrotbeat/su_lunaticcarrotbeat2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0455741707fe0044aa0ec1584ecd4ef6
+    m_Address: data/texture/effect/su_nyanggrass/su_nyanggrass.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a11ef50ca2a6e7646890335588d6082d
+    m_Address: data/texture/effect/su_pickypeck/su_pickypeck.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 819de0e277ae3984ca7e29d11933114d
+    m_Address: data/texture/effect/su_powerofflock/su_powerofflock.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0f70e275ff89df45b8b525113ac4f97
+    m_Address: data/texture/effect/su_scaroftarou/su_scaroftarou.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a3fae2932b339634ba00405b66ac524c
+    m_Address: data/texture/effect/su_scratch/su_scratch.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49ea1b803804e7d4fa758dc9b4a496d8
+    m_Address: data/texture/effect/su_sv_stemspear/su_sv_stemspear.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cef7c73e8c72be649a2e29bb9898ceac
+    m_Address: data/texture/effect/su_svg_spirit/su_svg_spirit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 55885d1f1c7d1954d8de89560b217f4f
+    m_Address: data/texture/effect/su_svg_sprit/su_svg_sprit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cef938b37faf570408df87965447e608
+    m_Address: data/texture/effect/su_svg_sprit/su_svg_sprit2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88f98f88fd3cdd8438641b8408670327
+    m_Address: data/texture/effect/su_tunabelly/su_scratch.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 152826df9941e1c43ae336be98adf550
+    m_Address: data/texture/effect/su_tunabelly/su_tunabelly.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1743f6d2d39f8d04084c08048510dc5c
+    m_Address: data/texture/effect/suffragium.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 02c75ddfc294eb648990799394a156c2
+    m_Address: data/texture/effect/suffragium_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27e4f640fe26cca47a424ee338a33bf8
+    m_Address: data/texture/effect/sui_explosion.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ba3e4bbf9445bc41aa583077d0c38fe
+    m_Address: data/texture/effect/suicide.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 082c7e3353d6f294489eee7ac22e284c
+    m_Address: data/texture/effect/superstar.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8792eda19cdaf654b99a7b3da60e66ee
+    m_Address: data/texture/effect/sv_stemspear/spearboomerang.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edc8b6784c148ce479d81dc3214ae449
+    m_Address: data/texture/effect/sword.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3f1193a3a02d134f9e376b831d14cd2
+    m_Address: data/texture/effect/thief_invenom.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c3c5b503ed179974ba83cb6b1677705e
+    m_Address: data/texture/effect/thunderstorm.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cfc8d7452588436448710df3d953a0d9
+    m_Address: data/texture/effect/tinder.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0e525a40cde8544792656e2d9394136
+    m_Address: data/texture/effect/twohand.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 575ad339574443b4db9f5444b6a0bae9
+    m_Address: data/texture/effect/ufidel.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b6db1e45f5902824fb878920686f2cf4
+    m_Address: data/texture/effect/ufidel_pang.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b43e5a5bbf6c3ab4cb1145a925ebf8e2
+    m_Address: data/texture/effect/unlucky.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 433f2942865fd4e428bf966687fb3dda
+    m_Address: data/texture/effect/vash00.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f560c26b7d30da45b66875201220c93
+    m_Address: data/texture/effect/venomdust.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af7ede4807b3d1f46bc488eaf0e3369f
+    m_Address: data/texture/effect/venomsplasher.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a6f542ac84ae6c4e9d8828f811e460f
+    m_Address: data/texture/effect/venomsplasher_1st.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 021ce7b40bdd7fd4f9944a1b8674c4c2
+    m_Address: data/texture/effect/venomsplasherafter.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c80f662665a6be94496095b261a67449
+    m_Address: data/texture/effect/we_cheerup/we_cheerup.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d94d0e485c523bf4ca5788a6ace8caa7
+    m_Address: data/texture/effect/we_oneforever/we_oneforever.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47bbd948310a41a448b28647db4ad8b5
+    m_Address: data/texture/effect/weakness.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6dad8b2fac5311b4fa8b4adf51f0f767
+    m_Address: data/texture/effect/weapon perfection.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3bbe6ff6f54cb36498dc2c0ca616ab8c
+    m_Address: data/texture/effect/weaponperfection.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9515569c7023d064a8c3e6e6da2c1692
+    m_Address: data/texture/effect/weaponperfection_min.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdd8e70034a32e34c95cef1f56a2f68c
+    m_Address: data/texture/effect/wideb.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7ac68971603783f4f8ee1a74198b7179
+    m_Address: data/texture/effect/windhit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0262e17805c53f488f185b7e7a1b3b8
+    m_Address: data/texture/effect/windhit1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 643bf43189532f14e80b53c6c8f2344b
+    m_Address: data/texture/effect/windhit2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83a00d2aeaf681a478085b8b1e5e3cec
+    m_Address: data/texture/effect/windhit3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b60123c67d57ea4bba2b798b8f8bb90
+    m_Address: data/texture/effect/wl_telekinesis_intense.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: caa733198e5d3dd41bb3a3dca04e86bc
+    m_Address: data/texture/effect/yunta_1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2218fedcd1e2a4e4798dc522c5953386
+    m_Address: data/texture/effect/yunta_2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b15e5e8cec26e5f4bb556fb2bc88e3bc
+    m_Address: data/texture/effect/yunta_3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f4bdc89130d8a346a798d844c1a8b77
+    m_Address: data/texture/effect/yunta_4.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2c26ce01725c8044991f9048b56e562
+    m_Address: data/texture/effect/yunta_5.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c7a28c95837c9d4a88a4022ba69ad37
+    m_Address: "data/texture/effect/\xB0\xA2\xBC\xBA.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a84d790a7c24e041ae4e0005bcd4777
+    m_Address: "data/texture/effect/\xB3\xEB\xB6\xF5\xC6\xF7\xBC\xC7.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a60098c6e7010564191f621bdccb45f8
+    m_Address: "data/texture/effect/\xB5\xF0\xBD\xBA\xC6\xE7.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d84aa4c25b195804cb5a733d5acd2db8
+    m_Address: "data/texture/effect/\xB8\xC5\xC1\xF7\xB7\xCE\xB5\xE5.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47413b33b830d594f9cc12cb5c43729e
+    m_Address: "data/texture/effect/\xB9\xF6\xBC\xAD\xC5\xA9.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a61f1683fe07354bbb9f6e0cd7c6dc1
+    m_Address: "data/texture/effect/\xBA\xD2\xB1\xE6\xC7\xD1\xBA\xD3\xC0\xBA\xB4\xDE\xBA\xFB.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 25ae6b03af68e724d9b0b544603f90ad
+    m_Address: "data/texture/effect/\xBA\xD2\xBD\xBA\xBE\xC6\xC0\xCC.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3bfbf44f3646744b98cd92593ac822c
+    m_Address: "data/texture/effect/\xBB\xA1\xB0\xA3\xC6\xF7\xBC\xC7.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe362b09545a3db4897a63d536dd33cc
+    m_Address: "data/texture/effect/\xBB\xE7\xB6\xF7\xC8\xBF\xB0\xFA.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 439bc1ef10eb8284db2254b44935b2a6
+    m_Address: "data/texture/effect/\xBC\xD2\xBF\xEF\xB9\xF8.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 74a5f5619618df84382177dfd71e4a16
+    m_Address: "data/texture/effect/\xBC\xFA\xBD\xC4\xC0\xFC\xB0\xB32.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7c4bb72d9daf6ce4a89af566cff2c17e
+    m_Address: "data/texture/effect/\xBC\xFA\xBD\xC4\xC0\xFC\xB0\xB33.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2229f7270376cb94ebbbdd213ceb32c7
+    m_Address: "data/texture/effect/\xBC\xFA\xBD\xC4\xC0\xFC\xB0\xB34.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99f4cd9d931db634b9db88699269e05c
+    m_Address: "data/texture/effect/\xBC\xFA\xBD\xC4\xC0\xFC\xB0\xB35.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5da92742b8579c04f97f25d4096fccff
+    m_Address: "data/texture/effect/\xBC\xFA\xBD\xC4\xC7\xD8\xB9\xE6.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e2a4493a21fe721419d68459173a7317
+    m_Address: "data/texture/effect/\xBF\xAC\xC8\xAF.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ce467f364baf96f48bee13f1ef20ad4d
+    m_Address: "data/texture/effect/\xC0\xCC\xB1\xD7\xB4\xCF\xBC\xC7\xBA\xEA\xB7\xB9\xC0\xCC\xC5\xA9.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b9853424066ee6148ba125579dda83a7
+    m_Address: "data/texture/effect/\xC1\xD6\xC8\xAB\xC6\xF7\xBC\xC7.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4bb8babc31ce4594ebd2075f82a39694
+    m_Address: "data/texture/effect/\xC1\xFD\xC1\xDF.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c21ce555d55f95e4597256e4fce3a5a0
+    m_Address: "data/texture/effect/\xC2\xFD\xBD\xD2\xB6\xB1.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 188efc7e6d2e1a8418032171d33cc06d
+    m_Address: "data/texture/effect/\xC3\xCA\xB7\xCF\xC6\xF7\xBC\xC7.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6403077250f42ab488c5d82be6ac9a4f
+    m_Address: "data/texture/effect/\xC3\xCA\xBD\xC2\xB4\xDE2.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 44b5c257fec4eb8428dfe83e0be01e56
+    m_Address: "data/texture/effect/\xC6\xAE\xB7\xA2\xC5\xB7.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb446e811f20ec645b7b4b34a4d84261
+    m_Address: "data/texture/effect/\xC6\xC4\xB6\xF5\xC6\xF7\xBC\xC7.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 159120a3f0b5b704c8a6f1ccdeb7f643
+    m_Address: "data/texture/effect/\xC7\xCF\xBE\xE1\xC6\xF7\xBC\xC7.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e45486e53ac9be429c24c97fd0ea077
+    m_Address: "data/texture/effect/\xC7\xE3\xB9\xAB\xC0\xC7\xB1\xD7\xB8\xB2\xC0\xDA.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6ed1b72408af0c94aa5cff90b320d294
+    m_Address: "data/texture/effect/\xC8\xE5\xB8\xB0\xB4\xDE\xBA\xFB\xC8\xAF\xBB\xF32.asset"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effects
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c99779a8de5df7a409366194290f8300, type: 2}
   m_SchemaSet:

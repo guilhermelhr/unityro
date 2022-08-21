@@ -2,7 +2,6 @@
 using ROIO.Utils;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -101,80 +100,7 @@ namespace ROIO.Loaders {
                 }
             }
 
-            return MakeAtlas(str, path);
-        }
-
-        private static STR MakeAtlas(STR str, string path) {
-            var baseName = Path.GetFileNameWithoutExtension(path);
-            var atlasName = $"{baseName.Replace("\\", "_")}_atlas";
-
-            var extraTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            textures.Add(extraTexture);
-
-            var superTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            superTexture.name = atlasName;
-
-            var atlasRects = superTexture.PackTextures(textures.ToArray(), 2, 4096, false);
-
-            PatchAtlasEdges(superTexture, atlasRects);
-
-            str.AtlasRects = atlasRects;
-            str.name = path;
-
-            textureIdLookup.Clear();
-            textures.Clear();
-            textureNames.Clear();
-
             return str;
-        }
-
-        public static void PatchAtlasEdges(Texture2D atlas, Rect[] rects) {
-            foreach (var r in rects) {
-                var xMin = Mathf.RoundToInt(Mathf.Lerp(0, atlas.width, r.x));
-                var xMax = Mathf.RoundToInt(Mathf.Lerp(0, atlas.width, r.x + r.width));
-                var yMin = Mathf.RoundToInt(Mathf.Lerp(0, atlas.height, r.y));
-                var yMax = Mathf.RoundToInt(Mathf.Lerp(0, atlas.height, r.y + r.height));
-
-                //bottom left
-                if (xMin > 0 && yMin > 0)
-                    atlas.SetPixel(xMin - 1, yMin - 1, atlas.GetPixel(xMin, yMin));
-
-                //top left
-                if (xMin > 0 && yMax < atlas.height)
-                    atlas.SetPixel(xMin - 1, yMax, atlas.GetPixel(xMin, yMax - 1));
-
-                //bottom right
-                if (xMax < atlas.width && yMin > 0)
-                    atlas.SetPixel(xMax, yMin - 1, atlas.GetPixel(xMax - 1, yMin));
-
-                //top right
-                if (xMax < atlas.width && yMax < atlas.height)
-                    atlas.SetPixel(xMax, yMax, atlas.GetPixel(xMax - 1, yMax - 1));
-
-                //left edge
-                if (xMin > 0) {
-                    var colors = atlas.GetPixels(xMin, yMin, 1, yMax - yMin);
-                    atlas.SetPixels(xMin - 1, yMin, 1, yMax - yMin, colors);
-                }
-
-                //right edge
-                if (xMax < atlas.width) {
-                    var colors = atlas.GetPixels(xMax - 1, yMin, 1, yMax - yMin);
-                    atlas.SetPixels(xMax, yMin, 1, yMax - yMin, colors);
-                }
-
-                //bottom edge
-                if (yMin > 0) {
-                    var colors = atlas.GetPixels(xMin, yMin, xMax - xMin, 1);
-                    atlas.SetPixels(xMin, yMin - 1, xMax - xMin, 1, colors);
-                }
-
-                //top edge
-                if (yMax < atlas.height) {
-                    var colors = atlas.GetPixels(xMin, yMax - 1, xMax - xMin, 1);
-                    atlas.SetPixels(xMin, yMax, xMax - xMin, 1, colors);
-                }
-            }
         }
     }
 }

@@ -26,12 +26,12 @@ public class NodeProperties : MonoBehaviour {
         var extension = Path.GetExtension(textureName);
         var nameWithoutExtension = textureName.Substring(0, textureName.IndexOf(extension)).SanitizeForAddressables();
 
-        var texture = await Addressables.LoadAssetAsync<Texture2D>($"data/texture/{nameWithoutExtension}.png");
+        var texture = await Addressables.LoadAssetAsync<Texture2D>($"data/texture/{nameWithoutExtension}.png").Task;
         if (texture == null) {
             var filename = Path.GetFileNameWithoutExtension(textureName).ToLowerInvariant();
             var oldPath = Path.GetDirectoryName(textureName);
             var newPath = Path.Combine("data", "texture", oldPath, $"{filename}.png").SanitizeForAddressables();
-            texture = await Addressables.LoadAssetAsync<Texture2D>(newPath);
+            texture = await Addressables.LoadAssetAsync<Texture2D>(newPath).Task;
         }
 
         GetComponent<MeshRenderer>().material.mainTexture = texture;
