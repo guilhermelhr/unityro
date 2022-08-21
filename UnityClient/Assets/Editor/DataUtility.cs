@@ -23,6 +23,7 @@ public class DataUtility {
         var config = ConfigurationLoader.Init();
         FileManager.LoadGRF(config.root, config.grf);
         var textureDescriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/texture").ToList();
+        var shouldContinue = true;
 
         try {
             // This disable Unity's auto update of assets
@@ -34,6 +35,7 @@ public class DataUtility {
                 try {
                     var progress = file / textureDescriptors.Count;
                     if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting texture {file} of {textureDescriptors.Count}\t\t{progress * 100}%", progress)) {
+                        shouldContinue = false;
                         break;
                     }
 
@@ -46,11 +48,11 @@ public class DataUtility {
                     Directory.CreateDirectory(assetPath);
 
                     var texture = FileManager.Load(path) as Texture2D;
+
                     texture.alphaIsTransparency = true;
                     var bytes = texture.EncodeToPNG();
                     var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".png");
                     File.WriteAllBytes(completePath, bytes);
-
                     file++;
                 } catch (Exception e) {
                     Debug.LogError(e);
@@ -59,7 +61,40 @@ public class DataUtility {
         } finally {
             AssetDatabase.StopAssetEditing();
             EditorUtility.ClearProgressBar();
-            EditorApplication.ExitPlaymode();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+        }
+
+        if (!shouldContinue) {
+            return;
+        }
+
+        MakeTexturesReadable();
+    }
+
+    [MenuItem("UnityRO/Utils/Textures/Make Textures Readable")]
+    private static void MakeTexturesReadable() {
+        var texturesPaths = GetFilesFromDir(Path.Combine(GENERATED_RESOURCES_PATH, "data", "texture"));
+        try {
+            AssetDatabase.StartAssetEditing();
+
+            for (int i = 0; i < texturesPaths.Length; i++) {
+                var progress = i / texturesPaths.Length;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Processing textures {i} of {texturesPaths.Length}\t\t{progress * 100}%", progress)) {
+                    break;
+                }
+
+                var path = texturesPaths[i];
+                var tImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (tImporter != null) {
+                    tImporter.textureType = TextureImporterType.Default;
+                    tImporter.isReadable = true;
+                    AssetDatabase.ImportAsset(path);
+                }
+            }
+
+        } finally {
+            AssetDatabase.StopAssetEditing();
+            EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         }
     }
@@ -346,6 +381,50 @@ public class DataUtility {
         }
     }
 
+    [MenuItem("UnityRO/Utils/Extract/Effects")]
+    async static void ExtractEffects() {
+        var config = ConfigurationLoader.Init();
+        FileManager.LoadGRF(config.root, config.grf);
+        AssetDatabase.StartAssetEditing();
+
+        try {
+            var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/texture/effect")
+                .Where(it => Path.GetExtension(it) == ".str")
+                .ToList();
+
+            for (int i = 0; i < descriptors.Count; i++) {
+                var progress = i * 1f / descriptors.Count;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting effects {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
+                    break;
+                }
+
+                try {
+                    var descriptor = descriptors[i];
+                    var strEffect = await EffectLoader.Load(FileManager.ReadSync(descriptor), Path.GetDirectoryName(descriptor).Replace("\\", "/"));
+
+                    if (strEffect != null) {
+                        var filename = Path.GetFileName(descriptor);
+                        var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
+                        var dir = Path.GetDirectoryName(descriptor).Replace("/", "\\");
+
+                        string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, "data", "effect", dir);
+                        Directory.CreateDirectory(assetPath);
+
+                        var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".asset");
+                        AssetDatabase.CreateAsset(strEffect, completePath);
+                    }
+                } catch (Exception e) {
+                    Debug.LogException(e);
+                    continue;
+                }
+            }
+        } finally {
+            AssetDatabase.StopAssetEditing();
+            EditorUtility.ClearProgressBar();
+            AssetDatabase.Refresh();
+        }
+    }
+
     [MenuItem("UnityRO/1. Extract Assets")]
     static void ExtractAssets() {
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Textures");
@@ -355,8 +434,8 @@ public class DataUtility {
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Sprites");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Prepare/Models");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Lua Files");
+        EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Effects");
 
-        // Extract effects
         // Generate map prefabs
     }
 
@@ -431,10 +510,11 @@ public class DataUtility {
 
     [MenuItem("UnityRO/3. Create Addressable Assets/1. All")]
     static void CreateAllAddressableAssets() {
-        //EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/2. Textures");
+        // textures were already assigned to addressables when you run UnityRO/1. Extract Assets
         EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/3. Models");
         EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/4. Sprites");
         EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/5. Data Tables");
+        EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/6. Effects");
     }
 
     [MenuItem("UnityRO/3. Create Addressable Assets/2. Textures")]
@@ -461,6 +541,12 @@ public class DataUtility {
     static void CreateDataTablesAddressableAssets() {
         var files = Resources.LoadAll("lua").ToList();
         files.SetAddressableGroup("DataTables", "DataTables");
+    }
+
+    [MenuItem("UnityRO/3. Create Addressable Assets/6. Effects")]
+    static void CreateEffectsAddressableAssets() {
+        var files = Resources.LoadAll(Path.Combine("data", "effect")).ToList();
+        files.SetAddressableGroup("Effects", "Effects");
     }
 
     [MenuItem("UnityRO/4. Rename Generated Resources folder")]
