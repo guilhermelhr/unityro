@@ -88,7 +88,7 @@ public class MapRenderer {
         }
     }
 
-    internal async Task<GameMap> OnMapComplete(AsyncMapLoader.GameMap gameMap) {
+    public async Task<GameMap> OnMapComplete(AsyncMapLoader.GameMap gameMap) {
         if (mapParent == null) {
             mapParent = new GameObject(gameMap.Name);
             mapParent.tag = "Map";
@@ -136,8 +136,10 @@ public class MapRenderer {
 
         Ground ground = new Ground();
         ground.BuildMesh(mesh);
-        ground.InitTextures(mesh);
-        ground.Render();
+        if (ground.meshes.Length > 0) {
+            ground.InitTextures(mesh);
+            ground.Render();
+        }
 
         if (mesh.waterVertCount > 0) {
             water = new WaterBuilder();

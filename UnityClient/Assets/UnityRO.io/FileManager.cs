@@ -154,7 +154,7 @@ namespace ROIO {
                         case "gat":
                             return AltitudeLoader.Load(br);
                         case "rsw":
-                            return WorldLoader.Load(br);
+                            return WorldLoader.Load(br, file);
                         case "gnd":
                             return GroundLoader.Load(br);
                         case "rsm":

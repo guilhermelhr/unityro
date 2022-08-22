@@ -8,7 +8,7 @@ using Unity.Jobs;
 using UnityEngine;
 
 public class Ground {
-    private Mesh[] meshes;
+    public Mesh[] meshes { get; private set; }
     private Texture2D atlas;
     private Texture2D lightmap;
     private Texture2D tintmap;

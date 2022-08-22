@@ -381,6 +381,34 @@ public class DataUtility {
         }
     }
 
+    [MenuItem("UnityRO/Utils/Extract/Txt Tables")]
+    static void ExtractTables() {
+        try {
+            var config = ConfigurationLoader.Init();
+            FileManager.LoadGRF(config.root, config.grf);
+            var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data")
+                .Where(it => Path.GetExtension(it) == ".txt")
+                .ToList();
+
+            AssetDatabase.StartAssetEditing();
+
+            foreach (var descriptor in descriptors) {
+                try {
+                    string table = FileManager.Load(descriptor) as string;
+                    var path = Path.Combine(GENERATED_RESOURCES_PATH, "txt", Path.GetDirectoryName(descriptor));
+                    Directory.CreateDirectory(path);
+
+                    File.WriteAllText(Path.Combine(path, Path.GetFileName(descriptor) + ".txt"), table);
+                } catch (Exception e) {
+                    Debug.LogError($"Couldnt load file {descriptor} {e}");
+                }
+            }
+        } finally {
+            AssetDatabase.StopAssetEditing();
+            AssetDatabase.Refresh();
+        }
+    }
+
     [MenuItem("UnityRO/Utils/Extract/Effects")]
     async static void ExtractEffects() {
         var config = ConfigurationLoader.Init();
@@ -394,7 +422,7 @@ public class DataUtility {
 
             for (int i = 0; i < descriptors.Count; i++) {
                 var progress = i * 1f / descriptors.Count;
-                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting wavs {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting effects {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
                     break;
                 }
 
@@ -474,7 +502,7 @@ public class DataUtility {
             AssetDatabase.StartAssetEditing();
             for (int i = 0; i < descriptors.Count; i++) {
                 var progress = i * 1f / descriptors.Count;
-                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting effects {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting wavs {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
                     break;
                 }
 
@@ -513,6 +541,7 @@ public class DataUtility {
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Lua Files");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Effects");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Wav");
+        EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Txt Tables");
 
         // Generate map prefabs
     }
@@ -621,6 +650,9 @@ public class DataUtility {
     static void CreateDataTablesAddressableAssets() {
         var files = Resources.LoadAll("lua").ToList();
         files.SetAddressableGroup("DataTables", "DataTables");
+
+        var txtTables = Resources.LoadAll("txt").ToList();
+        txtTables.SetAddressableGroup("DataTables", "DataTables");
     }
 
     [MenuItem("UnityRO/3. Create Addressable Assets/6. Effects")]

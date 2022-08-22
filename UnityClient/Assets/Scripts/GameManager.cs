@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Audio;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -115,18 +116,14 @@ public class GameManager : MonoBehaviour {
     }
 
     public async void PlayBgm(string name) {
-        var request = Resources.LoadAsync<AudioClip>(Path.Combine("Audio", "BGM", Path.GetFileNameWithoutExtension(name)));
-
-        while (!request.isDone) {
-            await Task.Yield();
-        }
-
-        AudioSource.clip = request.asset as AudioClip;
+        var bgm = await Addressables.LoadAssetAsync<AudioClip>(Path.Combine("bgm", name)).Task;
+        AudioSource.clip = bgm;
         //AudioSource.Play();
     }
 
     public async Task<GameMap> BeginMapLoading(string mapName) {
-        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+        SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
+
         MapRenderer.Clear();
         EntityManager.ClearEntities();
 

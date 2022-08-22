@@ -52,7 +52,6 @@ public class OfflineUtility : MonoBehaviour {
 
     private async Task LoadEffect() {
         var str = await Addressables.LoadAssetAsync<STR>("data/texture/effect/magnificat.str").Task;
-        var str2 = FileManager.Load("data/texture/effect/magnificat.str") as STR;
         if (str != null) {
             var renderer = new GameObject().AddComponent<StrEffectRenderer>();
             renderer.transform.SetParent(offlineEntity.transform, false);

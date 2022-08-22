@@ -86,6 +86,7 @@ namespace ROIO.Models.FileTypes
         public class ModelDescriptor
         {
             public string name;
+            public int misteryByte;
             public int animType;
             public float animSpeed;
             public int blockType;
