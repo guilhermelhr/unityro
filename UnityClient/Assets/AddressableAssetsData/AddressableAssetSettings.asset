@@ -52,6 +52,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 96eb713a19ae36c4ba404d6808149278, type: 2}
   - {fileID: 11400000, guid: e149e7bda7773294aa80b331e6f81bcb, type: 2}
   - {fileID: 11400000, guid: ea51adab73128bd458054472ef928b0d, type: 2}
+  - {fileID: 11400000, guid: 41468e0b8876cf748afbf3defa192e35, type: 2}
+  - {fileID: 11400000, guid: a05b5d7733d7e6044816f838240c8619, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -99,6 +101,8 @@ MonoBehaviour:
     - Sprites
     - DataTables
     - Effects
+    - Wav
+    - BGM
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 135d4f6c62fed7949a0b9550b0f3efbd, type: 2}

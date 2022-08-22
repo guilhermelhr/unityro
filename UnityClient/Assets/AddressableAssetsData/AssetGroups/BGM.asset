@@ -1,0 +1,1135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: BGM
+  m_EditorClassIdentifier: 
+  m_GroupName: BGM
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 5dd0640ca8fd83b4e97aa079d9020944
+  m_SerializeEntries:
+  - m_GUID: 0fe2ac54006ec4d4194ccaacb5ae1c69
+    m_Address: bgm/01.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 418fa9773703e5247b55ff89a9c630e9
+    m_Address: bgm/02.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d46f1b5a5b7bc64fbfe476a2b18b762
+    m_Address: bgm/03.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e50616a8a43ecd4cbaa38cef2ed965d
+    m_Address: bgm/04.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4fd5438f1201f4248b4e730c11b85732
+    m_Address: bgm/05.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b192c468b7fe5c43b18e05409f7f722
+    m_Address: bgm/06.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e8ff465788d94c4189bf4af362f284d
+    m_Address: bgm/07.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4809c59a0110bca48b9e243a05f0d92f
+    m_Address: bgm/08.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47582f34b13c5114582eba4365ff8e1c
+    m_Address: bgm/09.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe5dd86307bc58843af3d4b6a6aac824
+    m_Address: bgm/10.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36fed706de7b14a4582659dcce1db08f
+    m_Address: bgm/100.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 41fe26a8ad5edeb4cb111945cc51ce13
+    m_Address: bgm/101.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a8555ca054c45a048adb3060c94ceaf6
+    m_Address: bgm/102.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ddd145c50a585fe4c99fdda6337091c2
+    m_Address: bgm/103.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9bd8f93e97e263f4a88e0ef76f05d334
+    m_Address: bgm/104.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eab8e2cce8d8af3498e31c4466933ead
+    m_Address: bgm/105.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 09736b4ecf754924aa5d48faf248bc47
+    m_Address: bgm/106.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ec1a5d682550fd241a8c04eba2d29708
+    m_Address: bgm/107.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c956c0e883d0ca8499ce6ac40d7f2488
+    m_Address: bgm/108.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2980d6cde1bad8b4ba34c03455d650db
+    m_Address: bgm/109.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 799f37e8f486b3c43a2a6b2e49a739ba
+    m_Address: bgm/11.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1de52cbfa14365a4fb83be2b0a50b1e8
+    m_Address: bgm/110.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c92fc8f46c838904bbda4425f6717c70
+    m_Address: bgm/111.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6baed6f12fcae0f4e900e6d6b47ccb4e
+    m_Address: bgm/112.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a670ca9526c0bf641ad855834036fd34
+    m_Address: bgm/113.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aacebb5323bf8e044a85d49005710bc8
+    m_Address: bgm/114.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a7c55421f34a0b45973ec32563b2a0b
+    m_Address: bgm/115.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 865e6e6f80905d7449a635b0cdbabc9b
+    m_Address: bgm/116.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93efe73eaca245043a1d55f0d0d0f37e
+    m_Address: bgm/117.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f007de3a155264f4295d743c5e5bcb13
+    m_Address: bgm/118.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4bbaaaf0f75362f43b8e452b8fef2ddf
+    m_Address: bgm/119.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bfce4086bbb90ed4c9b91cc0a40d9b56
+    m_Address: bgm/12.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27e33f2d21ab29c46b73d571fcca629c
+    m_Address: bgm/120.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be1015579ffbfa1418078c1a0d372f98
+    m_Address: bgm/121.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fed05a76f9e2ff408553d4bf046bcc4
+    m_Address: bgm/122.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a74d756a0b1a1c54d8f5cee3d9352ec5
+    m_Address: bgm/123.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aebaa5a05a54ce64e86378b93a90dd35
+    m_Address: bgm/124.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d55c07edbf40c364a881ad7a40ce6d49
+    m_Address: bgm/125.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 265c2b921f625f643b13dbb59fc42a54
+    m_Address: bgm/126.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 825ddded7c72e044cba18a70951996ef
+    m_Address: bgm/127.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31feff5feb4f17546aa2b2fa32e1f315
+    m_Address: bgm/128.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93c659a729585814e98a4c11e39a4ea4
+    m_Address: bgm/129.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b22d851916c9bed46add460a747299f9
+    m_Address: bgm/13.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 98c1d3894e2ef9f4ea9f580a73718013
+    m_Address: bgm/130.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0a2031cc34ef1ea498af63ad071d3a94
+    m_Address: bgm/131.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe44657849358924a9ceb794b4d4efba
+    m_Address: bgm/132.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab0d1c0e37a1e37419e9ead8f8e1126e
+    m_Address: bgm/133.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3ea30a1359b5c7b4a9db18b07a013b05
+    m_Address: bgm/134.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d62be6ff7f25af4aad372bdbbca48ba
+    m_Address: bgm/135.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 610b985e7367f554bb18a1b9af33ef14
+    m_Address: bgm/136.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a610ba83cae3a3f4380b02e83d97806f
+    m_Address: bgm/137.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b6e58d3708b24314db2a9f559618fa65
+    m_Address: bgm/138.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b9516a0d728ccc49a1c703233f69996
+    m_Address: bgm/139.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5ab019d11d50dda469ad59c24b30c1bf
+    m_Address: bgm/14.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f48d101fe9c2d9642afabfdc6b65e552
+    m_Address: bgm/140.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d25c538f74a184f4f99a2edc91ab5bcf
+    m_Address: bgm/141.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b0f00b4dbee3ad4cb90b81367b5ea65
+    m_Address: bgm/142.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a45a64362364a644a0daef1e2218626
+    m_Address: bgm/143.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b630f1e87696eb4388bff07c5ef1961
+    m_Address: bgm/144.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c3d1176d4c65dad4bba49910d31afd58
+    m_Address: bgm/145.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a156b710ac493ca4b9b8f7ab2d9dd34f
+    m_Address: bgm/146.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cd0e557f2e7521947b395398f9464804
+    m_Address: bgm/147.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 460468a69a56fb94b949e7bba9449d79
+    m_Address: bgm/148.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0455bacfbd3786f46a1653cec3e4643e
+    m_Address: bgm/149.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 21bea0bb6cecd3b4ba4528c0defc8703
+    m_Address: bgm/15.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1d7f49372940b7345a8aa8ecdf07cd27
+    m_Address: bgm/150.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 32a9efa8fe2810940be5ca1a794641a9
+    m_Address: bgm/151.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0afe521c0830bc43bc73418d69fd249
+    m_Address: bgm/152.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94c80578f170a0946a8300a3da381715
+    m_Address: bgm/153.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b350c3bab4b7ed448ade5dbde10d956e
+    m_Address: bgm/154.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3f04748c450e134ebf1c7a40eb0c376
+    m_Address: bgm/155.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4906b8786d6baae49b882c98c1935f42
+    m_Address: bgm/156.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30baf0b06d42f9b41a3e8ef79fa86e87
+    m_Address: bgm/157.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fd664c34b40fd934ca5a9752793355b7
+    m_Address: bgm/158.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93441c0a7335a994fa2536bf0357d52a
+    m_Address: bgm/159.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0615bf7403d184542b562cc0443700d1
+    m_Address: bgm/16.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9221e722474424449e4954495caed33
+    m_Address: bgm/160.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5ff98b85c0b04044d9dc401a2435a5f4
+    m_Address: bgm/161.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8db9ebdc3244a214285ba65902d1341e
+    m_Address: bgm/162.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fc3349571a9d7cc40b3706544cf54829
+    m_Address: bgm/163.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 78d2a034a723e7a41b047be5a9fad735
+    m_Address: bgm/164.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0912d3a7c451a354f8458e1f428b3f04
+    m_Address: bgm/165.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4186af32297a34948b43aa4a377ba2c4
+    m_Address: bgm/166.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 256ddf623e7bd9746bd16a3d0b7b184c
+    m_Address: bgm/167.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e5a9d2e3e9d71645b294395a10714b6
+    m_Address: bgm/168.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ffc7b20c3ea048468e083a32bdd38fd
+    m_Address: bgm/169.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56e77b677c485f74db774546b7408097
+    m_Address: bgm/17.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b2cdd848b5e2364c84bbeadb4d22ec6
+    m_Address: bgm/170.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b34373e2297db64e8186247cfe36e61
+    m_Address: bgm/171.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6635258f70d1bc041ba438c84b2ad14c
+    m_Address: bgm/172.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56befcf87cd57b34288c27ed089b67bc
+    m_Address: bgm/174.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9eae40c33f538414b8e97f76da8189ae
+    m_Address: bgm/175.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8eb04fd2e535af947aa0bb03e15424d8
+    m_Address: bgm/176.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 96bc0c1336b51144e8c39bc7a1ef3a53
+    m_Address: bgm/177.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf322bbcf10cd6c4f8eabf55a9069097
+    m_Address: bgm/178.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 227097830bcc79a4ea008e7396ff0e5e
+    m_Address: bgm/179.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 52e522b03aa802f4698612d20090079c
+    m_Address: bgm/18.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 706316847fa82cf438609b380653191d
+    m_Address: bgm/180.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: da7e9157a672a5a46a8406e583273f46
+    m_Address: bgm/181.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d3c5c12eef7671f4d858599b0aff1220
+    m_Address: bgm/182.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e06b6ad859c2554eb782de0cc3fe914
+    m_Address: bgm/183.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88891f925a0aa1a42a393d71cbce93ed
+    m_Address: bgm/184.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bfd12b26fac7ce04abefd58edf808d24
+    m_Address: bgm/185.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f8aae2f09f5b63247aaa84eac994cbdc
+    m_Address: bgm/186.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e8e7997a5532fd4da81d1a02f86cb98
+    m_Address: bgm/19.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d73964e141e99a348bb7b64856688dfc
+    m_Address: bgm/20.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b52a55bc7a61708438189e151d67a20a
+    m_Address: bgm/21.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd1efac81d3d5fb44a91aa352d7409a2
+    m_Address: bgm/22.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca0b182a20c8e2b408b45ab2df965ac3
+    m_Address: bgm/23.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d26c24bcb603d6649a77962acc0d0ef3
+    m_Address: bgm/24.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 232e453ab650d7f4ea79fe71f608cf7f
+    m_Address: bgm/25.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c04a1dc535a09c41bc185bc8e802839
+    m_Address: bgm/26.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2cae138b732f3b24cbf33f6c91333184
+    m_Address: bgm/27.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b0f8ee09510c1f428ac28ac76f7b4f0
+    m_Address: bgm/28.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fccfcee7fefb89f4d89c0471ad77e91c
+    m_Address: bgm/29.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 040c4eb2305cf75439c5528d9fa18a19
+    m_Address: bgm/30.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 585afea013fb2214a9f9954f5c670580
+    m_Address: bgm/31.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 68ec8d17048b2a748af5dbbdc1ec38b2
+    m_Address: bgm/33.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c3c21349cea462e4f8ba707f6cf0a5be
+    m_Address: bgm/34.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a93e48159c8a4e40a160715f2796e22
+    m_Address: bgm/35.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5892350c258ed344aa01e803923f7de
+    m_Address: bgm/36.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc1cef8a6b5d7234681695bceded4d9d
+    m_Address: bgm/37.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 708704e9948860d4a9ebe0147b3c6fc1
+    m_Address: bgm/38.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c6767601d02816d4eb4b753e62318d28
+    m_Address: bgm/39.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9b07a4c6dbd5af4dab4c226172d71b8
+    m_Address: bgm/40.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db1715ee24f3be34a95caa597d3215c5
+    m_Address: bgm/41.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24eb94d74ab402749a79747e972e171f
+    m_Address: bgm/42.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 95b9e028275154147a5cb4a8225ec201
+    m_Address: bgm/43.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eba1a17b7d20dde46804f75e9ba1f6d9
+    m_Address: bgm/44.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9aba31c613147ba418df748e385910d9
+    m_Address: bgm/45.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 26b25a92fba0a5e47b2ff20c32f9d3ce
+    m_Address: bgm/46.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3833dfe1bcc05de45b206e73c8f36e09
+    m_Address: bgm/47.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6829bd475da79a43abf70cc47ef4c67
+    m_Address: bgm/48.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6cbdc4a5d9734f7488714cf76229eff7
+    m_Address: bgm/49.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 665eae351ea197f499373b5901c4d3e3
+    m_Address: bgm/50.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c18695d9589afa942a47b65ebf800165
+    m_Address: bgm/51.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 17d53a647da8b644a89b7188cc475905
+    m_Address: bgm/52.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4ccc6041b0476464c8869f97221cc654
+    m_Address: bgm/53.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1210b7bb44096734ca0644793c33058f
+    m_Address: bgm/54.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fc4fd566e702f5a4fa8bd424d27c76bc
+    m_Address: bgm/55.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 263d6f1d14dda5a47a5ef531880e469a
+    m_Address: bgm/56.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf4b03f7706e0744aa4618ee1035a26e
+    m_Address: bgm/57.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4143da08e3b159b4c94f8a2cfc8ba397
+    m_Address: bgm/58.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40d166affcd4ce4469baa7fb13338d29
+    m_Address: bgm/59.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1a58f412d4450a4885317020612cc63
+    m_Address: bgm/60.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad1ea3fdb65a7a74cb4556fdde975dff
+    m_Address: bgm/61.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81b2fce4c2a0a9a4c99a31dc8e8af493
+    m_Address: bgm/62.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f1bc0e68a0d7dbb44a016f2c51e68826
+    m_Address: bgm/63.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 79b4a313af36ed946a4f51c69f6badf6
+    m_Address: bgm/64.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 33ca755d8777f444d8cd2f8899776ed2
+    m_Address: bgm/65.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 10aff893ad2934c4399d8a6bfed62c6c
+    m_Address: bgm/66.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e3c03837c0561942a873669c8e2e688
+    m_Address: bgm/67.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d9088e53a1876dd43bf777a6d336af30
+    m_Address: bgm/68.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 62ec551ab3fda0942994e86d9abf5357
+    m_Address: bgm/69.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c7dfe6b76b401174595e09a0f73fc1f0
+    m_Address: bgm/70.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6267786677a540543833d9ef328f9545
+    m_Address: bgm/71.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a3aee7e49934ae4a9315c3c351dafec
+    m_Address: bgm/72.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c79efdbea3c4702408e65660e3c9c288
+    m_Address: bgm/73.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef071c7e2c16ca649a08f095d124902a
+    m_Address: bgm/74.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4ec254d46e03e6c4b9e8bce6814c2c35
+    m_Address: bgm/75.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a87e3a9e76f8327479472f093f113d33
+    m_Address: bgm/76.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ee5580e799269245959747ffd9d638d
+    m_Address: bgm/77.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4476e283d5dbcf949a2d4e526e0afa4c
+    m_Address: bgm/78.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 86f08780eb8e67e47ac9f4cc24fbbc59
+    m_Address: bgm/79.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e92d48db26726624c8b4bc60ba2bcaf7
+    m_Address: bgm/80.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f77ffd44aa7c8b49a3d37eaf636c028
+    m_Address: bgm/81.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 064883991c5d09f489f07f3dc93e139d
+    m_Address: bgm/82.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab2995d2447423740bcf4c772fd9bf9f
+    m_Address: bgm/83.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e64f462ca25441408d2913d0a1dbc93
+    m_Address: bgm/84.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1078854f93f4b794a86dc286709c3e0e
+    m_Address: bgm/85.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf7d4871209c74447a44c6e74b049b42
+    m_Address: bgm/86.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed7b9e9fef9f5ec41b155920d944d9c5
+    m_Address: bgm/87.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f75d3248f36f3d4db5b06596b263e6f
+    m_Address: bgm/88.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc0fa0da7ccd57e40a70017a0fa033ae
+    m_Address: bgm/89.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4630401eaab2ce46a1c55a76d00ad5b
+    m_Address: bgm/90.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a0a7ad46211d5d4484406d59507a8c2
+    m_Address: bgm/91.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c693246f3dd47a443b6a15bf79e1f0e3
+    m_Address: bgm/92.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9230b3489eac92041a504fcea1ab7cdc
+    m_Address: bgm/93.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a8ccc554d669fa47a9a684925315118
+    m_Address: bgm/94.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29259d7e5efaeda4187a15ec0ba8a9d5
+    m_Address: bgm/95.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bed04939dd6ec9945a0575441f9c34f3
+    m_Address: bgm/96.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 07778b6816980f64a87125bd1fb0c43b
+    m_Address: bgm/97.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be4fabb15da7fd544a5c64e27242427b
+    m_Address: bgm/98.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: afc328227d5e4b3479348a296cba02d1
+    m_Address: bgm/99.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 05993e7117ece1f4e9a11ef4eaf63e48
+    m_Address: bgm/997.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BGM
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c99779a8de5df7a409366194290f8300, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: e84dd629f0c60554b8a02e3942d63f38, type: 2}
+    - {fileID: 11400000, guid: d43ee62fac13dc9418832c84dd593c4b, type: 2}

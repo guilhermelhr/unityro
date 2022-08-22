@@ -394,7 +394,7 @@ public class DataUtility {
 
             for (int i = 0; i < descriptors.Count; i++) {
                 var progress = i * 1f / descriptors.Count;
-                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting effects {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting wavs {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
                     break;
                 }
 
@@ -403,7 +403,6 @@ public class DataUtility {
                     var strEffect = await EffectLoader.Load(FileManager.ReadSync(descriptor), Path.GetDirectoryName(descriptor).Replace("\\", "/"));
 
                     if (strEffect != null) {
-                        var filename = Path.GetFileName(descriptor);
                         var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
                         var dir = Path.GetDirectoryName(descriptor).Replace("/", "\\");
 
@@ -415,7 +414,85 @@ public class DataUtility {
                     }
                 } catch (Exception e) {
                     Debug.LogException(e);
-                    continue;
+                }
+            }
+        } finally {
+            AssetDatabase.StopAssetEditing();
+            EditorUtility.ClearProgressBar();
+            AssetDatabase.Refresh();
+        }
+    }
+
+    [MenuItem("UnityRO/Utils/Extract/BGM")]
+    static void ExtractBGM() {
+        var config = ConfigurationLoader.Init();
+        FileManager.LoadGRF(config.root, config.grf);
+        AssetDatabase.StartAssetEditing();
+
+        try {
+            var descriptors = GetFilesFromDir(config.BgmPath).ToList();
+
+            for (int i = 0; i < descriptors.Count; i++) {
+                var progress = i * 1f / descriptors.Count;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting bgm {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
+                    break;
+                }
+
+                try {
+                    var descriptor = descriptors[i];
+                    var bgm = File.ReadAllBytes(descriptor);
+
+                    if (bgm != null) {
+                        var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
+
+                        string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, "bgm");
+                        Directory.CreateDirectory(assetPath);
+
+                        var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".mp3");
+                        File.WriteAllBytes(completePath, bgm);
+                    }
+                } catch (Exception e) {
+                    Debug.LogException(e);
+                }
+            }
+        } finally {
+            AssetDatabase.StopAssetEditing();
+            EditorUtility.ClearProgressBar();
+            AssetDatabase.Refresh();
+        }
+    }
+
+    [MenuItem("UnityRO/Utils/Extract/Wav")]
+    static void ExtractWav() {
+        var config = ConfigurationLoader.Init();
+        FileManager.LoadGRF(config.root, config.grf);
+        var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/wav")
+            .Where(it => Path.GetExtension(it) == ".wav")
+            .ToList();
+
+        try {
+            AssetDatabase.StartAssetEditing();
+            for (int i = 0; i < descriptors.Count; i++) {
+                var progress = i * 1f / descriptors.Count;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting effects {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
+                    break;
+                }
+
+                var descriptor = descriptors[i];
+                try {
+                    var audioClip = FileManager.Load(descriptor) as AudioClip;
+
+                    if (audioClip != null) {
+                        var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
+                        var dir = Path.GetDirectoryName(descriptor).Replace("/", "\\");
+                        string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
+                        Directory.CreateDirectory(assetPath);
+
+                        var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".asset");
+                        AssetDatabase.CreateAsset(audioClip, completePath);
+                    }
+                } catch (Exception e) {
+                    Debug.LogError($"Failed to extract {descriptor} {e}");
                 }
             }
         } finally {
@@ -435,6 +512,7 @@ public class DataUtility {
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Prepare/Models");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Lua Files");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Effects");
+        EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Wav");
 
         // Generate map prefabs
     }
@@ -515,6 +593,8 @@ public class DataUtility {
         EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/4. Sprites");
         EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/5. Data Tables");
         EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/6. Effects");
+        EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/7. Wav");
+        EditorApplication.ExecuteMenuItem("UnityRO/3. Create Addressable Assets/8. BGM");
     }
 
     [MenuItem("UnityRO/3. Create Addressable Assets/2. Textures")]
@@ -549,6 +629,22 @@ public class DataUtility {
             .Where(it => it is STR)
             .ToList();
         files.SetAddressableGroup("Effects", "Effects");
+    }
+
+    [MenuItem("UnityRO/3. Create Addressable Assets/7. Wav")]
+    static void CreateWavAddressableAssets() {
+        var files = Resources.LoadAll(Path.Combine("data", "wav"))
+            .Where(it => it is AudioClip)
+            .ToList();
+        files.SetAddressableGroup("Wav", "Wav");
+    }
+
+    [MenuItem("UnityRO/3. Create Addressable Assets/8. BGM")]
+    static void CreateBGMAddressableAssets() {
+        var files = Resources.LoadAll("bgm")
+            .Where(it => it is AudioClip)
+            .ToList();
+        files.SetAddressableGroup("BGM", "BGM");
     }
 
     [MenuItem("UnityRO/4. Rename Generated Resources folder")]
