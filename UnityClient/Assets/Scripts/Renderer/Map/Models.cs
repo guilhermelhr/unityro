@@ -14,7 +14,8 @@ public class Models {
     private List<RSM.CompiledModel> models;
 
     private Material material = (Material) Resources.Load("Materials/Models/ModelMaterial", typeof(Material));
-    private Material material2s = (Material) Resources.Load("Materials/Models/ModelMaterial2Sided", typeof(Material));
+    private Material materialTwoSided = (Material) Resources.Load("Materials/Models/ModelMaterial2Sided", typeof(Material));
+    private Material materialTransparent = (Material) Resources.Load("Materials/Models/TransparentModelMaterial", typeof(Material));
 
     public Models(List<RSM.CompiledModel> models) {
         this.models = models;
@@ -167,7 +168,10 @@ public class Models {
                 mf.mesh = mesh;
                 var mr = nodeObj.AddComponent<MeshRenderer>();
                 if (meshData.twoSided) {
-                    mr.material = material2s;
+                    mr.material = materialTwoSided;
+                } else if(model.rsm.alpha < 1f) {
+                    mr.material = materialTransparent;
+                    mr.material.SetFloat("_Alpha", model.rsm.alpha);
                 } else {
                     mr.material = material;
                 }

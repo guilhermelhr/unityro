@@ -31,7 +31,7 @@ public class DataUtility {
             AssetDatabase.StartAssetEditing();
 
             var file = 1f;
-            foreach (var path in textureDescriptors) {
+            foreach (var descriptor in textureDescriptors) {
                 try {
                     var progress = file / textureDescriptors.Count;
                     if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting texture {file} of {textureDescriptors.Count}\t\t{progress * 100}%", progress)) {
@@ -39,15 +39,15 @@ public class DataUtility {
                         break;
                     }
 
-                    var filename = Path.GetFileName(path);
-                    var filenameWithoutExtension = Path.GetFileNameWithoutExtension(path).SanitizeForAddressables();
-                    var dir = path.Substring(0, path.IndexOf(filename)).Replace("/", "\\");
+                    var filename = Path.GetFileName(descriptor);
+                    var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
+                    var dir = Path.GetDirectoryName(descriptor);
 
                     string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
 
                     Directory.CreateDirectory(assetPath);
 
-                    var texture = FileManager.Load(path) as Texture2D;
+                    var texture = FileManager.Load(descriptor) as Texture2D;
 
                     texture.alphaIsTransparency = true;
                     var bytes = texture.EncodeToPNG();
@@ -61,7 +61,7 @@ public class DataUtility {
         } finally {
             AssetDatabase.StopAssetEditing();
             EditorUtility.ClearProgressBar();
-            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+            AssetDatabase.Refresh();
         }
 
         if (!shouldContinue) {
@@ -106,7 +106,7 @@ public class DataUtility {
             var config = ConfigurationLoader.Init();
             FileManager.LoadGRF(config.root, config.grf);
             var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/sprite/")
-                .Select(it => it[..it.IndexOf(Path.GetExtension(it))].Replace("/", "\\"))
+                .Select(it => it[..it.IndexOf(Path.GetExtension(it))])
                 .Where(it => it.Length > 0)
                 .Distinct()
                 .ToList();
@@ -145,7 +145,7 @@ public class DataUtility {
 
                     var filename = Path.GetFileName(sprPath);
                     var filenameWithoutExtension = Path.GetFileNameWithoutExtension(sprPath);
-                    var dir = sprPath.Substring(0, sprPath.IndexOf(filename)).Replace("/", "\\");
+                    var dir = sprPath.Substring(0, sprPath.IndexOf(filename));
                     string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
 
                     Directory.CreateDirectory(assetPath);
@@ -432,7 +432,7 @@ public class DataUtility {
 
                     if (strEffect != null) {
                         var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
-                        var dir = Path.GetDirectoryName(descriptor).Replace("/", "\\");
+                        var dir = Path.GetDirectoryName(descriptor);
 
                         string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
                         Directory.CreateDirectory(assetPath);
@@ -512,7 +512,7 @@ public class DataUtility {
 
                     if (audioClip != null) {
                         var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
-                        var dir = Path.GetDirectoryName(descriptor).Replace("/", "\\");
+                        var dir = Path.GetDirectoryName(descriptor);
                         string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
                         Directory.CreateDirectory(assetPath);
 

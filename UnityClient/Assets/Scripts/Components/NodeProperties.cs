@@ -23,14 +23,14 @@ public class NodeProperties : MonoBehaviour {
     }
 
     private async void LoadTexture() {
-        var extension = Path.GetExtension(textureName);
-        var nameWithoutExtension = textureName.Substring(0, textureName.IndexOf(extension)).SanitizeForAddressables();
+        var nameWithoutExtension = Path.GetFileNameWithoutExtension(textureName);
+        var directory = Path.GetDirectoryName(textureName);
+        var path = Path.Combine("data", "texture", directory, $"{nameWithoutExtension}.png").SanitizeForAddressables();
+        var texture = await Addressables.LoadAssetAsync<Texture2D>(path).Task;
 
-        var texture = await Addressables.LoadAssetAsync<Texture2D>($"data/texture/{nameWithoutExtension}.png").Task;
         if (texture == null) {
-            var filename = Path.GetFileNameWithoutExtension(textureName).ToLowerInvariant();
-            var oldPath = Path.GetDirectoryName(textureName);
-            var newPath = Path.Combine("data", "texture", oldPath, $"{filename}.png").SanitizeForAddressables();
+            var filename = nameWithoutExtension.ToLowerInvariant();
+            var newPath = Path.Combine("data", "texture", directory, $"{filename}.png").SanitizeForAddressables();
             texture = await Addressables.LoadAssetAsync<Texture2D>(newPath).Task;
         }
 

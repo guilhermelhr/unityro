@@ -22,18 +22,22 @@ public class ModelsSceneManager : MonoBehaviour {
         FileManager.LoadGRF(config.root, config.grf);
         var descriptorsHashtable = FileManager.GetFileDescriptors();
 
-        var modelDescriptors = FindDescriptors(descriptorsHashtable);
+        var modelDescriptors = FindDescriptors(descriptorsHashtable).Take(10).ToList();
 
         MapRenderer.mapParent = gameObject;
         List<RSM.CompiledModel> compiledModels = new List<RSM.CompiledModel>();
 
         foreach (var descriptor in modelDescriptors) {
-            RSM model = FileManager.Load(descriptor) as RSM;
-            if (model != null) {
-                model.filename = descriptor;
-                compiledModels.Add(ModelLoader.Compile(model));
-            } else {
-                Debug.LogError($"Failed to compile {descriptor}");
+            try {
+                RSM model = FileManager.Load(descriptor) as RSM;
+                if (model != null) {
+                    model.filename = descriptor;
+                    compiledModels.Add(ModelLoader.Compile(model));
+                } else {
+                    Debug.LogError($"Failed to compile {descriptor}");
+                }
+            } catch (Exception e) {
+                Debug.LogError($"{descriptor} ${e}");
             }
         }
 
@@ -50,7 +54,7 @@ public class ModelsSceneManager : MonoBehaviour {
 
             if (count == modelDescriptors.Count) {
                 EditorUtility.ClearProgressBar();
-                EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Models");
+                //EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Models");
             }
         });
     }
