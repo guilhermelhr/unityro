@@ -12,16 +12,22 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-[InitializeOnLoadAttribute]
+[InitializeOnLoad]
 public class DataUtility {
+
+    private static Configuration config;
+
+    static DataUtility() {
+        config = ConfigurationLoader.Init();
+        FileManager.LoadGRF(config.root, config.grf);
+        Debug.Log("Done initializing grf");
+    }
 
     public static string GENERATED_RESOURCES_PATH = Path.Combine("Assets", "_Generated", "Resources");
     public static string GENERATED_ADDRESSABLES_PATH = Path.Combine("Assets", "_Generated", "AddressablesAssets");
 
     [MenuItem("UnityRO/Utils/Extract/Textures")]
     static void ExtractTextures() {
-        var config = ConfigurationLoader.Init();
-        FileManager.LoadGRF(config.root, config.grf);
         var textureDescriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/texture").ToList();
         var shouldContinue = true;
 
@@ -48,11 +54,12 @@ public class DataUtility {
                     Directory.CreateDirectory(assetPath);
 
                     var texture = FileManager.Load(descriptor) as Texture2D;
-
-                    texture.alphaIsTransparency = true;
-                    var bytes = texture.EncodeToPNG();
-                    var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".png");
-                    File.WriteAllBytes(completePath, bytes);
+                    if (texture != null) {
+                        texture.alphaIsTransparency = true;
+                        var bytes = texture.EncodeToPNG();
+                        var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".png");
+                        File.WriteAllBytes(completePath, bytes);
+                    }
                     file++;
                 } catch (Exception e) {
                     Debug.LogError(e);
@@ -103,8 +110,6 @@ public class DataUtility {
     static void ExtractSprites() {
         try {
             var shouldContinue = true;
-            var config = ConfigurationLoader.Init();
-            FileManager.LoadGRF(config.root, config.grf);
             var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/sprite/")
                 .Select(it => it[..it.IndexOf(Path.GetExtension(it))])
                 .Where(it => it.Length > 0)
@@ -354,9 +359,6 @@ public class DataUtility {
         };
 
         try {
-            var config = ConfigurationLoader.Init();
-            FileManager.LoadGRF(config.root, config.grf);
-
             AssetDatabase.StartAssetEditing();
 
             foreach (var lua in files) {
@@ -384,8 +386,6 @@ public class DataUtility {
     [MenuItem("UnityRO/Utils/Extract/Txt Tables")]
     static void ExtractTables() {
         try {
-            var config = ConfigurationLoader.Init();
-            FileManager.LoadGRF(config.root, config.grf);
             var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data")
                 .Where(it => Path.GetExtension(it) == ".txt")
                 .ToList();
@@ -411,8 +411,6 @@ public class DataUtility {
 
     [MenuItem("UnityRO/Utils/Extract/Effects")]
     async static void ExtractEffects() {
-        var config = ConfigurationLoader.Init();
-        FileManager.LoadGRF(config.root, config.grf);
         AssetDatabase.StartAssetEditing();
 
         try {
@@ -453,8 +451,6 @@ public class DataUtility {
 
     [MenuItem("UnityRO/Utils/Extract/BGM")]
     static void ExtractBGM() {
-        var config = ConfigurationLoader.Init();
-        FileManager.LoadGRF(config.root, config.grf);
         AssetDatabase.StartAssetEditing();
 
         try {
@@ -492,8 +488,6 @@ public class DataUtility {
 
     [MenuItem("UnityRO/Utils/Extract/Wav")]
     static void ExtractWav() {
-        var config = ConfigurationLoader.Init();
-        FileManager.LoadGRF(config.root, config.grf);
         var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/wav")
             .Where(it => Path.GetExtension(it) == ".wav")
             .ToList();
@@ -537,11 +531,12 @@ public class DataUtility {
         CreateTexturesAddressableAssets();
 
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Sprites");
-        EditorApplication.ExecuteMenuItem("UnityRO/Utils/Prepare/Models");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Lua Files");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Effects");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Wav");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Txt Tables");
+
+        EditorApplication.ExecuteMenuItem("UnityRO/Utils/Prepare/Models");
 
         // Generate map prefabs
     }
@@ -550,8 +545,6 @@ public class DataUtility {
     static void CheckForMissingAssets() {
         AssetDatabase.Refresh();
 
-        var config = ConfigurationLoader.Init();
-        FileManager.LoadGRF(config.root, config.grf);
         var descriptors = FileManager.GetFileDescriptors();
 
         var textureDescriptors = FilterDescriptors(descriptors, "data/texture")
