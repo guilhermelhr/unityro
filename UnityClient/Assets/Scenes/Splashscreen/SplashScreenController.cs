@@ -1,7 +1,11 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using ROIO;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 public class SplashScreenController : MonoBehaviour {
@@ -35,7 +39,27 @@ public class SplashScreenController : MonoBehaviour {
             yield return handle;
         }
 #endif
-        yield return new WaitForSeconds(2f);
+
+        yield return new WaitForSeconds(1f);
+
+        StartCoroutine(FetchConfigs());
+    }
+
+    private IEnumerator FetchConfigs() {
+        var localRequest = Addressables.LoadAssetAsync<TextAsset>("LocalConfigs.json.txt");
+        yield return localRequest;
+
+        var localConfig = JObject.Parse(localRequest.Result.text);
+        var localConfiguration = JsonConvert.DeserializeObject<LocalConfiguration>(localConfig.ToString());
+
+        var remoteRequest = UnityWebRequest.Get(localConfiguration.remoteConfigLocation);
+        yield return remoteRequest.SendWebRequest();
+
+        var remoteConfig = JObject.Parse(remoteRequest.downloadHandler.text);
+        var remoteConfiguration = JsonConvert.DeserializeObject<RemoteConfiguration>(remoteConfig.ToString());
+
+        FindObjectOfType<GameManager>().SetConfigurations(remoteConfiguration, localConfiguration);
+
         SceneManager.LoadScene("LoginScene");
     }
 }

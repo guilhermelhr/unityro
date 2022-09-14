@@ -29,7 +29,8 @@ public class GameManager : MonoBehaviour {
     private EntityManager EntityManager;
     #endregion
 
-    public static Action OnMapLoaded;
+    public RemoteConfiguration RemoteConfiguration { get; private set; }
+    public LocalConfiguration LocalConfiguration { get; private set; }
 
     public Camera MainCamera { get; private set; }
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
@@ -127,10 +128,14 @@ public class GameManager : MonoBehaviour {
         var map = Instantiate(mapPrefab).GetComponent<GameMap>();
 
         SceneManager.UnloadSceneAsync("LoadingScene");
-        OnMapLoaded?.Invoke();
 
         PlayBgm(Tables.MapTable[$"{mapName}.rsw"].mp3);
         return map;
+    }
+
+    public void SetConfigurations(RemoteConfiguration remoteConfiguration, LocalConfiguration localConfiguration) {
+        RemoteConfiguration = remoteConfiguration;
+        LocalConfiguration = localConfiguration;
     }
 
     //TODO Get rid of these

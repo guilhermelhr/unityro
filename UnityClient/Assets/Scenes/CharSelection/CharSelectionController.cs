@@ -21,10 +21,12 @@ public class CharSelectionController : MonoBehaviour {
 
     private EntityManager EntityManager;
     private NetworkClient NetworkClient;
+    private GameManager GameManager;
 
     private List<CharacterCellController> characterSlots;
 
     private void Awake() {
+        GameManager = FindObjectOfType<GameManager>();
         EntityManager = FindObjectOfType<EntityManager>();
         NetworkClient = FindObjectOfType<NetworkClient>();
     }
@@ -68,11 +70,20 @@ public class CharSelectionController : MonoBehaviour {
 
     private void OnCharacterSelectionAccepted(ushort cmd, int size, InPacket packet) {
         if (packet is HC.NOTIFY_ZONESVR2) {
+            var remoteConfig = GameManager.RemoteConfiguration;
             NetworkClient.Disconnect();
 
             currentMapInfo = packet as HC.NOTIFY_ZONESVR2;
             NetworkClient.State.SelectedCharacter = selectedCharacter;
-            NetworkClient.ChangeServer(currentMapInfo.IP.ToString(), currentMapInfo.Port);
+
+            string mapIp;
+            if (remoteConfig.useSameIpForEveryServer) {
+                mapIp = remoteConfig.loginServer;
+            } else {
+                mapIp = currentMapInfo.IP.ToString();
+            }
+
+            NetworkClient.ChangeServer(mapIp, currentMapInfo.Port);
             NetworkClient.CurrentConnection.Start();
 
             var entity = EntityManager.SpawnPlayer(NetworkClient.State.SelectedCharacter);
