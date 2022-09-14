@@ -287,6 +287,7 @@ public class DataUtility {
             "data/luafiles514/lua files/datainfo/npcidentity.lub",
             "data/luafiles514/lua files/datainfo/jobname_f.lub",
             "data/luafiles514/lua files/datainfo/jobname.lub",
+            "data/luafiles514/lua files/datainfo/pcjobnamegender.lub",
             "data/luafiles514/lua files/datainfo/petinfo.lub",
             "data/luafiles514/lua files/datainfo/accessoryid.lub",
             "data/luafiles514/lua files/datainfo/accname_f.lub",

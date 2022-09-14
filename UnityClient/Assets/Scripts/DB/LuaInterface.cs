@@ -46,7 +46,7 @@ public class LuaInterface {
         var JTtbl = Environment.Globals["JTtbl"] as Table;
         Environment.Globals["pcJobTbl2"] = JTtbl;
 
-        //Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/pcjobnamegender.lub.txt"));
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/pcjobnamegender.lub.txt"));
     }
 
     private async Task LoadAccessoryInfo() {
