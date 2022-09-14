@@ -51,8 +51,13 @@ public class MapUiController : MonoBehaviour {
     }
 
     private void LateUpdate() {
+        if (Event.current == null)
+            return;
+
         if (!Event.current.isKey || Event.current.keyCode == KeyCode.None)
             return;
+
+
         switch (Event.current.type) {
             case EventType.KeyDown:
                 if (Event.current.modifiers == EventModifiers.Alt) {

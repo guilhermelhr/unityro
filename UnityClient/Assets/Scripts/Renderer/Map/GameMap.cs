@@ -31,6 +31,9 @@ namespace Assets.Scripts.Renderer.Map {
         }
 
         private void InitWorldLight() {
+            if (WorldLight != null)
+                return;
+
             var worldLightGameObject = new GameObject("Light");
             worldLightGameObject.transform.SetParent(gameObject.transform);
             WorldLight = worldLightGameObject.GetOrAddComponent<Light>();
@@ -77,6 +80,14 @@ namespace Assets.Scripts.Renderer.Map {
         public void SetMapAltitude(Altitude altitude) {
             Altitude = altitude;
             PathFinder?.LoadMap(Altitude);
+        }
+
+        public PathFinder GetPathFinder() {
+            if (PathFinder == null) {
+                InitPathFinder();
+            }
+
+            return PathFinder;
         }
     }
 }

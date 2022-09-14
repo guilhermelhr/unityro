@@ -64,9 +64,10 @@ public class GameManager : MonoBehaviour {
     }
 
     private async Task Init() {
+        InitManagers();
+
         await DBManager.Init();
 
-        InitManagers();
         MaybeInitOfflineUtils();
 
         MapRenderer = new MapRenderer(SoundMixerGroup, WorldLight);
@@ -119,8 +120,11 @@ public class GameManager : MonoBehaviour {
         MapRenderer.Clear();
         EntityManager.ClearEntities();
 
-        AsyncMapLoader.GameMap gameMap = await new AsyncMapLoader().Load($"{mapName}.rsw");
-        GameMap map = await MapRenderer.OnMapComplete(gameMap);
+        //AsyncMapLoader.GameMap gameMap = await new AsyncMapLoader().Load($"{mapName}.rsw");
+        //GameMap map = await MapRenderer.OnMapComplete(gameMap);
+
+        var mapPrefab = await Addressables.LoadAssetAsync<GameObject>($"data/maps/{mapName}.prefab").Task;
+        var map = Instantiate(mapPrefab).GetComponent<GameMap>();
 
         SceneManager.UnloadSceneAsync("LoadingScene");
         OnMapLoaded?.Invoke();

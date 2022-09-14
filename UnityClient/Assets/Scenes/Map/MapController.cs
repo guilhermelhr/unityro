@@ -1,14 +1,14 @@
-﻿using ROIO;
+﻿using Assets.Scripts.Renderer.Map;
+using ROIO;
 using ROIO.Models.FileTypes;
 using System;
+using System.IO;
 using UnityEngine;
 using UnityRO.GameCamera;
 
 public class MapController : MonoBehaviour {
 
     public static MapController Instance;
-
-    [SerializeField] private Light worldLight;
 
     public MapUiController UIController;
 
@@ -26,7 +26,6 @@ public class MapController : MonoBehaviour {
         NetworkClient = FindObjectOfType<NetworkClient>();
         GameManager = FindObjectOfType<GameManager>();
         EntityManager = FindObjectOfType<EntityManager>();
-        PathFinding = FindObjectOfType<PathFinder>();
 
         UIController.GetComponent<CanvasGroup>().alpha = 1;
 
@@ -50,13 +49,15 @@ public class MapController : MonoBehaviour {
         NetworkClient.HookPacket(ZC.NOTIFY_TIME.HEADER, delegate{ });
 
         GameManager.InitCamera();
-        GameManager.SetWorldLight(worldLight);
-        await GameManager.BeginMapLoading(mapInfo.mapname);
+
+        var gameMap = await GameManager.BeginMapLoading(mapInfo.mapname);
+        PathFinding = gameMap.GetPathFinder();
 
         InitEntity(mapInfo);
     }
 
     private void InitEntity(MapLoginInfo mapInfo) {
+
         var entity = Session.CurrentSession.Entity as Entity;
         entity.transform.position = new Vector3(mapInfo.PosX, PathFinding.GetCellHeight(mapInfo.PosX, mapInfo.PosY), mapInfo.PosY);
 
@@ -149,7 +150,11 @@ public class MapController : MonoBehaviour {
             if (pkt.MapName != Session.CurrentSession.CurrentMap) {
                 var entity = Session.CurrentSession.Entity as Entity;
                 entity.StopMoving();
-                await GameManager.BeginMapLoading(pkt.MapName.Split('.')[0]);
+
+                var mapname = Path.GetFileNameWithoutExtension(pkt.MapName);
+
+                await GameManager.BeginMapLoading(mapname);
+                
                 Session.CurrentSession.SetCurrentMap(pkt.MapName);
                 entity.transform.position = new Vector3(pkt.PosX, PathFinding.GetCellHeight(pkt.PosX, pkt.PosY), pkt.PosY);
                 new CZ.NOTIFY_ACTORINIT().Send();
