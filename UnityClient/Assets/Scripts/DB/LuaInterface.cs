@@ -1,39 +1,43 @@
 ﻿using MoonSharp.Interpreter;
-using ROIO;
-using System.IO;
-using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class LuaInterface {
 
     public static Script Environment { get; private set; } = new Script();
 
-    public LuaInterface(Configuration configs) {
-        LoadSkillInfoZ();
-        LoadJobInfo();
-        LoadAccessoryInfo();
-
-        ItemTable.LoadItemDb(configs);
-        SkillTable.LoadSkillData();
+    public LuaInterface() {
+        InitTables();
     }
 
     public static Table GetTable(string name) {
         return Environment.Globals[name] as Table;
     }
 
-    private void LoadSkillInfoZ() {
-        Environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/jobinheritlist.lub") as MemoryStream);
-        Environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillid.lub") as MemoryStream);
-        Environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skilldescript.lub") as MemoryStream);
-        Environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillinfolist.lub") as MemoryStream);
-        Environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skillinfo_f.lub") as MemoryStream);
-        Environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/skillinfoz/skilltreeview.lub") as MemoryStream);
+    private async void InitTables() {
+        await LoadSkillInfoZ();
+        await LoadJobInfo();
+        await LoadAccessoryInfo();
+
+        await ItemTable.LoadItemDb();
+        SkillTable.LoadSkillData();
     }
 
-    private void LoadJobInfo() {
-        Environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/jobidentity.lub") as MemoryStream);
-        Environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/npcidentity.lub") as MemoryStream);
-        Environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/jobname.lub") as MemoryStream);
-        //environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/pcjobnamegender_f.lub"));
+    private async Task LoadSkillInfoZ() {
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/jobinheritlist.lub.txt"));
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/skillid.lub.txt"));
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/skilldescript.lub.txt"));
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/skillinfolist.lub.txt"));
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/skillinfo_f.lub.txt"));
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/skilltreeview.lub.txt"));
+    }
+
+    private async Task LoadJobInfo() {
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/jobidentity.lub.txt"));
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/npcidentity.lub.txt"));
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/jobname.lub.txt"));
+        //environment.DoStream(Addressables.LoadAssetAsync<TextAsset>("data/luafiles514/lua files/datainfo/pcjobnamegender_f.lub"));
 
         /**
          * Hack for Kagerou and Oboro
@@ -42,11 +46,15 @@ public class LuaInterface {
         var JTtbl = Environment.Globals["JTtbl"] as Table;
         Environment.Globals["pcJobTbl2"] = JTtbl;
 
-        Environment.DoStream(FileManager.ReadSync("data/luafiles514/lua files/datainfo/pcjobnamegender.lub") as MemoryStream);
+        //Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/pcjobnamegender.lub.txt"));
     }
 
-    private void LoadAccessoryInfo() {
-        Environment.DoString(FileManager.ReadSync("data/lua files/datainfo/accessoryid.lub", Encoding.GetEncoding(1252)).ReadToEnd());
-        Environment.DoString(FileManager.ReadSync("data/lua files/datainfo/accname.lub", Encoding.GetEncoding(1252)).ReadToEnd());
+    private async Task LoadAccessoryInfo() {
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/accessoryid.lub.txt"));
+        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/accname.lub.txt"));
+    }
+
+    private async Task<string> LoadTable(string key) {
+        return (await Addressables.LoadAssetAsync<TextAsset>(key).Task).text;
     }
 }

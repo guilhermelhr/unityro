@@ -162,7 +162,7 @@ public class MapRenderer {
 
     private async Task OnModelsComplete(RSM.CompiledModel[] compiledModels) {
         models = new Models(compiledModels.ToList());
-        await models.BuildMeshes(OnMapLoadingProgress);
+        await models.BuildMeshesAsync(OnMapLoadingProgress);
 
         modelsCompleted = true;
     }

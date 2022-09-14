@@ -1,9 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 
 public class SplashScreenController : MonoBehaviour {
@@ -14,41 +12,30 @@ public class SplashScreenController : MonoBehaviour {
     [SerializeField]
     private TextMeshProUGUI labelText;
 
-    AsyncOperationHandle<IList<GameObject>> loadHandle;
-
-    // Start is called before the first frame update
     void Start() {
         StartCoroutine(PrefetchAssets());
     }
 
     private IEnumerator PrefetchAssets() {
-        loadHandle = Addressables.LoadAssetsAsync<GameObject>(LabelsToPrefetch, null, Addressables.MergeMode.Union);
+#if !UNITY_EDITOR
+        foreach (var label in LabelsToPrefetch) {
+            var handle = Addressables.DownloadDependenciesAsync(label, true);
 
-        while (!loadHandle.IsDone) {
-            var downloadStatus = loadHandle.GetDownloadStatus();
-            var text = $"Downloading - {downloadStatus.DownloadedBytes / 1024 / 1024}kB / {downloadStatus.TotalBytes / 1024 / 1024}MB ({loadHandle.PercentComplete}%)";
-            labelText.text = text;
-            yield return null;
+            while(!handle.IsDone) {
+                var downloadStatus = handle.GetDownloadStatus();
+                var downloadedMbs = downloadStatus.DownloadedBytes / 1024 / 1024;
+                var totalMbs = downloadStatus.TotalBytes / 1024 / 1024;
+                var progress = (downloadedMbs / totalMbs) * 100;
+
+                var text = $"Downloading {label.labelString}\n{downloadedMbs}MB / {totalMbs}MB\n{progress}%";
+                labelText.text = text;
+                yield return null;
+            }
+
+            yield return handle;
         }
-
-        yield return loadHandle;
+#endif
+        yield return new WaitForEndOfFrame();
+        SceneManager.LoadScene("LoginScene");
     }
-
-    void OnDestroy() {
-        Addressables.Release(loadHandle);
-    }
-
-
-    //void Awake() {
-    //    GameManager.OnGrfLoaded += OnGrfLoaded;
-    //}
-
-    //private void OnGrfLoaded() {
-    //    SceneManager.LoadScene("LoginScene");
-    //}
-
-    //// Update is called once per frame
-    //void Destroy() {
-    //    GameManager.OnGrfLoaded -= OnGrfLoaded;
-    //}
 }

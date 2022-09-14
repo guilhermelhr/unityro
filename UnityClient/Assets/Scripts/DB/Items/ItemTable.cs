@@ -3,7 +3,9 @@ using ROIO;
 using ROIO.Loaders;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public enum EquipmentLocation : int {
     HEAD_BOTTOM = 1 << 0,
@@ -331,10 +333,12 @@ public class ItemTable {
         { WeaponType.WEAPONTYPE_FOXTAIL_METAL, WeaponType.WEAPONTYPE_ROD }
     };
 
-    public static void LoadItemDb(Configuration configs) {
+    public async static Task LoadItemDb() {
         Script script = new Script();
         script.Options.ScriptLoader = new CustomScriptLoader();
-        script.DoFile(configs.SystemPath + "itemInfo.lua");
+
+        var itemInfoText = await Addressables.LoadAssetAsync<TextAsset>("lua/itemInfo_true.lub.txt").Task;
+        script.DoString(itemInfoText.text);
         Table table = (Table)script.Globals["tbl"];
 
         foreach (var key in table.Keys) {

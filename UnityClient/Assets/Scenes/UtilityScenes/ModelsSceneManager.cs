@@ -17,12 +17,12 @@ public class ModelsSceneManager : MonoBehaviour {
     private bool ExtractOnlyMissingModels = false;
 
     // Start is called before the first frame update
-    async void Start() {
+    void Start() {
         var config = ConfigurationLoader.Init();
         FileManager.LoadGRF(config.root, config.grf);
         var descriptorsHashtable = FileManager.GetFileDescriptors();
 
-        var modelDescriptors = FindDescriptors(descriptorsHashtable).Take(10).ToList();
+        var modelDescriptors = FindDescriptors(descriptorsHashtable).ToList();
 
         MapRenderer.mapParent = gameObject;
         List<RSM.CompiledModel> compiledModels = new List<RSM.CompiledModel>();
@@ -41,12 +41,9 @@ public class ModelsSceneManager : MonoBehaviour {
             }
         }
 
-        Debug.Log($"Finished compiling {compiledModels.Count} of {modelDescriptors.Count} models");
-
-        var count = 0;
-        await new Models(compiledModels).BuildMeshes(delegate (float progress) {
+        int count = 0;
+        StartCoroutine(new Models(compiledModels).BuildMeshes(delegate (float progress) {
             count++;
-
             if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Loading models - {progress * 100}%", progress)) {
                 EditorApplication.ExitPlaymode();
                 EditorUtility.ClearProgressBar();
@@ -54,9 +51,9 @@ public class ModelsSceneManager : MonoBehaviour {
 
             if (count == modelDescriptors.Count) {
                 EditorUtility.ClearProgressBar();
-                //EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Models");
+                EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Models");
             }
-        });
+        }, ignorePrefabs: true));
     }
 
     private List<string> FindDescriptors(Hashtable descriptorsHashtable) {

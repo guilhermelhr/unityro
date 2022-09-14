@@ -29,13 +29,10 @@ public class GameManager : MonoBehaviour {
     private EntityManager EntityManager;
     #endregion
 
-    public static Action OnGrfLoaded;
     public static Action OnMapLoaded;
 
     public Camera MainCamera { get; private set; }
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
-
-    private Configuration Configs;
 
     private void Awake() {
         if (MainCamera == null) {
@@ -63,16 +60,11 @@ public class GameManager : MonoBehaviour {
     }
 
     async void Start() {
-        Configs = ConfigurationLoader.Init();
-
-        await LoadGrf();
+        await Init();
     }
 
-    private async Task LoadGrf() {
-        FileManager.LoadGRF(Configs.root, Configs.grf);
-        OnGrfLoaded?.Invoke();
-
-        await DBManager.Init(Configs);
+    private async Task Init() {
+        await DBManager.Init();
 
         InitManagers();
         MaybeInitOfflineUtils();

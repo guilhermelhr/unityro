@@ -45,7 +45,7 @@ public class Models {
         public bool isChild;
     }
 
-    public async Task BuildMeshes(Action<float> OnProgress) {
+    public async Task BuildMeshesAsync(Action<float> OnProgress, bool ignorePrefabs = false) {
         GameObject modelsParent = new GameObject("_Models");
         GameObject originals = new GameObject("_Originals");
         GameObject copies = new GameObject("_Copies");
@@ -56,18 +56,20 @@ public class Models {
 
         int nodeId = 0;
 
-        var tasks = new List<Task<GameObject>>();
-        foreach (var model in models) {
-            var filenameWithoutExtension = model.rsm.filename.Substring(0, model.rsm.filename.IndexOf(".rsm"));
-            tasks.Add(Addressables.LoadAssetAsync<GameObject>(Path.Combine("data", "model", $"{filenameWithoutExtension}.prefab").SanitizeForAddressables()).Task);
-        }
-        var prefabs = await Task.WhenAll(tasks);
-        for (int i = 0; i < prefabs.Length; i++) {
-            var prefab = prefabs[i];
-            var model = models[i];
+        if (!ignorePrefabs) {
+            var tasks = new List<Task<GameObject>>();
+            foreach (var model in models) {
+                var filenameWithoutExtension = model.rsm.filename.Substring(0, model.rsm.filename.IndexOf(".rsm"));
+                tasks.Add(Addressables.LoadAssetAsync<GameObject>(Path.Combine("data", "model", $"{filenameWithoutExtension}.prefab").SanitizeForAddressables()).Task);
+            }
+            var prefabs = await Task.WhenAll(tasks);
+            for (int i = 0; i < prefabs.Length; i++) {
+                var prefab = prefabs[i];
+                var model = models[i];
 
-            if (prefab != null) {
-                prefabDict.Add(model.rsm.filename, prefab);
+                if (prefab != null) {
+                    prefabDict.Add(model.rsm.filename, prefab);
+                }
             }
         }
 
@@ -135,6 +137,96 @@ public class Models {
         //yield return null;
     }
 
+    public IEnumerator BuildMeshes(Action<float> OnProgress, bool ignorePrefabs = false) {
+        GameObject modelsParent = new GameObject("_Models");
+        GameObject originals = new GameObject("_Originals");
+        GameObject copies = new GameObject("_Copies");
+        Dictionary<string, GameObject> prefabDict = new Dictionary<string, GameObject>();
+        modelsParent.transform.SetParent(MapRenderer.mapParent.transform);
+        originals.transform.SetParent(modelsParent.transform);
+        copies.transform.SetParent(modelsParent.transform);
+
+        int nodeId = 0;
+        if (!ignorePrefabs) {
+            for (int index = 0; index < models.Count; index++) {
+                RSM.CompiledModel model = models[index];
+                var filenameWithoutExtension = model.rsm.filename.Substring(0, model.rsm.filename.IndexOf(".rsm"));
+                var prefabRequest = Addressables.LoadAssetAsync<GameObject>(Path.Combine("data", "model", $"{filenameWithoutExtension}.prefab").SanitizeForAddressables());
+                while (!prefabRequest.IsDone) {
+                    yield return prefabRequest;
+                }
+                if (prefabRequest.Result != null) {
+                    prefabDict.Add(model.rsm.filename, prefabRequest.Result);
+                }
+            }
+        }
+
+        for (var index = 0; index < models.Count; index++) {
+            OnProgress.Invoke(index / (float) models.Count);
+
+            RSM.CompiledModel model = models[index];
+
+            GameObject modelObj;
+            if (prefabDict.TryGetValue(model.rsm.filename, out GameObject prefab)) {
+                modelObj = GameObject.Instantiate(prefab, originals.transform);
+                modelObj.name = model.rsm.filename;
+            } else {
+                modelObj = new GameObject(model.rsm.filename);
+                modelObj.transform.SetParent(originals.transform);
+
+                nodeId = CreateOriginalModel(nodeId, model, modelObj);
+            }
+
+            //instantiate model
+            for (int i = 0; i < model.rsm.instances.Count; i++) {
+                GameObject instanceObj;
+                if (i == model.rsm.instances.Count - 1) {
+                    //last instance
+                    instanceObj = modelObj;
+                } else {
+                    instanceObj = UnityEngine.Object.Instantiate(modelObj);
+                    instanceObj.transform.SetParent(copies.transform);
+                    instanceObj.name += "[" + i + "]";
+                }
+
+                RSW.ModelDescriptor descriptor = model.rsm.instances[i];
+
+                instanceObj.transform.Rotate(Vector3.forward, -descriptor.rotation[2]);
+                instanceObj.transform.Rotate(Vector3.right, -descriptor.rotation[0]);
+                instanceObj.transform.Rotate(Vector3.up, descriptor.rotation[1]);
+
+                Vector3 scale = new Vector3(descriptor.scale[0], -descriptor.scale[1], descriptor.scale[2]);
+                instanceObj.transform.localScale = scale;
+
+                //avoid z fighting between models
+                float xRandom = UnityEngine.Random.Range(-0.002f, 0.002f);
+                float yRandom = UnityEngine.Random.Range(-0.002f, 0.002f);
+                float zRandom = UnityEngine.Random.Range(-0.002f, 0.002f);
+
+                Vector3 position = new Vector3(descriptor.position[0] + xRandom, descriptor.position[1] + yRandom, descriptor.position[2] + zRandom);
+                position.x += MapRenderer.width;
+                position.y *= -1;
+                position.z += MapRenderer.height;
+                instanceObj.transform.position = position;
+
+                //setup hierarchy
+                var propertiesComponents = instanceObj.GetComponentsInChildren<NodeProperties>();
+                foreach (var properties in propertiesComponents) {
+                    if (properties.isChild) {
+                        var nodeParent = instanceObj.transform.FindRecursive(properties.parentName);
+                        properties.transform.parent = nodeParent;
+                    }
+                }
+
+                instanceObj.SetActive(true);
+            }
+
+            yield return null;
+        }
+
+        yield return null;
+    }
+
     private int CreateOriginalModel(int nodeId, RSM.CompiledModel model, GameObject modelObj) {
         foreach (var nodeData in model.nodesData) {
             foreach (var meshesByTexture in nodeData) {
@@ -169,7 +261,7 @@ public class Models {
                 var mr = nodeObj.AddComponent<MeshRenderer>();
                 if (meshData.twoSided) {
                     mr.material = materialTwoSided;
-                } else if(model.rsm.alpha < 1f) {
+                } else if (model.rsm.alpha < 1f) {
                     mr.material = materialTransparent;
                     mr.material.SetFloat("_Alpha", model.rsm.alpha);
                 } else {
