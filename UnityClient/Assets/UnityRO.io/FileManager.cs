@@ -67,6 +67,10 @@ namespace ROIO {
         }
 
         public static object Load(string file, bool ignoreCache = false) {
+#if !UNITY_EDITOR
+            Debug.LogError($"File manager being called outside Editor from {new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name}");
+            return null;
+#endif
             file = file.Trim();
             file = file.Replace("\\", "/");
 
