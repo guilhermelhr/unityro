@@ -1151,6 +1151,16 @@ MonoBehaviour:
     m_SerializedLabels:
     - DataTables
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8320d500c7b80d6479a95b3aed9bf559
+    m_Address: LocalConfigs.json.txt
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd8c1595e7d86624bae4d116ea23b839
+    m_Address: lua/data/luafiles514/lua files/datainfo/pcjobnamegender.lub.txt
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c99779a8de5df7a409366194290f8300, type: 2}
   m_SchemaSet:

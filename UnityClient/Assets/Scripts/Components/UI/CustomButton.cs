@@ -1,6 +1,7 @@
 ﻿using B83.Image.BMP;
 using ROIO;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -20,20 +21,20 @@ public class CustomButton : Button,
     private Texture2D pressedBMP;
     private RawImage rawImage;
 
-    protected override void Awake() {
+    protected override async void Awake() {
         enabled = true;
         rawImage = GetComponent<RawImage>();
         try {
             if(backgroundImage != null) {
-                backgroundBMP = (Texture2D)FileManager.Load(DBManager.INTERFACE_PATH + backgroundImage);
+                backgroundBMP = await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + backgroundImage).Task;
                 rawImage.texture = backgroundBMP;
                 //GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundBMP.width, backgroundBMP.height);
             }
             if(hoverImage != null) {
-                hoverBMP = FileManager.Load(DBManager.INTERFACE_PATH + hoverImage) as Texture2D;
+                hoverBMP = await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + hoverImage).Task;
             }
             if(pressedImage != null) {
-                pressedBMP = FileManager.Load(DBManager.INTERFACE_PATH + pressedImage) as Texture2D;
+                pressedBMP = await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + pressedImage).Task;
             }
         } catch { }
     }

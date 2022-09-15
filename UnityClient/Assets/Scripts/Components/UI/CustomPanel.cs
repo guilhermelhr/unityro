@@ -1,6 +1,8 @@
 ﻿using ROIO;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -29,48 +31,48 @@ public class CustomPanel : RawImage,
         LoadPressedTexture();
     }
 
-    private void LoadPressedTexture() {
+    private async void LoadPressedTexture() {
         try {
-            if(pressedImage != null && pressedImage.Length > 0 && pressedTexture == null) {
-                pressedTexture = LoadImage(pressedImage);
+            if (pressedImage != null && pressedImage.Length > 0 && pressedTexture == null) {
+                pressedTexture = await LoadImage(pressedImage);
             }
         } catch {
             Debug.LogError("Failed to load pressed image from " + this);
         }
     }
 
-    private void LoadHoverTexture() {
+    private async void LoadHoverTexture() {
         try {
-            if(hoverImage != null && hoverImage.Length > 0 && hoverTexture == null) {
-                hoverTexture = LoadImage(hoverImage);
+            if (hoverImage != null && hoverImage.Length > 0 && hoverTexture == null) {
+                hoverTexture = await LoadImage(hoverImage);
             }
         } catch {
             Debug.LogError("Failed to load hover image from " + this);
         }
     }
 
-    private void LoadIdleTexture() {
+    private async void LoadIdleTexture() {
         try {
-            if(backgroundImage != null && backgroundImage.Length > 0 && backgroundTexture == null) {
-                backgroundTexture = LoadImage(backgroundImage);
+            if (backgroundImage != null && backgroundImage.Length > 0 && backgroundTexture == null) {
+                backgroundTexture = await LoadImage(backgroundImage);
                 texture = backgroundTexture;
                 if (overrideSize)
                     SetNativeSize();
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             Debug.LogError("Failed to load background image from " + this);
             Debug.LogException(e);
         }
     }
 
     private void Update() {
-        if(texture == null) {
+        if (texture == null) {
             LoadTextures();
         }
     }
 
-    public void SetBackground(string path) {
-        backgroundTexture = (Texture2D)FileManager.Load(DBManager.INTERFACE_PATH + path);
+    public async void SetBackground(string path) {
+        backgroundTexture = await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + path).Task;
         texture = backgroundTexture;
         GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundTexture.width, backgroundTexture.height);
     }
@@ -99,5 +101,5 @@ public class CustomPanel : RawImage,
         }
     }
 
-    private Texture2D LoadImage(string path) => FileManager.Load(DBManager.INTERFACE_PATH + path) as Texture2D;
+    private async Task<Texture2D> LoadImage(string path) => await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + path).Task;
 }

@@ -406,7 +406,7 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    private void InitShadow() {
+    private async void InitShadow() {
         if (ViewerType != ViewerType.BODY)
             return;
 
@@ -418,13 +418,10 @@ public class EntityViewer : MonoBehaviour {
         var sortingGroup = shadow.AddComponent<SortingGroup>();
         sortingGroup.sortingOrder = -20001;
 
-        SPR sprite = FileManager.Load("data/sprite/shadow.spr") as SPR;
-
-        sprite.SwitchToRGBA();
-        sprite.Compile();
+        var spriteData = await Addressables.LoadAssetAsync<SpriteData>("data/sprite/shadow.asset").Task;
 
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = sprite.GetSprites()[0];
+        spriteRenderer.sprite = spriteData.sprites[0];
         spriteRenderer.sortingOrder = -1;
         spriteRenderer.material.color = new Color(1, 1, 1, 0.4f);
     }

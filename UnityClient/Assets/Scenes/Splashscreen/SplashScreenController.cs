@@ -29,7 +29,7 @@ public class SplashScreenController : MonoBehaviour {
                 var downloadStatus = handle.GetDownloadStatus();
                 var downloadedMbs = downloadStatus.DownloadedBytes / 1024 / 1024;
                 var totalMbs = downloadStatus.TotalBytes / 1024 / 1024;
-                var progress = (downloadedMbs / totalMbs) * 100;
+                var progress = downloadedMbs / (totalMbs > 0 ? totalMbs : 1) * 100;
 
                 var text = $"Downloading {label.labelString}\n{downloadedMbs}MB / {totalMbs}MB\n{progress}%";
                 labelText.text = text;
