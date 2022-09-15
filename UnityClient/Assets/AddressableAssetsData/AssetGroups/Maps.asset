@@ -257,6 +257,48 @@ MonoBehaviour:
     m_SerializedLabels:
     - Maps
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c38ea94956217cd49855d8570d931875
+    m_Address: data/maps/prt_in/ground/_0/texture.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 825cce07013d83a4ea2e6f8d10e340ed
+    m_Address: data/maps/prt_in/ground/_0/lightmap.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 777c7ec0f816c8349918a4d67753c7bc
+    m_Address: data/maps/prt_in/ground/_0/tintmap.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd4094e0ef7ea1a4eae87d1308ce9e92
+    m_Address: data/maps/prt_in/ground/_0/Ground_0__0.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1d3699a6f96c55449a1fdbfd5d8b3b6c
+    m_Address: data/maps/prt_in/ground/_0/Ground_0__0.mat
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f093c668df76b34d9d3f20083b47117
+    m_Address: data/maps/prt_in/ground/_0/Ground_0_.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a7f61b7a9dcf1e34ab00965483cbaf70
+    m_Address: data/maps/prt_in.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Maps
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c99779a8de5df7a409366194290f8300, type: 2}
   m_SchemaSet:
