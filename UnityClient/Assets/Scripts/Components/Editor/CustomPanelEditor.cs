@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEngine;
 
 [CustomEditor(typeof(CustomPanel))]
 public class CustomPanelEditor : UnityEditor.UI.RawImageEditor {

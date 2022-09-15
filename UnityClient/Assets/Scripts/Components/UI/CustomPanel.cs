@@ -1,6 +1,4 @@
-﻿using ROIO;
-using System;
-using System.Threading.Tasks;
+﻿using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
@@ -21,7 +19,14 @@ public class CustomPanel : RawImage,
     private Texture2D hoverTexture;
     private Texture2D pressedTexture;
 
+    private CustomUIAddressablesHolder AddressablesHolder;
+
+    protected override void OnEnable() {
+        AddressablesHolder = gameObject.GetComponent<CustomUIAddressablesHolder>();
+    }
+
     protected override void Start() {
+        texture = null;
         LoadTextures();
     }
 
@@ -33,41 +38,34 @@ public class CustomPanel : RawImage,
 
     private async void LoadPressedTexture() {
         try {
-            if (pressedImage != null && pressedImage.Length > 0 && pressedTexture == null) {
-                pressedTexture = await LoadImage(pressedImage);
+            if (pressedTexture == null && AddressablesHolder.pressedTexture.AssetGUID.Length > 0) {
+                pressedTexture = await AddressablesHolder.pressedTexture.LoadAssetAsync().Task;
             }
-        } catch {
-            Debug.LogError("Failed to load pressed image from " + this);
+        } catch (Exception e) {
+            Debug.LogError($"Failed to load pressed image from {this} {e}");
         }
     }
 
     private async void LoadHoverTexture() {
         try {
-            if (hoverImage != null && hoverImage.Length > 0 && hoverTexture == null) {
-                hoverTexture = await LoadImage(hoverImage);
+            if (hoverTexture == null && AddressablesHolder.hoverTexture.AssetGUID.Length > 0) {
+                hoverTexture = await AddressablesHolder.hoverTexture.LoadAssetAsync().Task;
             }
-        } catch {
-            Debug.LogError("Failed to load hover image from " + this);
+        } catch (Exception e) {
+            Debug.LogError($"Failed to load hover image from {this} {e}");
         }
     }
 
     private async void LoadIdleTexture() {
         try {
-            if (backgroundImage != null && backgroundImage.Length > 0 && backgroundTexture == null) {
-                backgroundTexture = await LoadImage(backgroundImage);
+            if (backgroundTexture == null && AddressablesHolder.backgroundTexture.AssetGUID.Length > 0) {
+                backgroundTexture = await AddressablesHolder.backgroundTexture.LoadAssetAsync().Task;
                 texture = backgroundTexture;
                 if (overrideSize)
                     SetNativeSize();
             }
         } catch (Exception e) {
-            Debug.LogError("Failed to load background image from " + this);
-            Debug.LogException(e);
-        }
-    }
-
-    private void Update() {
-        if (texture == null) {
-            LoadTextures();
+            Debug.LogError($"Failed to load background image from {this} {e}");
         }
     }
 
@@ -100,6 +98,4 @@ public class CustomPanel : RawImage,
             texture = hoverTexture;
         }
     }
-
-    private async Task<Texture2D> LoadImage(string path) => await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + path).Task;
 }

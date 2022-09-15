@@ -1,5 +1,6 @@
 ﻿using B83.Image.BMP;
 using ROIO;
+using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
@@ -12,57 +13,84 @@ public class CustomButton : Button,
     IPointerUpHandler,
     ISelectHandler {
 
-    [SerializeField] public string backgroundImage;
-    [SerializeField] public string hoverImage;
-    [SerializeField] public string pressedImage;
+    public string backgroundImage;
+    public string hoverImage;
+    public string pressedImage;
 
-    private Texture2D backgroundBMP;
-    private Texture2D hoverBMP;
-    private Texture2D pressedBMP;
+    private Texture2D backgroundTexture;
+    private Texture2D hoverTexture;
+    private Texture2D pressedTexture;
     private RawImage rawImage;
 
-    protected override async void Awake() {
-        enabled = true;
+    private CustomUIAddressablesHolder AddressablesHolder;
+
+    protected override void OnEnable() {
         rawImage = GetComponent<RawImage>();
+        AddressablesHolder = GetComponent<CustomUIAddressablesHolder>();
+    }
+
+    protected override void Start() {
+        LoadTextures();
+    }
+
+    private void LoadTextures() {
+        LoadIdleTexture();
+        LoadHoverTexture();
+        LoadPressedTexture();
+    }
+
+    private async void LoadPressedTexture() {
         try {
-            if(backgroundImage != null) {
-                backgroundBMP = await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + backgroundImage).Task;
-                rawImage.texture = backgroundBMP;
-                //GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundBMP.width, backgroundBMP.height);
+            if (pressedTexture == null) {
+                pressedTexture = await AddressablesHolder.pressedTexture.LoadAssetAsync().Task;
             }
-            if(hoverImage != null) {
-                hoverBMP = await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + hoverImage).Task;
+        } catch (Exception e) {
+            Debug.LogError($"Failed to load pressed image from {this} {e}");
+        }
+    }
+
+    private async void LoadHoverTexture() {
+        try {
+            if (hoverTexture == null) {
+                hoverTexture = await AddressablesHolder.hoverTexture.LoadAssetAsync().Task;
             }
-            if(pressedImage != null) {
-                pressedBMP = await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + pressedImage).Task;
+        } catch (Exception e) {
+            Debug.LogError($"Failed to load hover image from {this} {e}");
+        }
+    }
+
+    private async void LoadIdleTexture() {
+        try {
+            if (backgroundTexture == null) {
+                backgroundTexture = await AddressablesHolder.backgroundTexture.LoadAssetAsync().Task;
+                rawImage.texture = backgroundTexture;
             }
-        } catch { }
+        } catch (Exception e) {
+            Debug.LogError($"Failed to load background image from {this} {e}");
+        }
     }
 
     override public void OnPointerDown(PointerEventData eventData) {
-        rawImage.texture = pressedBMP;
+        rawImage.texture = pressedTexture;
     }
 
     override public void OnPointerUp(PointerEventData eventData) {
-        rawImage.texture = hoverBMP;
+        rawImage.texture = hoverTexture;
     }
 
     override public void OnPointerEnter(PointerEventData pointerEventData) {
-        //Output to console the GameObject's name and the following message
-        rawImage.texture = hoverBMP;
+        rawImage.texture = hoverTexture;
     }
 
-    //Detect when Cursor leaves the GameObject
     override public void OnPointerExit(PointerEventData pointerEventData) {
-        //Output the following message with the GameObject's name
-        rawImage.texture = backgroundBMP;
+        rawImage.texture = backgroundTexture;
     }
 
     override public void OnSelect(BaseEventData eventData) {
-		rawImage.texture = hoverBMP;
+		rawImage.texture = hoverTexture;
 	}
 
     override public void OnDeselect(BaseEventData eventData) {
-        rawImage.texture = backgroundBMP;
+        rawImage.texture = backgroundTexture;
     }
 }

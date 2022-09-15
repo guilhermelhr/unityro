@@ -39,7 +39,7 @@ public class SplashScreenController : MonoBehaviour {
             yield return handle;
         }
 #endif
-
+        yield return Addressables.InitializeAsync();
         yield return new WaitForSeconds(1f);
 
         StartCoroutine(FetchConfigs());
