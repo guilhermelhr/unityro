@@ -1,6 +1,6 @@
-﻿using ROIO;
-using System;
+﻿using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -20,15 +20,18 @@ public class ToggleImage : MonoBehaviour {
 
     public UnityEvent<int> onValueChanged;
 
-    public void Awake() {
+    private CustomUIAddressablesHolder AddressablesHolder;
+
+    public async void Awake() {
+        AddressablesHolder = GetComponent<CustomUIAddressablesHolder>();
         try {
             Image = GetComponent<Image>();
             Toggle = GetComponent<Toggle>();
 
-            var NormalTexture = NormalImage != null ? FileManager.Load(DBManager.INTERFACE_PATH + NormalImage) as Texture2D : null;
-            var HoverTexture = NormalImage != null ? FileManager.Load(DBManager.INTERFACE_PATH + HoverImage) as Texture2D : null;
-            var PressedTexture = NormalImage != null ? FileManager.Load(DBManager.INTERFACE_PATH + PressedImage) as Texture2D : null;
-            var SelectedTexture = NormalImage != null ? FileManager.Load(DBManager.INTERFACE_PATH + SelectedImage) as Texture2D : null;
+            var NormalTexture = await AddressablesHolder.backgroundTexture.LoadAssetAsync().Task;
+            var HoverTexture = await AddressablesHolder.hoverTexture.LoadAssetAsync().Task;
+            var PressedTexture = await AddressablesHolder.pressedTexture.LoadAssetAsync().Task;
+            var SelectedTexture = await AddressablesHolder.selectedTexture.LoadAssetAsync().Task;
 
             var NormalSprite = NormalTexture != null ? CreateSprite(NormalTexture) : null;
             var HoverSprite = HoverTexture != null ? CreateSprite(HoverTexture) : null;
@@ -55,9 +58,9 @@ public class ToggleImage : MonoBehaviour {
         }
     }
 
-    public void SetImage(string path, int index) {
+    public async void SetImage(string path, int index) {
         Index = index;
-        var texture = path != null ? FileManager.Load(DBManager.INTERFACE_PATH + path) as Texture2D : null;
+        var texture = path != null ? await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + path).Task : null;
         InnerImage.texture = texture;
     }
 

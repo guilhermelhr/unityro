@@ -13,7 +13,7 @@ public class CustomPanel : RawImage,
     public string backgroundImage;
     public string hoverImage;
     public string pressedImage;
-    public bool overrideSize = true;
+    public bool overrideSize = false;
 
     private Texture2D backgroundTexture;
     private Texture2D hoverTexture;

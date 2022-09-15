@@ -1,8 +1,5 @@
-﻿using B83.Image.BMP;
-using ROIO;
-using System;
+﻿using System;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -30,6 +27,7 @@ public class CustomButton : Button,
     }
 
     protected override void Start() {
+        rawImage.texture = null;
         LoadTextures();
     }
 
@@ -41,7 +39,7 @@ public class CustomButton : Button,
 
     private async void LoadPressedTexture() {
         try {
-            if (pressedTexture == null) {
+            if (pressedTexture == null && AddressablesHolder.pressedTexture.AssetGUID.Length > 0) {
                 pressedTexture = await AddressablesHolder.pressedTexture.LoadAssetAsync().Task;
             }
         } catch (Exception e) {
@@ -51,7 +49,7 @@ public class CustomButton : Button,
 
     private async void LoadHoverTexture() {
         try {
-            if (hoverTexture == null) {
+            if (hoverTexture == null && AddressablesHolder.hoverTexture.AssetGUID.Length > 0) {
                 hoverTexture = await AddressablesHolder.hoverTexture.LoadAssetAsync().Task;
             }
         } catch (Exception e) {
@@ -61,7 +59,7 @@ public class CustomButton : Button,
 
     private async void LoadIdleTexture() {
         try {
-            if (backgroundTexture == null) {
+            if (backgroundTexture == null && AddressablesHolder.backgroundTexture.AssetGUID.Length > 0) {
                 backgroundTexture = await AddressablesHolder.backgroundTexture.LoadAssetAsync().Task;
                 rawImage.texture = backgroundTexture;
             }
