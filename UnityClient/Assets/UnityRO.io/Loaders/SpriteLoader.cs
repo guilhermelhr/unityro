@@ -401,7 +401,7 @@ namespace ROIO.Loaders
                 var texrect = new Rect(rects[i].x * supertexture.width, rects[i].y * supertexture.height, rects[i].width * supertexture.width, rects[i].height * supertexture.height);
 
                 SpriteSizes.Add(new Vector2Int(Textures[i].width, Textures[i].height));
-                var sprite = Sprite.Create(supertexture, texrect, new Vector2(0.5f, 0.5f), 50, 0, SpriteMeshType.FullRect);
+                var sprite = Sprite.Create(supertexture, texrect, new Vector2(0.5f, 0.5f), SPR.PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect);
 
                 sprite.name = $"sprite_{basename}_{i:D4}";
 

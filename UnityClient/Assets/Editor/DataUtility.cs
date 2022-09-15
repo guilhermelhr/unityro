@@ -209,6 +209,7 @@ public class DataUtility {
                         var textureSettings = new TextureImporterSettings();
                         importer.ReadTextureSettings(textureSettings);
                         textureSettings.spriteMeshType = SpriteMeshType.FullRect;
+                        textureSettings.spritePixelsPerUnit = SPR.PIXELS_PER_UNIT;
 
                         var sheetMetaData = sprites.Select(it => {
                             return new SpriteMetaData {
