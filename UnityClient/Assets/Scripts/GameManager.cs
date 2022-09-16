@@ -125,7 +125,7 @@ public class GameManager : MonoBehaviour {
         AsyncMapLoader.GameMap gameMap = await new AsyncMapLoader().Load($"{mapName}.rsw");
         GameMap map = await MapRenderer.OnMapComplete(gameMap);
 #else
-        var mapPrefab = await Addressables.LoadAssetAsync<GameObject>($"data/maps/{mapName}.prefab").Task;
+        var mapPrefab = await Addressables.LoadAssetAsync<GameObject>($"data/maps/{Path.GetFileNameWithoutExtension(mapName)}.prefab").Task;
         var map = Instantiate(mapPrefab).GetComponent<GameMap>();
 #endif
         SceneManager.UnloadSceneAsync("LoadingScene");

@@ -1,6 +1,4 @@
 ﻿using Assets.Scripts.Renderer.Sprite;
-using ROIO;
-using ROIO.Models.FileTypes;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

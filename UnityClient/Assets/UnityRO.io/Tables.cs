@@ -3,17 +3,17 @@ using ROIO.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 
-namespace ROIO
-{
-    public static class Tables
-    {
+namespace ROIO {
+    public static class Tables {
 
         public static Dictionary<string, MapTableStruct> MapTable = new Dictionary<string, MapTableStruct>();
         public static Hashtable ResNameTable = new Hashtable();
         public static Hashtable MsgStringTable = new Hashtable();
-        public static void Init()
-        {
+
+        public static void Init() {
             InitMsgStringTable();
             InitMp3NameTable();
             InitMapTable();
@@ -25,21 +25,18 @@ namespace ROIO
             //LoadTable("data/fogparametertable.txt", 5);
         }
 
-        private static void InitResNameTable()
-        {
-            foreach (object[] args in TableLoader.LoadTable("data/resnametable.txt", 2))
-            {
+        private async static void InitResNameTable() {
+            var data = await Addressables.LoadAssetAsync<TextAsset>($"txt/data/resnametable.txt.txt").Task;
+            foreach (object[] args in TableLoader.LoadTable(data.text, 2)) {
                 ResNameTable[args[1]] = args[2];
             }
         }
 
-        private static void InitMapTable()
-        {
-            foreach (object[] args in TableLoader.LoadTable("data/mapnametable.txt", 2))
-            {
+        private async static void InitMapTable() {
+            var data = await Addressables.LoadAssetAsync<TextAsset>($"txt/data/mapnametable.txt.txt").Task;
+            foreach (object[] args in TableLoader.LoadTable(data.text, 2)) {
                 var key = Convert.ToString(args[1]);
-                if (!MapTable.ContainsKey(key))
-                {
+                if (!MapTable.ContainsKey(key)) {
                     MapTable.Add(key, new MapTableStruct());
                 }
 
@@ -49,13 +46,11 @@ namespace ROIO
             }
         }
 
-        private static void InitMp3NameTable()
-        {
-            foreach (object[] args in TableLoader.LoadTable("data/mp3nametable.txt", 2))
-            {
+        private async static void InitMp3NameTable() {
+            var data = await Addressables.LoadAssetAsync<TextAsset>($"txt/data/mp3nametable.txt.txt").Task;
+            foreach (object[] args in TableLoader.LoadTable(data.text, 2)) {
                 var key = Convert.ToString(args[1]);
-                if (!MapTable.ContainsKey(key))
-                {
+                if (!MapTable.ContainsKey(key)) {
                     MapTable.Add(key, new MapTableStruct());
                 }
 
@@ -65,10 +60,9 @@ namespace ROIO
             }
         }
 
-        private static void InitMsgStringTable()
-        {
-            foreach (object[] args in TableLoader.LoadTable("data/msgstringtable.txt", 1))
-            {
+        private async static void InitMsgStringTable() {
+            var data = await Addressables.LoadAssetAsync<TextAsset>($"txt/data/msgstringtable.txt.txt").Task;
+            foreach (object[] args in TableLoader.LoadTable(data.text, 1)) {
                 MsgStringTable[args[0]] = args[1];
             }
         }

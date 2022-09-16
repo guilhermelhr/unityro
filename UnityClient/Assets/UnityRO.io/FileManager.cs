@@ -43,8 +43,6 @@ namespace ROIO {
                 var grf = Grf.grf_callback_open(rootPath + path, "r", null);
                 GrfList.Add(grf);
             }
-
-            Tables.Init();
         }
 
         public static void InitBatch() {

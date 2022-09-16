@@ -18,6 +18,7 @@ public class DBManager {
 
     public async static Task Init() {
         new LuaInterface();
+        Tables.Init();
 
         var WeaponActionsText = await Addressables.LoadAssetAsync<TextAsset>("WeaponActions").Task;
         var WeaponJobTableText = await Addressables.LoadAssetAsync<TextAsset>("WeaponJobTable").Task;
