@@ -268,6 +268,37 @@ public class DataUtility {
         }
     }
 
+    [MenuItem("UnityRO/Utils/Fix Sprites PixelsPerUnit")]
+    static void FixSpritePixelsPerUnit() {
+        var paths = GetFilesFromDir(Path.Combine("Assets", "_Generated", "AddressablesAssets", "data", "sprite"))
+        .Where(it => Path.GetExtension(it) == ".png")
+        .ToList();
+
+        AssetDatabase.StartAssetEditing();
+
+        var dataList = new List<SpriteData>();
+        for (var i = 0; i < paths.Count; i++) {
+            var progress = i * 1f / paths.Count;
+            if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Post processing sprites {i} of {paths.Count}\t\t{progress * 100}%", progress)) {
+                break;
+            }
+            var path = paths[i];
+            try {
+                TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                var textureSettings = new TextureImporterSettings();
+                importer.ReadTextureSettings(textureSettings);
+                textureSettings.spritePixelsPerUnit = SPR.PIXELS_PER_UNIT;
+                importer.SetTextureSettings(textureSettings);
+                importer.SaveAndReimport();
+            } catch (Exception ex) {
+                Debug.LogError($"Failed post processing sprite {ex}");
+            }
+        }
+
+        AssetDatabase.StopAssetEditing();
+        AssetDatabase.Refresh();
+    }
+
     [MenuItem("UnityRO/Utils/Extract/Lua Files")]
     static void ExtractLuaFiles() {
         /**

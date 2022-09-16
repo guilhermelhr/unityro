@@ -1,6 +1,7 @@
 ﻿using ROIO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public class CartItem : MonoBehaviour {
@@ -22,13 +23,13 @@ public class CartItem : MonoBehaviour {
 
     private Item Item;
 
-    public void SetItemShopInfo(ItemNPCShopInfo itemShopInfo, int quantity) {
+    public async void SetItemShopInfo(ItemNPCShopInfo itemShopInfo, int quantity) {
         ItemShopInfo = itemShopInfo;
         Quantity = quantity;
 
         Item = DBManager.GetItem(itemShopInfo.itemID);
         try {
-            ItemImage.texture = FileManager.Load(DBManager.GetItemResPath(itemShopInfo.itemID, true)) as Texture2D;
+            ItemImage.texture = await Addressables.LoadAssetAsync<Texture2D>(DBManager.GetItemResPath(itemShopInfo.itemID, true)).Task;
         } catch {
 
         }

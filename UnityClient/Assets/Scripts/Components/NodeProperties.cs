@@ -10,6 +10,8 @@ public class NodeProperties : MonoBehaviour {
     public string mainName;
     public string textureName;
 
+    private MeshRenderer MeshRenderer;
+
     internal bool isChild {
         get { return !string.IsNullOrEmpty(parentName) && !parentName.Equals(mainName); }
     }
@@ -19,10 +21,14 @@ public class NodeProperties : MonoBehaviour {
     }
 
     private void Start() {
+        MeshRenderer = GetComponent<MeshRenderer>();
         LoadTexture();
     }
 
     private async void LoadTexture() {
+        if (MeshRenderer.material.mainTexture != null)
+            return;
+
         var nameWithoutExtension = Path.GetFileNameWithoutExtension(textureName);
         var directory = Path.GetDirectoryName(textureName);
         var path = Path.Combine("data", "texture", directory, $"{nameWithoutExtension}.png").SanitizeForAddressables();
@@ -34,6 +40,6 @@ public class NodeProperties : MonoBehaviour {
             texture = await Addressables.LoadAssetAsync<Texture2D>(newPath).Task;
         }
 
-        GetComponent<MeshRenderer>().material.mainTexture = texture;
+        MeshRenderer.material.mainTexture = texture;
     }
 }

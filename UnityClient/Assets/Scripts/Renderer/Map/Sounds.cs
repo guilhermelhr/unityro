@@ -1,7 +1,9 @@
 ﻿using ROIO;
 using ROIO.Models.FileTypes;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class Sounds
 {
@@ -33,13 +35,12 @@ public class Sounds
         return playing.Count;
     }
 
-    public void Add(RSW.Sound sound, GameObject parent) {
+    public async void Add(RSW.Sound sound, GameObject parent) {
         if(_parent == null) {
             _parent = new GameObject("_sounds");
             _parent.transform.parent = MapRenderer.mapParent.transform;
         }
-
-        var clip = FileManager.Load(sound.file) as AudioClip;
+        var clip = await Addressables.LoadAssetAsync<AudioClip>(Path.ChangeExtension(sound.file, ".asset").SanitizeForAddressables()).Task;
 
         Playing p = new Playing();
         p.playAt = 0;

@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public async void PlayBgm(string name) {
-        var bgm = await Addressables.LoadAssetAsync<AudioClip>(Path.Combine("bgm", name)).Task;
+        var bgm = await Addressables.LoadAssetAsync<AudioClip>(Path.Combine("bgm", name).SanitizeForAddressables()).Task;
         AudioSource.clip = bgm;
         //AudioSource.Play();
     }

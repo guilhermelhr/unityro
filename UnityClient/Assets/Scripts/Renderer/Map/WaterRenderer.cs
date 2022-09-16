@@ -2,7 +2,9 @@
 using ROIO.Models.FileTypes;
 using ROIO.Utils;
 using System;
+using System.IO;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Assets.Scripts.Renderer.Map {
 
@@ -16,7 +18,7 @@ namespace Assets.Scripts.Renderer.Map {
         private int currentTextureId;
         private Texture2D[] textures;
 
-        private void Start() {
+        private async void Start() {
             material = gameObject.GetComponent<MeshRenderer>().material;
 
             material.SetFloat("Wave Height", WaterInfo.waveHeight);
@@ -24,7 +26,7 @@ namespace Assets.Scripts.Renderer.Map {
 
             textures = new Texture2D[32];
             for (int i = 0; i < 32; i++) {
-                var texture = FileManager.Load(WaterInfo.images[i]) as Texture2D;
+                var texture = await Addressables.LoadAssetAsync<Texture2D>(Path.ChangeExtension(WaterInfo.images[i], ".png").SanitizeForAddressables()).Task;
                 textures[i] = texture;
             }
         }

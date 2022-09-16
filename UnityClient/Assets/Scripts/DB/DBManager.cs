@@ -46,11 +46,11 @@ public class DBManager {
     }
 
     public static string GetItemResPath(Item item, bool isIdentified) {
-        return $"{INTERFACE_PATH}item/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.bmp";
+        return $"{INTERFACE_PATH}item/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.png";
     }
 
     public static string GetItemCollectionPath(Item item, bool isIdentified) {
-        return $"{INTERFACE_PATH}collection/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.bmp";
+        return $"{INTERFACE_PATH}collection/{(isIdentified ? item.identifiedResourceName : item.unidentifiedResourceName)}.png";
     }
 
     public static int GetWeaponAction(Job job, int sex, int weapon, int shield) {

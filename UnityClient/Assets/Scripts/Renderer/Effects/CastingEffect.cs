@@ -2,6 +2,7 @@
 using ROIO;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 class CastingEffect : MonoBehaviour {
     public static Dictionary<string, Material> CastMaterials = new Dictionary<string, Material>();
@@ -11,7 +12,7 @@ class CastingEffect : MonoBehaviour {
 
     private PrimitiveCylinderEffect prim;
 
-    public static void StartCasting(float duration, string texture, GameObject followTarget) {
+    public static async void StartCasting(float duration, string texture, GameObject followTarget) {
         var go = new GameObject("CastingEffect");
         var cast = go.AddComponent<CastingEffect>();
 
@@ -19,7 +20,7 @@ class CastingEffect : MonoBehaviour {
             cast.CastMaterial = CastMaterials[texture];
         } else {
             cast.CastMaterial = new Material(Shader.Find("Mobile/Particles/Additive"));
-            cast.CastMaterial.mainTexture = FileManager.Load(texture) as Texture2D;
+            cast.CastMaterial.mainTexture = await Addressables.LoadAssetAsync<Texture2D>(texture).Task;
             CastMaterials.Add(texture, cast.CastMaterial);
         }
 

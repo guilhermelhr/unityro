@@ -122,10 +122,10 @@ public class MapController : MonoBehaviour {
                     var entity = EntityManager.GetEntity(NOTIFY_EFFECT2.GID);
                     if (entity == null) break;
 
-                    var str = FileManager.Load("data/texture/effect/magnificat.str") as STR;
-                    var renderer = new GameObject().AddComponent<StrEffectRenderer>();
-                    renderer.transform.SetParent(entity.transform, false);
-                    renderer.Initialize(str);
+                    //var str = FileManager.Load("data/texture/effect/magnificat.str") as STR;
+                    //var renderer = new GameObject().AddComponent<StrEffectRenderer>();
+                    //renderer.transform.SetParent(entity.transform, false);
+                    //renderer.Initialize(str);
                     break;
                 default:
                     break;

@@ -71,6 +71,8 @@ public class Ground {
 
         for (int i = 0; i < count; i++) {
             // TODO remove this
+            // Why tho? Can't remember now (16/09/2022)
+            // Could be because this is only called when building the map using the grf so we can save as prefab
             var texture = FileManager.Load(textures[i]) as Texture2D;
             var x = (float) (i % _width) * 258;
             var y = (float) Math.Floor(i / _width) * 258;
