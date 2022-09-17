@@ -47,9 +47,14 @@ public class MapsUtility {
         }
     }
 
+    public static string GetBasePath() {
+        var isAddressablesInitialized = Directory.Exists(DataUtility.GENERATED_ADDRESSABLES_PATH);
+        return isAddressablesInitialized ? DataUtility.GENERATED_ADDRESSABLES_PATH : DataUtility.GENERATED_RESOURCES_PATH;
+    }
+
     public static void SaveMap(GameObject mapObject, GameManager gameManager) {
         string mapName = Path.GetFileNameWithoutExtension(mapObject.name);
-        string localPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "maps");
+        string localPath = Path.Combine(GetBasePath(), "data", "maps");
         Directory.CreateDirectory(localPath);
 
         try {
@@ -83,7 +88,7 @@ public class MapsUtility {
         for (int i = 0; i < waterMeshes.transform.childCount; i++) {
             var mesh = waterMeshes.transform.GetChild(i);
             mesh.gameObject.SetActive(true);
-            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "maps", mapName, "water", $"_{i}");
+            var meshPath = Path.Combine(GetBasePath(), "data", "maps", mapName, "water", $"_{i}");
             Directory.CreateDirectory(meshPath);
 
             var progress = i * 1f / waterMeshes.transform.childCount;
@@ -130,7 +135,7 @@ public class MapsUtility {
         for (int i = 0; i < groundMeshes.transform.childCount; i++) {
             var mesh = groundMeshes.transform.GetChild(i);
             mesh.gameObject.SetActive(true);
-            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "maps", mapName, "ground", $"_{i}");
+            var meshPath = Path.Combine(GetBasePath(), "data", "maps", mapName, "ground", $"_{i}");
             Directory.CreateDirectory(meshPath);
 
             var progress = i * 1f / groundMeshes.transform.childCount;
@@ -248,7 +253,7 @@ public class MapsUtility {
             } else {
                 meshPathWithoutExtension = mesh.name.Substring(0, mesh.name.IndexOf(Path.GetExtension(mesh.name)));
             }
-            var meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "model", meshPathWithoutExtension);
+            var meshPath = Path.Combine(GetBasePath(), "data", "model", meshPathWithoutExtension);
 
             var prefab = AssetDatabase.LoadAssetAtPath(meshPath + ".prefab", typeof(GameObject)) as GameObject;
             if (!originalPrefabs.ContainsKey(meshPathWithoutExtension)) {

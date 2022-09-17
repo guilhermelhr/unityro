@@ -53,9 +53,9 @@ public class ModelsUtility {
 
         string meshPath;
         if (mesh.name.Contains("data/model")) {
-            meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, meshPathWithoutExtension);
+            meshPath = Path.Combine(MapsUtility.GetBasePath(), meshPathWithoutExtension);
         } else {
-            meshPath = Path.Combine(DataUtility.GENERATED_RESOURCES_PATH, "data", "model", meshPathWithoutExtension);
+            meshPath = Path.Combine(MapsUtility.GetBasePath(), "data", "model", meshPathWithoutExtension);
         }
 
         Directory.CreateDirectory(meshPath);
