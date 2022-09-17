@@ -1,10 +1,13 @@
 ﻿using Assets.Scripts.Effects;
+using Assets.Scripts.Renderer.Sprite;
 using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
 
 public class Entity : MonoBehaviour, INetworkEntity {
@@ -107,8 +110,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         NetworkClient.HookPacket(ZC.USESKILL_ACK2.HEADER, OnEntityCastSkill);
     }
 
-    public void Init(SPR spr, ACT act) {
-        EntityViewer.Init(spr, act);
+    public void Init(SpriteData spriteData) {
+        EntityViewer.Init(spriteData);
     }
 
     public void Init(EntitySpawnData data, int rendererLayer, EntityCanvas canvas) {
@@ -141,7 +144,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             Robe = (short) data.Robe
         };
 
-        gameObject.transform.position = new Vector3(data.PosDir[0], PathFinder.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
+        gameObject.transform.position = new Vector3(data.PosDir[0], PathFinder?.GetCellHeight(data.PosDir[0], data.PosDir[1]) ?? 0f, data.PosDir[1]);
 
         SetupViewer(EquipInfo, rendererLayer);
 
@@ -399,12 +402,12 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void CastSkill(float delayTime, uint property) {
         PlayAudio("data/wav/effect/ef_beginspell.wav");
-        CastingEffect.StartCasting(delayTime, "data/texture/effect/ring_yellow.tga", gameObject);
+        CastingEffect.StartCasting(delayTime, "data/texture/effect/ring_yellow.png", gameObject);
         ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Casting, delay = 0 });
     }
 
-    public void PlayAudio(string path) {
-        var clip = FileManager.Load(path) as AudioClip;
+    public async void PlayAudio(string path) {
+        var clip = await Addressables.LoadAssetAsync<AudioClip>(Path.ChangeExtension(path, ".asset").SanitizeForAddressables()).Task;
 
         if (clip != null && AudioSource != null) {
             AudioSource.clip = clip;

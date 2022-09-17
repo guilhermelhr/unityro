@@ -1,10 +1,12 @@
-﻿using Assets.Scripts.Effects;
+﻿using Assets.Scripts.Renderer.Map;
 using ROIO;
 using ROIO.Loaders;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Audio;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -26,17 +28,14 @@ public class GameManager : MonoBehaviour {
 
     #region Components
     private EntityManager EntityManager;
-    private PathFinder PathFinder;
     #endregion
 
-    public static Action OnGrfLoaded;
-    public static Action OnMapLoaded;
+    public RemoteConfiguration RemoteConfiguration { get; private set; }
+    public LocalConfiguration LocalConfiguration { get; private set; }
 
     public Camera MainCamera { get; private set; }
-    public bool IsMapReady => MapRenderer.Ready;
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
-
-    private Configuration Configs;
+    public GameMap CurrentMap { get; private set; }
 
     private void Awake() {
         if (MainCamera == null) {
@@ -63,25 +62,26 @@ public class GameManager : MonoBehaviour {
         OnPostRender();
     }
 
-    void Start() {
-        Configs = ConfigurationLoader.Init();
-
-        LoadGrf();
-        DBManager.Init(Configs);
+    async void Start() {
+        await Init();
     }
 
-    private void LoadGrf() {
-        FileManager.LoadGRF(Configs.root, Configs.grf);
-        OnGrfLoaded?.Invoke();
-
+    private async Task Init() {
         InitManagers();
+
+        await DBManager.Init();
+
         MaybeInitOfflineUtils();
 
-        MapRenderer = new MapRenderer(this, PathFinder, SoundMixerGroup, WorldLight);
+        MapRenderer = new MapRenderer(SoundMixerGroup, WorldLight);
         MapLoader = new MapLoader();
     }
 
     void FixedUpdate() {
+        if (MapRenderer == null) {
+            return;
+        }
+
         if (MapRenderer.Ready) {
             MapRenderer.FixedUpdate();
         }
@@ -91,13 +91,13 @@ public class GameManager : MonoBehaviour {
         if (MainCamera == null) {
             MainCamera = Camera.main;
         }
-
-        if (MapRenderer.Ready) {
-            MapRenderer.Render();
-        }
     }
 
     public void OnPostRender() {
+        if (MapRenderer == null) {
+            return;
+        }
+
         if (MapRenderer.Ready) {
             MapRenderer.PostRender();
         }
@@ -112,41 +112,36 @@ public class GameManager : MonoBehaviour {
     }
 
     public async void PlayBgm(string name) {
-        var request = Resources.LoadAsync<AudioClip>(Path.Combine("Audio", "BGM", Path.GetFileNameWithoutExtension(name)));
-
-        while(!request.isDone) {
-            await Task.Yield();
-        }
-
-        AudioSource.clip = request.asset as AudioClip;
+        var bgm = await Addressables.LoadAssetAsync<AudioClip>(Path.Combine("bgm", name).SanitizeForAddressables()).Task;
+        AudioSource.clip = bgm;
         //AudioSource.Play();
     }
 
-    public async Task BeginMapLoading(string mapName) {
-        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+    public async Task<GameMap> BeginMapLoading(string mapName) {
+        SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
+
         MapRenderer.Clear();
         EntityManager.ClearEntities();
-        await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
+        if (CurrentMap != null) {
+            Destroy(CurrentMap.gameObject);
+        }
 
+#if UNITY_EDITOR
+        AsyncMapLoader.GameMapData gameMap = await new AsyncMapLoader().Load($"{mapName}.rsw");
+        CurrentMap = await MapRenderer.OnMapComplete(gameMap);
+#else
+        var mapPrefab = await Addressables.LoadAssetAsync<GameObject>($"data/maps/{Path.GetFileNameWithoutExtension(mapName)}.prefab").Task;
+        CurrentMap = Instantiate(mapPrefab).GetComponent<GameMap>();
+#endif
         SceneManager.UnloadSceneAsync("LoadingScene");
-        OnMapLoaded?.Invoke();
 
         PlayBgm(Tables.MapTable[$"{mapName}.rsw"].mp3);
+        return CurrentMap;
     }
 
-    public async Task<long> BenchmarkMapLoading(string mapName) {
-        MapRenderer.Clear();
-        EntityManager.ClearEntities();
-        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
-        var stopWatch = new System.Diagnostics.Stopwatch();
-        stopWatch.Restart();
-        await MapLoader.Load($"{mapName}.rsw", MapRenderer.OnComplete);
-        stopWatch.Stop();
-
-        Debug.Log($"Map loaded in {stopWatch.Elapsed.TotalSeconds} seconds");
-        SceneManager.UnloadSceneAsync("LoadingScene");
-
-        return stopWatch.ElapsedMilliseconds;
+    public void SetConfigurations(RemoteConfiguration remoteConfiguration, LocalConfiguration localConfiguration) {
+        RemoteConfiguration = remoteConfiguration;
+        LocalConfiguration = localConfiguration;
     }
 
     //TODO Get rid of these
@@ -159,7 +154,6 @@ public class GameManager : MonoBehaviour {
         new GameObject("ThreadManager").AddComponent<ThreadManager>();
         new GameObject("NetworkClient").AddComponent<NetworkClient>();
         EntityManager = new GameObject("EntityManager").AddComponent<EntityManager>();
-        PathFinder = new GameObject("PathFinder").AddComponent<PathFinder>();
         new GameObject("CursorRenderer").AddComponent<CursorRenderer>();
         new GameObject("GridRenderer").AddComponent<GridRenderer>();
         new GameObject("ItemManager").AddComponent<ItemManager>();

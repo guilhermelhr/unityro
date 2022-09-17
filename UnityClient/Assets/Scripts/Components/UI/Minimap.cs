@@ -2,6 +2,7 @@ using ROIO;
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public class Minimap : MonoBehaviour {
@@ -16,10 +17,10 @@ public class Minimap : MonoBehaviour {
     private int CurrentZoom = 1;
 
     // Start is called before the first frame update
-    void Start() {
+    async void Start() {
         MapThumb = GetComponent<RawImage>();
 
-        PlayerIndicatorTexture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/map_arrow.bmp") as Texture2D;
+        PlayerIndicatorTexture = await Addressables.LoadAssetAsync<Texture2D>($"{DBManager.INTERFACE_PATH}map/map_arrow.png").Task;
         Session.OnMapChanged += OnMapChanged;
     }
 
@@ -27,9 +28,9 @@ public class Minimap : MonoBehaviour {
         Session.OnMapChanged -= OnMapChanged;
     }
 
-    private void OnMapChanged(string mapName) {
+    private async void OnMapChanged(string mapName) {
         CurrentMap = Path.GetFileNameWithoutExtension(mapName);
-        MapThumbTexture = FileManager.Load($"{DBManager.INTERFACE_PATH}map/{CurrentMap}.bmp") as Texture2D;
+        MapThumbTexture = await Addressables.LoadAssetAsync<Texture2D>($"{DBManager.INTERFACE_PATH}map/{CurrentMap}.png").Task;
 
         if (MapThumbTexture == null) {
             return;

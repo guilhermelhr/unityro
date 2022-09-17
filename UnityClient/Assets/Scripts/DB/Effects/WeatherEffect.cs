@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
-public class WeatherEffect
-{
+public class WeatherEffect {
     public static SkyPrefs[] skyList = new SkyPrefs[]{
         // Blue sky and white clouds
         new SkyPrefs() { mapfile = "airplane.rsw"    , skyColor = new Color(0.4f, 0.6f, 0.8f, 1.0f), cloudColor = new Color(1.0f, 1.0f, 1.0f, 1.0f)},
@@ -20,8 +19,8 @@ public class WeatherEffect
     };
 
     public static SkyPrefs GetPrefs(string mapfile) {
-        foreach(SkyPrefs pref in skyList) {
-            if(pref.mapfile.Equals(mapfile)) {
+        foreach (SkyPrefs pref in skyList) {
+            if (pref.mapfile.Equals(mapfile)) {
                 return pref;
             }
         }
@@ -30,8 +29,8 @@ public class WeatherEffect
     }
 
     public static bool HasMap(string mapfile) {
-        foreach(SkyPrefs pref in skyList) {
-            if(pref.mapfile.Equals(mapfile)) {
+        foreach (SkyPrefs pref in skyList) {
+            if (pref.mapfile.Equals(mapfile)) {
                 return true;
             }
         }
@@ -39,8 +38,7 @@ public class WeatherEffect
         return false;
     }
 
-    public class SkyPrefs
-    {
+    public class SkyPrefs {
         public string mapfile;
         public Color32 skyColor;
         public Color32 cloudColor;

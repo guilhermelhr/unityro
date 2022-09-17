@@ -1,6 +1,6 @@
-﻿using ROIO;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -30,13 +30,13 @@ public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         Canvas = Canvas.FindMainCanvas();
     }
 
-    public void SetItemShopInfo(ItemNPCShopInfo itemShopInfo, NpcShopType shopType) {
+    public async void SetItemShopInfo(ItemNPCShopInfo itemShopInfo, NpcShopType shopType) {
         ItemShopInfo = itemShopInfo;
 
         if (shopType == NpcShopType.BUY) {
             Item = DBManager.GetItem(itemShopInfo.itemID);
             try {
-                ItemImage.texture = FileManager.Load(DBManager.GetItemResPath(itemShopInfo.itemID, true)) as Texture2D;
+                ItemImage.texture = await Addressables.LoadAssetAsync<Texture2D>(DBManager.GetItemResPath(itemShopInfo.itemID, true)).Task;
             } catch {
                 Debug.LogError($"Could not load texture of item {itemShopInfo.itemID}");
                 return;
@@ -51,7 +51,7 @@ public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
 
             itemShopInfo.itemID = itemInfo.ItemID;
             try {
-                ItemImage.texture = FileManager.Load(DBManager.GetItemResPath(itemInfo.ItemID, true)) as Texture2D;
+                ItemImage.texture = await Addressables.LoadAssetAsync<Texture2D>(DBManager.GetItemResPath(itemInfo.ItemID, true)).Task;
             } catch {
                 Debug.LogError($"Could not load texture of item {itemInfo.ItemID}");
                 return;

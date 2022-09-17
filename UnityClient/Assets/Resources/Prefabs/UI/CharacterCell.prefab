@@ -28,6 +28,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4032596202115033324}
   m_RootOrder: 0
@@ -91,6 +92,7 @@ GameObject:
   - component: {fileID: 4032596202115033326}
   - component: {fileID: 1467296937053791371}
   - component: {fileID: 6410550655584254627}
+  - component: {fileID: 430817481479324416}
   m_Layer: 5
   m_Name: CharacterCell
   m_TagString: Untagged
@@ -108,6 +110,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4032596201144418146}
   m_Father: {fileID: 0}
@@ -139,7 +142,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterName: {fileID: 4032596201144418157}
-  image: {fileID: 0}
 --- !u!114 &6410550655584254627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,3 +173,35 @@ MonoBehaviour:
   hoverImage: select_character_ver3/img_slot_over.bmp
   pressedImage: select_character_ver3/img_slot_press.bmp
   overrideSize: 1
+--- !u!114 &430817481479324416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4032596202115033325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e34c3bdadc99c745ace4e0a15cb1437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backgroundTexture:
+    m_AssetGUID: c61bc4efb15ee094d8dfda040e108b78
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 1
+  hoverTexture:
+    m_AssetGUID: faf4a43a16b072a41998e684bc2b7e33
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 1
+  pressedTexture:
+    m_AssetGUID: c0e05c7ccf032584ea3088ceafe2c1f2
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 1
+  disabledTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0

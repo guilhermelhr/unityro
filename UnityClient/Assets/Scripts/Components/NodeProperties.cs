@@ -1,15 +1,16 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System;
 using System.IO;
-using ROIO;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 
-public class NodeProperties : MonoBehaviour
-{
+public class NodeProperties : MonoBehaviour {
     //hierarchy
     public int nodeId;
     public string parentName;
     public string mainName;
     public string textureName;
+
+    private MeshRenderer MeshRenderer;
 
     internal bool isChild {
         get { return !string.IsNullOrEmpty(parentName) && !parentName.Equals(mainName); }
@@ -20,18 +21,25 @@ public class NodeProperties : MonoBehaviour
     }
 
     private void Start() {
-        StartCoroutine(LoadTexture());
+        MeshRenderer = GetComponent<MeshRenderer>();
+        LoadTexture();
     }
 
-    private IEnumerator LoadTexture() {
-        var extension = Path.GetExtension(textureName);
-        var nameWithoutExtension = textureName.Substring(0, textureName.IndexOf(extension));
-        var request = Resources.LoadAsync<Texture2D>(Path.Combine("Textures", "data", "texture", nameWithoutExtension));
+    private async void LoadTexture() {
+        if (MeshRenderer.material.mainTexture != null)
+            return;
 
-        while(!request.isDone) {
-            yield return 0;
+        var nameWithoutExtension = Path.GetFileNameWithoutExtension(textureName);
+        var directory = Path.GetDirectoryName(textureName);
+        var path = Path.Combine("data", "texture", directory, $"{nameWithoutExtension}.png").SanitizeForAddressables();
+        var texture = await Addressables.LoadAssetAsync<Texture2D>(path).Task;
+
+        if (texture == null) {
+            var filename = nameWithoutExtension.ToLowerInvariant();
+            var newPath = Path.Combine("data", "texture", directory, $"{filename}.png").SanitizeForAddressables();
+            texture = await Addressables.LoadAssetAsync<Texture2D>(newPath).Task;
         }
 
-        GetComponent<MeshRenderer>().material.mainTexture = request.asset as Texture2D;
+        MeshRenderer.material.mainTexture = texture;
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -14,7 +15,7 @@ public class UISkill : MonoBehaviour,
     IEndDragHandler,
     IDragHandler {
 
-    private const string NO_SKILL_IMAGE = "basic_interface/no_skill.bmp";
+    private const string NO_SKILL_IMAGE = "basic_interface/no_skill.png";
     private Texture2D NO_SKILL_TEXTURE;
 
     [SerializeField] private RawImage skillContainer;
@@ -43,12 +44,12 @@ public class UISkill : MonoBehaviour,
         Canvas = Canvas.FindMainCanvas();
     }
 
-    internal void SetSkill(Skill skill) {
+    internal async void SetSkill(Skill skill) {
         Skill = skill;
 
         if (skill != null) {
             try {
-                var texture = FileManager.Load($"{DBManager.INTERFACE_PATH}item/{skill.SkillTag.ToLower()}.bmp") as Texture2D;
+                var texture = await Addressables.LoadAssetAsync<Texture2D>($"{DBManager.INTERFACE_PATH}item/{skill.SkillTag.ToLower()}.png").Task;
                 skillImage.texture = texture;
                 skillImage.material = unownedSkillShader;
             } catch { }
@@ -56,7 +57,7 @@ public class UISkill : MonoBehaviour,
             skillName.text = skill.SkillName;
         } else {
             if (NO_SKILL_TEXTURE == null)
-                NO_SKILL_TEXTURE = FileManager.Load(DBManager.INTERFACE_PATH + NO_SKILL_IMAGE) as Texture2D;
+                NO_SKILL_TEXTURE = await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + NO_SKILL_IMAGE).Task;
 
             skillImage.texture = NO_SKILL_TEXTURE;
             skillImage.material = unownedSkillShader;

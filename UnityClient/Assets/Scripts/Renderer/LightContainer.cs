@@ -1,8 +1,11 @@
 ﻿using ROIO.Models.FileTypes;
+using System;
 using UnityEngine;
 
+[Serializable]
 public class LightContainer : MonoBehaviour {
 
+    [SerializeField]
     private Light Light;
 
     public void SetLightProps(RSW.Light light, uint height, uint width) {

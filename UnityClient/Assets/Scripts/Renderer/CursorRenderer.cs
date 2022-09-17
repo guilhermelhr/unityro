@@ -1,7 +1,10 @@
-﻿using ROIO;
+﻿using Assets.Scripts.Renderer.Sprite;
+using ROIO;
 using ROIO.Models.FileTypes;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public enum CursorAction {
     DEFAULT = 0,
@@ -19,8 +22,7 @@ public enum CursorAction {
 public class CursorRenderer : MonoBehaviour {
 
     private ACT act;
-    private SPR spr;
-    private List<Texture2D> textures = new List<Texture2D>();
+    private List<Sprite> sprites = new List<Sprite>();
 
     private CursorAction type;
     private double tick;
@@ -30,24 +32,31 @@ public class CursorRenderer : MonoBehaviour {
     private int currentFrame;
     private double currentFrameTime = 0;
 
+    private bool isReady = false;
+
     private void Awake() {
         DontDestroyOnLoad(this);
     }
 
     // Use this for initialization
-    void Start() {
-        spr = FileManager.Load("data/sprite/cursors.spr") as SPR;
-        act = FileManager.Load("data/sprite/cursors.act") as ACT;
+    async void Start() {
+        var spriteData = await Addressables.LoadAssetAsync<SpriteData>("data/sprite/cursors.asset").Task;
+
+        sprites = spriteData.sprites.ToList();
+        act = spriteData.act;
 
         tick = Time.deltaTime;
 
-        spr.SwitchToRGBA();
-        spr.Compile();
-        FlipTextures();
+        //FlipTextures();
         SetAction(CursorAction.DEFAULT, true);
+
+        // Leaving this off for now
+        //isReady = true;
     }
 
     void Update() {
+        if (!isReady)
+            return;
         if (Input.GetKey(KeyCode.Mouse1)) {
             SetAction(CursorAction.ROTATE, false);
         }
@@ -55,6 +64,9 @@ public class CursorRenderer : MonoBehaviour {
 
     // Update is called once per frame
     void LateUpdate() {
+        if (!isReady)
+            return;
+
         var action = act.actions[currentAction];
         currentFrameTime -= Time.deltaTime;
 
@@ -63,7 +75,7 @@ public class CursorRenderer : MonoBehaviour {
         }
 
         var index = action.frames[currentFrame].layers[0].index;
-        Cursor.SetCursor(textures[index], Vector2.zero, CursorMode.ForceSoftware);
+        Cursor.SetCursor(sprites[index].texture, Vector2.zero, CursorMode.ForceSoftware);
     }
 
     private void AdvanceFrame() {
@@ -97,30 +109,6 @@ public class CursorRenderer : MonoBehaviour {
 
         this.currentFrameTime = action.delay / 1000f;
     }
-
-    private void FlipTextures() {
-        foreach (var sprite in spr.GetSprites()) {
-            var t = sprite.texture;
-            var flipped = new Texture2D(t.width, t.height, TextureFormat.RGBA32, false, false);
-
-#if UNITY_EDITOR
-            flipped.alphaIsTransparency = true;
-#endif
-
-            int width = t.width;
-            int height = t.height;
-
-            for (int x = 0; x < width; x++) {
-                for (int y = 0; y < height; y++) {
-                    flipped.SetPixel(x, height - y - 1, t.GetPixel(x, y));
-                }
-            }
-            flipped.Apply();
-
-            textures.Add(flipped);
-        }
-    }
-
 
     class CursorActionInfo {
         public int drawX, drawY, startX, startY;

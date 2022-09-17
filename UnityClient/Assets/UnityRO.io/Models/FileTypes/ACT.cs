@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace ROIO.Models.FileTypes
 {
@@ -11,6 +12,7 @@ namespace ROIO.Models.FileTypes
      * A single Motion can have multiple layers
      * Some layers might have their index as negative, those must (?) be ignored
      */
+    [Serializable]
     public class ACT
     {
         public static string Header = "AC";
@@ -21,6 +23,7 @@ namespace ROIO.Models.FileTypes
         public string[] sounds;
         public Action[] actions;
 
+        [Serializable]
         public class Action
         {
             public Frame[] frames;
@@ -28,6 +31,7 @@ namespace ROIO.Models.FileTypes
             public int FrameCount => frames.Length;
         }
 
+        [Serializable]
         public class Frame
         {
             public Layer[] layers;
@@ -35,6 +39,7 @@ namespace ROIO.Models.FileTypes
             public Vector2Int[] pos;
         }
 
+        [Serializable]
         public class Layer
         {
             public Vector2Int pos;

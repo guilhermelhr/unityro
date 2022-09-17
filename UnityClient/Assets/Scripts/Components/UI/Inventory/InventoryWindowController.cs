@@ -68,7 +68,7 @@ public class InventoryWindowController : DraggableUIWindow {
             CurrentTab = (InventoryType)newTab;
         }
 
-        Tabs.SetBackground($"{ResName}{(int)CurrentTab + 1}.bmp");
+        Tabs.SetBackground($"{ResName}{(int)CurrentTab + 1}.png");
         UpdateEquipment();
     }
 }

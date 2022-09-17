@@ -1,5 +1,5 @@
-﻿using ROIO;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Assets.Scripts.Effects {
     class MapWarpEffect : MonoBehaviour {
@@ -14,26 +14,29 @@ namespace Assets.Scripts.Effects {
         private Material Ring2Material;
         private Material CircleMaterial;
 
-        public void StartWarp(GameObject parent) {
+        private bool isReady = false;
+
+        public async void StartWarp(GameObject parent) {
             if (Ring1Material == null) {
                 Ring1Material = new Material(ShaderCache.Instance.AdditiveShader);
-                Ring1Material.mainTexture = FileManager.Load("data/texture/effect/ring_blue.tga") as Texture2D;
+                Ring1Material.mainTexture = await Addressables.LoadAssetAsync<Texture2D>("data/texture/effect/ring_blue.png").Task;
                 Ring1Material.color = new Color(170 / 255f, 170 / 255f, 1f, 1f);
             }
 
             if (Ring2Material == null) {
                 Ring2Material = new Material(ShaderCache.Instance.AdditiveShader);
-                Ring2Material.mainTexture = FileManager.Load("data/texture/effect/ring_blue.tga") as Texture2D;
+                Ring2Material.mainTexture = await Addressables.LoadAssetAsync<Texture2D>("data/texture/effect/ring_blue.png").Task;
                 Ring2Material.color = new Color(100 / 255f, 100 / 255f, 1f, 1f);
             }
 
             if (CircleMaterial == null) {
                 CircleMaterial = new Material(ShaderCache.Instance.AlphaBlendParticleShader);
-                CircleMaterial.mainTexture = FileManager.Load("data/texture/effect/alpha_down.tga") as Texture2D;
+                CircleMaterial.mainTexture = await Addressables.LoadAssetAsync<Texture2D>("data/texture/effect/alpha_down.png").Task;
                 //CircleMaterial.color = new Color(1f, 1f, 1f, 1f);
             }
 
             FollowTarget = parent;
+            isReady = true;
 
             Init();
         }
@@ -178,6 +181,9 @@ namespace Assets.Scripts.Effects {
         }
 
         public void Update() {
+            if (!isReady) {
+                return;
+            }
             if (FollowTarget == null) {
                 Destroy(gameObject);
                 return;

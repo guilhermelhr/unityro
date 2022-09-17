@@ -1,6 +1,7 @@
 ﻿using ROIO;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class ItemManager : MonoBehaviour {
 
@@ -76,7 +77,7 @@ public class ItemManager : MonoBehaviour {
         }
     }
 
-    private void OnInventoryUpdate(ushort cmd, int size, InPacket packet) {
+    private async void OnInventoryUpdate(ushort cmd, int size, InPacket packet) {
         var list = new List<ItemInfo>();
         if (packet is ZC.INVENTORY_ITEMLIST_EQUIP) {
             var pkt = packet as ZC.INVENTORY_ITEMLIST_EQUIP;
@@ -95,8 +96,8 @@ public class ItemManager : MonoBehaviour {
             var item = DBManager.GetItem(itemInfo.ItemID);
             if (item == null)
                 continue;
-            var res = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D;
-            var collection = FileManager.Load(DBManager.GetItemCollectionPath(item, itemInfo.IsIdentified)) as Texture2D;
+            var res = await Addressables.LoadAssetAsync<Texture2D>(DBManager.GetItemResPath(item, itemInfo.IsIdentified)).Task;
+            var collection = await Addressables.LoadAssetAsync<Texture2D>(DBManager.GetItemCollectionPath(item, itemInfo.IsIdentified)).Task;
 
             itemInfo.item = item;
             itemInfo.res = res;
@@ -137,7 +138,7 @@ public class ItemManager : MonoBehaviour {
         }
     }
 
-    private void OnItemPickup(ushort cmd, int size, InPacket packet) {
+    private async void OnItemPickup(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.ITEM_PICKUP_ACK7 ITEM_PICKUP_ACK7) {
 
             if (ITEM_PICKUP_ACK7.result != 0) {
@@ -150,7 +151,7 @@ public class ItemManager : MonoBehaviour {
             Item item = DBManager.GetItem(itemInfo.ItemID);
             itemInfo.item = item;
 
-            Texture2D itemRes = FileManager.Load(DBManager.GetItemResPath(item, itemInfo.IsIdentified)) as Texture2D;
+            Texture2D itemRes = await Addressables.LoadAssetAsync<Texture2D>(DBManager.GetItemResPath(item, itemInfo.IsIdentified)).Task;
             itemInfo.res = itemRes;
 
             itemInfo.tab = FindItemTab(itemInfo);

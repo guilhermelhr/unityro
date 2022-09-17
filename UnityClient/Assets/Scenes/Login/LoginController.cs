@@ -2,6 +2,7 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using ROIO;
 
 public class LoginController : MonoBehaviour {
 
@@ -15,8 +16,9 @@ public class LoginController : MonoBehaviour {
         background.SetLoginBackground();
         
         NetworkClient = FindObjectOfType<NetworkClient>();
+        var remoteConfiguration = FindObjectOfType<GameManager>().RemoteConfiguration;
 
-        NetworkClient.ChangeServer("127.0.0.1", 6900);
+        NetworkClient.ChangeServer(remoteConfiguration.loginServer, int.Parse(remoteConfiguration.loginPort));
         NetworkClient.HookPacket(AC.ACCEPT_LOGIN3.HEADER, this.OnLoginResponse);
         usernameField.text = "danilo3";
     }

@@ -5,34 +5,27 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
-namespace ROIO.Loaders
-{
-    public class ModelLoader
-    {
+namespace ROIO.Loaders {
+    public class ModelLoader {
         //returns a collection of nodes and its meshes generated from an RSM.
-        public static RSM.CompiledModel Compile(RSM rsm)
-        {
+        public static RSM.CompiledModel Compile(RSM rsm) {
             var nodesData = new Dictionary<long, RSM.NodeMeshData>[rsm.nodes.Length];
 
-            for (int i = 0; i < rsm.nodes.Length; ++i)
-            {
+            for (int i = 0; i < rsm.nodes.Length; ++i) {
                 //mesh = union of nodes meshes
                 nodesData[i] = rsm.nodes[i].Compile();
             }
 
-            return new RSM.CompiledModel()
-            {
+            return new RSM.CompiledModel() {
                 nodesData = nodesData,
                 rsm = rsm,
             };
         }
 
-        public static RSM Load(MemoryStreamReader data)
-        {
+        public static RSM Load(MemoryStreamReader data) {
             var header = data.ReadBinaryString(4);
 
-            if (header != RSM.Header)
-            {
+            if (header != RSM.Header) {
                 throw new Exception("ModelLoader.Load: Header (" + header + ") is not \"GRSM\"");
             }
 
@@ -45,7 +38,7 @@ namespace ROIO.Loaders
             double dversion = double.Parse(version, CultureInfo.InvariantCulture);
             rsm.version = version;
             rsm.animLen = data.ReadInt();
-            rsm.shadeType = (RSM.SHADING)data.ReadInt();
+            rsm.shadeType = (RSM.SHADING) data.ReadInt();
 
             rsm.alpha = dversion >= 1.4 ? data.ReadByte() / 255f : 1;
             data.Seek(16, System.IO.SeekOrigin.Current);
@@ -53,8 +46,7 @@ namespace ROIO.Loaders
             //read textures
             int textureCount = data.ReadInt();
             rsm.textures = new string[textureCount];
-            for (int i = 0; i < textureCount; ++i)
-            {
+            for (int i = 0; i < textureCount; ++i) {
                 rsm.textures[i] = data.ReadBinaryString(40);
             }
 
@@ -63,48 +55,38 @@ namespace ROIO.Loaders
             int nodeCount = data.ReadInt();
             rsm.nodes = new RSM.Node[nodeCount];
 
-            for (int i = 0; i < nodeCount; ++i)
-            {
+            for (int i = 0; i < nodeCount; ++i) {
                 var node = rsm.nodes[i] = LoadNode(rsm, data, dversion);
-                if (string.Equals(node.name, rsm.name))
-                {
+                if (string.Equals(node.name, rsm.name)) {
                     rsm.mainNode = node;
                 }
             }
 
             //fallback for non defined main node
-            if (rsm.mainNode == null)
-            {
+            if (rsm.mainNode == null) {
                 rsm.mainNode = rsm.nodes[0];
             }
 
             //read poskeyframes
-            if (dversion < 1.5)
-            {
+            if (dversion < 1.5) {
                 int count = data.ReadInt();
                 rsm.posKeyframes = new RSM.PositionKeyframe[count];
-                for (int i = 0; i < count; ++i)
-                {
-                    rsm.posKeyframes[i] = new RSM.PositionKeyframe()
-                    {
+                for (int i = 0; i < count; ++i) {
+                    rsm.posKeyframes[i] = new RSM.PositionKeyframe() {
                         frame = data.ReadInt(),
                         p = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat())
                     };
                 }
-            }
-            else
-            {
+            } else {
                 rsm.posKeyframes = new RSM.PositionKeyframe[0];
             }
 
             //read volume box
-            short vbCount = (short)data.ReadInt();
+            var vbCount = data.ReadInt();
             rsm.volumeBoxes = new RSM.VolumeBox[vbCount];
 
-            for (int i = 0; i < vbCount; ++i)
-            {
-                rsm.volumeBoxes[i] = new RSM.VolumeBox()
-                {
+            for (int i = 0; i < vbCount; ++i) {
+                rsm.volumeBoxes[i] = new RSM.VolumeBox() {
                     size = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()),
                     pos = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()),
                     rot = new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()),
@@ -120,18 +102,15 @@ namespace ROIO.Loaders
             return rsm;
         }
 
-        private static void CalcBoundingBox(RSM rsm)
-        {
+        private static void CalcBoundingBox(RSM rsm) {
             var matrix = Mat4.Identity;
             var count = rsm.nodes.Length;
             var box = rsm.box;
 
             CalcNodeBoundingBox(rsm.mainNode, matrix);
 
-            for (int i = 0; i < 3; ++i)
-            {
-                for (int j = 0; j < count; ++j)
-                {
+            for (int i = 0; i < 3; ++i) {
+                for (int j = 0; j < count; ++j) {
                     box.max[i] = Math.Max(box.max[i], rsm.nodes[j].box.max[i]);
                     box.min[i] = Math.Min(box.min[i], rsm.nodes[j].box.min[i]);
                 }
@@ -141,8 +120,7 @@ namespace ROIO.Loaders
             }
         }
 
-        private static void CalcNodeBoundingBox(RSM.Node node, Mat4 _matrix)
-        {
+        private static void CalcNodeBoundingBox(RSM.Node node, Mat4 _matrix) {
             var v = new Vector3();
             var box = node.box;
             var nodes = node.model.nodes;
@@ -155,8 +133,7 @@ namespace ROIO.Loaders
             Mat4.Translate(node.matrix, node.matrix, node.pos);
 
             //dynamic or static model
-            if (node.rotKeyframes.Count == 0)
-            {
+            if (node.rotKeyframes.Count == 0) {
                 Mat4.Rotate(node.matrix, node.matrix, node.rotAngle, node.rotAxis);
             }
 
@@ -164,15 +141,13 @@ namespace ROIO.Loaders
 
             Mat4 matrix = node.matrix.Clone();
 
-            if (!node.isOnly)
-            {
+            if (!node.isOnly) {
                 Mat4.Translate(matrix, matrix, node.offset);
             }
 
             Mat4.Multiply(matrix, matrix, Mat4.FromMat3(node.mat3, null));
 
-            for (int i = 0, count = vertices.Count; i < count; ++i)
-            {
+            for (int i = 0, count = vertices.Count; i < count; ++i) {
                 x = vertices[i][0];
                 y = vertices[i][1];
                 z = vertices[i][2];
@@ -181,24 +156,20 @@ namespace ROIO.Loaders
                 v[1] = matrix[1] * x + matrix[5] * y + matrix[9] * z + matrix[13];
                 v[2] = matrix[2] * x + matrix[6] * y + matrix[10] * z + matrix[14];
 
-                for (int j = 0; j < 3; j++)
-                {
+                for (int j = 0; j < 3; j++) {
                     box.min[j] = Math.Min(v[j], box.min[j]);
                     box.max[j] = Math.Max(v[j], box.max[j]);
                 }
             }
 
-            for (int i = 0; i < 3; ++i)
-            {
+            for (int i = 0; i < 3; ++i) {
                 box.offset[i] = (box.max[i] + box.min[i]) / 2.0f;
                 box.range[i] = (box.max[i] - box.min[i]) / 2.0f;
                 box.center[i] = box.min[i] + box.range[i];
             }
 
-            for (int i = 0, count = nodes.Length; i < count; ++i)
-            {
-                if (string.Equals(nodes[i].parentName, node.name) && !string.Equals(node.name, node.parentName))
-                {
+            for (int i = 0, count = nodes.Length; i < count; ++i) {
+                if (string.Equals(nodes[i].parentName, node.name) && !string.Equals(node.name, node.parentName)) {
                     nodes[i].parent = node;
                     node.children.Add(nodes[i]);
                     CalcNodeBoundingBox(nodes[i], node.matrix);
@@ -206,8 +177,7 @@ namespace ROIO.Loaders
             }
         }
 
-        private static RSM.Node LoadNode(RSM rsm, MemoryStreamReader data, double version)
-        {
+        private static RSM.Node LoadNode(RSM rsm, MemoryStreamReader data, double version) {
             RSM.Node node = new RSM.Node();
 
             node.model = rsm;
@@ -220,8 +190,7 @@ namespace ROIO.Loaders
             int textureCount = data.ReadInt();
             node.textures = new long[textureCount];
 
-            for (int i = 0; i < textureCount; ++i)
-            {
+            for (int i = 0; i < textureCount; ++i) {
                 node.textures[i] = data.ReadInt();
             }
 
@@ -241,18 +210,15 @@ namespace ROIO.Loaders
             //read vertices
             int verticeCount = data.ReadInt();
             node.vertices = new List<Vector3>();
-            for (int i = 0; i < verticeCount; ++i)
-            {
+            for (int i = 0; i < verticeCount; ++i) {
                 node.vertices.Add(new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()));
             }
 
             //read textures vertices
             int tverticeCount = data.ReadInt();
             node.tVertices = new float[tverticeCount * 6];
-            for (int i = 0; i < tverticeCount; ++i)
-            {
-                if (version >= 1.2)
-                {
+            for (int i = 0; i < tverticeCount; ++i) {
+                if (version >= 1.2) {
                     node.tVertices[i * 6 + 0] = data.ReadByte() / 255f;
                     node.tVertices[i * 6 + 1] = data.ReadByte() / 255f;
                     node.tVertices[i * 6 + 2] = data.ReadByte() / 255f;
@@ -265,10 +231,8 @@ namespace ROIO.Loaders
             //read faces
             int faceCount = data.ReadInt();
             node.faces = new RSM.Face[faceCount];
-            for (int i = 0; i < faceCount; ++i)
-            {
-                node.faces[i] = new RSM.Face()
-                {
+            for (int i = 0; i < faceCount; ++i) {
+                node.faces[i] = new RSM.Face() {
                     vertidx = new Vector3Int(data.ReadUShort(), data.ReadUShort(), data.ReadUShort()),
                     tvertidx = new Vector3Int(data.ReadUShort(), data.ReadUShort(), data.ReadUShort()),
                     texid = data.ReadUShort(),
@@ -281,15 +245,12 @@ namespace ROIO.Loaders
             //read position keyframes
             // DIFF: roBrowser and open-ragnarok use (version >= 1.5) here.
             // BrowEdit does not read position keyframes at all for any version.
-            if (version > 1.5)
-            {
+            if (version > 1.5) {
                 int pkfCount = data.ReadInt();
-                for (int i = 0; i < pkfCount; ++i)
-                {
+                for (int i = 0; i < pkfCount; ++i) {
                     var key = data.ReadInt();
 
-                    if (!node.posKeyframes.ContainsKey(key))
-                    {
+                    if (!node.posKeyframes.ContainsKey(key)) {
                         node.posKeyframes.Add(key, new Vector3(data.ReadFloat(), data.ReadFloat(), data.ReadFloat()));
                     }
                 }
@@ -297,13 +258,11 @@ namespace ROIO.Loaders
 
             //read rotation keyframes
             int rkfCount = data.ReadInt();
-            for (int i = 0; i < rkfCount; ++i)
-            {
+            for (int i = 0; i < rkfCount; ++i) {
                 int time = data.ReadInt();
                 Quaternion quat = new Quaternion(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
 
-                if (!node.rotKeyframes.ContainsKey(time))
-                {
+                if (!node.rotKeyframes.ContainsKey(time)) {
                     //some models have multiple keyframes with the
                     //same timestamp, here we just keep the first one
                     //and throw out the rest.

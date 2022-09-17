@@ -31,6 +31,10 @@ public class EntityWalk : MonoBehaviour {
     }
 
     private void Update() {
+        if (PathFinder == null) {
+            PathFinder = FindObjectOfType<PathFinder>();
+            return;
+        }
         if (isWalking && !nodes.IsEmpty()) {
             bool isEnd = false;
             while (_tick <= GameManager.Tick) {

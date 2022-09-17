@@ -126,7 +126,7 @@ public class CharCreationController : MonoBehaviour {
 
             var index = i - 1;
             var toggle = HairToggleList[index];
-            toggle.SetImage(hairstylePath + ".bmp", index);
+            toggle.SetImage(hairstylePath + ".png", index);
             toggle.onValueChanged.AddListener(OnHairToggleChanged);
         }
     }

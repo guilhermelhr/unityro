@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PathFinder : MonoBehaviour {
-    public void Awake() {
-        DontDestroyOnLoad(this);
-    }
 
     public struct PathRequest {
         public Vector2Int from;

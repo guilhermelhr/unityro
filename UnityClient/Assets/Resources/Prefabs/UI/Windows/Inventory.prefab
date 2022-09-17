@@ -28,6 +28,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8740602538209216876}
   - {fileID: 8740602537387403128}
@@ -105,6 +106,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8740602537360644953}
   m_RootOrder: 1
@@ -175,6 +177,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8740602538209216876}
   m_RootOrder: 1
@@ -308,6 +311,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7008150621795552800}
   - {fileID: 8740602537360644953}
@@ -396,6 +400,7 @@ GameObject:
   - component: {fileID: 8740602538209216876}
   - component: {fileID: 8740602538209216874}
   - component: {fileID: 8740602538209216877}
+  - component: {fileID: 5874635721086327565}
   m_Layer: 5
   m_Name: Tabs
   m_TagString: Untagged
@@ -413,6 +418,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8740602538250345768}
   - {fileID: 8740602537529026644}
@@ -464,6 +470,43 @@ MonoBehaviour:
   hoverImage: 
   pressedImage: 
   overrideSize: 1
+--- !u!114 &5874635721086327565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8740602538209216879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e34c3bdadc99c745ace4e0a15cb1437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backgroundTexture:
+    m_AssetGUID: 62b1ca46cee2864458a1da8136a7020a
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 1
+  hoverTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  pressedTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  disabledTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  selectedTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
 --- !u!1 &8740602538250345771
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,6 +536,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8740602538209216876}
   m_RootOrder: 0
@@ -625,6 +669,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8740602538209216876}
   m_RootOrder: 2
@@ -739,6 +784,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 'Title Bar '
       objectReference: {fileID: 0}
+    - target: {fileID: 2480459662682490656, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
+      propertyPath: overrideSize
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5201228998091950362, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
       propertyPath: m_text
       value: Inventory
@@ -773,11 +822,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5613340026902390931, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 310
+      value: 309
       objectReference: {fileID: 0}
     - target: {fileID: 5613340026902390931, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 17
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 5613340026902390931, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -834,3 +883,45 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5613340026902390931, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
   m_PrefabInstance: {fileID: 3217651370311100083}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8187322958365382022 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6717209028481905461, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
+  m_PrefabInstance: {fileID: 3217651370311100083}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5096451699084999897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8187322958365382022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e34c3bdadc99c745ace4e0a15cb1437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backgroundTexture:
+    m_AssetGUID: 838ac3890f2e6b145ba314fdea226b34
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 1
+  hoverTexture:
+    m_AssetGUID: 61082511472ede144960df1b55a740f3
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 1
+  pressedTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  disabledTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  selectedTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0

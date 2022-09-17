@@ -1,5 +1,6 @@
 ﻿using ROIO;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class GridRenderer : MonoBehaviour {
 
@@ -31,13 +32,14 @@ public class GridRenderer : MonoBehaviour {
         LoadGridTexture();
     }
 
-    private void Update() {
-        if (!GameManager.IsMapReady) {
+    private async void Update() {
+        if (PathFinder == null) {
+            PathFinder = FindObjectOfType<PathFinder>();
             return;
         }
 
         if (gridIcon == null) {
-            gridIcon = (Texture2D) FileManager.Load("data/texture/grid.tga");
+            gridIcon = await Addressables.LoadAssetAsync<Texture2D>("data/texture/grid.png").Task;
         }
 
         var ray = GameManager.MainCamera.ScreenPointToRay(Input.mousePosition);

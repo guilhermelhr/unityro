@@ -11,10 +11,12 @@ public class CharServerSelectionController : MonoBehaviour {
     public RawImage background;
 
     private NetworkClient NetworkClient;
+    private GameManager GameManager;
 
     private CharServerInfo charServerInfo;
 
     private void Awake() {
+        GameManager = FindObjectOfType<GameManager>();
         NetworkClient = FindObjectOfType<NetworkClient>();
     }
 
@@ -65,11 +67,20 @@ public class CharServerSelectionController : MonoBehaviour {
 
     public void OnOkClicked() {
         var loginInfo = NetworkClient.State.LoginInfo;
+        var remoteConfig = GameManager.RemoteConfiguration;
         if(charServerInfo == null || loginInfo == null) {
             throw new Exception("Invalid charserverinfo or login info");
         };
         NetworkClient.State.CharServer = charServerInfo;
-        NetworkClient.ChangeServer(charServerInfo.IP.ToString(), charServerInfo.Port);
+
+        string charIp;
+        if (remoteConfig.useSameIpForEveryServer) {
+            charIp = remoteConfig.loginServer;
+        } else {
+            charIp = charServerInfo.IP.ToString();
+        }
+
+        NetworkClient.ChangeServer(charIp, charServerInfo.Port);
         NetworkClient.SkipBytes(4);
 
         new CH.ENTER(loginInfo.AccountID, loginInfo.LoginID1, loginInfo.LoginID2, loginInfo.Sex).Send();

@@ -43,8 +43,6 @@ namespace ROIO {
                 var grf = Grf.grf_callback_open(rootPath + path, "r", null);
                 GrfList.Add(grf);
             }
-
-            Tables.Init();
         }
 
         public static void InitBatch() {
@@ -67,6 +65,10 @@ namespace ROIO {
         }
 
         public static object Load(string file, bool ignoreCache = false) {
+#if !UNITY_EDITOR
+            Debug.LogError($"File manager being called outside Editor from {new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name}");
+            return null;
+#endif
             file = file.Trim();
             file = file.Replace("\\", "/");
 
@@ -154,7 +156,7 @@ namespace ROIO {
                         case "gat":
                             return AltitudeLoader.Load(br);
                         case "rsw":
-                            return WorldLoader.Load(br);
+                            return WorldLoader.Load(br, file);
                         case "gnd":
                             return GroundLoader.Load(br);
                         case "rsm":
@@ -208,18 +210,6 @@ namespace ROIO {
         /// <param name="path">file path</param>
         /// <returns>file or null</returns>
         public static MemoryStreamReader ReadSync(string path) {
-
-            if (Application.isMobilePlatform || Application.platform == RuntimePlatform.WebGLPlayer) {
-                var filePath = Path.Combine(Application.streamingAssetsPath, path);
-                WWW reader = new WWW(filePath);
-                while (!reader.isDone) { };
-
-                if (reader.bytes.Length > 0) {
-                    return new MemoryStreamReader(reader.bytes);
-                } else {
-                    return null;
-                }
-            }
 
             foreach (var grf in GrfList) {
                 GrfFile file = grf.GetDescriptor(path);

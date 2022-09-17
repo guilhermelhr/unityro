@@ -1,4 +1,5 @@
-﻿using ROIO;
+﻿using Assets.Scripts.Renderer.Sprite;
+using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
 using UnityRO.GameCamera;
 
@@ -32,7 +34,6 @@ public class EntityViewer : MonoBehaviour {
     private PaletteData CurrentPaletteData;
     private Sprite[] sprites;
     private ACT currentACT;
-    private SPR currentSPR;
     private ACT.Action currentAction;
     private int currentActionIndex;
     private int currentViewID;
@@ -43,14 +44,7 @@ public class EntityViewer : MonoBehaviour {
 
     private MeshCollider meshCollider;
     private Material SpriteMaterial;
-
-    public void Init(SPR spr, ACT act) {
-        currentSPR = spr;
-        currentACT = act;
-
-        //currentSPR.SwitchToRGBA();
-        sprites = currentSPR.GetSprites();
-    }
+    private Texture2D PaletteTexture;
 
     public void Start() {
         SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
@@ -59,7 +53,12 @@ public class EntityViewer : MonoBehaviour {
         InitShadow();
     }
 
-    public void Init(bool reloadSprites = false) {
+    public void Init(SpriteData spriteData) {
+        currentACT = spriteData.act;
+        sprites = spriteData.sprites;
+    }
+
+    public async void Init(bool reloadSprites = false) {
         CurrentPaletteData = new PaletteData {
             hairColor = Entity.Status.hair_color,
             hair = Entity.Status.hair,
@@ -71,7 +70,7 @@ public class EntityViewer : MonoBehaviour {
             return;
         }
 
-        if (currentSPR == null || reloadSprites) {
+        if (sprites == null || reloadSprites) {
             string path = "";
             string palettePath = "";
 
@@ -112,7 +111,7 @@ public class EntityViewer : MonoBehaviour {
 
             if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD && currentViewID <= 0) {
                 currentACT = null;
-                currentSPR = null;
+                sprites = null;
                 Layers.Values.ToList().ForEach(Renderer => {
                     Destroy(Renderer.gameObject);
                 });
@@ -123,30 +122,25 @@ public class EntityViewer : MonoBehaviour {
             }
 
             try {
-                currentSPR = FileManager.Load(path + ".spr", true) as SPR;
-                currentACT = FileManager.Load(path + ".act", true) as ACT;
+                var spriteData = await Addressables.LoadAssetAsync<SpriteData>(path + ".asset").Task;
 
-                if (palettePath.Length > 0) {
-                    try {
-                        var currentPalette = FileManager.Load(palettePath) as byte[];
-                        if (currentPalette != null && currentPalette.Length > 0) {
-                            currentSPR.SwitchToRGBA(currentPalette);
-                        }
-                    } catch (Exception e) {
-                        currentSPR.SwitchToRGBA();
-                        Debug.LogError(e);
-                        Debug.LogError($"Could not load palettes for: {palettePath}");
-                    }
-                } else {
-                    currentSPR.SwitchToRGBA();
-                }
+                // Figure out a way of using palettes with shaders
+                //if (palettePath.Length > 0) {
+                //    if (FileManager.Load(palettePath) is byte[] currentPalette) {
+                //        PaletteTexture = new Texture2D(256, 1, TextureFormat.RGBA32, false) {
+                //            filterMode = FilterMode.Point,
+                //            wrapMode = TextureWrapMode.Clamp
+                //        };
+                //        PaletteTexture.LoadRawTextureData(currentPalette);
+                //        PaletteTexture.Apply();
+                //    }
+                //}
 
-                currentSPR.Compile();
-                sprites = currentSPR.GetSprites();
+                sprites = spriteData.sprites;
+                currentACT = spriteData.act;
             } catch {
                 Debug.LogError($"Could not load sprites for: {path}");
                 currentACT = null;
-                currentSPR = null;
             }
         }
 
@@ -172,7 +166,7 @@ public class EntityViewer : MonoBehaviour {
                 return;
             }
         }
-        
+
         if (CheckForEntityViewsUpdates()) {
             Init(reloadSprites: true);
             return;
@@ -257,6 +251,8 @@ public class EntityViewer : MonoBehaviour {
                 var go = new GameObject($"Layer{i}");
                 spriteRenderer = go.AddComponent<SpriteRenderer>();
                 spriteRenderer.transform.SetParent(gameObject.transform, false);
+                SpriteMaterial.SetTexture("_PaletteTex", PaletteTexture);
+
                 spriteRenderer.material = SpriteMaterial;
             }
 
@@ -410,7 +406,7 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    private void InitShadow() {
+    private async void InitShadow() {
         if (ViewerType != ViewerType.BODY)
             return;
 
@@ -422,13 +418,10 @@ public class EntityViewer : MonoBehaviour {
         var sortingGroup = shadow.AddComponent<SortingGroup>();
         sortingGroup.sortingOrder = -20001;
 
-        SPR sprite = FileManager.Load("data/sprite/shadow.spr") as SPR;
-
-        sprite.SwitchToRGBA();
-        sprite.Compile();
+        var spriteData = await Addressables.LoadAssetAsync<SpriteData>("data/sprite/shadow.asset").Task;
 
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = sprite.GetSprites()[0];
+        spriteRenderer.sprite = spriteData.sprites[0];
         spriteRenderer.sortingOrder = -1;
         spriteRenderer.material.color = new Color(1, 1, 1, 0.4f);
     }

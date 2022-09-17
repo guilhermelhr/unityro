@@ -8,7 +8,7 @@ using Unity.Jobs;
 using UnityEngine;
 
 public class Ground {
-    private Mesh[] meshes;
+    public Mesh[] meshes { get; private set; }
     private Texture2D atlas;
     private Texture2D lightmap;
     private Texture2D tintmap;
@@ -70,6 +70,9 @@ public class Ground {
         GL.LoadPixelMatrix(0, width, 0, height);
 
         for (int i = 0; i < count; i++) {
+            // TODO remove this
+            // Why tho? Can't remember now (16/09/2022)
+            // Could be because this is only called when building the map using the grf so we can save as prefab
             var texture = FileManager.Load(textures[i]) as Texture2D;
             var x = (float) (i % _width) * 258;
             var y = (float) Math.Floor(i / _width) * 258;

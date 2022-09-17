@@ -1,8 +1,10 @@
-﻿using ROIO;
+﻿using Assets.Scripts.Renderer.Map;
+using ROIO;
+using ROIO.Loaders;
 using ROIO.Models.FileTypes;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -23,28 +25,21 @@ public class MapRenderer {
     public Light WorldLight;
     public static uint width, height;
 
-    private Altitude altitude;
     private RSW world;
-    private Water water;
+    private WaterBuilder water;
     private Models models;
     private Sounds sounds = new Sounds();
     private Sky sky;
 
     private bool worldCompleted, altitudeCompleted, groundCompleted, modelsCompleted;
 
-    private GameManager GameManager;
-    private PathFinder PathFinder;
-
     public bool Ready {
         get { return worldCompleted && altitudeCompleted && groundCompleted && modelsCompleted; }
     }
 
-    // TODO this PathFinder here probably can be somewhere else
-    public MapRenderer(GameManager gameManager, PathFinder pathFinder, AudioMixerGroup audioMixerGroup, Light worldLight) {
+    public MapRenderer(AudioMixerGroup audioMixerGroup, Light worldLight) {
         SoundsMixerGroup = audioMixerGroup;
         WorldLight = worldLight;
-        GameManager = gameManager;
-        PathFinder = pathFinder;
     }
 
     /*public class Fog {
@@ -60,61 +55,27 @@ public class MapRenderer {
 
     public Fog fog = new Fog(false);*/
 
-    public void OnComplete(string mapname, string id, object data) {
-        if (mapParent == null) {
-            mapParent = new GameObject(mapname);
-            mapParent.tag = "Map";
-        }
-
-        var stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Restart();
-        switch (id) {
-            case "MAP_GROUND_SIZE":
-                var size = (Vector2) data;
-                width = (uint) size.x;
-                height = (uint) size.y;
-                break;
-            case "MAP_WORLD":
-                OnWorldComplete(data as RSW);
-                break;
-            case "MAP_ALTITUDE":
-                OnAltitudeComplete(data as GAT);
-                break;
-            case "MAP_GROUND":
-                OnGroundComplete(data as GND.Mesh);
-                break;
-            case "MAP_MODELS":
-                OnModelsComplete(data as RSM.CompiledModel[]);
-                break;
-        }
-        stopwatch.Stop();
-        Debug.Log(id + " oncomplete time: " + stopwatch.Elapsed.TotalSeconds);
-
-        if (Ready) {
-            OnMapComplete(mapname);
-        }
-    }
-
-    private void OnMapComplete(string mapname) {
-        //everything needed was loaded, no need to keep the current cache
-        //FileCache.Report();
-        FileCache.ClearAll();
-
+    private void InitializeSounds() {
         //add sounds to playlist (and cache)
         foreach (var sound in world.sounds) {
             sounds.Add(sound, null);
         }
+    }
 
+    private void MaybeInitSky(string mapname) {
         if (WeatherEffect.HasMap(mapname)) {
             //create sky
-            sky = new Sky();
-            //initialize clouds
+            var skyObject = new GameObject("_sky");
+            skyObject.transform.SetParent(mapParent.transform);
+            sky = skyObject.AddComponent<Sky>();
             sky.Initialize(mapname);
         } else {
             //no weather effects, set sky color to blueish
             //Camera.main.backgroundColor = new Color(0.4f, 0.6f, 0.8f, 1.0f);
         }
+    }
 
+    private void CreateLightPoints() {
         //add lights
         GameObject lightsParent = new GameObject("_lights");
         lightsParent.transform.parent = mapParent.transform;
@@ -127,29 +88,37 @@ public class MapRenderer {
         }
     }
 
+    public async Task<GameMap> OnMapComplete(AsyncMapLoader.GameMapData gameMap) {
+        if (mapParent == null) {
+            mapParent = new GameObject(gameMap.Name);
+            mapParent.tag = "Map";
+            mapParent.AddComponent<GameMap>();
+        }
+        var GameMapManager = mapParent.GetComponent<GameMap>();
+        GameMapManager.SetMapLightInfo(gameMap.World.light);
+        GameMapManager.SetMapSize((int) gameMap.Ground.width, (int) gameMap.Ground.height);
+        GameMapManager.SetMapAltitude(new Altitude(gameMap.Altitude));
+
+        FileCache.ClearAll();
+
+        OnWorldComplete(gameMap.World);
+        OnGroundComplete(gameMap.CompiledGround);
+        OnAltitudeComplete(gameMap.Altitude);
+        await OnModelsComplete(gameMap.CompiledModels);
+
+        InitializeSounds();
+        MaybeInitSky(gameMap.Name);
+        CreateLightPoints();
+
+        return GameMapManager;
+    }
+
     /// <summary>
     /// receive parsed world
     /// </summary>
     /// <param name="world"></param>
     private void OnWorldComplete(RSW world) {
         this.world = world;
-
-        //calculate light direction
-        RSW.LightInfo lightInfo = world.light;
-        lightInfo.direction = new Vector3();
-
-        Vector3 lightRotation = new Vector3(lightInfo.longitude, lightInfo.latitude, 0);
-        WorldLight.transform.rotation = Quaternion.identity;
-        WorldLight.transform.Rotate(lightRotation);
-
-        Color ambient = new Color(lightInfo.ambient[0], lightInfo.ambient[1], lightInfo.ambient[2]);
-        Color diffuse = new Color(lightInfo.diffuse[0], lightInfo.diffuse[1], lightInfo.diffuse[2]);
-
-        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-        RenderSettings.ambientLight = ambient * lightInfo.intensity;
-
-        WorldLight.color = diffuse;
-
         worldCompleted = true;
     }
 
@@ -159,7 +128,6 @@ public class MapRenderer {
     /// <param name="gat"></param>
     private void OnAltitudeComplete(GAT gat) {
         altitudeCompleted = true;
-        altitude = new Altitude(gat, PathFinder);
     }
 
     private void OnGroundComplete(GND.Mesh mesh) {
@@ -168,11 +136,13 @@ public class MapRenderer {
 
         Ground ground = new Ground();
         ground.BuildMesh(mesh);
-        ground.InitTextures(mesh);
-        ground.Render();
+        if (ground.meshes.Length > 0) {
+            ground.InitTextures(mesh);
+            ground.Render();
+        }
 
         if (mesh.waterVertCount > 0) {
-            water = new Water();
+            water = new WaterBuilder();
             water.InitTextures(mesh, world.water);
             water.BuildMesh(mesh);
         }
@@ -190,9 +160,9 @@ public class MapRenderer {
         groundCompleted = true;
     }
 
-    private void OnModelsComplete(RSM.CompiledModel[] compiledModels) {
+    private async Task OnModelsComplete(RSM.CompiledModel[] compiledModels) {
         models = new Models(compiledModels.ToList());
-        GameManager.StartCoroutine(models.BuildMeshes(OnMapLoadingProgress));
+        await models.BuildMeshesAsync(OnMapLoadingProgress);
 
         modelsCompleted = true;
     }
@@ -203,30 +173,16 @@ public class MapRenderer {
 
     public void PostRender() {
         if (water != null) {
-            water.Render();
+            //water.Render();
         }
-    }
-
-    public void Render() {
-        if (sky != null) {
-            sky.Render();
-        }
-
-        models.Render();
     }
 
     public void FixedUpdate() {
         sounds.Update();
-        if (sky != null) {
-            sky.FixedUpdate();
-        }
     }
 
     public void Clear() {
         sounds.Clear();
-        if (sky != null) {
-            sky.Clear();
-        }
 
         world = null;
         water = null;
@@ -235,7 +191,8 @@ public class MapRenderer {
 
         //destroy map
         if (mapParent != null) {
-            UnityEngine.Object.Destroy(mapParent);
+            //UnityEngine.Object.Destroy(mapParent);
+            mapParent.gameObject.SetActive(false);
             mapParent = null;
         }
 
