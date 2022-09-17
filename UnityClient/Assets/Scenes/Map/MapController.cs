@@ -153,8 +153,9 @@ public class MapController : MonoBehaviour {
 
                 var mapname = Path.GetFileNameWithoutExtension(pkt.MapName);
 
-                await GameManager.BeginMapLoading(mapname);
-                
+                GameMap map = await GameManager.BeginMapLoading(mapname);
+                PathFinding = map.GetPathFinder();
+
                 Session.CurrentSession.SetCurrentMap(pkt.MapName);
                 entity.transform.position = new Vector3(pkt.PosX, PathFinding.GetCellHeight(pkt.PosX, pkt.PosY), pkt.PosY);
                 new CZ.NOTIFY_ACTORINIT().Send();
