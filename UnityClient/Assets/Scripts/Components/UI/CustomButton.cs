@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(CustomUIAddressablesHolder))]
 public class CustomButton : Button,
     IPointerEnterHandler,
     IPointerExitHandler,
@@ -17,13 +18,24 @@ public class CustomButton : Button,
     private Texture2D backgroundTexture;
     private Texture2D hoverTexture;
     private Texture2D pressedTexture;
-    private RawImage rawImage;
 
+    private RawImage rawImage;
     private CustomUIAddressablesHolder AddressablesHolder;
 
     protected override void OnEnable() {
-        rawImage = GetComponent<RawImage>();
-        AddressablesHolder = GetComponent<CustomUIAddressablesHolder>();
+        if (rawImage == null) {
+            rawImage = GetComponent<RawImage>();
+        }
+        
+        rawImage.texture = null;
+        
+        if (AddressablesHolder == null) {
+            AddressablesHolder = GetComponent<CustomUIAddressablesHolder>();
+        }
+
+        if (AddressablesHolder.backgroundTexture.Asset != null) {
+            rawImage.texture = (Texture2D) AddressablesHolder.backgroundTexture.Asset;
+        }
     }
 
     protected override void Start() {
@@ -85,8 +97,8 @@ public class CustomButton : Button,
     }
 
     override public void OnSelect(BaseEventData eventData) {
-		rawImage.texture = hoverTexture;
-	}
+        rawImage.texture = hoverTexture;
+    }
 
     override public void OnDeselect(BaseEventData eventData) {
         rawImage.texture = backgroundTexture;

@@ -9,6 +9,7 @@ public class MapUiController : MonoBehaviour {
     [SerializeField] private ItemDetailsWindow ItemDetailsPrefab;
     [SerializeField] private NpcBoxController NpcBox;
     [SerializeField] private NpcBoxMenuController NpcMenu;
+    [SerializeField] private NpcShopController ShopController;
     [SerializeField] private PopupController PopupController;
     [SerializeField] public EquipmentWindowController EquipmentWindow;
     [SerializeField] public InventoryWindowController InventoryWindow;
@@ -17,7 +18,7 @@ public class MapUiController : MonoBehaviour {
     [SerializeField] public ChatBoxController ChatBox;
     [SerializeField] public NpcShopTypeSelectorController ShopDealType;
     [SerializeField] public EscapeWindowController EscapeWindow;
-    [SerializeField] private NpcShopController ShopController; 
+    [SerializeField] public MenuController Menu;
 
     private NetworkClient NetworkClient;
 
@@ -56,7 +57,6 @@ public class MapUiController : MonoBehaviour {
 
         if (!Event.current.isKey || Event.current.keyCode == KeyCode.None)
             return;
-
 
         switch (Event.current.type) {
             case EventType.KeyDown:
@@ -113,6 +113,29 @@ public class MapUiController : MonoBehaviour {
 
     public void HideTooltip() {
         Tooltip.SetText(null, Vector3.zero);
+    }
+
+    public void OnMenuClick(int itemType) {
+        var menuItemType = (MenuController.MenuItemType) itemType;
+        switch (menuItemType) {
+            case MenuController.MenuItemType.STATUS:
+                StatsWindow.ToggleActive();
+                break;
+            case MenuController.MenuItemType.EQUIPMENT:
+                EquipmentWindow.ToggleActive();
+                break;
+            case MenuController.MenuItemType.SKILL:
+                SkillWindow.ToggleActive();
+                break;
+            case MenuController.MenuItemType.OPTIONS:
+                EscapeWindow.ToggleActive();
+                break;
+            case MenuController.MenuItemType.INVENTORY:
+                InventoryWindow.ToggleActive();
+                break;
+            default:
+                break;
+        }
     }
 
     public void OnRestartAnswer(ushort cmd, int size, InPacket packet) {

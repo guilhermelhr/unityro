@@ -4,6 +4,7 @@ using ROIO.Loaders;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Audio;

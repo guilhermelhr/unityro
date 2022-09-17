@@ -144,7 +144,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             Robe = (short) data.Robe
         };
 
-        gameObject.transform.position = new Vector3(data.PosDir[0], PathFinder.GetCellHeight(data.PosDir[0], data.PosDir[1]), data.PosDir[1]);
+        gameObject.transform.position = new Vector3(data.PosDir[0], PathFinder?.GetCellHeight(data.PosDir[0], data.PosDir[1]) ?? 0f, data.PosDir[1]);
 
         SetupViewer(EquipInfo, rendererLayer);
 

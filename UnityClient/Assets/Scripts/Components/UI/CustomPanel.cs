@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Assets.Scripts.Utils.Extensions;
+using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(CustomUIAddressablesHolder))]
 public class CustomPanel : RawImage,
     IPointerEnterHandler,
     IPointerExitHandler,
@@ -22,7 +24,14 @@ public class CustomPanel : RawImage,
     private CustomUIAddressablesHolder AddressablesHolder;
 
     protected override void OnEnable() {
-        AddressablesHolder = gameObject.GetComponent<CustomUIAddressablesHolder>();
+        texture = null;
+        if (AddressablesHolder == null) {
+            AddressablesHolder = gameObject.GetComponent<CustomUIAddressablesHolder>();
+        }
+
+        if (AddressablesHolder.backgroundTexture.Asset != null) {
+            texture = (Texture2D) AddressablesHolder.backgroundTexture.Asset;
+        }
     }
 
     protected override void Start() {
@@ -39,7 +48,7 @@ public class CustomPanel : RawImage,
     private async void LoadPressedTexture() {
         try {
             if (pressedTexture == null && AddressablesHolder.pressedTexture.AssetGUID.Length > 0) {
-                pressedTexture = await AddressablesHolder.pressedTexture.LoadAssetAsync().Task;
+                pressedTexture = await AddressablesHolder.pressedTexture.LoadAsync();
             }
         } catch (Exception e) {
             Debug.LogError($"Failed to load pressed image from {this} {e}");
@@ -49,7 +58,7 @@ public class CustomPanel : RawImage,
     private async void LoadHoverTexture() {
         try {
             if (hoverTexture == null && AddressablesHolder.hoverTexture.AssetGUID.Length > 0) {
-                hoverTexture = await AddressablesHolder.hoverTexture.LoadAssetAsync().Task;
+                hoverTexture = await AddressablesHolder.hoverTexture.LoadAsync();
             }
         } catch (Exception e) {
             Debug.LogError($"Failed to load hover image from {this} {e}");
@@ -59,7 +68,7 @@ public class CustomPanel : RawImage,
     private async void LoadIdleTexture() {
         try {
             if (backgroundTexture == null && AddressablesHolder.backgroundTexture.AssetGUID.Length > 0) {
-                backgroundTexture = await AddressablesHolder.backgroundTexture.LoadAssetAsync().Task;
+                backgroundTexture = await AddressablesHolder.backgroundTexture.LoadAsync();
                 texture = backgroundTexture;
                 if (overrideSize)
                     SetNativeSize();

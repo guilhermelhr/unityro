@@ -9,10 +9,20 @@ public class CustomUIAddressablesHolder : MonoBehaviour {
     public AssetReferenceTexture2D selectedTexture;
 
     private void OnDestroy() {
-        backgroundTexture.ReleaseAsset();
-        hoverTexture.ReleaseAsset();
-        pressedTexture.ReleaseAsset();
-        disabledTexture.ReleaseAsset();
-        selectedTexture.ReleaseAsset();
+        if (backgroundTexture.Asset != null) {
+            backgroundTexture.ReleaseAsset();
+        }
+        if (hoverTexture.Asset != null) {
+            hoverTexture.ReleaseAsset();
+        }
+        if (pressedTexture.Asset != null) {
+            pressedTexture.ReleaseAsset();
+        }
+        if (disabledTexture.Asset != null) {
+            disabledTexture.ReleaseAsset();
+        }
+        if (selectedTexture.Asset != null) {
+            selectedTexture.ReleaseAsset();
+        }
     }
 }

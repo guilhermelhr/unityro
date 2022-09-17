@@ -28,6 +28,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8211011231481525104}
   m_Father: {fileID: 8741330928727269232}
@@ -87,6 +88,7 @@ GameObject:
   - component: {fileID: 2204872972977439455}
   - component: {fileID: 6417782132071265543}
   - component: {fileID: 8609539094747997946}
+  - component: {fileID: 3359316496797176855}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -104,6 +106,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1699354594036600118}
   m_RootOrder: 0
@@ -152,6 +155,43 @@ MonoBehaviour:
   hoverImage: basic_interface/sys_base_on.bmp
   pressedImage: 
   overrideSize: 1
+--- !u!114 &3359316496797176855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2204443001979060743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e34c3bdadc99c745ace4e0a15cb1437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backgroundTexture:
+    m_AssetGUID: 838ac3890f2e6b145ba314fdea226b34
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 1
+  hoverTexture:
+    m_AssetGUID: 61082511472ede144960df1b55a740f3
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 1
+  pressedTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  disabledTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  selectedTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
 --- !u!1 &2545085339081994241
 GameObject:
   m_ObjectHideFlags: 0
@@ -180,6 +220,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1699354594036600118}
   m_RootOrder: 1
@@ -297,6 +338,7 @@ GameObject:
   - component: {fileID: 1699354594036600118}
   - component: {fileID: 7901814025968952293}
   - component: {fileID: 1059338570442631500}
+  - component: {fileID: 2026033356481219629}
   m_Layer: 5
   m_Name: Title Bar
   m_TagString: Untagged
@@ -314,6 +356,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2204872972977439455}
   - {fileID: 688334317215624855}
@@ -363,7 +406,44 @@ MonoBehaviour:
   backgroundImage: basic_interface/titlebar_fix.bmp
   hoverImage: 
   pressedImage: 
-  overrideSize: 1
+  overrideSize: 0
+--- !u!114 &2026033356481219629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3694731488274328832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e34c3bdadc99c745ace4e0a15cb1437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backgroundTexture:
+    m_AssetGUID: c4fdfcb7f27938d4db895e0e68974aaf
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 1
+  hoverTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  pressedTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  disabledTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  selectedTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
 --- !u!1 &4935631482140241013
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,6 +471,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1699354594036600118}
   - {fileID: 5651695093075663596}
