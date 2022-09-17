@@ -88,7 +88,7 @@ public class MapRenderer {
         }
     }
 
-    public async Task<GameMap> OnMapComplete(AsyncMapLoader.GameMap gameMap) {
+    public async Task<GameMap> OnMapComplete(AsyncMapLoader.GameMapData gameMap) {
         if (mapParent == null) {
             mapParent = new GameObject(gameMap.Name);
             mapParent.tag = "Map";

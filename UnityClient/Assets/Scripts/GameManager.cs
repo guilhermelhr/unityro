@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour {
 
     public Camera MainCamera { get; private set; }
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
+    public GameMap CurrentMap { get; private set; }
 
     private void Awake() {
         if (MainCamera == null) {
@@ -121,18 +122,21 @@ public class GameManager : MonoBehaviour {
 
         MapRenderer.Clear();
         EntityManager.ClearEntities();
+        if (CurrentMap != null) {
+            Destroy(CurrentMap.gameObject);
+        }
 
 #if UNITY_EDITOR
-        AsyncMapLoader.GameMap gameMap = await new AsyncMapLoader().Load($"{mapName}.rsw");
-        GameMap map = await MapRenderer.OnMapComplete(gameMap);
+        AsyncMapLoader.GameMapData gameMap = await new AsyncMapLoader().Load($"{mapName}.rsw");
+        CurrentMap = await MapRenderer.OnMapComplete(gameMap);
 #else
         var mapPrefab = await Addressables.LoadAssetAsync<GameObject>($"data/maps/{Path.GetFileNameWithoutExtension(mapName)}.prefab").Task;
-        var map = Instantiate(mapPrefab).GetComponent<GameMap>();
+        CurrentMap = Instantiate(mapPrefab).GetComponent<GameMap>();
 #endif
         SceneManager.UnloadSceneAsync("LoadingScene");
 
         PlayBgm(Tables.MapTable[$"{mapName}.rsw"].mp3);
-        return map;
+        return CurrentMap;
     }
 
     public void SetConfigurations(RemoteConfiguration remoteConfiguration, LocalConfiguration localConfiguration) {

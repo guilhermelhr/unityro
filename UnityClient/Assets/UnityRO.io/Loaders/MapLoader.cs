@@ -8,7 +8,7 @@ namespace ROIO.Loaders {
 
     public class AsyncMapLoader {
 
-        public struct GameMap {
+        public struct GameMapData {
             public string Name;
             public RSW World;
             public GND Ground;
@@ -19,7 +19,7 @@ namespace ROIO.Loaders {
             public GND.Mesh CompiledGround;
         }
 
-        public async Task<GameMap> Load(string mapname) {
+        public async Task<GameMapData> Load(string mapname) {
             RSW world = await LoadWorld(mapname);
             GND ground = await LoadGround(mapname);
             GAT altitude = await LoadAltitude(mapname);
@@ -28,7 +28,7 @@ namespace ROIO.Loaders {
             RSM[] models = LoadModels(world.modelDescriptors);
             RSM.CompiledModel[] compiledModels = await CompileModels(models);
 
-            return new GameMap {
+            return new GameMapData {
                 Name = mapname,
                 World = world,
                 Ground = ground,

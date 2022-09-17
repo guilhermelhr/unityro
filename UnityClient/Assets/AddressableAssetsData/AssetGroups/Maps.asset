@@ -294,7 +294,7 @@ MonoBehaviour:
     - Maps
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 368d1d311e51d7542be0d8d467a21db7
-    m_Address: esAssets/data/maps/prt_in.prefab
+    m_Address: data/maps/prt_in.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - Maps

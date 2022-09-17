@@ -2,6 +2,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
@@ -19,7 +20,8 @@ internal static class AddressablesExtensions {
 
             var assetpath = AssetDatabase.GetAssetPath(obj);
             var guid = AssetDatabase.AssetPathToGUID(assetpath);
-            var length = "Assets/_Generated/Resources/".Length;
+            var isAddressablesInitialized = Directory.Exists(DataUtility.GENERATED_ADDRESSABLES_PATH);
+            var length = (isAddressablesInitialized ? DataUtility.GENERATED_ADDRESSABLES_PATH : DataUtility.GENERATED_RESOURCES_PATH).Length;
 
             var e = settings.CreateOrMoveEntry(guid, group, false, false);
             e.SetAddress(e.address[length..], false);
