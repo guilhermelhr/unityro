@@ -7,7 +7,7 @@ using UnityEngine;
 
 public abstract class OutPacket {
 
-    private PacketHeader Header;
+    public PacketHeader Header { get; private set; }
     public int Size;
 
     private bool IsFixed => Size > 0;

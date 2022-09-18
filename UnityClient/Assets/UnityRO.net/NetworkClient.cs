@@ -7,7 +7,8 @@ using static PacketSerializer;
 
 public class NetworkClient : MonoBehaviour, IPacketHandler {
 
-    public static UnityAction<InPacket> OnPacketReceivedEvent;
+    public static UnityAction<InPacket, bool> OnPacketReceivedEvent;
+    public static UnityAction<OutPacket> OnPacketSendEvent;
 
     #region Singleton
     private static NetworkClient _instance;
@@ -110,6 +111,7 @@ public class NetworkClient : MonoBehaviour, IPacketHandler {
 
         var packet = OutPacketQueue.Dequeue();
         if (CurrentConnection.GetStream().CanWrite) {
+            OnPacketSendEvent?.Invoke(packet);
             packet.Send(CurrentConnection.GetStream());
         }
     }
@@ -120,10 +122,11 @@ public class NetworkClient : MonoBehaviour, IPacketHandler {
         }
 
         var packet = InPacketQueue.Dequeue();
-        PacketHooks.TryGetValue(packet.Header, out var hook);
+        var isHandled = PacketHooks.TryGetValue(packet.Header, out var hook);
         if (hook != null) {
             hook?.DynamicInvoke((ushort) packet.Header, -1, packet);
         }
+        OnPacketReceivedEvent?.Invoke(packet, isHandled);
     }
     #endregion
 
