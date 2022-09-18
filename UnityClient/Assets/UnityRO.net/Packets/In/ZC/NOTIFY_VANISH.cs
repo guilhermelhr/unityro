@@ -8,6 +8,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_VANISH;
         public const int SIZE = 7;
+        public PacketHeader Header => HEADER;
 
         public uint AID;
         public int Type;

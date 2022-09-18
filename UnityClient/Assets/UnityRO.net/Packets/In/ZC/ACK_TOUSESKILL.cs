@@ -9,6 +9,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ACK_TOUSESKILL;
         public const int SIZE = 14;
+        public PacketHeader Header => HEADER;
 
         public short SkillId;
         public int Type;

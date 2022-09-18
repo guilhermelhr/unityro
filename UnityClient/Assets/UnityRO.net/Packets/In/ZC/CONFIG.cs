@@ -7,7 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_CONFIG;
         public const int SIZE = 10;
-
+        public PacketHeader Header => HEADER;
         public void Read(MemoryStreamReader br, int size) {
         }
     }

@@ -12,6 +12,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_WEIGHT_PERCENTAGE;
         public const int SIZE = 6;
+        public PacketHeader Header => HEADER;
 
         public int WeightPercentage;
 

@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿using ROIO;
+using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using ROIO;
 
 public class LoginController : MonoBehaviour {
 
@@ -11,14 +11,14 @@ public class LoginController : MonoBehaviour {
     public RawImage background;
     
     private NetworkClient NetworkClient;
+    private RemoteConfiguration RemoteConfiguration;
     
     void Start() {
         background.SetLoginBackground();
         
         NetworkClient = FindObjectOfType<NetworkClient>();
-        var remoteConfiguration = FindObjectOfType<GameManager>().RemoteConfiguration;
+        RemoteConfiguration = FindObjectOfType<GameManager>().RemoteConfiguration;
 
-        NetworkClient.ChangeServer(remoteConfiguration.loginServer, int.Parse(remoteConfiguration.loginPort));
         NetworkClient.HookPacket(AC.ACCEPT_LOGIN3.HEADER, this.OnLoginResponse);
         usernameField.text = "danilo3";
     }
@@ -51,11 +51,16 @@ public class LoginController : MonoBehaviour {
             return;
         }
 
-        new CA.LOGIN(username, password, 10, 10).Send();
+        TryConnectAndLogin(username, password);
     }
 
     public void OnExitClicked() {
 
+    }
+
+    private async void TryConnectAndLogin(string username, string password) {
+        await NetworkClient.ChangeServer(RemoteConfiguration.loginServer, int.Parse(RemoteConfiguration.loginPort));
+        new CA.LOGIN(username, password, 10, 10).Send();
     }
 
     private void OnLoginResponse(ushort cmd, int size, InPacket packet) {

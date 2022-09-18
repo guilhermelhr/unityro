@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_RESURRECTION;
         public const int SIZE = 8;
+        public PacketHeader Header => HEADER;
 
         public uint GID;
         public short Type;

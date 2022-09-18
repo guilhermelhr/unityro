@@ -8,6 +8,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_PC_PURCHASE_ITEMLIST;
         private const int BLOCK_SIZE = 13; // PACKET_ZC_PC_PURCHASE_ITEMLIST_sub
+        public PacketHeader Header => HEADER;
 
         public List<ItemNPCShopInfo> ItemList;
 
@@ -36,6 +37,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_PC_SELL_ITEMLIST;
         public const int BLOCK_SIZE = 10;
+        public PacketHeader Header => HEADER;
 
         public List<ItemNPCShopInfo> ItemList;
 

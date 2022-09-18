@@ -8,6 +8,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ACTION_FAILURE;
         public const int SIZE = 4;
+        public PacketHeader Header => HEADER;
 
         public short ErrorCode;
 

@@ -6,6 +6,7 @@ public partial class ZC {
     public class NOTIFY_UPDATECHAR : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_UPDATECHAR;
+        public PacketHeader Header => HEADER;
         public const int SIZE = 9;
 
         public uint GID;

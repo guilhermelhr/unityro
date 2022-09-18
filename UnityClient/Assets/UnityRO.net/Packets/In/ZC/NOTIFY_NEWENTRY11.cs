@@ -6,7 +6,7 @@ public partial class ZC {
     public class NOTIFY_NEWENTRY11 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_NEWENTRY11;
-
+        public PacketHeader Header => HEADER;
         public EntitySpawnData entityData;
 
         public void Read(MemoryStreamReader br, int size) {

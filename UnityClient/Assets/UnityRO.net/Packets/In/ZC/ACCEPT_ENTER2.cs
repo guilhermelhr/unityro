@@ -9,6 +9,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ACCEPT_ENTER2;
         public const int SIZE = 13;
+        public PacketHeader Header => HEADER;
 
         public int Tick;
         public int PosX;

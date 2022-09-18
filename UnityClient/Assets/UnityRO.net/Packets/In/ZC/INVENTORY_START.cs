@@ -6,6 +6,7 @@ public partial class ZC {
     public class INVENTORY_START : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_START;
+        public PacketHeader Header => HEADER;
 
         public void Read(MemoryStreamReader br, int size) {
             var inventoryType = br.ReadShort();
