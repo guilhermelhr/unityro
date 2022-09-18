@@ -6,6 +6,7 @@ public partial class ZC {
     public class NOTIFY_MAPPROPERTY2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_MAPPROPERTY2;
+        public PacketHeader Header => HEADER;
         public const int SIZE = 8;
 
         public void Read(MemoryStreamReader br, int size) {

@@ -6,7 +6,7 @@ public partial class ZC {
     public class PC_PURCHASE_ITEMLIST_FROMMC2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_PC_PURCHASE_ITEMLIST_FROMMC2;
-
+        public PacketHeader Header => HEADER;
         public void Read(MemoryStreamReader br, int size) {
 
         }

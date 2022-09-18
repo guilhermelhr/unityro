@@ -8,6 +8,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_STATUS_CHANGE;
         public const int SIZE = 5;
+        public PacketHeader Header => HEADER;
 
         public EntityStatus status;
         public int value;

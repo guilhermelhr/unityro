@@ -9,6 +9,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ITEM_PICKUP_ACK_V7;
         public const int SIZE = 69;
+        public PacketHeader Header => HEADER;
 
         public bool IsIdentified;
         public bool IsDamaged;

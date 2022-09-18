@@ -9,7 +9,7 @@ public partial class HC {
         public const int SIZE = 157;
 
         public CharacterData characterData;
-
+        public PacketHeader Header => HEADER;
         public void Read(MemoryStreamReader br, int size) {
             characterData = CharacterData.parse(br);
         }

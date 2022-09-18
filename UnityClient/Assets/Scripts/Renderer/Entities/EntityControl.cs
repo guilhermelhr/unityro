@@ -39,6 +39,9 @@ public class EntityControl : MonoBehaviour {
         if (MainCamera == null) {
             MainCamera = Camera.main;
         }
+        if (PathFinder == null) {
+            PathFinder = FindObjectOfType<PathFinder>();
+        }
 
         var ray = MainCamera.ScreenPointToRay(Input.mousePosition);
         var didHitAnything = Physics.Raycast(ray, out var hit, 150, EntityMask | GroundMask);

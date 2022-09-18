@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 public class Connection {
 
@@ -8,48 +9,49 @@ public class Connection {
 
     public static System.Action OnDisconnect;
 
-    private TcpClient Client;
+    private TcpClient TcpClient;
     private NetworkStream Stream;
     private BinaryWriter BinaryWriter;
     private PacketSerializer PacketSerializer;
     private byte[] receiveBuffer;
 
-    public Connection() {
-        Client = new TcpClient();
-        PacketSerializer = new PacketSerializer();
+    public bool IsConnected() => TcpClient.Connected;
+    public BinaryWriter GetBinaryWriter() => BinaryWriter;
+    public NetworkStream GetStream() => TcpClient.GetStream();
+
+    public Connection(IPacketHandler packetHandler) {
+        TcpClient = new TcpClient();
+        PacketSerializer = new PacketSerializer(packetHandler);
         receiveBuffer = new byte[DATA_BUFFER_SIZE];
     }
 
-    public void Connect(string target, int port) {
-        if(Client.Connected)
+    public async Task Connect(string target, int port) {
+        if(TcpClient.Connected)
             Disconnect();
 
-        Client.Connect(target, port);
+        await TcpClient.ConnectAsync(target, port);
 
-        Stream = Client.GetStream();
+        Stream = TcpClient.GetStream();
         BinaryWriter = new BinaryWriter(Stream);
 
         Start();
     }
 
     public void Start() {
-        Client.Client.BeginReceive(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None, out var err, ReadComplete, null);
+        TcpClient
+            .Client
+            .BeginReceive(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None, out var err, OnReceivedCallback, null);
     }
 
     public void SkipBytes(int bytesToSkip) {
         PacketSerializer.BytesToSkip = bytesToSkip;
     }
 
-    public bool IsConnected() => Client.Connected;
-
-    public BinaryWriter GetBinaryWriter() => BinaryWriter;
-    public NetworkStream GetStream() => Stream;
-
-    private void ReadComplete(IAsyncResult ar) {
+    private void OnReceivedCallback(IAsyncResult ar) {
         int size = 0;
         SocketError err;
         try {
-            size = Client.Client.EndReceive(ar, out err);
+            size = TcpClient.Client.EndReceive(ar, out err);
         } catch {
             return;
         }
@@ -65,21 +67,19 @@ public class Connection {
     }
 
     public void Disconnect() {
-        if(Client.Connected) {
+        if(TcpClient.Connected) {
             try {
-                Client.Close();
-                Client.Client.Dispose();
+                TcpClient.Close();
+                TcpClient.Client.Dispose();
             } catch {
 
             }
 
-            Client = new TcpClient();
+            TcpClient = new TcpClient();
+            Stream = null;
+            BinaryWriter = null;
             PacketSerializer.Reset();
         }
-    }
-
-    public void Hook(ushort cmd, PacketSerializer.OnPacketReceived onPackedReceived) {
-        PacketSerializer.Hook(cmd, onPackedReceived);
     }
 }
 

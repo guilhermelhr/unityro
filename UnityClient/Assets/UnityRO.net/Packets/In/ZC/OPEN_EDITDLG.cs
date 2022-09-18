@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_OPEN_EDITDLG;
         public const int SIZE = 6;
+        public PacketHeader Header => HEADER;
 
         public void Read(MemoryStreamReader br, int size) {
             var NAID = br.ReadUInt();

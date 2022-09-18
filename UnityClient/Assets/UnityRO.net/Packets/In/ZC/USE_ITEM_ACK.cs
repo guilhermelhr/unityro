@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_USE_ITEM_ACK;
         public const int SIZE = 7;
+        public PacketHeader Header => HEADER;
 
         public short index;
         public short count;

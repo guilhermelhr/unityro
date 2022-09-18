@@ -7,6 +7,7 @@ public partial class ZC {
     public class SAY_DIALOG : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_SAY_DIALOG;
+        public PacketHeader Header => HEADER;
 
         public uint NAID;
         public string Message;

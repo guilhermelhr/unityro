@@ -11,6 +11,7 @@ public partial class ZC {
     public class NOTIFY_EFFECT2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_EFFECT2;
+        public PacketHeader Header => HEADER;
         public const int SIZE = 10;
 
         public uint GID;

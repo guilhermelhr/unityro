@@ -7,6 +7,7 @@ public partial class HC {
     public class SECOND_PASSWD_LOGIN : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.HC_SECOND_PASSWD_LOGIN;
+        public PacketHeader Header => HEADER;
         public const int SIZE = 12;
 
         public void Read(MemoryStreamReader br, int size) {

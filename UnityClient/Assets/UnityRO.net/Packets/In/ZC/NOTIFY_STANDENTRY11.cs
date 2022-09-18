@@ -6,6 +6,7 @@ public partial class ZC {
     public class NOTIFY_STANDENTRY11 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_STANDENTRY11;
+        public PacketHeader Header => HEADER;
 
         public EntitySpawnData entityData;
 

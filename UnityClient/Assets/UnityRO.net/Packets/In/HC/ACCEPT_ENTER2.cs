@@ -8,7 +8,7 @@ public partial class HC {
     public class ACCEPT_ENTER2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.HC_ACCEPT_ENTER2;
-
+        public PacketHeader Header => HEADER;
         public void Read(MemoryStreamReader br, int Size) {
 
             var size = br.ReadShort();

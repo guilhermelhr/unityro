@@ -816,6 +816,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     public void UpdateSprites() {
+        if (!IsReady) {
+            return;
+        }
+
         MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Weapon, ViewerType.WEAPON);
         MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Shield, ViewerType.SHIELD);
         MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadTop, ViewerType.HEAD_TOP);

@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_MSG_STATE_CHANGE;
         public const int SIZE = 9;
+        public PacketHeader Header => HEADER;
 
         public void Read(MemoryStreamReader br, int size) {
         }
