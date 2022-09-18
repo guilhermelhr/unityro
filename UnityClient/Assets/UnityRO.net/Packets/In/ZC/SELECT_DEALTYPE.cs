@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_SELECT_DEALTYPE;
         public const int SIZE = 6;
+        public PacketHeader Header => HEADER;
 
         public uint NAID;
 

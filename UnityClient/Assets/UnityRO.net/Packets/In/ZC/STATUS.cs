@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_STATUS;
         public const int SIZE = 44;
+        public PacketHeader Header => HEADER;
 
         public short stpoint;
         public int str;

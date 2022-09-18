@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_STOPMOVE;
         public const int SIZE = 10;
+        public PacketHeader Header => HEADER;
 
         public uint AID;
         public short PosX;

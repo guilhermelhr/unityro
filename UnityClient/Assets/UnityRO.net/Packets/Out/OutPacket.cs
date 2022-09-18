@@ -12,25 +12,26 @@ public abstract class OutPacket {
 
     private bool IsFixed => Size > 0;
     private IEnumerable<byte> buffer = new List<byte>();
-    private Stream Stream;
 
     public OutPacket(PacketHeader header, int size) {
         Header = header;
         Size = size;
-        Stream = NetworkClient.GetStream();
     }
 
     public virtual void Send() {
-        IEnumerable<byte> packet = BitConverter.GetBytes((ushort)Header);
+        NetworkClient.SendPacket(this);
+    }
+
+    public void Send(Stream stream) {
+        IEnumerable<byte> packet = BitConverter.GetBytes((ushort) Header);
         if (!IsFixed) {
             Size = buffer.Count() + 4;
-            packet = packet.Concat(BitConverter.GetBytes((short)Size));
+            packet = packet.Concat(BitConverter.GetBytes((short) Size));
         }
         packet = packet.Concat(buffer);
 
-        Debug.Log($"<color='green'>Sent: {Header} \tSize:{Size}</color>");
-        Stream.Write(packet.ToArray(), 0, packet.Count());
-        Stream.Flush();
+        stream.Write(packet.ToArray(), 0, packet.Count());
+        stream.Flush();
         buffer = new List<byte>();
     }
 

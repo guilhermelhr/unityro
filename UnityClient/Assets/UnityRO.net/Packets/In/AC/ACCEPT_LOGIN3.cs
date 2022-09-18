@@ -15,6 +15,8 @@ public partial class AC {
         public byte Sex { get; set; }
         public CharServerInfo[] Servers { get; set; }
 
+        public PacketHeader Header => HEADER;
+
         public void Read(MemoryStreamReader br, int size) {
             
             LoginID1 = br.ReadInt();

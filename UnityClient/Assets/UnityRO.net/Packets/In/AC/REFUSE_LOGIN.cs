@@ -9,6 +9,7 @@ public partial class AC
         public string BlockDate { get; set; }
 
         public const PacketHeader HEADER = PacketHeader.AC_REFUSE_LOGIN;
+        public PacketHeader Header => HEADER;
         public void Read(MemoryStreamReader br, int size) 
         {
             ErrorCode = (byte) br.ReadByte();

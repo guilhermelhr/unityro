@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_WAIT_DIALOG;
         public const int SIZE = 6;
+        public PacketHeader Header => HEADER;
 
         public uint NAID;
 

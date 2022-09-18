@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NPCACK_MAPMOVE;
         public const int SIZE = 22;
+        public PacketHeader Header => HEADER;
 
         public string MapName;
         public short PosX;

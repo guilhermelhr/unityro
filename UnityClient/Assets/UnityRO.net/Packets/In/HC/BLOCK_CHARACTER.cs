@@ -7,7 +7,7 @@ public partial class HC {
 
         public const PacketHeader HEADER = PacketHeader.HC_BLOCK_CHARACTER;
 
-        public PacketHeader GetHeader() => HEADER;
+        public PacketHeader Header => HEADER;
 
         public void Read(MemoryStreamReader br, int size) {
             var count = (br.Length - br.Position) / 24;

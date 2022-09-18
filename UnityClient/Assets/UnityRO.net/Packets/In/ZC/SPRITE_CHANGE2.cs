@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_SPRITE_CHANGE2;
         public const int SIZE = 15;
+        public PacketHeader Header => HEADER;
 
         public uint GID;
         public LookType type;

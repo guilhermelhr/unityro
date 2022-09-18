@@ -4,7 +4,6 @@ using ROIO.Loaders;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Audio;
@@ -28,13 +27,14 @@ public class GameManager : MonoBehaviour {
 
     #region Components
     private EntityManager EntityManager;
+    private NetworkClient NetworkClient;
     #endregion
 
     public RemoteConfiguration RemoteConfiguration { get; private set; }
     public LocalConfiguration LocalConfiguration { get; private set; }
 
-    public Camera MainCamera { get; private set; }
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
+    public Camera MainCamera { get; private set; }
     public GameMap CurrentMap { get; private set; }
 
     private void Awake() {
@@ -120,6 +120,8 @@ public class GameManager : MonoBehaviour {
     public async Task<GameMap> BeginMapLoading(string mapName) {
         SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
 
+        NetworkClient.PausePacketHandling();
+
         MapRenderer.Clear();
         EntityManager.ClearEntities();
         if (CurrentMap != null) {
@@ -133,6 +135,8 @@ public class GameManager : MonoBehaviour {
         var mapPrefab = await Addressables.LoadAssetAsync<GameObject>($"data/maps/{Path.GetFileNameWithoutExtension(mapName)}.prefab").Task;
         CurrentMap = Instantiate(mapPrefab).GetComponent<GameMap>();
 #endif
+
+        NetworkClient.ResumePacketHandling();
         SceneManager.UnloadSceneAsync("LoadingScene");
 
         PlayBgm(Tables.MapTable[$"{mapName}.rsw"].mp3);
@@ -152,7 +156,7 @@ public class GameManager : MonoBehaviour {
 
     private void InitManagers() {
         new GameObject("ThreadManager").AddComponent<ThreadManager>();
-        new GameObject("NetworkClient").AddComponent<NetworkClient>();
+        NetworkClient = new GameObject("NetworkClient").AddComponent<NetworkClient>();
         EntityManager = new GameObject("EntityManager").AddComponent<EntityManager>();
         new GameObject("CursorRenderer").AddComponent<CursorRenderer>();
         new GameObject("GridRenderer").AddComponent<GridRenderer>();

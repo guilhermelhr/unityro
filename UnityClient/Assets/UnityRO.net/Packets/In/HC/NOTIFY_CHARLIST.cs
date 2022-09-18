@@ -7,7 +7,7 @@ public partial class HC {
 
         public const PacketHeader HEADER = PacketHeader.HC_NOTIFY_CHARLIST;
         public const int SIZE = 6;
-
+        public PacketHeader Header => HEADER;
         public void Read(MemoryStreamReader br, int size) {
             var totalCnt = br.ReadInt();
         }

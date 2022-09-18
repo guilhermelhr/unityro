@@ -8,6 +8,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_LONGPAR_CHANGE2;
         public const int SIZE = 12;
+        public PacketHeader Header => HEADER;
 
         public EntityStatus varID;
         public int value;

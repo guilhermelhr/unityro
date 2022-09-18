@@ -6,6 +6,7 @@ public partial class ZC {
     public class ACK_TAKEOFF_EQUIP_V5 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ACK_TAKEOFF_EQUIP_V5;
+        public PacketHeader Header => HEADER;
         public const int SIZE = 9;
 
         public int index;

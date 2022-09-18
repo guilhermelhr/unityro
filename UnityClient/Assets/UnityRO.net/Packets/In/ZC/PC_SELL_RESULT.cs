@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_PC_SELL_RESULT;
         public const int SIZE = 3;
+        public PacketHeader Header => HEADER;
 
         public int Result { get; private set; }
 

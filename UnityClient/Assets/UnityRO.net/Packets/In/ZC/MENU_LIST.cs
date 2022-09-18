@@ -7,6 +7,7 @@ public partial class ZC {
     public class MENU_LIST : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_MENU_LIST;
+        public PacketHeader Header => HEADER;
 
         public uint NAID;
         public string Message;

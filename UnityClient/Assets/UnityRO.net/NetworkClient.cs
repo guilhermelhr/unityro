@@ -1,11 +1,15 @@
 ﻿using System.Collections;
-using System.IO;
-using System.Net.Sockets;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 using static PacketSerializer;
 
-public class NetworkClient : MonoBehaviour {
+public class NetworkClient : MonoBehaviour, IPacketHandler {
 
+    public static UnityAction<InPacket> OnPacketReceivedEvent;
+
+    #region Singleton
     private static NetworkClient _instance;
     private static NetworkClient Instance {
         get {
@@ -16,35 +20,54 @@ public class NetworkClient : MonoBehaviour {
             return _instance;
         }
     }
+    #endregion
 
-    public struct NetworkClientState {
-        public MapLoginInfo MapLoginInfo;
-        public CharServerInfo CharServer;
-        public CharacterData SelectedCharacter;
-        public AC.ACCEPT_LOGIN3 LoginInfo;
-        public HC.ACCEPT_ENTER CurrentCharactersInfo;
-    }
-
+    #region Members
+    public bool IsConnected => CurrentConnection.IsConnected();
     public static int CLIENT_ID = new System.Random().Next();
 
-    public Connection CurrentConnection;
-    public NetworkClientState State;
+    private Dictionary<PacketHeader, OnPacketReceived> PacketHooks { get; set; } = new Dictionary<PacketHeader, OnPacketReceived>();
 
+    private bool IsPaused = false;
+
+    public NetworkClientState State;
+    public Connection CurrentConnection;
+
+    private Queue<OutPacket> OutPacketQueue;
+    private Queue<InPacket> InPacketQueue;
+    #endregion
+
+    #region Lifecycle
     private void Awake() {
         DontDestroyOnLoad(this);
     }
 
     public void Start() {
-        CurrentConnection = new Connection();
+        CurrentConnection = new Connection(this);
         State = new NetworkClientState();
+
+        OutPacketQueue = new Queue<OutPacket>();
+        InPacketQueue = new Queue<InPacket>();
+    }
+
+    private void Update() {
+        if (IsPaused) {
+            return;
+        }
+        TrySendPacket();
+        TryHandleReceivedPacket();
     }
 
     private void OnApplicationQuit() {
         Disconnect();
     }
+    #endregion
 
-    public void ChangeServer(string ip, int port) {
-        CurrentConnection.Connect(ip, port);
+    public async Task ChangeServer(string ip, int port) {
+        await CurrentConnection.Connect(ip, port);
+
+        OutPacketQueue.Clear();
+        InPacketQueue.Clear();
     }
 
     public void StartHeatBeat() {
@@ -52,22 +75,57 @@ public class NetworkClient : MonoBehaviour {
     }
 
     public void Disconnect() {
-        CurrentConnection.Disconnect();
+        CurrentConnection?.Disconnect();
     }
 
-    public bool IsConnected => CurrentConnection.IsConnected();
-
     public void HookPacket(PacketHeader cmd, OnPacketReceived onPackedReceived) {
-        CurrentConnection?.Hook((ushort) cmd, onPackedReceived);
+        PacketHooks[cmd] = onPackedReceived;
     }
 
     public void SkipBytes(int bytesToSkip) {
-        CurrentConnection.SkipBytes(bytesToSkip);
+        CurrentConnection?.SkipBytes(bytesToSkip);
     }
 
-    public BinaryWriter GetBinaryWriter() => CurrentConnection.GetBinaryWriter();
+    #region Packet Handling
+    public void PausePacketHandling() {
+        IsPaused = true;
+    }
 
-    public static NetworkStream GetStream() => Instance?.CurrentConnection?.GetStream();
+    public void ResumePacketHandling() {
+        IsPaused = false;
+    }
+
+    public void OnPacketReceived(InPacket packet) {
+        InPacketQueue.Enqueue(packet);
+    }
+
+    public static void SendPacket(OutPacket packet) {
+        Instance?.OutPacketQueue.Enqueue(packet);
+    }
+
+    private void TrySendPacket() {
+        if (OutPacketQueue.Count == 0) {
+            return;
+        }
+
+        var packet = OutPacketQueue.Dequeue();
+        if (CurrentConnection.GetStream().CanWrite) {
+            packet.Send(CurrentConnection.GetStream());
+        }
+    }
+
+    private void TryHandleReceivedPacket() {
+        if (InPacketQueue.Count == 0) {
+            return;
+        }
+
+        var packet = InPacketQueue.Dequeue();
+        PacketHooks.TryGetValue(packet.Header, out var hook);
+        if (hook != null) {
+            hook?.DynamicInvoke((ushort) packet.Header, -1, packet);
+        }
+    }
+    #endregion
 
     private IEnumerator ServerHeartBeat() {
         for (; ; ) {
@@ -75,5 +133,13 @@ public class NetworkClient : MonoBehaviour {
             new CZ.REQUEST_TIME2().Send();
             yield return new WaitForSeconds(10f);
         }
+    }
+
+    public struct NetworkClientState {
+        public MapLoginInfo MapLoginInfo;
+        public CharServerInfo CharServer;
+        public CharacterData SelectedCharacter;
+        public AC.ACCEPT_LOGIN3 LoginInfo;
+        public HC.ACCEPT_ENTER CurrentCharactersInfo;
     }
 }
