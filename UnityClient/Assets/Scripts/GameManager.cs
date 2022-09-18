@@ -118,7 +118,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public async Task<GameMap> BeginMapLoading(string mapName) {
-        SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
+        await LoadScene("LoadingScene", LoadSceneMode.Additive);
 
         NetworkClient.PausePacketHandling();
 
@@ -136,11 +136,31 @@ public class GameManager : MonoBehaviour {
         CurrentMap = Instantiate(mapPrefab).GetComponent<GameMap>();
 #endif
 
+        await UnloadScene("LoadingScene");
         NetworkClient.ResumePacketHandling();
-        SceneManager.UnloadSceneAsync("LoadingScene");
 
         PlayBgm(Tables.MapTable[$"{mapName}.rsw"].mp3);
         return CurrentMap;
+    }
+
+    private Task<bool> LoadScene(string sceneName, LoadSceneMode mode) {
+        var t = new TaskCompletionSource<bool>();
+
+        SceneManager.LoadSceneAsync(sceneName, mode).completed += delegate {
+            t.TrySetResult(true);
+        };
+
+        return t.Task;
+    }
+
+    private Task<bool> UnloadScene(string sceneName) {
+        var t = new TaskCompletionSource<bool>();
+
+        SceneManager.UnloadSceneAsync(sceneName).completed += delegate {
+            t.TrySetResult(true);
+        };
+
+        return t.Task;
     }
 
     public void SetConfigurations(RemoteConfiguration remoteConfiguration, LocalConfiguration localConfiguration) {
