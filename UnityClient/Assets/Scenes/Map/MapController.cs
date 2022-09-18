@@ -149,7 +149,7 @@ public class MapController : MonoBehaviour {
         if (packet is ZC.NPCACK_MAPMOVE) {
             var pkt = packet as ZC.NPCACK_MAPMOVE;
 
-            if (pkt.MapName != Session.CurrentSession.CurrentMap) {
+            if (Path.GetFileNameWithoutExtension(pkt.MapName) != Session.CurrentSession.CurrentMap) {
                 var entity = Session.CurrentSession.Entity as Entity;
                 entity.StopMoving();
 
