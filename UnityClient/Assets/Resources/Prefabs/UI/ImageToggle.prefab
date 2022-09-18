@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1077498117635202316}
   - component: {fileID: 6560414062760876695}
   - component: {fileID: 5961510691578473831}
+  - component: {fileID: 2603540768741938977}
   m_Layer: 5
   m_Name: ImageToggle
   m_TagString: Untagged
@@ -30,6 +31,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8299426924207106601}
   m_Father: {fileID: 0}
@@ -92,6 +94,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -137,13 +140,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4834fa1e19c9594385e1e1cb38d6cc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Toggle: {fileID: 0}
-  Image: {fileID: 0}
+  Toggle: {fileID: 6560414062760876695}
   InnerImage: {fileID: 1420858163516160645}
   NormalImage: 
   HoverImage: 
   PressedImage: 
   SelectedImage: 
+  onValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &2603540768741938977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077498117635202418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e34c3bdadc99c745ace4e0a15cb1437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backgroundTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  hoverTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  pressedTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  disabledTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  selectedTexture:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
 --- !u!1 &2744316405521687661
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,6 +214,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1077498117635202419}
   m_RootOrder: 0

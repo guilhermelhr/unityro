@@ -155,7 +155,7 @@ public class EntityViewer : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (!Entity.IsReady || currentACT == null)
+        if (currentACT == null || !Entity.IsReady)
             return;
 
         if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD) {
@@ -178,6 +178,10 @@ public class EntityViewer : MonoBehaviour {
         currentAction = currentACT.actions[currentActionIndex];
         currentFrame = GetCurrentFrame(GameManager.Tick - AnimationStart);
         var frame = currentAction.frames[currentFrame];
+
+        if (currentAction == null) {
+            return;
+        }
 
         UpdateMesh(frame);
         RenderLayers(frame);
@@ -427,6 +431,10 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public Vector2 GetAnimationAnchor() {
+        if (currentAction == null) {
+            return Vector2.zero;
+        }
+
         var frame = currentAction.frames[currentFrame];
         if (frame.pos.Length > 0)
             return frame.pos[0];
