@@ -68,7 +68,7 @@ public class CharServerSelectionController : MonoBehaviour {
     public void OnOkClicked() {
         var loginInfo = NetworkClient.State.LoginInfo;
         var remoteConfig = GameManager.RemoteConfiguration;
-        if(charServerInfo == null || loginInfo == null) {
+        if (charServerInfo == null || loginInfo == null) {
             throw new Exception("Invalid charserverinfo or login info");
         };
         NetworkClient.State.CharServer = charServerInfo;
@@ -80,7 +80,11 @@ public class CharServerSelectionController : MonoBehaviour {
             charIp = charServerInfo.IP.ToString();
         }
 
-        NetworkClient.ChangeServer(charIp, charServerInfo.Port);
+        ConnectToCharServer(loginInfo, charIp);
+    }
+
+    private async System.Threading.Tasks.Task ConnectToCharServer(AC.ACCEPT_LOGIN3 loginInfo, string charIp) {
+        await NetworkClient.ChangeServer(charIp, charServerInfo.Port);
         NetworkClient.SkipBytes(4);
 
         new CH.ENTER(loginInfo.AccountID, loginInfo.LoginID1, loginInfo.LoginID2, loginInfo.Sex).Send();

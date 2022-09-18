@@ -9,6 +9,8 @@ public partial class HC {
         public const PacketHeader HEADER = PacketHeader.HC_NOTIFY_ZONESVR2;
         public const int SIZE = 156;
 
+        public PacketHeader Header => HEADER;
+
         public int GID;
         public string Mapname;
         public IPAddress IP;

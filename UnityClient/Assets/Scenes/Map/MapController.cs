@@ -52,6 +52,8 @@ public class MapController : MonoBehaviour {
 
         var gameMap = await GameManager.BeginMapLoading(mapInfo.mapname);
         PathFinding = gameMap.GetPathFinder();
+        NetworkClient.StartHeatBeat();
+        NetworkClient.ResumePacketHandling();
 
         InitEntity(mapInfo);
     }

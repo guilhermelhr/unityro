@@ -15,7 +15,7 @@ public partial class HC {
         public int PremiumSlots { get; set; }
         public List<CharacterData> Chars { get; set; }
 
-        public PacketHeader GetHeader() => HEADER;
+        public PacketHeader Header => HEADER;
 
         public void Read(MemoryStreamReader br, int size) {
 

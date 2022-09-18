@@ -6,7 +6,7 @@ public partial class ZC {
     public class ALL_ACH_LIST : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ALL_ACH_LIST;
-
+        public PacketHeader Header => HEADER;
         public void Read(MemoryStreamReader br, int size) {
         }
     }

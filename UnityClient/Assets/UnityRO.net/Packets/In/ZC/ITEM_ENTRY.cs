@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_ITEM_ENTRY;
         public const int SIZE = 19;
+        public PacketHeader Header => HEADER;
 
         public int id;
         public int mapID;

@@ -9,6 +9,7 @@ public partial class ZC {
 
         private const int BLOCK_SIZE = 37;
         public const PacketHeader HEADER = PacketHeader.ZC_SKILLINFO_LIST;
+        public PacketHeader Header => HEADER;
 
         public List<SkillInfo> skills = new List<SkillInfo>();
 

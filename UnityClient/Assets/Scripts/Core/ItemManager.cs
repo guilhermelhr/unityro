@@ -174,6 +174,9 @@ public class ItemManager : MonoBehaviour {
     }
 
     private void OnItemSpamInGround(ushort cmd, int size, InPacket packet) {
+        if (PathFinding == null) {
+            PathFinding = FindObjectOfType<PathFinder>();
+        }
         if (packet is ZC.ITEM_FALL_ENTRY5) {
             var pkt = packet as ZC.ITEM_FALL_ENTRY5;
 

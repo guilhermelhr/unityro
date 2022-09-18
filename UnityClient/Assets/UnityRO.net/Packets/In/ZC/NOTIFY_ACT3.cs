@@ -9,6 +9,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_ACT3;
         public const int SIZE = 34;
+        public PacketHeader Header => HEADER;
 
         public EntityActionRequest ActionRequest;
 

@@ -1805,7 +1805,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 280, y: 16}
+  m_SizeDelta: {x: 256, y: 16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8273577001801872057
 CanvasRenderer:
@@ -1835,7 +1835,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: c4fdfcb7f27938d4db895e0e68974aaf, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -3401,7 +3401,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 8, y: 0}
-  m_SizeDelta: {x: 11, y: 11}
+  m_SizeDelta: {x: 8, y: 8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8273577002445192850
 CanvasRenderer:
@@ -3431,7 +3431,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 838ac3890f2e6b145ba314fdea226b34, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -4311,8 +4311,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 140, y: 0}
-  m_SizeDelta: {x: 280, y: 103}
+  m_AnchoredPosition: {x: 128, y: 0}
+  m_SizeDelta: {x: 256, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8273577002655731294
 CanvasRenderer:
@@ -4342,7 +4342,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 6a713f667fb42a746b722881185e1328, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -4352,7 +4352,7 @@ MonoBehaviour:
   backgroundImage: basic_interface/statwin_bg.bmp
   hoverImage: 
   pressedImage: 
-  overrideSize: 1
+  overrideSize: 0
 --- !u!114 &8273577002655731292
 MonoBehaviour:
   m_ObjectHideFlags: 0
