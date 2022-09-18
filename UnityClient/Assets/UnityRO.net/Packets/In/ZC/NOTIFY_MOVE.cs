@@ -6,6 +6,7 @@ public partial class ZC {
     public class NOTIFY_MOVE : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_MOVE;
+        public PacketHeader Header => HEADER;
         public const int SIZE = 16;
 
         public uint GID;

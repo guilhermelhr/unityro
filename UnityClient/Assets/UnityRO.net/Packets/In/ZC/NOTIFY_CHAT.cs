@@ -6,6 +6,7 @@ public partial class ZC {
     public class NOTIFY_CHAT : InPacket {
         
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_CHAT;
+        public PacketHeader Header => HEADER;
 
         public uint GID;
         public string Message;

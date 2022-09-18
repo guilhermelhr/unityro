@@ -12,6 +12,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_SHORTCUT_KEY_LIST_V4;
         public const int SIZE = 271;
+        public PacketHeader Header => HEADER;
 
         public void Read(MemoryStreamReader br, int size) {
         }

@@ -6,6 +6,7 @@ public partial class ZC {
     public class NOTIFY_PLAYERMOVE : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_PLAYERMOVE;
+        public PacketHeader Header => HEADER;
         public const int SIZE = 12;
 
         public int[] startPosition;

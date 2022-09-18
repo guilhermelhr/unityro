@@ -81,6 +81,10 @@ public class EntityWalk : MonoBehaviour {
     }
 
     public void StartMoving(int startX, int startY, int endX, int endY) {
+        if (PathFinder == null) {
+            PathFinder = FindObjectOfType<PathFinder>();
+        }
+
         _tick = GameManager.Tick;
         nodeIndex = 0;
         nodes = PathFinder.GetPath(startX, startY, endX, endY).Select(node => new Vector3(node.x, (float) node.y, node.z)).ToList();

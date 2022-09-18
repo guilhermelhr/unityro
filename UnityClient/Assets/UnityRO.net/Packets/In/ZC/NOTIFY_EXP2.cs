@@ -6,6 +6,7 @@ public partial class ZC {
     public class NOTIFY_EXP2 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_EXP2;
+        public PacketHeader Header => HEADER;
         public const int SIZE = 18;
 
         public uint id;

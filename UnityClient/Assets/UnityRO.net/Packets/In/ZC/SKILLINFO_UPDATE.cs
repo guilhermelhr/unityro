@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_SKILLINFO_UPDATE;
         public const int SIZE = 11;
+        public PacketHeader Header => HEADER;
 
         public SkillInfo SkillInfo;
 

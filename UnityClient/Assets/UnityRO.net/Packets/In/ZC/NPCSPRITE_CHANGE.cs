@@ -12,6 +12,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NPCSPRITE_CHANGE;
         public const int SIZE = 11;
+        public PacketHeader Header => HEADER;
 
         public uint GID;
         public byte objecttype;

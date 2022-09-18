@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_RESTART_ACK;
         public const int SIZE = 3;
+        public PacketHeader Header => HEADER;
 
         public byte type;
 

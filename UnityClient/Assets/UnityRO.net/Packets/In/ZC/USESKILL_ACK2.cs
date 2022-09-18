@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_USESKILL_ACK2;
         public const int SIZE = 25;
+        public PacketHeader Header => HEADER;
 
         public uint AID;
         public uint targetID;

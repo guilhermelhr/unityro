@@ -7,7 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_DELETE_ITEM_FROM_BODY;
         public const int SIZE = 8;
-
+        public PacketHeader Header => HEADER;
         public short DeleteType;
         public ushort Index;
         public ushort Count;

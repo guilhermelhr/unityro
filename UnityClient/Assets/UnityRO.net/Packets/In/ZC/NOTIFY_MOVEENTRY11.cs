@@ -8,7 +8,7 @@ public partial class ZC {
     public class NOTIFY_MOVEENTRY11 : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_MOVEENTRY11;
-
+        public PacketHeader Header => HEADER;
         public EntitySpawnData entityData;
 
         public void Read(MemoryStreamReader br, int size) {

@@ -14,9 +14,6 @@ using UnityEngine;
  */
 public class PacketSerializer {
 
-    private const bool DUMP_REGISTERED_PACKETS = false;
-    private const bool DUMP_RECEIVED_PACKETS = true;
-
     public struct PacketInfo {
         public int Size;
         public Type Type;
@@ -24,9 +21,10 @@ public class PacketSerializer {
 
     public MemoryStream Memory { get; set; }
     public int BytesToSkip { get; set; }
-    private Dictionary<ushort, OnPacketReceived> PacketHooks { get; set; } = new Dictionary<ushort, OnPacketReceived>();
 
     public static Dictionary<ushort, PacketInfo> RegisteredPackets;
+
+    private IPacketHandler PacketHandler;
 
     static PacketSerializer() {
         RegisteredPackets = new Dictionary<ushort, PacketInfo>();
@@ -37,17 +35,10 @@ public class PacketSerializer {
             PacketHandlerAttribute ma = (PacketHandlerAttribute)attributes[0];
             RegisteredPackets.Add(ma.MethodId, new PacketInfo { Size = ma.Size, Type = type });
         }
-
-        if(DUMP_REGISTERED_PACKETS) {
-            using(StreamWriter w = File.AppendText(Path.Combine(Directory.GetCurrentDirectory(), "Logs", "registered_packets.txt"))) {
-                foreach(var pkt in RegisteredPackets) {
-                    w.WriteLine($"{string.Format("0x{0:x3}", pkt.Key)},{pkt.Value.Size} \t//{pkt.Value.Type}");
-                }
-            }
-        }
     }
 
-    public PacketSerializer() {
+    public PacketSerializer(IPacketHandler packetHandler) {
+        PacketHandler = packetHandler;
         Memory = new MemoryStream();
     }
 
@@ -80,7 +71,6 @@ public class PacketSerializer {
             ushort cmd = BitConverter.ToUInt16(tmp, 0);
 
             if(!RegisteredPackets.ContainsKey(cmd)) {
-                DumpReceivedPacket(cmd, -1, Memory.Length - Memory.Position);
                 // We gotta break because we don't know the size of the packet
                 Debug.LogWarning($"Received Unknown Command: {string.Format("0x{0:x4}", cmd)}\nProbably: {(PacketHeader)cmd}");
                 Memory.Position -= 2;
@@ -108,20 +98,14 @@ public class PacketSerializer {
 
                 ConstructorInfo ci = RegisteredPackets[cmd].Type.GetConstructor(new Type[] { });
                 InPacket packet = (InPacket)ci.Invoke(null);
-                using(var br = new MemoryStreamReader(data)) {
-                    packet.Read(br, size - (isFixed ? 2 : 4));
+                using var br = new MemoryStreamReader(data);
+                packet.Read(br, size - (isFixed ? 2 : 4));
 
-                    if(PacketHooks.ContainsKey(cmd)) {
-                        ThreadManager.ExecuteOnMainThread(() => {
-                            PacketHooks[cmd].DynamicInvoke(cmd, size, packet);
-                        });
-                    } else {
-                        Debug.LogWarning($"Received Unhadled Command {(PacketHeader)cmd}");
-                    }
+                ThreadManager.ExecuteOnMainThread(() => {
+                    PacketHandler.OnPacketReceived(packet);
+                });
 
-                    PacketReceived?.Invoke(cmd, size, packet);
-                    DumpReceivedPacket(cmd, size, Memory.Length - Memory.Position, packet);
-                }
+                PacketReceived?.Invoke(cmd, size, packet);
             }
         }
 
@@ -132,21 +116,6 @@ public class PacketSerializer {
 
             Memory = ms;
         }
-    }
-
-    private static void DumpReceivedPacket(ushort cmd, int size, long remainingSize, InPacket packet = null) {
-        if(DUMP_RECEIVED_PACKETS) {
-            try {
-                var log = $"{string.Format("0x{0:x3}", cmd)} \tReceived Size:{size} \tRegistered Size:{RegisteredPackets.Where(it => it.Key == cmd).FirstOrDefault().Value.Size} \tRemaining Size: {remainingSize} \t// {(PacketHeader)cmd}";
-                Debug.Log(log);
-            } catch(Exception e) {
-                Debug.LogException(e);
-            }
-        }
-    }
-
-    public void Hook(ushort cmd, OnPacketReceived onPackedReceived) {
-        PacketHooks[cmd] = onPackedReceived;
     }
 
     public event Action<ushort, int, InPacket> PacketReceived;

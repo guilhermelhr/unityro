@@ -7,6 +7,7 @@ public partial class ZC {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_UPDATEPLAYER;
         public const int SIZE = 5;
+        public PacketHeader Header => HEADER;
 
         public short Style;
         public int Item;

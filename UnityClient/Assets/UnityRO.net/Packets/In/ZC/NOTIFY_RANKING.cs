@@ -6,6 +6,7 @@ public partial class ZC {
     public class NOTIFY_RANKING : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_NOTIFY_RANKING;
+        public PacketHeader Header => HEADER;
         public const int SIZE = 14;
 
         public uint AID;

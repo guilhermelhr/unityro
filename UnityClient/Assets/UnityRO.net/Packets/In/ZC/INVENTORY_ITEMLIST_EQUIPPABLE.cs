@@ -12,6 +12,7 @@ public partial class ZC {
 
         private const int BLOCK_SIZE = 67;
         public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_ITEMLIST_EQUIP;
+        public PacketHeader Header => HEADER;
 
         public List<ItemInfo> Inventory = new List<ItemInfo>();
 
