@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Renderer.Sprite;
 using ROIO.Models.FileTypes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -292,10 +293,77 @@ public class EntityViewer : MonoBehaviour {
         meshCollider.sharedMesh = mesh;
     }
 
+    /**
+     * Hammer time
+     */
     private int GetCurrentFrame(long tm) {
         var isIdle = CurrentMotion.Motion == SpriteMotion.Idle || CurrentMotion.Motion == SpriteMotion.Sit;
         double animCount = currentAction.frames.Length;
 
+        switch (CurrentMotion.Motion) {
+            case SpriteMotion.Attack:
+            case SpriteMotion.Attack1:
+            case SpriteMotion.Attack2:
+            case SpriteMotion.Attack3:
+                return GetAttackFrame(tm, isIdle, animCount);
+            default:
+                return GetEverythingElseFrame(tm, isIdle, animCount);
+
+        }
+    }
+
+    private int GetEverythingElseFrame(long tm, bool isIdle, double animCount) {
+        long delay = (long) GetDelay();
+        if (delay <= 0) {
+            delay = (int) currentAction.delay;
+        }
+        var headDir = 0;
+        double frame;
+
+        if (ViewerType == ViewerType.BODY && Entity.Type == EntityType.PC && isIdle) {
+            return Entity.HeadDir;
+        }
+
+        if ((ViewerType == ViewerType.HEAD ||
+            ViewerType == ViewerType.HEAD_TOP ||
+            ViewerType == ViewerType.HEAD_MID ||
+            ViewerType == ViewerType.HEAD_BOTTOM) && isIdle) {
+            animCount = Math.Floor(animCount / 3);
+            headDir = Entity.HeadDir;
+        }
+
+        if (AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
+            frame = Math.Floor((double) (tm / delay));
+            frame %= animCount;
+            frame += animCount * headDir;
+            frame += previousFrame;
+            frame %= animCount;
+
+            return (int) frame;
+        }
+
+        frame = Math.Min(tm / delay | 0, animCount);
+        frame += (animCount * headDir);
+        frame += previousFrame;
+
+        if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
+            previousFrame = frame = animCount - 1;
+
+            if (CurrentMotion.delay > 0 && GameManager.Tick < CurrentMotion.delay) {
+                if (NextMotion.HasValue) {
+                    StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float) (CurrentMotion.delay - GameManager.Tick) / 1000f));
+                }
+            } else {
+                if (NextMotion.HasValue) {
+                    ChangeMotion(NextMotion.Value);
+                }
+            }
+        }
+
+        return (int) Math.Min(frame, animCount - 1);
+    }
+
+    private int GetAttackFrame(long tm, bool isIdle, double animCount) {
         if (isIdle) {
             return 0;
         }
@@ -331,13 +399,29 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private float GetDelay() {
-        if (currentAction == null) {
+        if (currentACT == null || currentAction == null) {
             return 4f;
-        } else if (currentAction.delay >= 100f) {
-            return 4f;
-        } else {
-            return currentAction.delay;
         }
+
+        if (ViewerType == ViewerType.BODY && CurrentMotion.Motion == SpriteMotion.Walk) {
+            return (int) (currentAction.delay / 150 * Entity.Status.walkSpeed);
+        }
+
+        if (CurrentMotion.Motion == SpriteMotion.Attack ||
+            CurrentMotion.Motion == SpriteMotion.Attack1 ||
+            CurrentMotion.Motion == SpriteMotion.Attack2 ||
+            CurrentMotion.Motion == SpriteMotion.Attack3) {
+
+            if (currentAction == null) {
+                return 4f;
+            } else if (currentAction.delay >= 100f) {
+                return 4f;
+            } else {
+                return currentAction.delay;
+            }
+        }
+
+        return (int) currentAction.delay;
     }
 
     private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
