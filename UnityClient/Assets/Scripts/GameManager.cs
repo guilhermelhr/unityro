@@ -117,13 +117,17 @@ public class GameManager : MonoBehaviour {
         //AudioSource.Play();
     }
 
+    /**
+     * We do not want to pause/resume packet handling from here
+     * That side effect can bring unwanted behaviour like being able to see
+     * npcs vanishing and spawning
+     * 
+     * So we leave for the caller the responsibility to pause/resume
+     */
     public async Task<GameMap> BeginMapLoading(string mapName) {
         await LoadScene("LoadingScene", LoadSceneMode.Additive);
 
-        NetworkClient.PausePacketHandling();
-
         MapRenderer.Clear();
-        EntityManager.ClearEntities();
         if (CurrentMap != null) {
             Destroy(CurrentMap.gameObject);
         }
@@ -135,9 +139,7 @@ public class GameManager : MonoBehaviour {
         var mapPrefab = await Addressables.LoadAssetAsync<GameObject>($"data/maps/{Path.GetFileNameWithoutExtension(mapName)}.prefab").Task;
         CurrentMap = Instantiate(mapPrefab).GetComponent<GameMap>();
 #endif
-
         await UnloadScene("LoadingScene");
-        NetworkClient.ResumePacketHandling();
 
         PlayBgm(Tables.MapTable[$"{mapName}.rsw"].mp3);
         return CurrentMap;
