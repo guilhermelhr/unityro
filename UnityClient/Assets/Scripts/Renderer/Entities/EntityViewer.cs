@@ -1,10 +1,8 @@
 ﻿using Assets.Scripts.Renderer.Sprite;
-using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -15,6 +13,7 @@ public class EntityViewer : MonoBehaviour {
 
     private const int AVERAGE_ATTACK_SPEED = 432;
     private const int AVERAGE_ATTACKED_SPEED = 288;
+    private const int MAX_ATTACK_SPEED = AVERAGE_ATTACKED_SPEED * 2;
 
     public Entity Entity;
     public EntityViewer Parent;
@@ -41,6 +40,11 @@ public class EntityViewer : MonoBehaviour {
     private long AnimationStart;
     private int ActionId = -1;
     private double previousFrame = 0;
+
+    private double motionSpeed = 4;
+    private bool isAnimationFinished;
+    private double loopCountToAnimationFinish = 1;
+    private float motionSpeedMultiplier = 1f;
 
     private MeshCollider meshCollider;
     private Material SpriteMaterial;
@@ -172,6 +176,10 @@ public class EntityViewer : MonoBehaviour {
             return;
         }
 
+        if (isAnimationFinished && NextMotion.HasValue) {
+            ChangeMotion(NextMotion.Value);
+        }
+
         var cameraDirection = (int) (CharacterCamera.ROCamera?.Direction ?? 0);
         var entityDirection = (int) Entity.Direction + 8;
         currentActionIndex = (ActionId + (cameraDirection + entityDirection) % 8) % currentACT.actions.Length;
@@ -288,54 +296,33 @@ public class EntityViewer : MonoBehaviour {
     private int GetCurrentFrame(long tm) {
         var isIdle = CurrentMotion.Motion == SpriteMotion.Idle || CurrentMotion.Motion == SpriteMotion.Sit;
         double animCount = currentAction.frames.Length;
-        long delay = GetDelay();
-        if (delay <= 0) {
-            delay = (int) currentAction.delay;
-        }
-        var headDir = 0;
-        double frame;
 
-        if (ViewerType == ViewerType.BODY && Entity.Type == EntityType.PC && isIdle) {
-            return Entity.HeadDir;
+        if (isIdle) {
+            return 0;
         }
 
-        if ((ViewerType == ViewerType.HEAD ||
-            ViewerType == ViewerType.HEAD_TOP ||
-            ViewerType == ViewerType.HEAD_MID ||
-            ViewerType == ViewerType.HEAD_BOTTOM) && isIdle) {
-            animCount = Math.Floor(animCount / 3);
-            headDir = Entity.HeadDir;
-        }
+        var stateCnt = tm / 24f;
+        double currentMotion = 0;
+        if (!AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
+            var motionCount = animCount;
+            currentMotion = (int) (stateCnt / motionSpeed % animCount);
+            var loopCount = (stateCnt / motionSpeed) / motionCount;
 
-        if (AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
-            frame = Math.Floor((double) (tm / delay));
-            frame %= animCount;
-            frame += animCount * headDir;
-            frame += previousFrame;
-            frame %= animCount;
-
-            return (int) frame;
-        }
-
-        frame = Math.Min(tm / delay | 0, animCount);
-        frame += (animCount * headDir);
-        frame += previousFrame;
-
-        if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
-            previousFrame = frame = animCount - 1;
-
-            if (CurrentMotion.delay > 0 && GameManager.Tick < CurrentMotion.delay) {
-                if (NextMotion.HasValue) {
-                    StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float) (CurrentMotion.delay - GameManager.Tick) / 1000f));
-                }
-            } else {
-                if (NextMotion.HasValue) {
-                    ChangeMotion(NextMotion.Value);
+            if (loopCount >= 1) {
+                currentMotion--;
+                if (loopCount >= loopCountToAnimationFinish) {
+                    isAnimationFinished = true;
                 }
             }
+        } else {
+            currentMotion = (int) (stateCnt / motionSpeed % animCount);
         }
 
-        return (int) Math.Min(frame, animCount - 1);
+        if (currentMotion <= 0) {
+            currentMotion = 0;
+        }
+
+        return (int) currentMotion;
     }
 
     private IEnumerator ChangeMotionAfter(MotionRequest motion, float time) {
@@ -344,21 +331,14 @@ public class EntityViewer : MonoBehaviour {
         ChangeMotion(motion);
     }
 
-    private int GetDelay() {
-        if (ViewerType == ViewerType.BODY && CurrentMotion.Motion == SpriteMotion.Walk) {
-            return (int) (currentAction.delay / 150 * Entity.Status.walkSpeed);
+    private float GetDelay() {
+        if (currentAction == null) {
+            return 4f;
+        } else if (currentAction.delay >= 100f) {
+            return 4f;
+        } else {
+            return currentAction.delay;
         }
-
-        if (CurrentMotion.Motion == SpriteMotion.Attack ||
-            CurrentMotion.Motion == SpriteMotion.Attack1 ||
-            CurrentMotion.Motion == SpriteMotion.Attack2 ||
-            CurrentMotion.Motion == SpriteMotion.Attack3) {
-            var delay = (int) (currentAction.delay * (Entity.Status.attackSpeed / AVERAGE_ATTACK_SPEED));
-
-            return (delay > 0) ? delay : Entity.Status.attackSpeed / currentAction.FrameCount;
-        }
-
-        return (int) currentAction.delay;
     }
 
     private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
@@ -394,6 +374,16 @@ public class EntityViewer : MonoBehaviour {
             var attackActions = new SpriteMotion[] { SpriteMotion.Attack1, SpriteMotion.Attack2, SpriteMotion.Attack3 };
             var action = DBManager.GetWeaponAction((Job) Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.Weapon, Entity.EquipInfo.Shield);
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, attackActions[action]);
+
+            /**
+             * Seems like og client makes entity look diagonally up
+             * when attacking from the sides
+             */
+            if (Entity.Direction == Direction.East) {
+                Entity.Direction = Direction.NorthEast;
+            } else if (Entity.Direction == Direction.West) {
+                Entity.Direction = Direction.NorthWest;
+            }
         } else {
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
         }
@@ -404,6 +394,14 @@ public class EntityViewer : MonoBehaviour {
         ActionId = newAction;
         AnimationStart = GameManager.Tick;
         previousFrame = 0;
+        motionSpeedMultiplier = 1;
+        isAnimationFinished = false;
+
+        motionSpeed = GetDelay();
+        if (motionSpeed < 1) {
+            motionSpeed = 1;
+        }
+        motionSpeed *= motionSpeedMultiplier;
 
         foreach (var child in Children) {
             child.ChangeMotion(motion, nextMotion);
@@ -452,5 +450,16 @@ public class EntityViewer : MonoBehaviour {
         public int hair;
         public int hairColor;
         public int clothesColor;
+    }
+
+    internal void SetMotionSpeedMultipler(ushort attackMT) {
+        //if (weapon is bow)
+        if (attackMT > MAX_ATTACK_SPEED) {
+            attackMT = MAX_ATTACK_SPEED;
+        }
+        //endif
+
+        motionSpeedMultiplier = (float) attackMT / AVERAGE_ATTACK_SPEED;
+        motionSpeed *= motionSpeedMultiplier;
     }
 }

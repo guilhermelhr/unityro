@@ -446,6 +446,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
                         delay = 0
                     }
                 );
+                srcEntity.SetAttackSpeed((ushort) NOTIFY_SKILL2.attackMT);
             }
 
             if (dstEntity != null) {
@@ -748,6 +749,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             new EntityViewer.MotionRequest { Motion = SpriteMotion.Attack },
             new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = GameManager.Tick + pkt.sourceSpeed }
         );
+        srcEntity.SetAttackSpeed(pkt.sourceSpeed);
     }
 
     private void OnUseSkillResult(ushort cmd, int size, InPacket packet) {
@@ -809,6 +811,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void SetAttackSpeed(ushort speed) {
         Status.attackSpeed = speed;
+        EntityViewer.SetMotionSpeedMultipler(speed);
     }
 
     public EntityBaseStatus GetBaseStatus() {
