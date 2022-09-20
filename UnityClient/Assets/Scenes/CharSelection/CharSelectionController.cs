@@ -93,9 +93,6 @@ public class CharSelectionController : MonoBehaviour {
             Session.StartSession(new Session(entity, NetworkClient.State.LoginInfo.AccountID));
             DontDestroyOnLoad(entity.gameObject);
 
-            //var mapUI = Instantiate(MapUIPrefab);
-            //DontDestroyOnLoad(mapUI);
-
             var loginInfo = NetworkClient.State.LoginInfo;
             new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int) new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
         }

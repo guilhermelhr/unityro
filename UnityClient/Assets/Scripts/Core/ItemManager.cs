@@ -184,7 +184,7 @@ public class ItemManager : MonoBehaviour {
             var z = pkt.y - 0.5 + pkt.subY / 12;
             var y = PathFinding.GetCellHeight((int) x, (int) z) + 5.0;
 
-            EntityManager.SpawnItem(new ItemSpawnInfo() {
+            _ = EntityManager.SpawnItem(new ItemSpawnInfo() {
                 AID = pkt.id,
                 mapID = pkt.mapID,
                 Position = new Vector3((float) x, (float) y, (float) z),
@@ -199,7 +199,7 @@ public class ItemManager : MonoBehaviour {
             var z = ITEM_ENTRY.y - 0.5 + ITEM_ENTRY.subY / 12;
             var y = PathFinding.GetCellHeight((int) x, (int) z) + 1.0;
 
-            EntityManager.SpawnItem(new ItemSpawnInfo() {
+            _ = EntityManager.SpawnItem(new ItemSpawnInfo() {
                 AID = ITEM_ENTRY.id,
                 mapID = ITEM_ENTRY.mapID,
                 Position = new Vector3((float) x, (float) y, (float) z),
