@@ -87,9 +87,10 @@ public class OfflineUtility : MonoBehaviour {
         charCam.SetTarget(offlineEntity.EntityViewer.transform);
 
         offlineEntity.SetReady(true);
-        //var mob = EntityManager.Spawn(new EntityData() { job = 1002, name = "Poring", GID = 20001, speed = 697, PosDir = new int[] { 0, 0, 0 }, objecttype = EntityType.MOB });
-        //mob.transform.position = new Vector3(150, 0, 155);
-        //mob.SetReady(true);
+
+        var mob = EntityManager.Spawn(new EntitySpawnData() { job = 1002, name = "Poring", GID = 20001, speed = 697, PosDir = new int[] { 0, 0, 0 }, objecttype = EntityType.MOB });
+        mob.transform.position = new Vector3(150, 0, 155);
+        mob.SetReady(true);
     }
 
     public async Task LoadMap() {
