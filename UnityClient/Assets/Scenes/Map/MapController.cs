@@ -34,8 +34,6 @@ public class MapController : MonoBehaviour {
             throw new Exception("Map Login info cannot be null");
         }
 
-        NetworkClient.PausePacketHandling();
-
         NetworkClient.HookPacket(ZC.NOTIFY_STANDENTRY11.HEADER, OnEntitySpawn);
         NetworkClient.HookPacket(ZC.NOTIFY_NEWENTRY11.HEADER, OnEntitySpawn);
         NetworkClient.HookPacket(ZC.NOTIFY_MOVEENTRY11.HEADER, OnEntitySpawn);
@@ -53,8 +51,6 @@ public class MapController : MonoBehaviour {
         GameManager.InitCamera();
 
         var gameMap = await GameManager.BeginMapLoading(mapInfo.mapname);
-
-        NetworkClient.ResumePacketHandling();
 
         PathFinding = gameMap.GetPathFinder();
         NetworkClient.StartHeatBeat();

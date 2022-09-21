@@ -32,6 +32,7 @@ public class OfflineUtility : MonoBehaviour {
         MapNames = new List<string>();
 
         SpawnCharacter();
+        SpawnMob();
         //GameManager.BeginMapLoading(MapName);
 
         var descriptors = FileManager.GetFileDescriptors();
@@ -86,10 +87,13 @@ public class OfflineUtility : MonoBehaviour {
         CharacterCamera charCam = FindObjectOfType<CharacterCamera>();
         charCam.SetTarget(offlineEntity.EntityViewer.transform);
 
-        offlineEntity.SetReady(true);
-        //var mob = EntityManager.Spawn(new EntityData() { job = 1002, name = "Poring", GID = 20001, speed = 697, PosDir = new int[] { 0, 0, 0 }, objecttype = EntityType.MOB });
-        //mob.transform.position = new Vector3(150, 0, 155);
-        //mob.SetReady(true);
+        //offlineEntity.SetReady(true);
+    }
+
+    private void SpawnMob() {
+        var mob = EntityManager.Spawn(new EntitySpawnData() { job = 1002, name = "Poring", GID = 20001, speed = 697, PosDir = new int[] { 0, 0, 0 }, objecttype = EntityType.MOB });
+        mob.transform.position = new Vector3(150, 0, 155);
+        mob.SetReady(true);
     }
 
     public async Task LoadMap() {
