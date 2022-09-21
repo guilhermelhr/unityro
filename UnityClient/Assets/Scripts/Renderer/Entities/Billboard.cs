@@ -10,8 +10,7 @@ public class Billboard : MonoBehaviour {
     }
 
     public void LateUpdate() {
-        UpdateRotation();
-        MaybeUpdateScale();
+        transform.localRotation = Camera.main.transform.rotation;
     }
 
     private void MaybeUpdateScale() {

@@ -27,7 +27,7 @@ public class EntityViewer : MonoBehaviour {
     public SpriteState State = SpriteState.Idle;
 
     public List<EntityViewer> Children = new List<EntityViewer>();
-    private Dictionary<int, SpriteRenderer> Layers = new Dictionary<int, SpriteRenderer>();
+    private Dictionary<ACT.Frame, Mesh> ColliderCache = new Dictionary<ACT.Frame, Mesh>();
     private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
 
     private PaletteData CurrentPaletteData;
@@ -42,18 +42,20 @@ public class EntityViewer : MonoBehaviour {
     private double previousFrame = 0;
 
     private double motionSpeed = 4;
-    private bool isAnimationFinished;
     private double loopCountToAnimationFinish = 1;
     private float motionSpeedMultiplier = 1f;
 
-    private MeshCollider meshCollider;
+    private MeshCollider MeshCollider;
+    private MeshFilter MeshFilter;
+    private MeshRenderer MeshRenderer;
+    private SortingGroup SortingGroup;
     private Material SpriteMaterial;
     private Texture2D PaletteTexture;
 
     public void Start() {
         SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
-        Init();
 
+        Init();
         InitShadow();
     }
 
@@ -68,7 +70,15 @@ public class EntityViewer : MonoBehaviour {
             hair = Entity.Status.hair,
             clothesColor = Entity.Status.clothes_color
         };
-        meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
+
+        MeshCollider = gameObject.GetOrAddComponent<MeshCollider>();
+        MeshFilter = gameObject.GetOrAddComponent<MeshFilter>();
+        MeshRenderer = gameObject.GetOrAddComponent<MeshRenderer>();
+        SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
+
+        MeshRenderer.receiveShadows = false;
+        MeshRenderer.lightProbeUsage = LightProbeUsage.Off;
+        MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
 
         if (Entity.Type == EntityType.WARP) {
             return;
@@ -116,10 +126,7 @@ public class EntityViewer : MonoBehaviour {
             if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD && currentViewID <= 0) {
                 currentACT = null;
                 sprites = null;
-                Layers.Values.ToList().ForEach(Renderer => {
-                    Destroy(Renderer.gameObject);
-                });
-                Layers.Clear();
+                ColliderCache.Clear();
                 MeshCache.Clear();
 
                 return;
@@ -127,23 +134,15 @@ public class EntityViewer : MonoBehaviour {
 
             try {
                 var spriteData = await Addressables.LoadAssetAsync<SpriteData>(path + ".asset").Task;
-
-                // Figure out a way of using palettes with shaders
-                //if (palettePath.Length > 0) {
-                //    if (FileManager.Load(palettePath) is byte[] currentPalette) {
-                //        PaletteTexture = new Texture2D(256, 1, TextureFormat.RGBA32, false) {
-                //            filterMode = FilterMode.Point,
-                //            wrapMode = TextureWrapMode.Clamp
-                //        };
-                //        PaletteTexture.LoadRawTextureData(currentPalette);
-                //        PaletteTexture.Apply();
-                //    }
-                //}
+                var atlas = await Addressables.LoadAssetAsync<Texture2D>(path + ".png").Task;
 
                 sprites = spriteData.sprites;
                 currentACT = spriteData.act;
-            } catch {
+                MeshRenderer.material = SpriteMaterial;
+                MeshRenderer.material.mainTexture = atlas;
+            } catch (Exception e) {
                 Debug.LogError($"Could not load sprites for: {path}");
+                Debug.LogException(e);
                 currentACT = null;
             }
         }
@@ -176,10 +175,6 @@ public class EntityViewer : MonoBehaviour {
             return;
         }
 
-        if (isAnimationFinished && NextMotion.HasValue) {
-            ChangeMotion(NextMotion.Value);
-        }
-
         var cameraDirection = (int) (CharacterCamera.ROCamera?.Direction ?? 0);
         var entityDirection = (int) Entity.Direction + 8;
         currentActionIndex = (ActionId + (cameraDirection + entityDirection) % 8) % currentACT.actions.Length;
@@ -192,7 +187,6 @@ public class EntityViewer : MonoBehaviour {
         }
 
         UpdateMesh(frame);
-        RenderLayers(frame);
         PlaySound(frame);
         UpdateAnchorPoints();
     }
@@ -249,48 +243,22 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    private void RenderLayers(ACT.Frame frame) {
-        // If current frame doesn't have layers, cleanup layer cache
-        Layers.Values.ToList().ForEach(Renderer => Renderer.sprite = null);
-
-        for (int i = 0; i < frame.layers.Length; i++) {
-            var layer = frame.layers[i];
-            var sprite = sprites[layer.index];
-
-            Layers.TryGetValue(i, out var spriteRenderer);
-
-            if (spriteRenderer == null) {
-                var go = new GameObject($"Layer{i}");
-                spriteRenderer = go.AddComponent<SpriteRenderer>();
-                spriteRenderer.transform.SetParent(gameObject.transform, false);
-                SpriteMaterial.SetTexture("_PaletteTex", PaletteTexture);
-
-                spriteRenderer.material = SpriteMaterial;
-            }
-
-            CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
-
-            spriteRenderer.transform.localRotation = rotation;
-            spriteRenderer.transform.localPosition = newPos;
-            spriteRenderer.transform.localScale = scale;
-
-            spriteRenderer.sprite = sprite;
-            spriteRenderer.material.color = layer.color;
-
-            if (!Layers.ContainsKey(i)) {
-                Layers.Add(i, spriteRenderer);
-            }
-        }
-    }
-
     private void UpdateMesh(ACT.Frame frame) {
         // We need this mesh collider in order to have the raycast to hit the sprite
-        MeshCache.TryGetValue(frame, out Mesh mesh);
-        if (mesh == null) {
-            mesh = SpriteMeshBuilder.BuildColliderMesh(frame, sprites);
-            MeshCache.Add(frame, mesh);
+        ColliderCache.TryGetValue(frame, out Mesh colliderMesh);
+        if (colliderMesh == null) {
+            colliderMesh = SpriteMeshBuilder.BuildColliderMesh(frame, sprites);
+            ColliderCache.Add(frame, colliderMesh);
         }
-        meshCollider.sharedMesh = mesh;
+
+        MeshCache.TryGetValue(frame, out Mesh rendererMesh);
+        if (rendererMesh == null) { 
+            rendererMesh = SpriteMeshBuilder.BuildSpriteMesh(frame, sprites);
+            MeshCache.Add(frame, rendererMesh);
+        }
+        MeshFilter.sharedMesh = null;
+        MeshFilter.sharedMesh = rendererMesh;
+        MeshCollider.sharedMesh = colliderMesh;
     }
 
     /**
@@ -369,7 +337,7 @@ public class EntityViewer : MonoBehaviour {
         }
 
         var stateCnt = tm / 24f;
-        double currentMotion = 0;
+        double currentMotion;
         if (!AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
             var motionCount = animCount;
             currentMotion = (int) (stateCnt / motionSpeed % animCount);
@@ -377,8 +345,8 @@ public class EntityViewer : MonoBehaviour {
 
             if (loopCount >= 1) {
                 currentMotion--;
-                if (loopCount >= loopCountToAnimationFinish) {
-                    isAnimationFinished = true;
+                if (loopCount >= loopCountToAnimationFinish && NextMotion.HasValue) {
+                    ChangeMotion(NextMotion.Value);
                 }
             }
         } else {
@@ -422,15 +390,6 @@ public class EntityViewer : MonoBehaviour {
         }
 
         return (int) currentAction.delay;
-    }
-
-    private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
-        rotation = Quaternion.Euler(0, 0, -layer.angle);
-        scale = new Vector3(layer.scale.x * (layer.isMirror ? -1 : 1), layer.scale.y, 1);
-        var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
-        var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
-
-        newPos = new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / sprite.pixelsPerUnit;
     }
 
     public void ChangeMotion(MotionRequest motion, MotionRequest? nextMotion = null) {
@@ -478,7 +437,6 @@ public class EntityViewer : MonoBehaviour {
         AnimationStart = GameManager.Tick;
         previousFrame = 0;
         motionSpeedMultiplier = 1;
-        isAnimationFinished = false;
 
         motionSpeed = GetDelay();
         if (motionSpeed < 1) {
