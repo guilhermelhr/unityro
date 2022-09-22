@@ -117,13 +117,17 @@ public class GameManager : MonoBehaviour {
         //AudioSource.Play();
     }
 
+    /**
+     * We do not want to pause/resume packet handling from here
+     * That side effect can bring unwanted behaviour like being able to see
+     * npcs vanishing and spawning
+     * 
+     * So we leave for the caller the responsibility to pause/resume
+     */
     public async Task<GameMap> BeginMapLoading(string mapName) {
-        SceneManager.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
-
-        NetworkClient.PausePacketHandling();
+        await LoadScene("LoadingScene", LoadSceneMode.Additive);
 
         MapRenderer.Clear();
-        EntityManager.ClearEntities();
         if (CurrentMap != null) {
             Destroy(CurrentMap.gameObject);
         }
@@ -135,12 +139,30 @@ public class GameManager : MonoBehaviour {
         var mapPrefab = await Addressables.LoadAssetAsync<GameObject>($"data/maps/{Path.GetFileNameWithoutExtension(mapName)}.prefab").Task;
         CurrentMap = Instantiate(mapPrefab).GetComponent<GameMap>();
 #endif
-
-        NetworkClient.ResumePacketHandling();
-        SceneManager.UnloadSceneAsync("LoadingScene");
+        await UnloadScene("LoadingScene");
 
         PlayBgm(Tables.MapTable[$"{mapName}.rsw"].mp3);
         return CurrentMap;
+    }
+
+    private Task<bool> LoadScene(string sceneName, LoadSceneMode mode) {
+        var t = new TaskCompletionSource<bool>();
+
+        SceneManager.LoadSceneAsync(sceneName, mode).completed += delegate {
+            t.TrySetResult(true);
+        };
+
+        return t.Task;
+    }
+
+    private Task<bool> UnloadScene(string sceneName) {
+        var t = new TaskCompletionSource<bool>();
+
+        SceneManager.UnloadSceneAsync(sceneName).completed += delegate {
+            t.TrySetResult(true);
+        };
+
+        return t.Task;
     }
 
     public void SetConfigurations(RemoteConfiguration remoteConfiguration, LocalConfiguration localConfiguration) {

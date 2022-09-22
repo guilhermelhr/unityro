@@ -1,10 +1,8 @@
 ﻿using Assets.Scripts.Renderer.Sprite;
-using ROIO;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -15,6 +13,7 @@ public class EntityViewer : MonoBehaviour {
 
     private const int AVERAGE_ATTACK_SPEED = 432;
     private const int AVERAGE_ATTACKED_SPEED = 288;
+    private const int MAX_ATTACK_SPEED = AVERAGE_ATTACKED_SPEED * 2;
 
     public Entity Entity;
     public EntityViewer Parent;
@@ -28,7 +27,7 @@ public class EntityViewer : MonoBehaviour {
     public SpriteState State = SpriteState.Idle;
 
     public List<EntityViewer> Children = new List<EntityViewer>();
-    private Dictionary<int, SpriteRenderer> Layers = new Dictionary<int, SpriteRenderer>();
+    private Dictionary<ACT.Frame, Mesh> ColliderCache = new Dictionary<ACT.Frame, Mesh>();
     private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
 
     private PaletteData CurrentPaletteData;
@@ -42,14 +41,21 @@ public class EntityViewer : MonoBehaviour {
     private int ActionId = -1;
     private double previousFrame = 0;
 
-    private MeshCollider meshCollider;
+    private double motionSpeed = 4;
+    private double loopCountToAnimationFinish = 1;
+    private float motionSpeedMultiplier = 1f;
+
+    private MeshCollider MeshCollider;
+    private MeshFilter MeshFilter;
+    private MeshRenderer MeshRenderer;
+    private SortingGroup SortingGroup;
     private Material SpriteMaterial;
     private Texture2D PaletteTexture;
 
     public void Start() {
         SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
-        Init();
 
+        Init();
         InitShadow();
     }
 
@@ -64,10 +70,16 @@ public class EntityViewer : MonoBehaviour {
             hair = Entity.Status.hair,
             clothesColor = Entity.Status.clothes_color
         };
-        meshCollider = gameObject.GetOrAddComponent<MeshCollider>();
+
+        InitRenderers();
 
         if (Entity.Type == EntityType.WARP) {
             return;
+        }
+
+        if (Entity.Type == EntityType.ITEM) {
+            MeshRenderer.material = SpriteMaterial;
+            MeshRenderer.material.mainTexture = sprites[0].texture;
         }
 
         if (sprites == null || reloadSprites) {
@@ -112,10 +124,7 @@ public class EntityViewer : MonoBehaviour {
             if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD && currentViewID <= 0) {
                 currentACT = null;
                 sprites = null;
-                Layers.Values.ToList().ForEach(Renderer => {
-                    Destroy(Renderer.gameObject);
-                });
-                Layers.Clear();
+                ColliderCache.Clear();
                 MeshCache.Clear();
 
                 return;
@@ -123,23 +132,16 @@ public class EntityViewer : MonoBehaviour {
 
             try {
                 var spriteData = await Addressables.LoadAssetAsync<SpriteData>(path + ".asset").Task;
-
-                // Figure out a way of using palettes with shaders
-                //if (palettePath.Length > 0) {
-                //    if (FileManager.Load(palettePath) is byte[] currentPalette) {
-                //        PaletteTexture = new Texture2D(256, 1, TextureFormat.RGBA32, false) {
-                //            filterMode = FilterMode.Point,
-                //            wrapMode = TextureWrapMode.Clamp
-                //        };
-                //        PaletteTexture.LoadRawTextureData(currentPalette);
-                //        PaletteTexture.Apply();
-                //    }
-                //}
+                var atlas = await Addressables.LoadAssetAsync<Texture2D>(path + ".png").Task;
 
                 sprites = spriteData.sprites;
                 currentACT = spriteData.act;
-            } catch {
+                MeshRenderer.material = SpriteMaterial;
+                MeshRenderer.material.mainTexture = atlas;
+                MeshRenderer.material.renderQueue -= 2;
+            } catch (Exception e) {
                 Debug.LogError($"Could not load sprites for: {path}");
+                Debug.LogException(e);
                 currentACT = null;
             }
         }
@@ -152,6 +154,17 @@ public class EntityViewer : MonoBehaviour {
             child.Init(reloadSprites);
             child.Start();
         }
+    }
+
+    private void InitRenderers() {
+        MeshCollider = gameObject.GetOrAddComponent<MeshCollider>();
+        MeshFilter = gameObject.GetOrAddComponent<MeshFilter>();
+        MeshRenderer = gameObject.GetOrAddComponent<MeshRenderer>();
+        SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
+
+        MeshRenderer.receiveShadows = false;
+        MeshRenderer.lightProbeUsage = LightProbeUsage.Off;
+        MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
     }
 
     void FixedUpdate() {
@@ -184,7 +197,6 @@ public class EntityViewer : MonoBehaviour {
         }
 
         UpdateMesh(frame);
-        RenderLayers(frame);
         PlaySound(frame);
         UpdateAnchorPoints();
     }
@@ -241,54 +253,50 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
-    private void RenderLayers(ACT.Frame frame) {
-        // If current frame doesn't have layers, cleanup layer cache
-        Layers.Values.ToList().ForEach(Renderer => Renderer.sprite = null);
-
-        for (int i = 0; i < frame.layers.Length; i++) {
-            var layer = frame.layers[i];
-            var sprite = sprites[layer.index];
-
-            Layers.TryGetValue(i, out var spriteRenderer);
-
-            if (spriteRenderer == null) {
-                var go = new GameObject($"Layer{i}");
-                spriteRenderer = go.AddComponent<SpriteRenderer>();
-                spriteRenderer.transform.SetParent(gameObject.transform, false);
-                SpriteMaterial.SetTexture("_PaletteTex", PaletteTexture);
-
-                spriteRenderer.material = SpriteMaterial;
-            }
-
-            CalculateSpritePositionScale(layer, sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation);
-
-            spriteRenderer.transform.localRotation = rotation;
-            spriteRenderer.transform.localPosition = newPos;
-            spriteRenderer.transform.localScale = scale;
-
-            spriteRenderer.sprite = sprite;
-            spriteRenderer.material.color = layer.color;
-
-            if (!Layers.ContainsKey(i)) {
-                Layers.Add(i, spriteRenderer);
-            }
-        }
-    }
-
     private void UpdateMesh(ACT.Frame frame) {
         // We need this mesh collider in order to have the raycast to hit the sprite
-        MeshCache.TryGetValue(frame, out Mesh mesh);
-        if (mesh == null) {
-            mesh = SpriteMeshBuilder.BuildColliderMesh(frame, sprites);
-            MeshCache.Add(frame, mesh);
+        ColliderCache.TryGetValue(frame, out Mesh colliderMesh);
+        if (colliderMesh == null) {
+            colliderMesh = SpriteMeshBuilder.BuildColliderMesh(frame, sprites);
+            ColliderCache.Add(frame, colliderMesh);
         }
-        meshCollider.sharedMesh = mesh;
+
+        MeshCache.TryGetValue(frame, out Mesh rendererMesh);
+        if (rendererMesh == null) { 
+            rendererMesh = SpriteMeshBuilder.BuildSpriteMesh(frame, sprites);
+            MeshCache.Add(frame, rendererMesh);
+        }
+
+        foreach (var layer in frame.layers) {
+            MeshRenderer.material.SetFloat("_Alpha", layer.color.a);
+        }
+
+        MeshFilter.sharedMesh = null;
+        MeshFilter.sharedMesh = rendererMesh;
+        MeshCollider.sharedMesh = colliderMesh;
     }
 
+    /**
+     * Hammer time
+     */
     private int GetCurrentFrame(long tm) {
         var isIdle = CurrentMotion.Motion == SpriteMotion.Idle || CurrentMotion.Motion == SpriteMotion.Sit;
         double animCount = currentAction.frames.Length;
-        long delay = GetDelay();
+
+        switch (CurrentMotion.Motion) {
+            case SpriteMotion.Attack:
+            case SpriteMotion.Attack1:
+            case SpriteMotion.Attack2:
+            case SpriteMotion.Attack3:
+                return GetAttackFrame(tm, isIdle, animCount);
+            default:
+                return GetEverythingElseFrame(tm, isIdle, animCount);
+
+        }
+    }
+
+    private int GetEverythingElseFrame(long tm, bool isIdle, double animCount) {
+        long delay = (long) GetDelay();
         if (delay <= 0) {
             delay = (int) currentAction.delay;
         }
@@ -338,13 +346,46 @@ public class EntityViewer : MonoBehaviour {
         return (int) Math.Min(frame, animCount - 1);
     }
 
+    private int GetAttackFrame(long tm, bool isIdle, double animCount) {
+        if (isIdle) {
+            return 0;
+        }
+
+        var stateCnt = tm / 24f;
+        double currentMotion;
+        if (!AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
+            var motionCount = animCount;
+            currentMotion = (int) (stateCnt / motionSpeed % animCount);
+            var loopCount = (stateCnt / motionSpeed) / motionCount;
+
+            if (loopCount >= 1) {
+                currentMotion--;
+                if (loopCount >= loopCountToAnimationFinish && NextMotion.HasValue) {
+                    ChangeMotion(NextMotion.Value);
+                }
+            }
+        } else {
+            currentMotion = (int) (stateCnt / motionSpeed % animCount);
+        }
+
+        if (currentMotion <= 0) {
+            currentMotion = 0;
+        }
+
+        return (int) currentMotion;
+    }
+
     private IEnumerator ChangeMotionAfter(MotionRequest motion, float time) {
         yield return new WaitForSeconds(time);
 
         ChangeMotion(motion);
     }
 
-    private int GetDelay() {
+    private float GetDelay() {
+        if (currentACT == null || currentAction == null) {
+            return 4f;
+        }
+
         if (ViewerType == ViewerType.BODY && CurrentMotion.Motion == SpriteMotion.Walk) {
             return (int) (currentAction.delay / 150 * Entity.Status.walkSpeed);
         }
@@ -353,21 +394,17 @@ public class EntityViewer : MonoBehaviour {
             CurrentMotion.Motion == SpriteMotion.Attack1 ||
             CurrentMotion.Motion == SpriteMotion.Attack2 ||
             CurrentMotion.Motion == SpriteMotion.Attack3) {
-            var delay = (int) (currentAction.delay * (Entity.Status.attackSpeed / AVERAGE_ATTACK_SPEED));
 
-            return (delay > 0) ? delay : Entity.Status.attackSpeed / currentAction.FrameCount;
+            if (currentAction == null) {
+                return 4f;
+            } else if (currentAction.delay >= 100f) {
+                return 4f;
+            } else {
+                return currentAction.delay;
+            }
         }
 
         return (int) currentAction.delay;
-    }
-
-    private void CalculateSpritePositionScale(ACT.Layer layer, Sprite sprite, out Vector3 scale, out Vector3 newPos, out Quaternion rotation) {
-        rotation = Quaternion.Euler(0, 0, -layer.angle);
-        scale = new Vector3(layer.scale.x * (layer.isMirror ? -1 : 1), layer.scale.y, 1);
-        var offsetX = (Mathf.RoundToInt(sprite.rect.width) % 2 == 1) ? 0.5f : 0f;
-        var offsetY = (Mathf.RoundToInt(sprite.rect.height) % 2 == 1) ? 0.5f : 0f;
-
-        newPos = new Vector3(layer.pos.x - offsetX, -(layer.pos.y) + offsetY) / sprite.pixelsPerUnit;
     }
 
     public void ChangeMotion(MotionRequest motion, MotionRequest? nextMotion = null) {
@@ -394,6 +431,16 @@ public class EntityViewer : MonoBehaviour {
             var attackActions = new SpriteMotion[] { SpriteMotion.Attack1, SpriteMotion.Attack2, SpriteMotion.Attack3 };
             var action = DBManager.GetWeaponAction((Job) Entity.Status.jobId, Entity.Status.sex, Entity.EquipInfo.Weapon, Entity.EquipInfo.Shield);
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, attackActions[action]);
+
+            /**
+             * Seems like og client makes entity look diagonally up
+             * when attacking from the sides
+             */
+            if (Entity.Direction == Direction.East) {
+                Entity.Direction = Direction.NorthEast;
+            } else if (Entity.Direction == Direction.West) {
+                Entity.Direction = Direction.NorthWest;
+            }
         } else {
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
         }
@@ -404,6 +451,13 @@ public class EntityViewer : MonoBehaviour {
         ActionId = newAction;
         AnimationStart = GameManager.Tick;
         previousFrame = 0;
+        motionSpeedMultiplier = 1;
+
+        motionSpeed = GetDelay();
+        if (motionSpeed < 1) {
+            motionSpeed = 1;
+        }
+        motionSpeed *= motionSpeedMultiplier;
 
         foreach (var child in Children) {
             child.ChangeMotion(motion, nextMotion);
@@ -427,6 +481,7 @@ public class EntityViewer : MonoBehaviour {
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = spriteData.sprites[0];
         spriteRenderer.sortingOrder = -1;
+        spriteRenderer.material.renderQueue -= 2;
         spriteRenderer.material.color = new Color(1, 1, 1, 0.4f);
     }
 
@@ -443,6 +498,15 @@ public class EntityViewer : MonoBehaviour {
         return Vector2.zero;
     }
 
+    public IEnumerator FadeOut() {
+        var currentAlpha = MeshRenderer.material.GetFloat("_Alpha");
+        while (currentAlpha > 0f) {
+            currentAlpha -= 0.05f;
+            MeshRenderer.material.SetFloat("_Alpha", currentAlpha);
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
     public struct MotionRequest {
         public SpriteMotion Motion;
         public double delay;
@@ -452,5 +516,16 @@ public class EntityViewer : MonoBehaviour {
         public int hair;
         public int hairColor;
         public int clothesColor;
+    }
+
+    internal void SetMotionSpeedMultipler(ushort attackMT) {
+        //if (weapon is bow)
+        if (attackMT > MAX_ATTACK_SPEED) {
+            attackMT = MAX_ATTACK_SPEED;
+        }
+        //endif
+
+        motionSpeedMultiplier = (float) attackMT / AVERAGE_ATTACK_SPEED;
+        motionSpeed *= motionSpeedMultiplier;
     }
 }

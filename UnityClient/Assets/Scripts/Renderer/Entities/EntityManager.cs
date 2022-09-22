@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
 
 public class EntityManager : MonoBehaviour {
@@ -60,12 +62,12 @@ public class EntityManager : MonoBehaviour {
         entityCache.Remove(AID);
     }
 
-    public Entity SpawnItem(ItemSpawnInfo itemSpawnInfo) {
+    public async Task<Entity> SpawnItem(ItemSpawnInfo itemSpawnInfo) {
 
         Item item = DBManager.GetItem(itemSpawnInfo.AID);
         string itemPath = DBManager.GetItemPath(itemSpawnInfo.AID, itemSpawnInfo.IsIdentified);
 
-        SpriteData spriteData = Resources.Load<SpriteData>(Path.Combine("Sprites", itemPath));
+        SpriteData spriteData = await Addressables.LoadAssetAsync<SpriteData>($"{itemPath}.asset".SanitizeForAddressables()).Task;
 
         var itemGO = new GameObject(item.identifiedDisplayName);
         itemGO.layer = LayerMask.NameToLayer("Items");

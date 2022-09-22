@@ -51,6 +51,7 @@ public class MapController : MonoBehaviour {
         GameManager.InitCamera();
 
         var gameMap = await GameManager.BeginMapLoading(mapInfo.mapname);
+
         PathFinding = gameMap.GetPathFinder();
         NetworkClient.StartHeatBeat();
         NetworkClient.ResumePacketHandling();
@@ -149,7 +150,7 @@ public class MapController : MonoBehaviour {
         if (packet is ZC.NPCACK_MAPMOVE) {
             var pkt = packet as ZC.NPCACK_MAPMOVE;
 
-            if (pkt.MapName != Session.CurrentSession.CurrentMap) {
+            if (Path.GetFileNameWithoutExtension(pkt.MapName) != Session.CurrentSession.CurrentMap) {
                 var entity = Session.CurrentSession.Entity as Entity;
                 entity.StopMoving();
 
