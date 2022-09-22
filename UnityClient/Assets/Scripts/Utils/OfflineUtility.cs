@@ -31,7 +31,7 @@ public class OfflineUtility : MonoBehaviour {
         MapLoadingTimes = new List<long>();
         MapNames = new List<string>();
 
-        SpawnCharacter();
+        //SpawnCharacter();
         SpawnMob();
         //GameManager.BeginMapLoading(MapName);
 
@@ -87,7 +87,7 @@ public class OfflineUtility : MonoBehaviour {
         CharacterCamera charCam = FindObjectOfType<CharacterCamera>();
         charCam.SetTarget(offlineEntity.EntityViewer.transform);
 
-        //offlineEntity.SetReady(true);
+        offlineEntity.SetReady(true);
     }
 
     private void SpawnMob() {
