@@ -351,12 +351,14 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     private IEnumerator DestroyAfterSecondsWithFade() {
         yield return new WaitForSeconds(1f);
+        IsReady = false;
         yield return EntityViewer.FadeOut();
         Destroy(gameObject);
         yield return null;
     }
 
     private IEnumerator DestroyWithFade() {
+        IsReady = false;
         yield return EntityViewer.FadeOut();
         Destroy(gameObject);
     }
