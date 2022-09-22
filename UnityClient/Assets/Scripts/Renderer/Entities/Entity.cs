@@ -331,16 +331,16 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     public void Vanish(int type) {
+        StopMoving();
         switch (type) {
             case 0: // Moved out of sight
-                // TODO start coroutine to fade-out entity
-                Destroy(gameObject);
+                StartCoroutine(DestroyWithFade());
                 break;
             case 1: // Died
                 var isPC = Type == EntityType.PC;
                 ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Dead });
                 if (!isPC) {
-                    StartCoroutine(DestroyAfterSeconds());
+                    StartCoroutine(DestroyAfterSecondsWithFade());
                 }
                 break;
             default:
@@ -349,10 +349,16 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
     }
 
-    private IEnumerator DestroyAfterSeconds() {
+    private IEnumerator DestroyAfterSecondsWithFade() {
         yield return new WaitForSeconds(1f);
+        yield return EntityViewer.FadeOut();
         Destroy(gameObject);
         yield return null;
+    }
+
+    private IEnumerator DestroyWithFade() {
+        yield return EntityViewer.FadeOut();
+        Destroy(gameObject);
     }
 
     internal void OnSpriteChange(ZC.SPRITE_CHANGE2.LookType type, short value, short value2) {

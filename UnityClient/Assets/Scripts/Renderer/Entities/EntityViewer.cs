@@ -71,17 +71,15 @@ public class EntityViewer : MonoBehaviour {
             clothesColor = Entity.Status.clothes_color
         };
 
-        MeshCollider = gameObject.GetOrAddComponent<MeshCollider>();
-        MeshFilter = gameObject.GetOrAddComponent<MeshFilter>();
-        MeshRenderer = gameObject.GetOrAddComponent<MeshRenderer>();
-        SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
-
-        MeshRenderer.receiveShadows = false;
-        MeshRenderer.lightProbeUsage = LightProbeUsage.Off;
-        MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
+        InitRenderers();
 
         if (Entity.Type == EntityType.WARP) {
             return;
+        }
+
+        if (Entity.Type == EntityType.ITEM) {
+            MeshRenderer.material = SpriteMaterial;
+            MeshRenderer.material.mainTexture = sprites[0].texture;
         }
 
         if (sprites == null || reloadSprites) {
@@ -140,6 +138,7 @@ public class EntityViewer : MonoBehaviour {
                 currentACT = spriteData.act;
                 MeshRenderer.material = SpriteMaterial;
                 MeshRenderer.material.mainTexture = atlas;
+                MeshRenderer.material.renderQueue -= 2;
             } catch (Exception e) {
                 Debug.LogError($"Could not load sprites for: {path}");
                 Debug.LogException(e);
@@ -155,6 +154,17 @@ public class EntityViewer : MonoBehaviour {
             child.Init(reloadSprites);
             child.Start();
         }
+    }
+
+    private void InitRenderers() {
+        MeshCollider = gameObject.GetOrAddComponent<MeshCollider>();
+        MeshFilter = gameObject.GetOrAddComponent<MeshFilter>();
+        MeshRenderer = gameObject.GetOrAddComponent<MeshRenderer>();
+        SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
+
+        MeshRenderer.receiveShadows = false;
+        MeshRenderer.lightProbeUsage = LightProbeUsage.Off;
+        MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
     }
 
     void FixedUpdate() {
@@ -256,6 +266,11 @@ public class EntityViewer : MonoBehaviour {
             rendererMesh = SpriteMeshBuilder.BuildSpriteMesh(frame, sprites);
             MeshCache.Add(frame, rendererMesh);
         }
+
+        foreach (var layer in frame.layers) {
+            MeshRenderer.material.SetFloat("_Alpha", layer.color.a);
+        }
+
         MeshFilter.sharedMesh = null;
         MeshFilter.sharedMesh = rendererMesh;
         MeshCollider.sharedMesh = colliderMesh;
@@ -466,6 +481,7 @@ public class EntityViewer : MonoBehaviour {
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = spriteData.sprites[0];
         spriteRenderer.sortingOrder = -1;
+        spriteRenderer.material.renderQueue -= 2;
         spriteRenderer.material.color = new Color(1, 1, 1, 0.4f);
     }
 
@@ -480,6 +496,15 @@ public class EntityViewer : MonoBehaviour {
         if (ViewerType == ViewerType.HEAD && (State == SpriteState.Idle || State == SpriteState.Sit))
             return frame.pos[currentFrame];
         return Vector2.zero;
+    }
+
+    public IEnumerator FadeOut() {
+        var currentAlpha = MeshRenderer.material.GetFloat("_Alpha");
+        while (currentAlpha > 0f) {
+            currentAlpha -= 0.05f;
+            MeshRenderer.material.SetFloat("_Alpha", currentAlpha);
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     public struct MotionRequest {

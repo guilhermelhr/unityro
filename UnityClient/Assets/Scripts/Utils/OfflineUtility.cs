@@ -31,7 +31,7 @@ public class OfflineUtility : MonoBehaviour {
         MapLoadingTimes = new List<long>();
         MapNames = new List<string>();
 
-        SpawnCharacter();
+        //SpawnCharacter();
         SpawnMob();
         //GameManager.BeginMapLoading(MapName);
 
@@ -91,7 +91,7 @@ public class OfflineUtility : MonoBehaviour {
     }
 
     private void SpawnMob() {
-        var mob = EntityManager.Spawn(new EntitySpawnData() { job = 811, name = "Poring", GID = 20001, speed = 697, PosDir = new int[] { 0, 0, 0 }, objecttype = EntityType.MOB });
+        var mob = EntityManager.Spawn(new EntitySpawnData() { job = 1002, name = "Poring", GID = 20001, speed = 697, PosDir = new int[] { 0, 0, 0 }, objecttype = EntityType.MOB });
         mob.transform.position = new Vector3(150, 0, 155);
         mob.SetReady(true);
     }
