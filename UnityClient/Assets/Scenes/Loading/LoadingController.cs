@@ -12,8 +12,8 @@ public class LoadingController : MonoBehaviour {
         MapRenderer.OnProgress += OnProgress;
     }
 
-    private async void Start() {
-        await background.SetLoading();
+    private void Start() {
+        background.SetLoading();
     }
 
     private void OnDestroy() {
