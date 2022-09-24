@@ -162,7 +162,7 @@ public class CharSelectionController : MonoBehaviour {
                             JobHelper.GetJobName(character.Job, character.Sex));
                     break;
                 case 2: // lv.
-                    fields[i].text = character.BaseLevel.ToString();
+                    fields[i].text = character.Level.ToString();
                     break;
                 case 3: // exp
                     fields[i].text = character.Exp.ToString();

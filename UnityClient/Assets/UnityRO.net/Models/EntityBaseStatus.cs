@@ -16,7 +16,7 @@ public class EntityBaseStatus {
 
 	public short jobId; ///< Player's JobID
 	public uint StatusPoints, SkillPoints;
-	public int hp, max_hp, sp, max_sp;
+	public long hp, max_hp, sp, max_sp;
 	public uint option;
 	public short manner; // Defines how many minutes a char will be muted, each negative point is equivalent to a minute.
 	public byte karma;

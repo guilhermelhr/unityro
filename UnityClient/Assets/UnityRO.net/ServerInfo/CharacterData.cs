@@ -2,37 +2,40 @@
 using System.IO;
 
 public class CharacterData {
+    public const int BLOCK_SIZE = 175;
+
     public int GID;
-    public int Exp;
-    public int Zeny;
-    public int JobExp;
+    public long Exp;
+    public int Money;
+    public long JobExp;
     public int JobLevel;
     public int BodyState;
     public int HealthState;
-    public int Option;
-    public int Karma;
-    public int Manner;
-    public short StatusPoint;
+    public int EffectState;
+    public int Virtue;
+    public int Honor;
+    public short JobPoint;
 
-    public int HP;
-    public int MaxHP;
-    public short SP;
-    public short MaxSP;
+    public long HP;
+    public long MaxHP;
+    public long SP;
+    public long MaxSP;
+
     public short Speed;
     public short Job;
-    public short Hair;
-    public short BaseLevel;
-    public short SkillPoint;
+    public short Head;
+    public short Level;
+    public short SPPoint;
 
     public short Weapon;
     public short Shield;
     public short Accessory;
     public short Accessory2;
     public short Accessory3;
-    public int Robe;
+    public int chr_slot_changeCnt;
 
-    public short HairColor;
-    public short ClothesColor;
+    public short HeadPalette;
+    public short BodyPalette;
 
     public string Name;
     public byte Str;
@@ -42,13 +45,13 @@ public class CharacterData {
     public byte Dex;
     public byte Luk;
 
-    public short Slot;
-    public short Rename;
+    public short CharNum;
+    public short bIsChangedCharName;
     public string MapName;
-    public int DeleteDate;
+    public int DelRevDate;
 
     public int Body;
-    public int Moves;
+    public int chr_name_changeCnt;
     public int AddOns;
     public int Sex;
 
@@ -56,38 +59,38 @@ public class CharacterData {
         CharacterData cd = new CharacterData();
 
         cd.GID = br.ReadInt();
-        cd.Exp = br.ReadInt();
-        br.Seek(4, SeekOrigin.Current);
-        cd.Zeny = br.ReadInt();
-        cd.JobExp = br.ReadInt();
-        br.Seek(4, SeekOrigin.Current);
+        cd.Exp = br.ReadLong();
+        //br.Seek(4, SeekOrigin.Current);
+        cd.Money = br.ReadInt();
+        cd.JobExp = br.ReadLong();
+        //br.Seek(4, SeekOrigin.Current);
         cd.JobLevel = br.ReadInt();
         cd.BodyState = br.ReadInt();
         cd.HealthState = br.ReadInt();
-        cd.Option = br.ReadInt();
-        cd.Karma = br.ReadInt();
-        cd.Manner = br.ReadInt();
+        cd.EffectState = br.ReadInt();
+        cd.Virtue = br.ReadInt();
+        cd.Honor = br.ReadInt();
 
-        cd.StatusPoint = br.ReadShort();
+        cd.JobPoint = br.ReadShort();
 
-        cd.HP = br.ReadInt();
-        cd.MaxHP = br.ReadInt();
+        cd.HP = br.ReadLong();
+        cd.MaxHP = br.ReadLong();
+        cd.SP = br.ReadLong();
+        cd.MaxSP = br.ReadLong();
 
-        cd.SP = br.ReadShort();
-        cd.MaxSP = br.ReadShort();
         cd.Speed = br.ReadShort();
         cd.Job = br.ReadShort();
-        cd.Hair = br.ReadShort();
+        cd.Head = br.ReadShort();
         cd.Body = br.ReadShort();
         cd.Weapon = br.ReadShort();
-        cd.BaseLevel = br.ReadShort();
-        cd.SkillPoint = br.ReadShort();
+        cd.Level = br.ReadShort();
+        cd.SPPoint = br.ReadShort();
         cd.Accessory = br.ReadShort();
         cd.Shield = br.ReadShort();
         cd.Accessory2 = br.ReadShort();
         cd.Accessory3 = br.ReadShort();
-        cd.HairColor = br.ReadShort();
-        cd.ClothesColor = br.ReadShort();
+        cd.HeadPalette = br.ReadShort();
+        cd.BodyPalette = br.ReadShort();
 
         cd.Name = br.ReadBinaryString(24);
 
@@ -96,17 +99,17 @@ public class CharacterData {
         cd.Vit = (byte)br.ReadByte();
         cd.Int = (byte)br.ReadByte();
         cd.Dex = (byte)br.ReadByte();
-        cd.Luk = (byte)br.ReadByte();
-
-        cd.Slot = br.ReadShort();
-        cd.Rename = br.ReadShort();
+        cd.Luk = (byte) br.ReadByte();
+        cd.CharNum = (byte)br.ReadByte();
+        var HairColor = (byte) br.ReadByte();
+        cd.bIsChangedCharName = br.ReadShort();
 
         cd.MapName = br.ReadBinaryString(16);
 
-        cd.DeleteDate = br.ReadInt();
-        cd.Robe = br.ReadInt();
-        cd.Moves = br.ReadInt();
-        cd.AddOns = br.ReadInt();
+        cd.DelRevDate = br.ReadInt();
+        var robePalette = br.ReadInt();
+        cd.chr_slot_changeCnt = br.ReadInt();
+        cd.chr_name_changeCnt = br.ReadInt();
 
         cd.Sex = br.ReadByte();
 
