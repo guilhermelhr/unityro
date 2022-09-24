@@ -46,7 +46,6 @@ public class CharSelectionController : MonoBehaviour {
             characterSlots.Find(it => it.IsEmpty).BindData(ACCEPT_MAKECHAR.characterData);
 
             if (SceneManager.sceneCount > 1) {
-                // TODO Use scene name
                 SceneManager.UnloadSceneAsync("CharCreationScene");
             }
             EventSystem.gameObject.SetActive(true);
@@ -96,7 +95,7 @@ public class CharSelectionController : MonoBehaviour {
             DontDestroyOnLoad(entity.gameObject);
 
             var loginInfo = NetworkClient.State.LoginInfo;
-            new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int) new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
+            new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
         }
     }
 
