@@ -537,6 +537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 539c7f4a3f1f41d88fc66644a382fb2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PacketLogWindow: {fileID: 0}
   ButtonPrefab: {fileID: 2821088483951365841, guid: 71427a1af58dae5469196c38402c5c6e, type: 3}
   Body: {fileID: 1995501774533854563}
 --- !u!114 &8026133130039361701

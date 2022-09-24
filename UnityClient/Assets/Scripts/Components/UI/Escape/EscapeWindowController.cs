@@ -4,7 +4,10 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class EscapeWindowController : DraggableUIWindow, IEscapeWindowController {
-    
+
+    [SerializeField]
+    private PacketLogWindow PacketLogWindow;
+
     [SerializeField]
     private GameObject ButtonPrefab;
     
@@ -46,7 +49,7 @@ public class EscapeWindowController : DraggableUIWindow, IEscapeWindowController
         BuildButton("Character select", () => new CZ.RESTART(CZ.RESTART.TYPE_CHAR_SELECT).Send());
 
 #if DEBUG
-        BuildButton("Packet log", () => { });
+        BuildButton("Packet log", () => { PacketLogWindow.Show(); });
 #endif
 
         BuildButton("Exit game", () => Application.Quit());

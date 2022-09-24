@@ -19,6 +19,7 @@ public class MapUiController : MonoBehaviour {
     [SerializeField] public NpcShopTypeSelectorController ShopDealType;
     [SerializeField] public EscapeWindowController EscapeWindow;
     [SerializeField] public MenuController Menu;
+    [SerializeField] public PacketLogWindow PacketLogWindow;
 
     private NetworkClient NetworkClient;
 
@@ -42,6 +43,8 @@ public class MapUiController : MonoBehaviour {
         NetworkClient.HookPacket(ZC.RESTART_ACK.HEADER, OnRestartAnswer);
 
         NpcMenu.OnNpcMenuSelected = OnNpcMenuSelected;
+
+        PacketLogWindow.Hide();
     }
 
     public void DisplayItemDetails(ItemInfo itemInfo, Vector2 position) {
