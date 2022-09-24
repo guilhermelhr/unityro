@@ -136,6 +136,11 @@ public class EntityViewer : MonoBehaviour {
 
                 sprites = spriteData.sprites;
                 currentACT = spriteData.act;
+
+                if (SpriteMaterial == null) {
+                    SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
+                }
+
                 MeshRenderer.material = SpriteMaterial;
                 MeshRenderer.material.mainTexture = atlas;
                 MeshRenderer.material.renderQueue -= 2;

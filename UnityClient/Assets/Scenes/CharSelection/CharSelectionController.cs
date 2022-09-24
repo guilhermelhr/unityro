@@ -45,8 +45,10 @@ public class CharSelectionController : MonoBehaviour {
             currentCharactersInfo.Chars.Add(ACCEPT_MAKECHAR.characterData);
             characterSlots.Find(it => it.IsEmpty).BindData(ACCEPT_MAKECHAR.characterData);
 
-            // TODO Use scene name
-            SceneManager.UnloadSceneAsync(6);
+            if (SceneManager.sceneCount > 1) {
+                // TODO Use scene name
+                SceneManager.UnloadSceneAsync("CharCreationScene");
+            }
             EventSystem.gameObject.SetActive(true);
         }
     }
@@ -124,7 +126,7 @@ public class CharSelectionController : MonoBehaviour {
                     EventSystem.gameObject.SetActive(true);
                 }
             };
-            SceneManager.LoadSceneAsync(6, LoadSceneMode.Additive);
+            SceneManager.LoadSceneAsync("CharCreationScene", LoadSceneMode.Additive);
         } else {
             selectedCharacter = character;
             SetTextFields(selectedCharacter);
@@ -147,7 +149,7 @@ public class CharSelectionController : MonoBehaviour {
             CharNum = (byte) currentCharactersInfo.Chars.Count
         }.Send();
     }
-    
+
     private void SetTextFields(CharacterData character) {
         Text[] fields = textPanel.GetComponentsInChildren<Text>();
         int numChildren = fields.Length;

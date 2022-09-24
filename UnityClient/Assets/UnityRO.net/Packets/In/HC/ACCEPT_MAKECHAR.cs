@@ -6,7 +6,7 @@ public partial class HC {
     public class ACCEPT_MAKECHAR : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.HC_ACCEPT_MAKECHAR;
-        public const int SIZE = 157;
+        public const int SIZE = CharacterData.BLOCK_SIZE + 2;
 
         public CharacterData characterData;
         public PacketHeader Header => HEADER;
