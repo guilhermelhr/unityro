@@ -79,7 +79,6 @@ public class EntityManager : MonoBehaviour {
         body.layer = LayerMask.NameToLayer("Items");
         body.transform.SetParent(itemGO.transform, false);
         body.transform.localPosition = new Vector3(0f, 0.4f, 0f);
-        body.AddComponent<Billboard>();
         body.AddComponent<SortingGroup>();
 
         if (itemSpawnInfo.animate) {
