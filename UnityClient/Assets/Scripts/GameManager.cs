@@ -63,14 +63,14 @@ public class GameManager : MonoBehaviour {
         OnPostRender();
     }
 
-    async void Start() {
-        await Init();
+    void Start() {
+        Init();
     }
 
     private async Task Init() {
         InitManagers();
 
-        await DBManager.Init();
+        DBManager.Init();
 
         MaybeInitOfflineUtils();
 
