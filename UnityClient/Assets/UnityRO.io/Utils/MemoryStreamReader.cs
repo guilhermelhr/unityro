@@ -88,6 +88,13 @@ namespace ROIO.Utils {
             return BitConverter.ToInt64(blong, 0);
         }
 
+        public ulong ReadULong() {
+            byte[] bulong = new byte[8];
+            Read(bulong, 0, 8);
+
+            return BitConverter.ToUInt64(bulong, 0);
+        }
+
         public ushort ReadUShort() {
             byte[] bushort = new byte[2];
             Read(bushort, 0, 2);
