@@ -1508,7 +1508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10e917e85094ad74cab41582ec872835, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CartScrollView: {fileID: 0}
+  CartScrollView: {fileID: 4911107136128863943}
   ShopItemPrefab: {fileID: 4693485359565361936, guid: 8b8a305d92050b44d8668b1732f399bc, type: 3}
   TotalPriceLabel: {fileID: 6926779088142050279}
   ShopController: {fileID: 4336742099170368785}
@@ -1787,6 +1787,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
+--- !u!1 &4911107136128863943 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7131267589075313546, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
+  m_PrefabInstance: {fileID: 2796906881066462541}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &4911107136730295042 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7131267589417600591, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}

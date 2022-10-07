@@ -50,6 +50,7 @@ public class EscapeWindowController : DraggableUIWindow, IEscapeWindowController
 
 #if DEBUG
         BuildButton("Packet log", () => { PacketLogWindow.Show(); });
+        BuildButton("Close shop", () => { new CZ.NPC_TRADE_QUIT().Send(); });
 #endif
 
         BuildButton("Exit game", () => Application.Quit());

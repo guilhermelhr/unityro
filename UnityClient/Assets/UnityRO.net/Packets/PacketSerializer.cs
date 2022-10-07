@@ -82,11 +82,11 @@ public class PacketSerializer {
                 if(size <= 0) {
                     isFixed = false;
 
-                    // Do we have more than two bytes left?
-                    if(Memory.Length - Memory.Position > 2) {
+                    if(Memory.Length - Memory.Position >= 2) {
                         Memory.Read(tmp, 0, 2);
                         size = BitConverter.ToUInt16(tmp, 0);
                     } else {
+                        Debug.LogWarning($"Received {(PacketHeader) cmd} ({Memory.Length - Memory.Position}b left) but remaining bytes does not match expected length");
                         Memory.Position -= 4;
                         break;
                     }
