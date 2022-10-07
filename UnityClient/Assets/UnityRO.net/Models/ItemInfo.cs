@@ -12,6 +12,7 @@ public class ItemInfo {
     public int location;
     public int wearState;
     public byte refine;
+    public byte enchantgrade;
     public int expireTime;
     public ushort bindOnEquip;
     public ushort wItemSpriteNumber;
