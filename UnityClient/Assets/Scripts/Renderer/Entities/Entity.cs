@@ -108,6 +108,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         NetworkClient.HookPacket(ZC.ACK_TOUSESKILL.HEADER, OnUseSkillResult);
         NetworkClient.HookPacket(ZC.NOTIFY_SKILL2.HEADER, OnEntityUseSkillToAttack);
         NetworkClient.HookPacket(ZC.USESKILL_ACK2.HEADER, OnEntityCastSkill);
+        NetworkClient.HookPacket(ZC.ATTACK_FAILURE_FOR_DISTANCE.HEADER, OnAttackFailureForDistance);
     }
 
     public void Init(SpriteData spriteData) {
@@ -391,6 +392,12 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void StopMoving() {
         EntityWalk.StopMoving();
+    }
+
+    private void OnAttackFailureForDistance(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.ATTACK_FAILURE_FOR_DISTANCE ATTACK_FAILURE_FOR_DISTANCE) {
+            RequestMove(ATTACK_FAILURE_FOR_DISTANCE.targetXPos, ATTACK_FAILURE_FOR_DISTANCE.targetYPos, 0);
+        }
     }
 
     private void OnEntityCastSkill(ushort cmd, int size, InPacket packet) {
