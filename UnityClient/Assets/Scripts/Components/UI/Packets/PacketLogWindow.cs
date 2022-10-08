@@ -34,25 +34,18 @@ public class PacketLogWindow : DraggableUIWindow {
     }
 
     private void OnNetworkPacket(NetworkPacket packet, bool isHandled) {
-        GameObject textObject = null;
-        if (packet is OutPacket outPacket) {
-            textObject = OnPacketSent(outPacket);
-        } else if (packet is InPacket inPacket) {
-            textObject = OnPacketReceived(inPacket, isHandled);
-        }
+        var textObject = Instantiate(TextLinePrefab).GetComponent<PacketLogItem>();
+        textObject.transform.SetParent(LinearLayout.transform, false);
 
         if (PacketHistory.Count >= MaxPacketHistory) {
             PacketHistory.Dequeue();
             Destroy(PacketHistoryText.Dequeue());
         }
         PacketHistory.Enqueue(packet);
-        PacketHistoryText.Enqueue(textObject);
+        PacketHistoryText.Enqueue(textObject.gameObject);
 
-        var trigger = textObject.AddComponent<EventTrigger>();
-        var entry = new EventTrigger.Entry();
-        entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((eventData) => { OnPacketSelected(packet); });
-        trigger.triggers.Add(entry);
+        textObject.SetPacket(packet);
+        textObject.OnPacketSelected = OnPacketSelected;
     }
 
     private void OnPacketSelected(NetworkPacket packet) {
@@ -61,30 +54,5 @@ public class PacketLogWindow : DraggableUIWindow {
         foreach (FieldInfo fi in packet.GetType().GetFields()) {
             PacketContent.text += $"{fi.Name}: {fi.GetValue(packet)?.ToString()}\n";
         }
-    }
-
-    private GameObject OnPacketReceived(InPacket packet, bool isHandled) {
-        var appendText = isHandled ? "" : "NH";
-        var text = $"<- {string.Format("0x{0:x3}", (ushort) packet.Header)} {packet.Header} {appendText}";
-        var color = Color.green;
-
-        return InstantiateText(text, color);
-    }
-
-    private GameObject OnPacketSent(OutPacket packet) {
-        var text = $"-> {string.Format("0x{0:x3}", (ushort) packet.Header)} {packet.Header}";
-        var color = Color.black;
-        return InstantiateText(text, color);
-    }
-
-    private GameObject InstantiateText(string text, Color color) {
-        var textObject = Instantiate(TextLinePrefab);
-        var uiText = textObject.GetComponentInChildren<TextMeshProUGUI>();
-        uiText.text = text;
-        uiText.color = color;
-        uiText.enableWordWrapping = false;
-        textObject.transform.SetParent(LinearLayout.transform, false);
-
-        return uiText.gameObject;
     }
 }
