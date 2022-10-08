@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace ROIO.Utils
-{
+namespace ROIO.Utils {
 
     /// <summary>
     /// Helper to load and parse binary data
@@ -10,19 +9,15 @@ namespace ROIO.Utils
     /// @author Guilherme Hernandez
     /// Based on ROBrowser by Vincent Thibault (robrowser.com)
     /// </summary>
-    public class MemoryStreamReader : MemoryStream
-    {
-        public MemoryStreamReader(byte[] buffer) : base(buffer)
-        {
+    public class MemoryStreamReader : MemoryStream {
+        public MemoryStreamReader(byte[] buffer) : base(buffer) {
         }
 
-        public MemoryStreamReader() : base()
-        {
+        public MemoryStreamReader() : base() {
         }
 
-        public string ReadBinaryString(long length)
-        {
-            return ReadBinaryString((int)length);
+        public string ReadBinaryString(long length) {
+            return ReadBinaryString((int) length);
         }
 
         /// <summary>
@@ -31,80 +26,83 @@ namespace ROIO.Utils
         /// <param name="buffer">buffer</param>
         /// <param name="length">num of bytes to read</param>
         /// <returns>string</returns>
-        public string ReadBinaryString(int length)
-        {
+        public string ReadBinaryString(int length) {
             char[] strBytes = new char[length];
 
-            for (int i = 0; i < length; i++)
-            {
-                strBytes[i] = (char)base.ReadByte();
+            for (int i = 0; i < length; i++) {
+                strBytes[i] = (char) base.ReadByte();
             }
 
             //string krEncoded = Encoding.GetEncoding(949).GetString(strBytes);
             string str = new string(strBytes);
             //.net strings are not zero-terminated
             int terminator = str.IndexOf('\0');
-            if (terminator != -1)
-            {
+            if (terminator != -1) {
                 str = str.Substring(0, terminator);
             }
             return str;
         }
 
-        public string ReadBinaryString(uint length)
-        {
-            return ReadBinaryString((int)length);
+        public string ReadBinaryString(uint length) {
+            return ReadBinaryString((int) length);
         }
 
-        public int ReadInt()
-        {
+        public int ReadInt() {
             byte[] bint = new byte[4];
             Read(bint, 0, 4);
 
             return BitConverter.ToInt32(bint, 0);
         }
 
-        public byte[] ReadBytes(int count)
-        {
+        public byte[] ReadBytes(int count) {
             byte[] data = new byte[count];
             Read(data, 0, count);
             return data;
         }
 
-        public uint ReadUInt()
-        {
+        public uint ReadUInt() {
             byte[] bulong = new byte[4];
             Read(bulong, 0, 4);
 
             return BitConverter.ToUInt32(bulong, 0);
         }
 
-        public float ReadFloat()
-        {
+        public float ReadFloat() {
             byte[] bfloat = new byte[4];
             Read(bfloat, 0, 4);
 
             return BitConverter.ToSingle(bfloat, 0);
         }
 
-        public double ReadDouble()
-        {
+        public double ReadDouble() {
             byte[] bdouble = new byte[8];
             Read(bdouble, 0, 8);
 
             return BitConverter.ToDouble(bdouble, 0);
         }
 
-        public ushort ReadUShort()
-        {
+        public long ReadLong() {
+            byte[] blong = new byte[8];
+            Read(blong, 0, 8);
+
+            return BitConverter.ToInt64(blong, 0);
+        }
+
+        public ulong ReadULong() {
+            byte[] bulong = new byte[8];
+            Read(bulong, 0, 8);
+
+            return BitConverter.ToUInt64(bulong, 0);
+        }
+
+        public ushort ReadUShort() {
             byte[] bushort = new byte[2];
             Read(bushort, 0, 2);
 
             return BitConverter.ToUInt16(bushort, 0);
         }
 
-        public short ReadShort()
-        {
+        public short ReadShort() {
             byte[] bshort = new byte[2];
             Read(bshort, 0, 2);
 
@@ -114,8 +112,7 @@ namespace ROIO.Utils
         /**
          * Taken from rAthena RBUFPOS
          */
-        public int[] ReadPos()
-        {
+        public int[] ReadPos() {
             var posX = base.ReadByte();
             var posY = base.ReadByte();
             var dir = base.ReadByte();
@@ -131,8 +128,7 @@ namespace ROIO.Utils
          * "Random bullshit, go!!"
          * Taken from roBrowser BinaryReader
          */
-        public int[] ReadPos2()
-        {
+        public int[] ReadPos2() {
             var a = base.ReadByte();
             var b = base.ReadByte();
             var c = base.ReadByte();

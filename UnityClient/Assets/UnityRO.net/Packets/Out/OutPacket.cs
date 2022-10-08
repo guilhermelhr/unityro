@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public abstract class OutPacket {
+public abstract class OutPacket : NetworkPacket {
 
     public PacketHeader Header { get; private set; }
     public int Size;

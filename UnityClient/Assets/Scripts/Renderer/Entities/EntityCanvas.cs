@@ -39,13 +39,13 @@ public class EntityCanvas : MonoBehaviour {
         (EntityName.gameObject.transform as RectTransform).sizeDelta = textSize;
     }
 
-    public void SetEntityHP(int value, int maxValue) {
+    public void SetEntityHP(long value, long maxValue) {
         HPBar.minValue = 0f;
         HPBar.maxValue = maxValue;
         HPBar.value = value;
     }
 
-    public void SetEntitySP(int value, int maxValue) {
+    public void SetEntitySP(long value, long maxValue) {
         SPBar.minValue = 0f;
         SPBar.maxValue = maxValue;
         SPBar.value = value;

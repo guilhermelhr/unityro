@@ -108,6 +108,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         NetworkClient.HookPacket(ZC.ACK_TOUSESKILL.HEADER, OnUseSkillResult);
         NetworkClient.HookPacket(ZC.NOTIFY_SKILL2.HEADER, OnEntityUseSkillToAttack);
         NetworkClient.HookPacket(ZC.USESKILL_ACK2.HEADER, OnEntityCastSkill);
+        NetworkClient.HookPacket(ZC.ATTACK_FAILURE_FOR_DISTANCE.HEADER, OnAttackFailureForDistance);
     }
 
     public void Init(SpriteData spriteData) {
@@ -170,7 +171,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
         GID = (uint) data.GID;
         Status.base_exp = (uint) data.Exp;
-        Status.zeny = data.Zeny;
+        Status.zeny = data.Money;
         Status.job_exp = (uint) data.JobExp;
         Status.job_level = (uint) data.JobLevel;
         //body state?
@@ -178,7 +179,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         //option?
         //karma?
         //manner
-        Status.StatusPoints = (uint) data.StatusPoint;
+        Status.StatusPoints = (uint) data.JobPoint;
 
         Status.hp = data.HP;
         Status.max_hp = data.MaxHP;
@@ -186,12 +187,12 @@ public class Entity : MonoBehaviour, INetworkEntity {
         Status.max_sp = data.MaxSP;
         Status.walkSpeed = data.Speed;
         Status.jobId = data.Job;
-        Status.hair = data.Hair;
-        Status.base_level = (uint) data.BaseLevel;
-        Status.SkillPoints = (uint) data.SkillPoint;
+        Status.hair = data.Head;
+        Status.base_level = (uint) data.Level;
+        Status.SkillPoints = (uint) data.SPPoint;
 
-        Status.hair_color = data.HairColor;
-        Status.clothes_color = data.ClothesColor;
+        Status.hair_color = data.HeadPalette;
+        Status.clothes_color = data.BodyPalette;
 
         Status.name = data.Name;
         Status.str = data.Str;
@@ -209,7 +210,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             HeadTop = (short) data.Accessory2,
             HeadBottom = (short) data.Accessory,
             HeadMid = (short) data.Accessory3,
-            Robe = (short) data.Robe
+            Robe = (short) data.chr_slot_changeCnt
         };
 
         SetupViewer(EquipInfo, rendererLayer);
@@ -391,6 +392,12 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void StopMoving() {
         EntityWalk.StopMoving();
+    }
+
+    private void OnAttackFailureForDistance(ushort cmd, int size, InPacket packet) {
+        if (packet is ZC.ATTACK_FAILURE_FOR_DISTANCE ATTACK_FAILURE_FOR_DISTANCE) {
+            RequestMove(ATTACK_FAILURE_FOR_DISTANCE.targetXPos, ATTACK_FAILURE_FOR_DISTANCE.targetYPos, 0);
+        }
     }
 
     private void OnEntityCastSkill(ushort cmd, int size, InPacket packet) {

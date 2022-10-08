@@ -20,43 +20,10 @@ public class ChatBoxController : MonoBehaviour {
         NetworkClient = FindObjectOfType<NetworkClient>();
         EntityManager = FindObjectOfType<EntityManager>();
 
-#if DEBUG
-        NetworkClient.OnPacketReceivedEvent += OnDebugPacketReceived;
-        NetworkClient.OnPacketSendEvent += OnDebugPacketSent;
-#endif
-
         NetworkClient.HookPacket(ZC.NOTIFY_PLAYERCHAT.HEADER, OnMessageRecieved);
         NetworkClient.HookPacket(ZC.NOTIFY_CHAT.HEADER, OnMessageRecieved);
         NetworkClient.HookPacket(ZC.MSG.HEADER, OnMessageRecieved);
     }
-
-    private void OnDestroy() {
-#if DEBUG
-        NetworkClient.OnPacketReceivedEvent -= OnDebugPacketReceived;
-        NetworkClient.OnPacketSendEvent -= OnDebugPacketSent;
-#endif
-    }
-
-#if DEBUG
-    private void OnDebugPacketReceived(InPacket packet, bool isHandled) {
-        var textObject = Instantiate(TextLinePrefab);
-        var uiText = textObject.GetComponentInChildren<TextMeshProUGUI>();
-        var appendText = isHandled ? "" : "NOT HANDLED";
-        uiText.text = $"RECV: {string.Format("0x{0:x3}", (ushort)packet.Header)} {packet.Header} {appendText}";
-        uiText.color = Color.green;
-
-        textObject.transform.SetParent(LinearLayout.transform, false);
-    }
-
-    private void OnDebugPacketSent(OutPacket packet) {
-        var textObject = Instantiate(TextLinePrefab);
-        var uiText = textObject.GetComponentInChildren<TextMeshProUGUI>();
-        uiText.text = $"SEND: {string.Format("0x{0:x3}", (ushort) packet.Header)} {packet.Header}";
-        uiText.color = Color.yellow;
-
-        textObject.transform.SetParent(LinearLayout.transform, false);
-    }
-#endif
 
     private void OnMessageRecieved(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NOTIFY_PLAYERCHAT) {

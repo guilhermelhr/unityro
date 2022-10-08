@@ -7,7 +7,7 @@ public partial class ZC {
     public class PC_PURCHASE_ITEMLIST : InPacket {
 
         public const PacketHeader HEADER = PacketHeader.ZC_PC_PURCHASE_ITEMLIST;
-        private const int BLOCK_SIZE = 13; // PACKET_ZC_PC_PURCHASE_ITEMLIST_sub
+        private const int BLOCK_SIZE = 19; // PACKET_ZC_PC_PURCHASE_ITEMLIST_sub
         public PacketHeader Header => HEADER;
 
         public List<ItemNPCShopInfo> ItemList;
@@ -17,16 +17,20 @@ public partial class ZC {
             ItemList = new List<ItemNPCShopInfo>();
 
             for (int i = 0; i < count; i++) {
-                var price = br.ReadInt();
-                var discount = br.ReadInt();
+                var itemID = br.ReadUInt();
+                var price = br.ReadUInt();
+                var discount = br.ReadUInt();
                 var type = br.ReadByte();
-                var itemID = br.ReadInt();
+                var viewSprite = br.ReadUShort();
+                var location = br.ReadUInt();
 
                 ItemList.Add(new ItemNPCShopInfo {
-                    price = price,
-                    specialPrice = discount,
+                    price = (int) price,
+                    specialPrice = (int) discount,
                     type = type,
-                    itemID = itemID
+                    itemID = (int) itemID,
+                    viewSprite = (short) viewSprite,
+                    location = (int) location
                 });
             }
         }
@@ -66,4 +70,6 @@ public class ItemNPCShopInfo {
     public int type;
     public int itemID;
     public int inventoryIndex;
+    public short viewSprite;
+    public int location;
 }

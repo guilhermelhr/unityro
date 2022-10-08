@@ -45,8 +45,9 @@ public class CharSelectionController : MonoBehaviour {
             currentCharactersInfo.Chars.Add(ACCEPT_MAKECHAR.characterData);
             characterSlots.Find(it => it.IsEmpty).BindData(ACCEPT_MAKECHAR.characterData);
 
-            // TODO Use scene name
-            SceneManager.UnloadSceneAsync(6);
+            if (SceneManager.sceneCount > 1) {
+                SceneManager.UnloadSceneAsync("CharCreationScene");
+            }
             EventSystem.gameObject.SetActive(true);
         }
     }
@@ -94,7 +95,7 @@ public class CharSelectionController : MonoBehaviour {
             DontDestroyOnLoad(entity.gameObject);
 
             var loginInfo = NetworkClient.State.LoginInfo;
-            new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, (int) new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
+            new CZ.ENTER2(loginInfo.AccountID, selectedCharacter.GID, loginInfo.LoginID1, new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), loginInfo.Sex).Send();
         }
     }
 
@@ -124,7 +125,7 @@ public class CharSelectionController : MonoBehaviour {
                     EventSystem.gameObject.SetActive(true);
                 }
             };
-            SceneManager.LoadSceneAsync(6, LoadSceneMode.Additive);
+            SceneManager.LoadSceneAsync("CharCreationScene", LoadSceneMode.Additive);
         } else {
             selectedCharacter = character;
             SetTextFields(selectedCharacter);
@@ -147,7 +148,7 @@ public class CharSelectionController : MonoBehaviour {
             CharNum = (byte) currentCharactersInfo.Chars.Count
         }.Send();
     }
-    
+
     private void SetTextFields(CharacterData character) {
         Text[] fields = textPanel.GetComponentsInChildren<Text>();
         int numChildren = fields.Length;
@@ -162,7 +163,7 @@ public class CharSelectionController : MonoBehaviour {
                             JobHelper.GetJobName(character.Job, character.Sex));
                     break;
                 case 2: // lv.
-                    fields[i].text = character.BaseLevel.ToString();
+                    fields[i].text = character.Level.ToString();
                     break;
                 case 3: // exp
                     fields[i].text = character.Exp.ToString();

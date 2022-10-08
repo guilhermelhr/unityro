@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(CustomUIAddressablesHolder))]
+[RequireComponent(typeof(CustomUIAddressablesHolder), typeof(RawImage))]
 public class CustomButton : Button,
     IPointerEnterHandler,
     IPointerExitHandler,

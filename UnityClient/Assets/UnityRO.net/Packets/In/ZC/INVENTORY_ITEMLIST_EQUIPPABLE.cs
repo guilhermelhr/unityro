@@ -10,7 +10,7 @@ public partial class ZC {
     [PacketHandler(HEADER, "ZC_INVENTORY_ITEMLIST_EQUIP")]
     public class INVENTORY_ITEMLIST_EQUIP : InPacket {
 
-        private const int BLOCK_SIZE = 67;
+        private const int BLOCK_SIZE = 68;
         public const PacketHeader HEADER = PacketHeader.ZC_INVENTORY_ITEMLIST_EQUIP;
         public PacketHeader Header => HEADER;
 
@@ -31,7 +31,6 @@ public partial class ZC {
 
                     location = (int)br.ReadUInt(),
                     wearState = (int)br.ReadUInt(),
-                    refine = (byte)br.ReadByte(),
 
                     slot = new ItemInfo.Slot() {
                         card1 = (int)br.ReadUInt(),
@@ -54,6 +53,10 @@ public partial class ZC {
                         param1 = (byte)br.ReadByte()
                     });
                 }
+
+                itemInfo.refine = (byte) br.ReadByte();
+                itemInfo.enchantgrade = (byte) br.ReadByte();
+
 
                 itemInfo.flag = br.ReadByte();
 

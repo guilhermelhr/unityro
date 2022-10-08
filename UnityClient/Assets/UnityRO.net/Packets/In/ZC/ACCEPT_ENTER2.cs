@@ -18,10 +18,6 @@ public partial class ZC {
         public short Font;
         public int Sex;
 
-        public PacketHeader GetHeader() {
-            return HEADER;
-        }
-
         public void Read(MemoryStreamReader br, int size) {
             Tick = br.ReadInt();
             var posDir = br.ReadPos();
