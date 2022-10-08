@@ -2,7 +2,7 @@
 
 public class FriendListItem {
 
-    public const int BLOCK_SIZE = 28;
+    public const int BLOCK_SIZE = 32;
 
     public uint AID;
     public uint CID;
