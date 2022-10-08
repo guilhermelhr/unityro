@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour {
     #region Inspector
     [Header(":: Game Setup")]
     public bool OfflineOnly = false;
+    public bool LocalHost = false;
 
     [Header(":: Rendering Setup")]
     public AudioMixerGroup SoundMixerGroup;
@@ -62,14 +63,14 @@ public class GameManager : MonoBehaviour {
         OnPostRender();
     }
 
-    async void Start() {
-        await Init();
+    void Start() {
+        Init();
     }
 
     private async Task Init() {
         InitManagers();
 
-        await DBManager.Init();
+        DBManager.Init();
 
         MaybeInitOfflineUtils();
 
@@ -168,6 +169,12 @@ public class GameManager : MonoBehaviour {
     public void SetConfigurations(RemoteConfiguration remoteConfiguration, LocalConfiguration localConfiguration) {
         RemoteConfiguration = remoteConfiguration;
         LocalConfiguration = localConfiguration;
+
+#if UNITY_EDITOR
+        if (LocalHost) {
+            RemoteConfiguration.loginServer = "127.0.0.1";
+        }
+#endif
     }
 
     //TODO Get rid of these

@@ -73,12 +73,12 @@ public class OfflineUtility : MonoBehaviour {
             GID = 20001,
             Weapon = 1,
             Speed = 150,
-            Hair = 1,
+            Head = 1,
             MaxHP = 100,
             HP = 100,
             MaxSP = 50,
             SP = 50,
-            ClothesColor = 1,
+            BodyPalette = 1,
         });
         offlineEntity.transform.position = new Vector3(150, 16, 150);
         offlineEntity.SetAttackSpeed(135);

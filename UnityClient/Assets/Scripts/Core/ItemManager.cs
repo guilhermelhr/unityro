@@ -20,7 +20,7 @@ public class ItemManager : MonoBehaviour {
     private void Start() {
         NetworkClient.HookPacket(ZC.ITEM_FALL_ENTRY5.HEADER, OnItemSpamInGround);
         NetworkClient.HookPacket(ZC.ITEM_ENTRY.HEADER, OnItemSpamInGround);
-        NetworkClient.HookPacket(ZC.ITEM_PICKUP_ACK7.HEADER, OnItemPickup);
+        NetworkClient.HookPacket(ZC.ITEM_PICKUP_ACK.HEADER, OnItemPickup);
         NetworkClient.HookPacket(ZC.ITEM_DISAPPEAR.HEADER, OnItemDisappear);
         NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_EQUIP.HEADER, OnInventoryUpdate);
         NetworkClient.HookPacket(ZC.INVENTORY_ITEMLIST_NORMAL.HEADER, OnInventoryUpdate);
@@ -139,7 +139,7 @@ public class ItemManager : MonoBehaviour {
     }
 
     private async void OnItemPickup(ushort cmd, int size, InPacket packet) {
-        if (packet is ZC.ITEM_PICKUP_ACK7 ITEM_PICKUP_ACK7) {
+        if (packet is ZC.ITEM_PICKUP_ACK ITEM_PICKUP_ACK7) {
 
             if (ITEM_PICKUP_ACK7.result != 0) {
                 Debug.Log("Failed to pick item");

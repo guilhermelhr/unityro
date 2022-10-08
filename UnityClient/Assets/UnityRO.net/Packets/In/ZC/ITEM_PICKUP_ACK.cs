@@ -1,14 +1,13 @@
 ﻿using ROIO.Utils;
-using System;
 using System.Collections.Generic;
 
 public partial class ZC {
 
-    [PacketHandler(HEADER, "ZC_ITEM_PICKUP_ACK_V7", SIZE)]
-    public class ITEM_PICKUP_ACK7 : InPacket {
+    [PacketHandler(HEADER, "ZC_ITEM_PICKUP_ACK", SIZE)]
+    public class ITEM_PICKUP_ACK : InPacket {
 
-        public const PacketHeader HEADER = PacketHeader.ZC_ITEM_PICKUP_ACK_V7;
-        public const int SIZE = 69;
+        public const PacketHeader HEADER = PacketHeader.ZC_ITEM_PICKUP_ACK;
+        public const int SIZE = 70;
         public PacketHeader Header => HEADER;
 
         public bool IsIdentified;
@@ -47,7 +46,6 @@ public partial class ZC {
             };
             IsIdentified = br.ReadByte() == 1;
             itemInfo.IsDamaged = br.ReadByte() == 1;
-            itemInfo.refine = (byte)br.ReadByte();
 
             itemInfo.slot = new ItemInfo.Slot() {
                 card1 = (int)br.ReadUInt(),
@@ -74,7 +72,10 @@ public partial class ZC {
             IsFavorite = br.ReadByte() == 1;
             itemInfo.flag = IsIdentified ? 0x1 : 0;
             itemInfo.flag |= IsFavorite ? 0x2 : 0;
+
             itemInfo.viewID = br.ReadShort();
+            itemInfo.refine = (byte) br.ReadByte();
+            itemInfo.enchantgrade = (byte) br.ReadByte();
         }
     }
 }
