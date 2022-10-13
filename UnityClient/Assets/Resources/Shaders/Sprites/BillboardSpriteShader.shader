@@ -48,7 +48,6 @@ Shader "UnityRO/BillboardSpriteShader"
             v2f vert(appdata v)
             {
                 v2f o;
-                UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv.xy;
 
                 // billboard mesh towards camera
@@ -56,15 +55,9 @@ Shader "UnityRO/BillboardSpriteShader"
                 float4 worldCoord = float4(unity_ObjectToWorld._m03_m13_m23, 1);
                 float4 viewPivot = mul(UNITY_MATRIX_V, worldCoord);
 
-                // construct rotation matrix
-                float3 forward = -normalize(viewPivot);
-                float3 up = mul(UNITY_MATRIX_V, float3(0,1,0)).xyz;
-                float3 right = normalize(cross(up,forward));
-                up = cross(forward,right);
-                const float3x3 facingRotation = float3x3(right, up, forward);
-
-                float4 viewPos = float4(viewPivot + mul(vpos, facingRotation), 1.0);
-                o.pos = mul(UNITY_MATRIX_P, viewPos);
+                // Temporary ignoring shaders billboard rotation, handled by cs script until we join all quads sprites in one
+                float4 viewPos = float4(viewPivot + mul(vpos, (float3x3)unity_ObjectToWorld), 1.0);
+                o.pos = UnityObjectToClipPos(v.vertex);
 
                 // calculate distance to vertical billboard plane seen at this vertex's screen position
                 const float3 planeNormal = normalize((_WorldSpaceCameraPos.xyz - unity_ObjectToWorld._m03_m13_m23) * float3(1,0,1));
