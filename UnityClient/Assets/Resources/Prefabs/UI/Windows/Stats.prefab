@@ -1835,7 +1835,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: c4fdfcb7f27938d4db895e0e68974aaf, type: 3}
+  m_Texture: {fileID: 2800000, guid: f81cbb789c5a1944ab7f4932c4ed102b, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -1859,7 +1859,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: c4fdfcb7f27938d4db895e0e68974aaf
+    m_AssetGUID: f81cbb789c5a1944ab7f4932c4ed102b
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
@@ -3431,7 +3431,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 838ac3890f2e6b145ba314fdea226b34, type: 3}
+  m_Texture: {fileID: 2800000, guid: 2eabc9331481fb343919ab86fd1df510, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -3455,12 +3455,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: 838ac3890f2e6b145ba314fdea226b34
+    m_AssetGUID: 2eabc9331481fb343919ab86fd1df510
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
   hoverTexture:
-    m_AssetGUID: 61082511472ede144960df1b55a740f3
+    m_AssetGUID: 6276e38e62846aa4fb56a2d98c491e78
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
@@ -4342,7 +4342,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 6a713f667fb42a746b722881185e1328, type: 3}
+  m_Texture: {fileID: 2800000, guid: 28ef0c2536132e34eacdd32ff6e1fd3d, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -4406,7 +4406,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: 6a713f667fb42a746b722881185e1328
+    m_AssetGUID: 28ef0c2536132e34eacdd32ff6e1fd3d
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1

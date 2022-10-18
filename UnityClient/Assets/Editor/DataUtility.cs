@@ -91,12 +91,27 @@ public class DataUtility {
                 }
 
                 var path = texturesPaths[i];
-                var tImporter = AssetImporter.GetAtPath(path) as TextureImporter;
-                if (tImporter != null) {
-                    tImporter.textureType = TextureImporterType.Default;
-                    tImporter.isReadable = true;
-                    AssetDatabase.ImportAsset(path);
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (importer == null) {
+                    continue;
                 }
+
+                if (path.IndexOf("유저인터페이스") > -1) { //make everything under the interface path be a sprite
+                    importer.textureType = TextureImporterType.Sprite;
+                    importer.spriteImportMode = SpriteImportMode.Single;
+                    var textureSettings = new TextureImporterSettings();
+                    importer.ReadTextureSettings(textureSettings);
+                    textureSettings.spriteMeshType = SpriteMeshType.FullRect;
+                    textureSettings.spritePixelsPerUnit = SPR.PIXELS_PER_UNIT;
+
+                    importer.SetTextureSettings(textureSettings);
+                } else {
+                    importer.textureType = TextureImporterType.Default;
+                    importer.isReadable = true;
+                }
+
+                AssetDatabase.ImportAsset(path);
+                //importer.SaveAndReimport(); //perhaps this has better effect?
             }
 
         } finally {
@@ -268,11 +283,53 @@ public class DataUtility {
         }
     }
 
+    [MenuItem("UnityRO/Utils/Fix interface textures")]
+    static void FixInterfaceTextures() {
+        var paths = GetFilesFromDir(Path.Combine("Assets", "_Generated", "AddressablesAssets", "data", "texture", "유저인터페이스"))
+            .Where(it => Path.GetExtension(it) == ".png")
+            .ToList();
+        Debug.Log(paths.Count);
+        AssetDatabase.StartAssetEditing();
+
+        for (var i = 0; i < paths.Count; i++) {
+            var progress = i * 1f / paths.Count;
+            if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Post processing UI textures {i} of {paths.Count}\t\t{progress * 100}%", progress)) {
+                break;
+            }
+
+            try {
+                var texturePath = paths[i];
+
+                TextureImporter importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
+
+                if (importer == null) {
+                    continue;
+                }
+
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
+                var textureSettings = new TextureImporterSettings();
+                importer.ReadTextureSettings(textureSettings);
+                textureSettings.spriteMeshType = SpriteMeshType.FullRect;
+                textureSettings.spritePixelsPerUnit = SPR.PIXELS_PER_UNIT;
+
+                importer.SetTextureSettings(textureSettings);
+                importer.SaveAndReimport();
+
+            } catch (Exception ex) {
+                Debug.LogError($"Failed post processing sprite {ex}");
+            }
+        }
+
+        AssetDatabase.StopAssetEditing();
+        AssetDatabase.Refresh();
+    }
+
     [MenuItem("UnityRO/Utils/Fix Sprites PixelsPerUnit")]
     static void FixSpritePixelsPerUnit() {
         var paths = GetFilesFromDir(Path.Combine("Assets", "_Generated", "AddressablesAssets", "data", "sprite"))
-        .Where(it => Path.GetExtension(it) == ".png")
-        .ToList();
+            .Where(it => Path.GetExtension(it) == ".png")
+            .ToList();
 
         AssetDatabase.StartAssetEditing();
 

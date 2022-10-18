@@ -1240,7 +1240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OfflineOnly: 0
-  LocalHost: 1
+  LocalHost: 0
   SoundMixerGroup: {fileID: 243063458056754506, guid: 80607cd4d5abb9d49824975c92ad1afc, type: 2}
   WorldLight: {fileID: 2052593200}
 --- !u!4 &6849943526642155883

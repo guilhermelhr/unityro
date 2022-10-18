@@ -359,7 +359,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 82}
+  m_SizeDelta: {x: 4, y: 4}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &8740602538209216874
 CanvasRenderer:
@@ -389,7 +389,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 62b1ca46cee2864458a1da8136a7020a, type: 3}
+  m_Texture: {fileID: 0}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -413,7 +413,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: 62b1ca46cee2864458a1da8136a7020a
+    m_AssetGUID: a65552c4a58c3bc40a1591eaf7cfe074
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
@@ -724,7 +724,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7131267588176943532, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
       propertyPath: m_Size
-      value: 0.999926
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7131267588176943532, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
       propertyPath: m_Value
@@ -740,7 +740,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7131267589075313545, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 97.80598
+      value: 97.80612
       objectReference: {fileID: 0}
     - target: {fileID: 7131267589417600584, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
       propertyPath: m_Name
@@ -893,11 +893,15 @@ PrefabInstance:
     - target: {fileID: 2480459662682490656, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
       propertyPath: m_Texture
       value: 
-      objectReference: {fileID: 2800000, guid: c4fdfcb7f27938d4db895e0e68974aaf, type: 3}
+      objectReference: {fileID: 2800000, guid: f81cbb789c5a1944ab7f4932c4ed102b, type: 3}
     - target: {fileID: 2480459662682490656, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
       propertyPath: overrideSize
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4350510912719786228, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
+      propertyPath: m_Texture
+      value: 
+      objectReference: {fileID: 2800000, guid: 2eabc9331481fb343919ab86fd1df510, type: 3}
     - target: {fileID: 5201228998091950362, guid: cdf05172d05d8d04696e182118225b7e, type: 3}
       propertyPath: m_text
       value: Inventory

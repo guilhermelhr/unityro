@@ -647,7 +647,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 256, y: 128}
+  m_SizeDelta: {x: 280, y: 157}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1479321180269076635
 CanvasRenderer:
@@ -701,7 +701,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 616e4b2b54db4f14d8118bb045a0bfe2, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -725,7 +725,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: 46a7fd67abcc2b646ada7d1748884e10
+    m_AssetGUID: 616e4b2b54db4f14d8118bb045a0bfe2
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
@@ -1107,7 +1107,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1479321180601132645}
   - component: {fileID: 1479321180601132647}
-  - component: {fileID: 1479321180601132641}
   - component: {fileID: 1479321180601132640}
   - component: {fileID: 1479321180601132642}
   m_Layer: 5
@@ -1147,20 +1146,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1479321180601132644}
   m_CullTransparentMesh: 0
---- !u!114 &1479321180601132641
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1479321180601132644}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalFit: 0
-  m_VerticalFit: 0
 --- !u!114 &1479321180601132640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1998,7 +1983,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 256, y: 16}
+  m_SizeDelta: {x: 280, y: 17}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1479321180893449382
 CanvasRenderer:
@@ -2028,7 +2013,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: f81cbb789c5a1944ab7f4932c4ed102b, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -2052,7 +2037,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: c4fdfcb7f27938d4db895e0e68974aaf
+    m_AssetGUID: f81cbb789c5a1944ab7f4932c4ed102b
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
@@ -2899,7 +2884,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 8, y: 0}
-  m_SizeDelta: {x: 8, y: 8}
+  m_SizeDelta: {x: 11, y: 11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1479321181696317909
 CanvasRenderer:
@@ -2929,7 +2914,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 2eabc9331481fb343919ab86fd1df510, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -2953,12 +2938,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: 838ac3890f2e6b145ba314fdea226b34
+    m_AssetGUID: 2eabc9331481fb343919ab86fd1df510
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
   hoverTexture:
-    m_AssetGUID: 61082511472ede144960df1b55a740f3
+    m_AssetGUID: 6276e38e62846aa4fb56a2d98c491e78
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1

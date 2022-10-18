@@ -242,7 +242,6 @@ public class Entity : MonoBehaviour, INetworkEntity {
         body.layer = rendererLayer;
         body.transform.SetParent(gameObject.transform, false);
         body.transform.localPosition = new Vector3(0f, 0.4f, 0f);
-        body.AddComponent<Billboard>();
         SortingGroup = body.AddComponent<SortingGroup>();
         SortingGroup.sortingOrder = 2;
 
@@ -263,6 +262,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
             warp.StartWarp(body);
             return;
         }
+
+        body.AddComponent<Billboard>();
         // Any other than PC has Head etc
         if (Type != EntityType.PC) {
             return;

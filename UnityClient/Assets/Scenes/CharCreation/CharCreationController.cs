@@ -73,6 +73,8 @@ public class CharCreationController : MonoBehaviour {
         SelectedSex = sex;
         SetHairstyles();
         UpdateEntity(StyleEntity, sex);
+        UpdateEntity(HumanSelectionEntity, sex);
+        UpdateEntity(DoramSelecionEntity, sex);
     }
 
     public void CreateCharacter() {

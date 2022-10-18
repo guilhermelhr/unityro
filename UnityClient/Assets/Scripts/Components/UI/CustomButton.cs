@@ -26,9 +26,9 @@ public class CustomButton : Button,
         if (rawImage == null) {
             rawImage = GetComponent<RawImage>();
         }
-        
+
         rawImage.texture = null;
-        
+
         if (AddressablesHolder == null) {
             AddressablesHolder = GetComponent<CustomUIAddressablesHolder>();
         }
@@ -49,10 +49,10 @@ public class CustomButton : Button,
         LoadPressedTexture();
     }
 
-    private async void LoadPressedTexture() {
+    private void LoadPressedTexture() {
         try {
             if (pressedTexture == null && AddressablesHolder.pressedTexture.AssetGUID.Length > 0) {
-                pressedTexture = await AddressablesHolder.pressedTexture.LoadAssetAsync().Task;
+                pressedTexture = AddressablesHolder.pressedTexture.LoadAssetAsync().WaitForCompletion();
             }
         } catch (Exception e) {
             Debug.LogError($"Failed to load pressed image from {this} {e}");
@@ -62,17 +62,17 @@ public class CustomButton : Button,
     private async void LoadHoverTexture() {
         try {
             if (hoverTexture == null && AddressablesHolder.hoverTexture.AssetGUID.Length > 0) {
-                hoverTexture = await AddressablesHolder.hoverTexture.LoadAssetAsync().Task;
+                hoverTexture = AddressablesHolder.hoverTexture.LoadAssetAsync().WaitForCompletion();
             }
         } catch (Exception e) {
             Debug.LogError($"Failed to load hover image from {this} {e}");
         }
     }
 
-    private async void LoadIdleTexture() {
+    private void LoadIdleTexture() {
         try {
             if (backgroundTexture == null && AddressablesHolder.backgroundTexture.AssetGUID.Length > 0) {
-                backgroundTexture = await AddressablesHolder.backgroundTexture.LoadAssetAsync().Task;
+                backgroundTexture = AddressablesHolder.backgroundTexture.LoadAssetAsync().WaitForCompletion();
                 rawImage.texture = backgroundTexture;
             }
         } catch (Exception e) {
@@ -81,26 +81,38 @@ public class CustomButton : Button,
     }
 
     override public void OnPointerDown(PointerEventData eventData) {
+        if (pressedTexture == null)
+            return;
         rawImage.texture = pressedTexture;
     }
 
     override public void OnPointerUp(PointerEventData eventData) {
+        if (hoverTexture == null)
+            return;
         rawImage.texture = hoverTexture;
     }
 
     override public void OnPointerEnter(PointerEventData pointerEventData) {
+        if (hoverTexture == null)
+            return;
         rawImage.texture = hoverTexture;
     }
 
     override public void OnPointerExit(PointerEventData pointerEventData) {
+        if (backgroundTexture == null)
+            return;
         rawImage.texture = backgroundTexture;
     }
 
     override public void OnSelect(BaseEventData eventData) {
+        if (hoverTexture == null)
+            return;
         rawImage.texture = hoverTexture;
     }
 
     override public void OnDeselect(BaseEventData eventData) {
+        if (backgroundTexture == null)
+            return;
         rawImage.texture = backgroundTexture;
     }
 }

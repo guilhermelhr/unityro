@@ -2,6 +2,7 @@
 using ROIO.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -42,7 +43,7 @@ namespace ROIO.Loaders {
                 layer.texturesIds = new List<int>();
                 for (int j = 0; j < textureCount; j++) {
                     var tex = data.ReadBinaryString(128);
-                    var texture = await Addressables.LoadAssetAsync<Texture2D>(path + "/" + tex).Task;
+                    var texture = Addressables.LoadAssetAsync<Texture2D>(path + "/" + Path.ChangeExtension(tex, ".png")).WaitForCompletion();
                     layer.textures[j] = texture;
 
                     if (!textureNames.Contains(tex)) {

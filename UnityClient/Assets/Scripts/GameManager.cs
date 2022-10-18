@@ -1,4 +1,9 @@
-﻿using Assets.Scripts.Renderer.Map;
+﻿#if !DUMP_RECEIVED_PACKET
+    //#define DUMP_RECEIVED_PACKET
+#endif
+
+
+using Assets.Scripts.Renderer.Map;
 using ROIO;
 using ROIO.Loaders;
 using System;
@@ -70,7 +75,7 @@ public class GameManager : MonoBehaviour {
     private async Task Init() {
         InitManagers();
 
-        DBManager.Init();
+        await DBManager.Init();
 
         MaybeInitOfflineUtils();
 
@@ -146,7 +151,7 @@ public class GameManager : MonoBehaviour {
         return CurrentMap;
     }
 
-    private Task<bool> LoadScene(string sceneName, LoadSceneMode mode) {
+    public Task<bool> LoadScene(string sceneName, LoadSceneMode mode) {
         var t = new TaskCompletionSource<bool>();
 
         SceneManager.LoadSceneAsync(sceneName, mode).completed += delegate {
@@ -156,7 +161,7 @@ public class GameManager : MonoBehaviour {
         return t.Task;
     }
 
-    private Task<bool> UnloadScene(string sceneName) {
+    public Task<bool> UnloadScene(string sceneName) {
         var t = new TaskCompletionSource<bool>();
 
         SceneManager.UnloadSceneAsync(sceneName).completed += delegate {
