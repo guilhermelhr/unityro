@@ -219,12 +219,15 @@
     ZC_NOTIFY_EFFECT = 0x19b,
     #endregion
 
+    #region SC
+    SC_NOTIFY_BAN = 0x81,
+    #endregion
+
     //ZC_INVENTORY_ITEMLIST_EQUIP = 0xa0d,
     //ZC_INVENTORY_ITEMLIST_NORMAL = 0x991,
     //ZC_USER_COUNT = 0xc2,
     //ZC_SPRITE_CHANGE = 0xc3,
     //SERVER_ENTRY_ACK = 0x8f,
-    //SC_NOTIFY_BAN = 0x81,
     //ZC_ACK_DISCONNECT_CHARACTER = 0xcd,
     //CZ_DISCONNECT_CHARACTER = 0xcc,
     //CZ_DISCONNECT_ALL_CHARACTER = 0xce,

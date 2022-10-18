@@ -547,7 +547,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 8, y: 0}
-  m_SizeDelta: {x: 8, y: 8}
+  m_SizeDelta: {x: 11, y: 11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8357828028649439875
 CanvasRenderer:
@@ -577,7 +577,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 838ac3890f2e6b145ba314fdea226b34, type: 3}
+  m_Texture: {fileID: 2800000, guid: 2eabc9331481fb343919ab86fd1df510, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -601,12 +601,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: 838ac3890f2e6b145ba314fdea226b34
+    m_AssetGUID: 2eabc9331481fb343919ab86fd1df510
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
   hoverTexture:
-    m_AssetGUID: 61082511472ede144960df1b55a740f3
+    m_AssetGUID: 6276e38e62846aa4fb56a2d98c491e78
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
@@ -1517,7 +1517,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 280, y: 16}
+  m_SizeDelta: {x: 280, y: 17}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3465439896746487705
 CanvasRenderer:
@@ -1547,7 +1547,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: c4fdfcb7f27938d4db895e0e68974aaf, type: 3}
+  m_Texture: {fileID: 2800000, guid: f81cbb789c5a1944ab7f4932c4ed102b, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0

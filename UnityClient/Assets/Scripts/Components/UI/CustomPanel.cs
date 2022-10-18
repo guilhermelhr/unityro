@@ -45,30 +45,30 @@ public class CustomPanel : RawImage,
         LoadPressedTexture();
     }
 
-    private async void LoadPressedTexture() {
+    private void LoadPressedTexture() {
         try {
             if (pressedTexture == null && AddressablesHolder.pressedTexture.AssetGUID.Length > 0) {
-                pressedTexture = await AddressablesHolder.pressedTexture.LoadAsync();
+                 pressedTexture = AddressablesHolder.pressedTexture.LoadAssetAsync().WaitForCompletion();
             }
         } catch (Exception e) {
             Debug.LogError($"Failed to load pressed image from {this} {e}");
         }
     }
 
-    private async void LoadHoverTexture() {
+    private void LoadHoverTexture() {
         try {
             if (hoverTexture == null && AddressablesHolder.hoverTexture.AssetGUID.Length > 0) {
-                hoverTexture = await AddressablesHolder.hoverTexture.LoadAsync();
+                hoverTexture = AddressablesHolder.hoverTexture.LoadAssetAsync().WaitForCompletion();
             }
         } catch (Exception e) {
             Debug.LogError($"Failed to load hover image from {this} {e}");
         }
     }
 
-    private async void LoadIdleTexture() {
+    private void LoadIdleTexture() {
         try {
             if (backgroundTexture == null && AddressablesHolder.backgroundTexture.AssetGUID.Length > 0) {
-                backgroundTexture = await AddressablesHolder.backgroundTexture.LoadAsync();
+                backgroundTexture = AddressablesHolder.backgroundTexture.LoadAssetAsync().WaitForCompletion();
                 texture = backgroundTexture;
                 if (overrideSize)
                     SetNativeSize();
@@ -78,8 +78,8 @@ public class CustomPanel : RawImage,
         }
     }
 
-    public async void SetBackground(string path) {
-        backgroundTexture = await Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + path).Task;
+    public void SetBackground(string path) {
+        backgroundTexture = Addressables.LoadAssetAsync<Texture2D>(DBManager.INTERFACE_PATH + path).WaitForCompletion();
         texture = backgroundTexture;
         GetComponent<RectTransform>().sizeDelta = new Vector2(backgroundTexture.width, backgroundTexture.height);
     }

@@ -50,7 +50,7 @@ public class GridRenderer : MonoBehaviour {
     }
 
     private void LoadGridTexture() {
-        material = new Material(Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default"));
+        material = Resources.Load<Material>("Materials/GridSelectorMaterial");
         material.SetFloat("_Glossiness", 0f);
         material.mainTexture = gridIcon;
         material.color = Color.red;

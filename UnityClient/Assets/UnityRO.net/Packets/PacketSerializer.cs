@@ -122,7 +122,7 @@ public class PacketSerializer {
     }
 
     private static void DumpReceivedPacket(ushort cmd, int size, long remainingSize, InPacket packet = null) {
-#if DEBUG
+#if DUMP_RECEIVED_PACKET
         try {
             var log = $"{string.Format("0x{0:x3}", cmd)} \tReceived Size:{size} \tRegistered Size:{RegisteredPackets.Where(it => it.Key == cmd).FirstOrDefault().Value.Size} \tRemaining Size: {remainingSize} \t// {(PacketHeader) cmd}";
             Debug.Log(log);

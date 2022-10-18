@@ -20,7 +20,6 @@ public class LoginController : MonoBehaviour {
         RemoteConfiguration = FindObjectOfType<GameManager>().RemoteConfiguration;
 
         NetworkClient.HookPacket(AC.ACCEPT_LOGIN3.HEADER, this.OnLoginResponse);
-        usernameField.text = "danilo3";
     }
 
     void Update() {
