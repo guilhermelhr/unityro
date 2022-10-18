@@ -151,7 +151,7 @@ public class GameManager : MonoBehaviour {
         return CurrentMap;
     }
 
-    private Task<bool> LoadScene(string sceneName, LoadSceneMode mode) {
+    public Task<bool> LoadScene(string sceneName, LoadSceneMode mode) {
         var t = new TaskCompletionSource<bool>();
 
         SceneManager.LoadSceneAsync(sceneName, mode).completed += delegate {
@@ -161,7 +161,7 @@ public class GameManager : MonoBehaviour {
         return t.Task;
     }
 
-    private Task<bool> UnloadScene(string sceneName) {
+    public Task<bool> UnloadScene(string sceneName) {
         var t = new TaskCompletionSource<bool>();
 
         SceneManager.UnloadSceneAsync(sceneName).completed += delegate {

@@ -4,6 +4,7 @@ using ROIO.Models.FileTypes;
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityRO.GameCamera;
 
 public class MapController : MonoBehaviour {
@@ -150,19 +151,22 @@ public class MapController : MonoBehaviour {
         if (packet is ZC.NPCACK_MAPMOVE) {
             var pkt = packet as ZC.NPCACK_MAPMOVE;
 
-            if (Path.GetFileNameWithoutExtension(pkt.MapName) != Session.CurrentSession.CurrentMap) {
-                var entity = Session.CurrentSession.Entity as Entity;
-                entity.StopMoving();
+            await GameManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+            var entity = Session.CurrentSession.Entity as Entity;
+            entity.StopMoving();
 
+            if (Path.GetFileNameWithoutExtension(pkt.MapName) != Session.CurrentSession.CurrentMap) {
                 var mapname = Path.GetFileNameWithoutExtension(pkt.MapName);
 
                 GameMap map = await GameManager.BeginMapLoading(mapname);
                 PathFinding = map.GetPathFinder();
 
                 Session.CurrentSession.SetCurrentMap(pkt.MapName);
-                entity.transform.position = new Vector3(pkt.PosX, PathFinding.GetCellHeight(pkt.PosX, pkt.PosY), pkt.PosY);
-                new CZ.NOTIFY_ACTORINIT().Send();
             }
+
+            entity.transform.position = new Vector3(pkt.PosX, PathFinding.GetCellHeight(pkt.PosX, pkt.PosY), pkt.PosY);
+            new CZ.NOTIFY_ACTORINIT().Send();
+            await GameManager.UnloadScene("LoadingScene");
         }
     }
 
