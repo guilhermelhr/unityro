@@ -202,7 +202,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 313ce4331797ec140b058765404efa32, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -226,12 +226,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: 838ac3890f2e6b145ba314fdea226b34
+    m_AssetGUID: 313ce4331797ec140b058765404efa32
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
   hoverTexture:
-    m_AssetGUID: 61082511472ede144960df1b55a740f3
+    m_AssetGUID: 5ffa0e21895af0c4789ea2290b98f18f
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
@@ -840,7 +840,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 2eabc9331481fb343919ab86fd1df510, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -864,12 +864,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: 838ac3890f2e6b145ba314fdea226b34
+    m_AssetGUID: 2eabc9331481fb343919ab86fd1df510
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
   hoverTexture:
-    m_AssetGUID: 61082511472ede144960df1b55a740f3
+    m_AssetGUID: 6276e38e62846aa4fb56a2d98c491e78
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
@@ -955,7 +955,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 96a1704e5a951ab4993f3f99a167f195, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -979,12 +979,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: 838ac3890f2e6b145ba314fdea226b34
+    m_AssetGUID: 96a1704e5a951ab4993f3f99a167f195
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
   hoverTexture:
-    m_AssetGUID: 61082511472ede144960df1b55a740f3
+    m_AssetGUID: 14343162e774aff41adf66b09a19c48d
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1

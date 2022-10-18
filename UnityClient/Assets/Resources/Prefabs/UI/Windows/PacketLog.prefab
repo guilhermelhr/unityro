@@ -506,12 +506,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: 8366e8aeb0e523648b90eafa051a07d6
+    m_AssetGUID: 96a1704e5a951ab4993f3f99a167f195
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
   hoverTexture:
-    m_AssetGUID: 716b28fec5502d6499ecd0db44b6f059
+    m_AssetGUID: 96a1704e5a951ab4993f3f99a167f195
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1
@@ -637,7 +637,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7131267588176943532, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7131267588176943533, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
       propertyPath: m_AnchorMin.x
@@ -835,6 +835,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7131267588176943532, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
+      propertyPath: m_Size
+      value: 0.9999938
+      objectReference: {fileID: 0}
+    - target: {fileID: 7131267588176943532, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
       propertyPath: m_Value
       value: 1
       objectReference: {fileID: 0}
@@ -864,7 +868,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7131267589075313545, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 146.14291
+      value: 146.14294
       objectReference: {fileID: 0}
     - target: {fileID: 7131267589075313551, guid: b45d9b48ba3242e4b82fe58cd4dc1dd1, type: 3}
       propertyPath: m_Padding.m_Top

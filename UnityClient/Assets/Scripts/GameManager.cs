@@ -1,4 +1,9 @@
-﻿using Assets.Scripts.Renderer.Map;
+﻿#if !DUMP_RECEIVED_PACKET
+    //#define DUMP_RECEIVED_PACKET
+#endif
+
+
+using Assets.Scripts.Renderer.Map;
 using ROIO;
 using ROIO.Loaders;
 using System;
@@ -70,7 +75,7 @@ public class GameManager : MonoBehaviour {
     private async Task Init() {
         InitManagers();
 
-        DBManager.Init();
+        await DBManager.Init();
 
         MaybeInitOfflineUtils();
 
