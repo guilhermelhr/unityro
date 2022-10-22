@@ -60,7 +60,8 @@ internal class UnityROFramePaceCalculator : MonoBehaviour, IFramePaceCalculator 
         if (CurrentFrame >= maxFrame) {
             if (AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
                 CurrentFrame = 0;
-            } else if (NextMotion.HasValue) {
+            } else if (NextMotion.HasValue && ViewerType == ViewerType.BODY) { 
+                // Since body is the main component, it's the only one "allowed" to ask for the next motion
                 Entity.ChangeMotion(NextMotion.Value);
             } else {
                 CurrentFrame = maxFrame;
