@@ -3,26 +3,16 @@ using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
-using UnityRO.GameCamera;
 
 public class EntityViewer : MonoBehaviour {
-
-    private const int AVERAGE_ATTACK_SPEED = 432;
-    private const int AVERAGE_ATTACKED_SPEED = 288;
-    private const int MAX_ATTACK_SPEED = AVERAGE_ATTACKED_SPEED * 2;
 
     public Entity Entity;
     public EntityViewer Parent;
     public ViewerType ViewerType;
 
-    public MotionRequest CurrentMotion;
-    public MotionRequest? NextMotion;
-
-    public float SpriteOffset;
     public int HeadDirection;
     public SpriteState State = SpriteState.Idle;
 
@@ -31,19 +21,12 @@ public class EntityViewer : MonoBehaviour {
     private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
 
     private PaletteData CurrentPaletteData;
-    private Sprite[] sprites;
-    private ACT currentACT;
-    private ACT.Action currentAction;
-    private int currentActionIndex;
-    private int currentViewID;
-    private int currentFrame = 0;
-    private long AnimationStart;
-    private int ActionId = -1;
-    private double previousFrame = 0;
-
-    private double motionSpeed = 4;
-    private double loopCountToAnimationFinish = 1;
-    private float motionSpeedMultiplier = 1f;
+    private Sprite[] Sprites;
+    private ACT CurrentACT;
+    private ACT.Action CurrentAction;
+    private int CurrentViewID;
+    private int CurrentFrameIndex = 0;
+    private int ActionId = 0;
 
     private MeshCollider MeshCollider;
     private MeshFilter MeshFilter;
@@ -52,19 +35,38 @@ public class EntityViewer : MonoBehaviour {
     private Material SpriteMaterial;
     private Texture2D PaletteTexture;
 
+    private IFramePaceCalculator FramePaceCalculator;
+
+    private bool IsReady = false;
+
+    private bool IsHead => ViewerType == ViewerType.HEAD ||
+        ViewerType == ViewerType.HEAD_BOTTOM ||
+        ViewerType == ViewerType.HEAD_TOP ||
+        ViewerType == ViewerType.HEAD_MID;
+
     public void Start() {
         SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
 
+        FramePaceCalculator = Entity.CurrentFramePaceAlgorithm switch {
+            Entity.FramePaceAlgorithm.RoBrowser => gameObject.GetOrAddComponent<RoBrowserFramePaceCalculator>(),
+            Entity.FramePaceAlgorithm.UnityRO => gameObject.GetOrAddComponent<UnityROFramePaceCalculator>(),
+            Entity.FramePaceAlgorithm.DHXJ => throw new NotImplementedException(),
+            _ => throw new NotImplementedException(),
+        };
+
         Init();
         InitShadow();
+        IsReady = true;
     }
 
     public void Init(SpriteData spriteData) {
-        currentACT = spriteData.act;
-        sprites = spriteData.sprites;
+        CurrentACT = spriteData.act;
+        Sprites = spriteData.sprites;
+
+        FramePaceCalculator.Init(Entity, ViewerType, CurrentACT);
     }
 
-    public async void Init(bool reloadSprites = false) {
+    public void Init(bool reloadSprites = false) {
         CurrentPaletteData = new PaletteData {
             hairColor = Entity.Status.hair_color,
             hair = Entity.Status.hair,
@@ -79,10 +81,10 @@ public class EntityViewer : MonoBehaviour {
 
         if (Entity.Type == EntityType.ITEM) {
             MeshRenderer.material = SpriteMaterial;
-            MeshRenderer.material.mainTexture = sprites[0].texture;
+            MeshRenderer.material.mainTexture = Sprites[0].texture;
         }
 
-        if (sprites == null || reloadSprites) {
+        if (Sprites == null || reloadSprites) {
             string path = "";
             string palettePath = "";
 
@@ -100,30 +102,30 @@ public class EntityViewer : MonoBehaviour {
                     }
                     break;
                 case ViewerType.WEAPON:
-                    currentViewID = Entity.EquipInfo.Weapon;
-                    path = DBManager.GetWeaponPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
+                    CurrentViewID = Entity.EquipInfo.Weapon;
+                    path = DBManager.GetWeaponPath(CurrentViewID, Entity.Status.jobId, Entity.Status.sex);
                     break;
                 case ViewerType.SHIELD:
-                    currentViewID = Entity.EquipInfo.Shield;
-                    path = DBManager.GetShieldPath(currentViewID, Entity.Status.jobId, Entity.Status.sex);
+                    CurrentViewID = Entity.EquipInfo.Shield;
+                    path = DBManager.GetShieldPath(CurrentViewID, Entity.Status.jobId, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_TOP:
-                    currentViewID = Entity.EquipInfo.HeadTop;
-                    path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
+                    CurrentViewID = Entity.EquipInfo.HeadTop;
+                    path = DBManager.GetHatPath(CurrentViewID, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_MID:
-                    currentViewID = Entity.EquipInfo.HeadMid;
-                    path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
+                    CurrentViewID = Entity.EquipInfo.HeadMid;
+                    path = DBManager.GetHatPath(CurrentViewID, Entity.Status.sex);
                     break;
                 case ViewerType.HEAD_BOTTOM:
-                    currentViewID = Entity.EquipInfo.HeadBottom;
-                    path = DBManager.GetHatPath(currentViewID, Entity.Status.sex);
+                    CurrentViewID = Entity.EquipInfo.HeadBottom;
+                    path = DBManager.GetHatPath(CurrentViewID, Entity.Status.sex);
                     break;
             }
 
-            if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD && currentViewID <= 0) {
-                currentACT = null;
-                sprites = null;
+            if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD && CurrentViewID <= 0) {
+                CurrentACT = null;
+                Sprites = null;
                 ColliderCache.Clear();
                 MeshCache.Clear();
 
@@ -131,11 +133,13 @@ public class EntityViewer : MonoBehaviour {
             }
 
             try {
-                var spriteData = await Addressables.LoadAssetAsync<SpriteData>(path + ".asset").Task;
-                var atlas = await Addressables.LoadAssetAsync<Texture2D>(path + ".png").Task;
+                var spriteData = Addressables.LoadAssetAsync<SpriteData>(path + ".asset").WaitForCompletion();
+                var atlas = Addressables.LoadAssetAsync<Texture2D>(path + ".png").WaitForCompletion();
 
-                sprites = spriteData.sprites;
-                currentACT = spriteData.act;
+                Sprites = spriteData.sprites;
+                CurrentACT = spriteData.act;
+
+                FramePaceCalculator.Init(Entity, ViewerType, CurrentACT);
 
                 if (SpriteMaterial == null) {
                     SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
@@ -147,17 +151,13 @@ public class EntityViewer : MonoBehaviour {
             } catch (Exception e) {
                 Debug.LogError($"Could not load sprites for: {path}");
                 Debug.LogException(e);
-                currentACT = null;
+                CurrentACT = null;
             }
         }
 
-        if (ActionId == -1) {
-            ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
-        }
-
         foreach (var child in Children) {
-            child.Init(reloadSprites);
             child.Start();
+            child.Init(reloadSprites);
         }
     }
 
@@ -173,16 +173,11 @@ public class EntityViewer : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (currentACT == null || !Entity.IsReady)
+        if (CurrentACT == null || (!Entity.IsReady && !IsReady))
             return;
 
-        if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD) {
-            var updatedViewID = FindCurrentViewID();
-            if (updatedViewID != currentViewID) {
-                Init(reloadSprites: true);
-
-                return;
-            }
+        if (ActionId == -1) {
+            ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
         }
 
         if (CheckForEntityViewsUpdates()) {
@@ -190,14 +185,9 @@ public class EntityViewer : MonoBehaviour {
             return;
         }
 
-        var cameraDirection = (int) (CharacterCamera.ROCamera?.Direction ?? 0);
-        var entityDirection = (int) Entity.Direction + 8;
-        currentActionIndex = (ActionId + (cameraDirection + entityDirection) % 8) % currentACT.actions.Length;
-        currentAction = currentACT.actions[currentActionIndex];
-        currentFrame = GetCurrentFrame(GameManager.Tick - AnimationStart);
-        var frame = currentAction.frames[currentFrame];
+        ACT.Frame frame = UpdateFrame();
 
-        if (currentAction == null) {
+        if (CurrentAction == null) {
             return;
         }
 
@@ -206,9 +196,16 @@ public class EntityViewer : MonoBehaviour {
         UpdateAnchorPoints();
     }
 
+    private ACT.Frame UpdateFrame() {
+        CurrentAction = CurrentACT.actions[FramePaceCalculator.GetActionIndex()];
+        CurrentFrameIndex = FramePaceCalculator.GetCurrentFrame();
+        var frame = CurrentAction.frames[CurrentFrameIndex];
+        return frame;
+    }
+
     private bool CheckForEntityViewsUpdates() {
         if (ViewerType != ViewerType.BODY && ViewerType != ViewerType.HEAD) {
-            return FindCurrentViewID() != currentViewID;
+            return FindCurrentViewID() != CurrentViewID;
         }
 
         if (Entity.Status.hair != CurrentPaletteData.hair ||
@@ -221,20 +218,14 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private int FindCurrentViewID() {
-        switch (ViewerType) {
-            case ViewerType.WEAPON:
-                return Entity.EquipInfo.Weapon;
-            case ViewerType.SHIELD:
-                return Entity.EquipInfo.Shield;
-            case ViewerType.HEAD_TOP:
-                return Entity.EquipInfo.HeadTop;
-            case ViewerType.HEAD_MID:
-                return Entity.EquipInfo.HeadMid;
-            case ViewerType.HEAD_BOTTOM:
-                return Entity.EquipInfo.HeadBottom;
-            default:
-                return -1;
-        }
+        return ViewerType switch {
+            ViewerType.WEAPON => Entity.EquipInfo.Weapon,
+            ViewerType.SHIELD => Entity.EquipInfo.Shield,
+            ViewerType.HEAD_TOP => Entity.EquipInfo.HeadTop,
+            ViewerType.HEAD_MID => Entity.EquipInfo.HeadMid,
+            ViewerType.HEAD_BOTTOM => Entity.EquipInfo.HeadBottom,
+            _ => -1,
+        };
     }
 
     private void UpdateAnchorPoints() {
@@ -249,8 +240,8 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private void PlaySound(ACT.Frame frame) {
-        if (frame.soundId > -1 && frame.soundId < currentACT.sounds.Length) {
-            var clipName = currentACT.sounds[frame.soundId];
+        if (frame.soundId > -1 && frame.soundId < CurrentACT.sounds.Length) {
+            var clipName = CurrentACT.sounds[frame.soundId];
             if (clipName == "atk")
                 return;
 
@@ -262,13 +253,13 @@ public class EntityViewer : MonoBehaviour {
         // We need this mesh collider in order to have the raycast to hit the sprite
         ColliderCache.TryGetValue(frame, out Mesh colliderMesh);
         if (colliderMesh == null) {
-            colliderMesh = SpriteMeshBuilder.BuildColliderMesh(frame, sprites);
+            colliderMesh = SpriteMeshBuilder.BuildColliderMesh(frame, Sprites);
             ColliderCache.Add(frame, colliderMesh);
         }
 
         MeshCache.TryGetValue(frame, out Mesh rendererMesh);
-        if (rendererMesh == null) { 
-            rendererMesh = SpriteMeshBuilder.BuildSpriteMesh(frame, sprites);
+        if (rendererMesh == null) {
+            rendererMesh = SpriteMeshBuilder.BuildSpriteMesh(frame, Sprites);
             MeshCache.Add(frame, rendererMesh);
         }
 
@@ -281,155 +272,17 @@ public class EntityViewer : MonoBehaviour {
         MeshCollider.sharedMesh = colliderMesh;
     }
 
-    /**
-     * Hammer time
-     */
-    private int GetCurrentFrame(long tm) {
-        var isIdle = CurrentMotion.Motion == SpriteMotion.Idle || CurrentMotion.Motion == SpriteMotion.Sit;
-        double animCount = currentAction.frames.Length;
-
-        switch (CurrentMotion.Motion) {
-            case SpriteMotion.Attack:
-            case SpriteMotion.Attack1:
-            case SpriteMotion.Attack2:
-            case SpriteMotion.Attack3:
-                return GetAttackFrame(tm, isIdle, animCount);
-            default:
-                return GetEverythingElseFrame(tm, isIdle, animCount);
-
-        }
-    }
-
-    private int GetEverythingElseFrame(long tm, bool isIdle, double animCount) {
-        long delay = (long) GetDelay();
-        if (delay <= 0) {
-            delay = (int) currentAction.delay;
-        }
-        var headDir = 0;
-        double frame;
-
-        if (ViewerType == ViewerType.BODY && Entity.Type == EntityType.PC && isIdle) {
-            return Entity.HeadDir;
-        }
-
-        if ((ViewerType == ViewerType.HEAD ||
-            ViewerType == ViewerType.HEAD_TOP ||
-            ViewerType == ViewerType.HEAD_MID ||
-            ViewerType == ViewerType.HEAD_BOTTOM) && isIdle) {
-            animCount = Math.Floor(animCount / 3);
-            headDir = Entity.HeadDir;
-        }
-
-        if (AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
-            frame = Math.Floor((double) (tm / delay));
-            frame %= animCount;
-            frame += animCount * headDir;
-            frame += previousFrame;
-            frame %= animCount;
-
-            return (int) frame;
-        }
-
-        frame = Math.Min(tm / delay | 0, animCount);
-        frame += (animCount * headDir);
-        frame += previousFrame;
-
-        if (ViewerType == ViewerType.BODY && frame >= animCount - 1) {
-            previousFrame = frame = animCount - 1;
-
-            if (CurrentMotion.delay > 0 && GameManager.Tick < CurrentMotion.delay) {
-                if (NextMotion.HasValue) {
-                    StartCoroutine(ChangeMotionAfter(NextMotion.Value, (float) (CurrentMotion.delay - GameManager.Tick) / 1000f));
-                }
-            } else {
-                if (NextMotion.HasValue) {
-                    ChangeMotion(NextMotion.Value);
-                }
-            }
-        }
-
-        return (int) Math.Min(frame, animCount - 1);
-    }
-
-    private int GetAttackFrame(long tm, bool isIdle, double animCount) {
-        if (isIdle) {
-            return 0;
-        }
-
-        var stateCnt = tm / 24f;
-        double currentMotion;
-        if (!AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
-            var motionCount = animCount;
-            currentMotion = (int) (stateCnt / motionSpeed % animCount);
-            var loopCount = (stateCnt / motionSpeed) / motionCount;
-
-            if (loopCount >= 1) {
-                currentMotion--;
-                if (loopCount >= loopCountToAnimationFinish && NextMotion.HasValue) {
-                    ChangeMotion(NextMotion.Value);
-                }
-            }
-        } else {
-            currentMotion = (int) (stateCnt / motionSpeed % animCount);
-        }
-
-        if (currentMotion <= 0) {
-            currentMotion = 0;
-        }
-
-        return (int) currentMotion;
-    }
-
-    private IEnumerator ChangeMotionAfter(MotionRequest motion, float time) {
-        yield return new WaitForSeconds(time);
-
-        ChangeMotion(motion);
-    }
-
-    private float GetDelay() {
-        if (currentACT == null || currentAction == null) {
-            return 4f;
-        }
-
-        if (ViewerType == ViewerType.BODY && CurrentMotion.Motion == SpriteMotion.Walk) {
-            return (int) (currentAction.delay / 150 * Entity.Status.walkSpeed);
-        }
-
-        if (CurrentMotion.Motion == SpriteMotion.Attack ||
-            CurrentMotion.Motion == SpriteMotion.Attack1 ||
-            CurrentMotion.Motion == SpriteMotion.Attack2 ||
-            CurrentMotion.Motion == SpriteMotion.Attack3) {
-
-            if (currentAction == null) {
-                return 4f;
-            } else if (currentAction.delay >= 100f) {
-                return 4f;
-            } else {
-                return currentAction.delay;
-            }
-        }
-
-        return (int) currentAction.delay;
-    }
-
     public void ChangeMotion(MotionRequest motion, MotionRequest? nextMotion = null) {
-        switch (motion.Motion) {
-            case SpriteMotion.Dead:
-                State = SpriteState.Dead;
-                break;
-            case SpriteMotion.Sit:
-                State = SpriteState.Sit;
-                break;
-            case SpriteMotion.Idle:
-                State = SpriteState.Idle;
-                break;
-            case SpriteMotion.Walk:
-                State = SpriteState.Walking;
-                break;
-            default:
-                State = SpriteState.Alive;
-                break;
-        }
+        if (!IsReady)
+            return;
+
+        State = motion.Motion switch {
+            SpriteMotion.Dead => SpriteState.Dead,
+            SpriteMotion.Sit => SpriteState.Sit,
+            SpriteMotion.Idle => SpriteState.Idle,
+            SpriteMotion.Walk => SpriteState.Walking,
+            _ => SpriteState.Alive,
+        };
 
         int newAction;
         if (motion.Motion == SpriteMotion.Attack) {
@@ -450,26 +303,18 @@ public class EntityViewer : MonoBehaviour {
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
         }
 
-        CurrentMotion = motion;
-        NextMotion = nextMotion;
         Entity.Action = newAction;
         ActionId = newAction;
-        AnimationStart = GameManager.Tick;
-        previousFrame = 0;
-        motionSpeedMultiplier = 1;
+        CurrentFrameIndex = 0;
 
-        motionSpeed = GetDelay();
-        if (motionSpeed < 1) {
-            motionSpeed = 1;
-        }
-        motionSpeed *= motionSpeedMultiplier;
+        FramePaceCalculator.OnMotionChanged(motion, nextMotion, newAction);
 
         foreach (var child in Children) {
             child.ChangeMotion(motion, nextMotion);
         }
     }
 
-    private async void InitShadow() {
+    private void InitShadow() {
         if (ViewerType != ViewerType.BODY)
             return;
 
@@ -481,7 +326,7 @@ public class EntityViewer : MonoBehaviour {
         var sortingGroup = shadow.AddComponent<SortingGroup>();
         sortingGroup.sortingOrder = -20001;
 
-        var spriteData = await Addressables.LoadAssetAsync<SpriteData>("data/sprite/shadow.asset").Task;
+        var spriteData = Addressables.LoadAssetAsync<SpriteData>("data/sprite/shadow.asset").WaitForCompletion();
 
         var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = spriteData.sprites[0];
@@ -491,15 +336,15 @@ public class EntityViewer : MonoBehaviour {
     }
 
     public Vector2 GetAnimationAnchor() {
-        if (currentAction == null) {
+        if (CurrentAction == null) {
             return Vector2.zero;
         }
 
-        var frame = currentAction.frames[currentFrame];
+        var frame = CurrentAction.frames[CurrentFrameIndex];
         if (frame.pos.Length > 0)
             return frame.pos[0];
         if (ViewerType == ViewerType.HEAD && (State == SpriteState.Idle || State == SpriteState.Sit))
-            return frame.pos[currentFrame];
+            return frame.pos[CurrentFrameIndex];
         return Vector2.zero;
     }
 
@@ -524,13 +369,6 @@ public class EntityViewer : MonoBehaviour {
     }
 
     internal void SetMotionSpeedMultipler(ushort attackMT) {
-        //if (weapon is bow)
-        if (attackMT > MAX_ATTACK_SPEED) {
-            attackMT = MAX_ATTACK_SPEED;
-        }
-        //endif
-
-        motionSpeedMultiplier = (float) attackMT / AVERAGE_ATTACK_SPEED;
-        motionSpeed *= motionSpeedMultiplier;
+        FramePaceCalculator.SetMotionSpeedMultiplier(attackMT);
     }
 }
