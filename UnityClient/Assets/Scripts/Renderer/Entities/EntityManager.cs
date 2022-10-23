@@ -95,9 +95,7 @@ public class EntityManager : MonoBehaviour {
 
         bodyViewer.ViewerType = ViewerType.BODY;
         bodyViewer.Entity = entity;
-        bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
-        bodyViewer.CurrentMotion = new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle };
 
         entity.Init(spriteData);
         entity.AID = (uint) itemSpawnInfo.mapID;

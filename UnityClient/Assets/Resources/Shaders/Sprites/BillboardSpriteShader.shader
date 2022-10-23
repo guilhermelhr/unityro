@@ -3,6 +3,7 @@ Shader "UnityRO/BillboardSpriteShader"
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
+        _Alpha("Alpha", Range(0.0, 1.0)) = 1.0
     }
 
     SubShader
@@ -31,10 +32,12 @@ Shader "UnityRO/BillboardSpriteShader"
             {
                 float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                fixed4 color : TEXCOOD1;
                 UNITY_FOG_COORDS(1)
             };
 
             sampler2D _MainTex;
+            float _Alpha;
             float4 _MainTex_ST;
 
             float rayPlaneIntersection( float3 rayDir, float3 rayPos, float3 planeNormal, float3 planePos)
@@ -84,6 +87,9 @@ Shader "UnityRO/BillboardSpriteShader"
             fixed4 frag(v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
+
+                col.a *= _Alpha;
+
                 UNITY_APPLY_FOG(i.fogCoord, col);
 
                 return col;
