@@ -10,7 +10,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using static ROIO.Models.FileTypes.RSW;
 
 [InitializeOnLoad]
 public class DataUtility {
@@ -500,7 +506,7 @@ public class DataUtility {
     }
 
     [MenuItem("UnityRO/Utils/Extract/Effects")]
-    async static void ExtractEffects() {
+    static void ExtractEffects() {
         AssetDatabase.StartAssetEditing();
 
         try {
@@ -516,7 +522,7 @@ public class DataUtility {
 
                 try {
                     var descriptor = descriptors[i];
-                    var strEffect = await EffectLoader.Load(FileManager.ReadSync(descriptor), Path.GetDirectoryName(descriptor).Replace("\\", "/"));
+                    var strEffect = EffectLoader.Load(FileManager.ReadSync(descriptor), Path.GetDirectoryName(descriptor).Replace("\\", "/"));
 
                     if (strEffect != null) {
                         var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
@@ -592,7 +598,7 @@ public class DataUtility {
 
                 var descriptor = descriptors[i];
                 try {
-                    var audioClip = FileManager.Load(descriptor) as AudioClip;
+                    var audioClip = FileManager.Load(descriptor) as byte[];
 
                     if (audioClip != null) {
                         var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
@@ -600,8 +606,8 @@ public class DataUtility {
                         string assetPath = Path.Combine(GENERATED_RESOURCES_PATH, dir);
                         Directory.CreateDirectory(assetPath);
 
-                        var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".asset");
-                        AssetDatabase.CreateAsset(audioClip, completePath);
+                        var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".wav");
+                        File.WriteAllBytes(completePath, audioClip);
                     }
                 } catch (Exception e) {
                     Debug.LogError($"Failed to extract {descriptor} {e}");
@@ -771,6 +777,74 @@ public class DataUtility {
          */
         Directory.Move(GENERATED_RESOURCES_PATH, GENERATED_ADDRESSABLES_PATH);
         AssetDatabase.Refresh();
+    }
+
+    [MenuItem("UnityRO/Utils/Fix wav addressables")]
+    static void FixWavAddressables() {
+        GetFilesFromDir(Path.Combine(GENERATED_ADDRESSABLES_PATH, "data", "wav"))
+            .Select(it => AssetDatabase.LoadAssetAtPath<AudioClip>(it))
+            .Where(it => it != null)
+            .ToList()
+            .SetAddressableGroup("Wav", "Wav");
+        AssetDatabase.Refresh();
+    }
+
+    [MenuItem("UnityRO/Utils/Fix effects addressables")]
+    static void FixEffectsAddressables() {
+        GetFilesFromDir(Path.Combine(GENERATED_ADDRESSABLES_PATH, "data", "texture", "effect"))
+            .Where(it => Path.GetExtension(it) == ".asset")
+            .Select(it => AssetDatabase.LoadAssetAtPath<STR>(it))
+            .Where(it => it != null)
+            .ToList()
+            .SetAddressableGroup("Effects", "Effects");
+        AssetDatabase.Refresh();
+    }
+
+    [MenuItem("UnityRO/Utils/Fix texture naming case issue")]
+    static void FixTexturesCaseNaming() {
+        var guidList = new List<KeyValuePair<string, string>>();
+        ResourceManager.ExceptionHandler = delegate (AsyncOperationHandle handle, Exception exception) {
+            if (exception is InvalidKeyException invalidKey) {
+                var attemptedKey = invalidKey.Key.ToString();
+                if (File.Exists(Path.Combine(GENERATED_ADDRESSABLES_PATH, attemptedKey))) {
+                    var guid = AssetDatabase.AssetPathToGUID(Path.Combine(GENERATED_ADDRESSABLES_PATH, attemptedKey));
+                    if (guid != null) {
+                        guidList.Add(new KeyValuePair<string, string>(guid, attemptedKey));
+                    }
+                } else {
+                    Debug.Log("Not found and doesn't exist");
+                }
+            }
+        };
+
+        var modelTextures = FilterDescriptors(FileManager.GetFileDescriptors(), "data/model")
+            .Where(it => Path.GetExtension(it) == ".rsm")
+            .Select(it => {
+                try {
+                    return FileManager.Load(it) as RSM;
+                } catch (Exception e) {
+                    return null;
+                }
+            })
+            .Where(it => it != null)
+            .SelectMany(it => it.textures)
+            .Distinct()
+            .Select(it => Addressables.LoadAsset<Texture2D>(Path.Combine("data", "texture", Path.ChangeExtension(it, ".png")).SanitizeForAddressables()))
+            .ToList();
+
+        var settings = AddressableAssetSettingsDefaultObject.Settings;
+        for (int i = 0; i < guidList.Count; i++) {
+            var progress = i / guidList.Count;
+            if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Fixing addressable texture {i+1} of {guidList.Count}\t\t{progress * 100}%", progress)) {
+                break;
+            }
+            var guid = guidList[i];
+            var entry = settings.FindAssetEntry(guid.Key);
+            entry.SetAddress(guid.Value);
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryModified, entry, false, false);
+        }
+
+        EditorUtility.ClearProgressBar();
     }
 
     private static string[] GetFilesFromDir(string dir) {

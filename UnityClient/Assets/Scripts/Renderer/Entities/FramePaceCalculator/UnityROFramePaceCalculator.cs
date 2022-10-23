@@ -1,5 +1,4 @@
-﻿using log4net.Util;
-using ROIO.Models.FileTypes;
+﻿using ROIO.Models.FileTypes;
 using UnityEngine;
 using UnityRO.GameCamera;
 using static EntityViewer;
@@ -67,8 +66,6 @@ internal class UnityROFramePaceCalculator : MonoBehaviour, IFramePaceCalculator 
                 CurrentFrame = maxFrame;
             }
         }
-
-        Debug.Log($"Current frame {CurrentFrame} for {CurrentMotion.Motion}");
 
         return CurrentFrame;
     }
