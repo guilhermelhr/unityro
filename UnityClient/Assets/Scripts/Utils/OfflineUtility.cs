@@ -68,7 +68,7 @@ public class OfflineUtility : MonoBehaviour {
     void SpawnCharacter() {
         offlineEntity = EntityManager.SpawnPlayer(new CharacterData() {
             Sex = 1,
-            Job = 0,
+            Job = 3,
             Name = "Player",
             GID = 20001,
             Weapon = 1,
@@ -81,7 +81,6 @@ public class OfflineUtility : MonoBehaviour {
             BodyPalette = 1,
         });
         offlineEntity.transform.position = new Vector3(150, 16, 150);
-        offlineEntity.SetAttackSpeed(135);
         Session.StartSession(new Session(offlineEntity, 0));
 
         CharacterCamera charCam = FindObjectOfType<CharacterCamera>();

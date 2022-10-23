@@ -16,6 +16,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
     private EntityWalk EntityWalk;
     private AudioSource AudioSource;
 
+    public FramePaceAlgorithm CurrentFramePaceAlgorithm = FramePaceAlgorithm.UnityRO;
+
     public Action OnParameterUpdated;
     public Action AfterMoveAction;
     public EntityType Type = EntityType.UNKNOWN;
@@ -248,9 +250,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         var bodyViewer = body.AddComponent<EntityViewer>();
         bodyViewer.ViewerType = ViewerType.BODY;
         bodyViewer.Entity = this;
-        bodyViewer.SpriteOffset = 0.5f;
         bodyViewer.HeadDirection = 0;
-        bodyViewer.CurrentMotion = new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle };
 
         EntityViewer = bodyViewer;
         ShadowSize = 1f;
@@ -845,5 +845,9 @@ public class Entity : MonoBehaviour, INetworkEntity {
         MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadMid, ViewerType.HEAD_MID);
         MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadBottom, ViewerType.HEAD_BOTTOM);
         EntityViewer.Init(reloadSprites: true);
+    }
+
+    public enum FramePaceAlgorithm {
+        RoBrowser, UnityRO, DHXJ
     }
 }
