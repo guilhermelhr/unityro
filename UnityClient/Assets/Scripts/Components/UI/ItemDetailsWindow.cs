@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ItemDetailsWindow : MonoBehaviour {
+public class ItemDetailsWindow : DraggableUIWindow {
 
     [SerializeField]
     private TextMeshProUGUI ItemName;

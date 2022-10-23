@@ -23,7 +23,8 @@ public class GameManager : MonoBehaviour {
     public bool LocalHost = false;
 
     [Header(":: Rendering Setup")]
-    public AudioMixerGroup SoundMixerGroup;
+    public AudioMixerGroup BGMMixerGroup;
+    public AudioMixerGroup EffectsMixerGroup;
     public Light WorldLight;
     #endregion
 
@@ -49,6 +50,7 @@ public class GameManager : MonoBehaviour {
         }
         if (AudioSource == null) {
             AudioSource = gameObject.AddComponent<AudioSource>();
+            AudioSource.outputAudioMixerGroup = BGMMixerGroup;
         }
 
         DontDestroyOnLoad(this);
@@ -79,7 +81,7 @@ public class GameManager : MonoBehaviour {
 
         MaybeInitOfflineUtils();
 
-        MapRenderer = new MapRenderer(SoundMixerGroup, WorldLight);
+        MapRenderer = new MapRenderer(EffectsMixerGroup, WorldLight);
         MapLoader = new MapLoader();
     }
 
@@ -117,10 +119,10 @@ public class GameManager : MonoBehaviour {
         MainCamera = Camera.main;
     }
 
-    public async void PlayBgm(string name) {
-        var bgm = await Addressables.LoadAssetAsync<AudioClip>(Path.Combine("bgm", name).SanitizeForAddressables()).Task;
+    public void PlayBgm(string name) {
+        var bgm = Addressables.LoadAssetAsync<AudioClip>(Path.Combine("bgm", name).SanitizeForAddressables()).WaitForCompletion();
         AudioSource.clip = bgm;
-        //AudioSource.Play();
+        AudioSource.Play();
     }
 
     /**

@@ -11,7 +11,7 @@ class CastingEffect : MonoBehaviour {
 
     private PrimitiveCylinderEffect prim;
 
-    public static async void StartCasting(float duration, string texture, GameObject followTarget) {
+    public static void StartCasting(float duration, string texture, GameObject followTarget) {
         var go = new GameObject("CastingEffect");
         var cast = go.AddComponent<CastingEffect>();
 
@@ -19,7 +19,7 @@ class CastingEffect : MonoBehaviour {
             cast.CastMaterial = CastMaterials[texture];
         } else {
             cast.CastMaterial = new Material(Shader.Find("Mobile/Particles/Additive"));
-            cast.CastMaterial.mainTexture = await Addressables.LoadAssetAsync<Texture2D>(texture).Task;
+            cast.CastMaterial.mainTexture = Addressables.LoadAssetAsync<Texture2D>(texture).WaitForCompletion();
             CastMaterials.Add(texture, cast.CastMaterial);
         }
 

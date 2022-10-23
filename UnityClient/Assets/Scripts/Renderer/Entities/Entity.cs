@@ -1,14 +1,12 @@
 ﻿using Assets.Scripts.Effects;
 using Assets.Scripts.Renderer.Sprite;
-using ROIO;
-using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
+using static ZC.NOTIFY_VANISH;
 
 public class Entity : MonoBehaviour, INetworkEntity {
 
@@ -38,6 +36,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public Inventory Inventory = new Inventory();
     public SkillTree SkillTree = new SkillTree();
 
+    private GameManager GameManager;
     private NetworkClient NetworkClient;
     private EntityManager EntityManager;
     private PathFinder PathFinder;
@@ -51,6 +50,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         NetworkClient = FindObjectOfType<NetworkClient>();
         EntityManager = FindObjectOfType<EntityManager>();
         PathFinder = FindObjectOfType<PathFinder>();
+        GameManager = FindObjectOfType<GameManager>();
         EntityMask = LayerMask.GetMask("NPC", "Monsters", "Characters");
         DamageNumbers = new List<DamageRenderer>();
 
@@ -62,7 +62,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             AudioSource.rolloffMode = AudioRolloffMode.Linear;
             AudioSource.volume = 1f;
             AudioSource.dopplerLevel = 0;
-            AudioSource.outputAudioMixerGroup = MapRenderer.SoundsMixerGroup;
+            AudioSource.outputAudioMixerGroup = GameManager.EffectsMixerGroup;
         }
     }
 
@@ -332,13 +332,19 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
     }
 
-    public void Vanish(int type) {
+    /**
+     * Investigate this because some of the packets to spawn
+     * entities doesnt seem to send the name and since we're destroying them
+     * everything gets borked...
+     * Check roBrowser logic or rA guys
+     */
+    public void Vanish(VanishType type) {
         StopMoving();
         switch (type) {
-            case 0: // Moved out of sight
+            case VanishType.OUT_OF_SIGHT:
                 StartCoroutine(DestroyWithFade());
                 break;
-            case 1: // Died
+            case VanishType.DIED:
                 var isPC = Type == EntityType.PC;
                 ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Dead });
                 if (!isPC) {
@@ -352,7 +358,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     private IEnumerator DestroyAfterSecondsWithFade() {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2.5f);
         IsReady = false;
         yield return EntityViewer.FadeOut();
         Destroy(gameObject);
@@ -372,9 +378,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
                 // update info window
                 break;
             case ZC.SPRITE_CHANGE2.LookType.LOOK_WEAPON:
-
-
-                break;
+                throw new NotImplementedException();
             default:
                 break;
         }
@@ -422,8 +426,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Casting, delay = 0 });
     }
 
-    public async void PlayAudio(string path) {
-        var clip = await Addressables.LoadAssetAsync<AudioClip>(Path.ChangeExtension(path, ".asset").SanitizeForAddressables()).Task;
+    public void PlayAudio(string path) {
+        var clip = Addressables.LoadAssetAsync<AudioClip>(path.SanitizeForAddressables()).WaitForCompletion();
 
         if (clip != null && AudioSource != null) {
             AudioSource.clip = clip;

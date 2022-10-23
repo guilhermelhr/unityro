@@ -35,12 +35,12 @@ public class Sounds
         return playing.Count;
     }
 
-    public async void Add(RSW.Sound sound, GameObject parent) {
+    public void Add(RSW.Sound sound, GameObject parent) {
         if(_parent == null) {
             _parent = new GameObject("_sounds");
             _parent.transform.parent = MapRenderer.mapParent.transform;
         }
-        var clip = await Addressables.LoadAssetAsync<AudioClip>(Path.ChangeExtension(sound.file, ".asset").SanitizeForAddressables()).Task;
+        var clip = Addressables.LoadAssetAsync<AudioClip>(sound.file.SanitizeForAddressables()).WaitForCompletion();
 
         Playing p = new Playing();
         p.playAt = 0;

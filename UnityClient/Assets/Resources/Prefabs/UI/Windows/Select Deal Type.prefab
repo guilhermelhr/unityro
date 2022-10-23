@@ -1547,7 +1547,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: f81cbb789c5a1944ab7f4932c4ed102b, type: 3}
+  m_Texture: {fileID: 0}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -1571,7 +1571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundTexture:
-    m_AssetGUID: c4fdfcb7f27938d4db895e0e68974aaf
+    m_AssetGUID: f81cbb789c5a1944ab7f4932c4ed102b
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 1

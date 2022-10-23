@@ -59,7 +59,7 @@ public class CustomButton : Button,
         }
     }
 
-    private async void LoadHoverTexture() {
+    private void LoadHoverTexture() {
         try {
             if (hoverTexture == null && AddressablesHolder.hoverTexture.AssetGUID.Length > 0) {
                 hoverTexture = AddressablesHolder.hoverTexture.LoadAssetAsync().WaitForCompletion();
