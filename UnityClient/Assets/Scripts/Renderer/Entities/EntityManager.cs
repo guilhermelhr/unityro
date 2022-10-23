@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
+using static ZC.NOTIFY_VANISH;
 
 public class EntityManager : MonoBehaviour {
 
@@ -57,7 +58,7 @@ public class EntityManager : MonoBehaviour {
     }
 
     //TODO this needs checking
-    public void VanishEntity(uint AID, int type) {
+    public void VanishEntity(uint AID, VanishType type) {
         GetEntity(AID)?.Vanish(type);
         entityCache.Remove(AID);
     }

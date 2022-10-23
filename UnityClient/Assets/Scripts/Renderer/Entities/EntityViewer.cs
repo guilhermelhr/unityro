@@ -47,21 +47,29 @@ public class EntityViewer : MonoBehaviour {
     public void Start() {
         SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
 
-        FramePaceCalculator = Entity.CurrentFramePaceAlgorithm switch {
-            Entity.FramePaceAlgorithm.RoBrowser => gameObject.GetOrAddComponent<RoBrowserFramePaceCalculator>(),
-            Entity.FramePaceAlgorithm.UnityRO => gameObject.GetOrAddComponent<UnityROFramePaceCalculator>(),
-            Entity.FramePaceAlgorithm.DHXJ => throw new NotImplementedException(),
-            _ => throw new NotImplementedException(),
-        };
+        InitFramePaceCalculator();
 
         Init();
         InitShadow();
         IsReady = true;
     }
 
+    private void InitFramePaceCalculator() {
+        FramePaceCalculator = Entity.CurrentFramePaceAlgorithm switch {
+            Entity.FramePaceAlgorithm.RoBrowser => gameObject.GetOrAddComponent<RoBrowserFramePaceCalculator>(),
+            Entity.FramePaceAlgorithm.UnityRO => gameObject.GetOrAddComponent<UnityROFramePaceCalculator>(),
+            Entity.FramePaceAlgorithm.DHXJ => throw new NotImplementedException(),
+            _ => throw new NotImplementedException(),
+        };
+    }
+
     public void Init(SpriteData spriteData) {
         CurrentACT = spriteData.act;
         Sprites = spriteData.sprites;
+
+        if (FramePaceCalculator == null) {
+            InitFramePaceCalculator();
+        }
 
         FramePaceCalculator.Init(Entity, ViewerType, CurrentACT);
     }
@@ -351,7 +359,7 @@ public class EntityViewer : MonoBehaviour {
     public IEnumerator FadeOut() {
         var currentAlpha = MeshRenderer.material.GetFloat("_Alpha");
         while (currentAlpha > 0f) {
-            currentAlpha -= 0.05f;
+            currentAlpha -= Time.deltaTime * 5f;
             MeshRenderer.material.SetFloat("_Alpha", currentAlpha);
             yield return new WaitForEndOfFrame();
         }

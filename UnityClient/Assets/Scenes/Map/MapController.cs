@@ -176,7 +176,7 @@ public class MapController : MonoBehaviour {
             EntityManager.VanishEntity(pkt.AID, pkt.Type);
 
             // Show escape menu
-            if (pkt.AID == Session.CurrentSession.AccountID && pkt.Type == 1) {
+            if (pkt.AID == Session.CurrentSession.AccountID && pkt.Type == ZC.NOTIFY_VANISH.VanishType.DIED) {
                 UIController.EscapeWindow.BuildButtons(true);
                 UIController.EscapeWindow.Show();
             }

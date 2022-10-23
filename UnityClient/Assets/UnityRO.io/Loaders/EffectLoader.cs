@@ -13,7 +13,7 @@ namespace ROIO.Loaders {
         private static List<string> textureNames = new List<string>();
         private static List<Texture2D> textures = new List<Texture2D>();
 
-        public async static Task<STR> Load(MemoryStreamReader data, string path) {
+        public static STR Load(MemoryStreamReader data, string path) {
             var header = data.ReadBinaryString(4);
 
             if (!header.Equals(STR.Header)) {
