@@ -11,11 +11,19 @@ public partial class ZC {
         public PacketHeader Header => HEADER;
 
         public uint AID;
-        public int Type;
+        public VanishType Type;
 
         public void Read(MemoryStreamReader br, int size) {
             AID = br.ReadUInt();
-            Type = br.ReadByte();
+            Type = (VanishType) br.ReadByte();
+        }
+
+        public enum VanishType : int {
+            OUT_OF_SIGHT = 0,
+            DIED = 1,
+            LOGGED_OUT = 2,
+            TELEPORT = 3,
+            TRICK_DEAD = 4
         }
     }
 }

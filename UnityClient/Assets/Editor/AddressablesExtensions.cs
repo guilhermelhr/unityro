@@ -10,6 +10,12 @@ using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 
 internal static class AddressablesExtensions {
+
+    private static int GetPrefixLength() {
+        var isAddressablesInitialized = Directory.Exists(DataUtility.GENERATED_ADDRESSABLES_PATH);
+        return (isAddressablesInitialized ? DataUtility.GENERATED_ADDRESSABLES_PATH : DataUtility.GENERATED_RESOURCES_PATH).Length + 1;
+    }
+
     internal static void SetAddressableGroup(this UnityEngine.Object obj, string groupName, string labelName) {
         var settings = AddressableAssetSettingsDefaultObject.Settings;
 
@@ -20,11 +26,10 @@ internal static class AddressablesExtensions {
 
             var assetpath = AssetDatabase.GetAssetPath(obj);
             var guid = AssetDatabase.AssetPathToGUID(assetpath);
-            var isAddressablesInitialized = Directory.Exists(DataUtility.GENERATED_ADDRESSABLES_PATH);
-            var length = (isAddressablesInitialized ? DataUtility.GENERATED_ADDRESSABLES_PATH : DataUtility.GENERATED_RESOURCES_PATH).Length;
+            
 
             var e = settings.CreateOrMoveEntry(guid, group, false, false);
-            e.SetAddress(e.address[length..], false);
+            e.SetAddress(e.address[GetPrefixLength()..], false);
             if (labelName != null) {
                 e.SetLabel(labelName, true, true, false);
             }
@@ -35,7 +40,7 @@ internal static class AddressablesExtensions {
         }
     }
 
-    internal static void SetAddressableGroup(this List<UnityEngine.Object> objs, string groupName, string labelName) {
+    internal static void SetAddressableGroup<T>(this List<T> objs, string groupName, string labelName) where T : UnityEngine.Object {
         var settings = AddressableAssetSettingsDefaultObject.Settings;
 
         if (settings) {
@@ -44,7 +49,6 @@ internal static class AddressablesExtensions {
                 group = settings.CreateGroup(groupName, false, false, true, null, typeof(ContentUpdateGroupSchema), typeof(BundledAssetGroupSchema));
 
             var entriesAdded = new List<AddressableAssetEntry>();
-            var length = "Assets/_Generated/Resources/".Length;
 
             try {
                 AssetDatabase.StartAssetEditing();
@@ -61,13 +65,7 @@ internal static class AddressablesExtensions {
                     var guid = AssetDatabase.AssetPathToGUID(assetpath);
 
                     var e = settings.CreateOrMoveEntry(guid, group, false, false);
-                    string address;
-                    if (e.address != null) {
-                        address = e.address[length..];
-                    } else {
-                        address = assetpath;
-                    }
-                    e.SetAddress(address, false);
+                    e.SetAddress(e.address[GetPrefixLength()..], false);
                     if (labelName != null) {
                         e.SetLabel(labelName, true, true, false);
                     }

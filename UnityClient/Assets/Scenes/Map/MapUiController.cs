@@ -17,7 +17,7 @@ public class MapUiController : MonoBehaviour {
     [SerializeField] public SkillWindowController SkillWindow;
     [SerializeField] public ChatBoxController ChatBox;
     [SerializeField] public NpcShopTypeSelectorController ShopDealType;
-    [SerializeField] public EscapeWindowController EscapeWindow;
+    [SerializeField] public EscapeWindow EscapeWindow;
     [SerializeField] public MenuController Menu;
     [SerializeField] public PacketLogWindow PacketLogWindow;
 
