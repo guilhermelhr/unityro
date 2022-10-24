@@ -164,7 +164,6 @@ namespace ROIO {
 
                         // Audio
                         case "wav":
-                            return br.ToArray();
                             WAVLoader.WAVFile wav = WAVLoader.OpenWAV(br.ToArray());
                             AudioClip clip = AudioClip.Create(file, wav.samples, wav.channels, wav.sampleRate, false);
                             clip.SetData(wav.leftChannel, 0);
