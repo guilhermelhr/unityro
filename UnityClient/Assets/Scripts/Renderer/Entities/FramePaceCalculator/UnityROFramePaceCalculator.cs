@@ -1,4 +1,5 @@
 ﻿using ROIO.Models.FileTypes;
+using System.Collections;
 using UnityEngine;
 using UnityRO.GameCamera;
 using static EntityViewer;
@@ -20,6 +21,8 @@ internal class UnityROFramePaceCalculator : MonoBehaviour, IFramePaceCalculator 
     [SerializeField] private ACT CurrentACT;
     [SerializeField] private ACT.Action CurrentAction;
     [SerializeField] private int ActionId;
+
+    private Coroutine MotionQueueCoroutine;
 
     public void Init(Entity entity, ViewerType viewerType, ACT currentACT) {
         Entity = entity;
@@ -88,7 +91,22 @@ internal class UnityROFramePaceCalculator : MonoBehaviour, IFramePaceCalculator 
         MotionSpeedMultiplier = (float) attackMT / AVERAGE_ATTACK_SPEED;
     }
 
+    private IEnumerator DelayCurrentMotion(MotionRequest currentMotion, MotionRequest? nextMotion, int actionId) {
+        yield return new WaitUntil(() => GameManager.Tick > currentMotion.delay);
+        OnMotionChanged(currentMotion, nextMotion, actionId);
+    }
+
     public void OnMotionChanged(MotionRequest currentMotion, MotionRequest? nextMotion, int actionId) {
+        if (MotionQueueCoroutine != null) {
+            StopCoroutine(MotionQueueCoroutine);
+            MotionQueueCoroutine = null;
+        }
+
+        if (currentMotion.delay > GameManager.Tick) {
+            MotionQueueCoroutine = StartCoroutine(DelayCurrentMotion(currentMotion, nextMotion, actionId));
+            return;
+        }
+
         AnimationStart = GameManager.Tick;
         MotionSpeedMultiplier = 1;
         CurrentFrame = 0;
