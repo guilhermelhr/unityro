@@ -312,7 +312,7 @@ public class EntityViewer : MonoBehaviour {
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
         }
 
-        if (Parent == null && ShadowObject != null) {
+        if (Parent == null && ShadowObject != null && State == SpriteState.Dead) {
             ShadowObject.SetActive(false);
         }
 
