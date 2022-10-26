@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using UnityEngine.ResourceManagement;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -37,6 +38,7 @@ public class SplashScreenController : MonoBehaviour {
     }
 
     private IEnumerator PrefetchAssets() {
+#if !UNITY_EDITOR
         var downloadSize = Addressables.GetDownloadSizeAsync(LabelsToPrefetch).WaitForCompletion();
 
         if (downloadSize <= 0) {
@@ -63,32 +65,26 @@ public class SplashScreenController : MonoBehaviour {
 
             yield return handle;
         }
-
+#endif
         yield return FetchConfigs();
     }
 
     private IEnumerator FetchConfigs() {
         labelText.text = "Fetching remote configuration...";
-        var localRequest = Resources.Load<TextAsset>("Configuration/LocalConfigs.json");
+        var localRequest = Addressables.LoadAssetAsync<TextAsset>("LocalConfigs.json.txt");
         yield return localRequest;
 
-        var localConfiguration = JsonConvert.DeserializeObject<LocalConfiguration>(JObject.Parse(localRequest.text).ToString());
+        var localConfig = JObject.Parse(localRequest.Result.text);
+        var localConfiguration = JsonConvert.DeserializeObject<LocalConfiguration>(localConfig.ToString());
 
         var remoteRequest = UnityWebRequest.Get(localConfiguration.remoteConfigLocation);
         yield return remoteRequest.SendWebRequest();
 
-        var remoteConfiguration = JsonConvert.DeserializeObject<RemoteConfiguration>(JObject.Parse(remoteRequest.downloadHandler.text).ToString());
+        var remoteConfig = JObject.Parse(remoteRequest.downloadHandler.text);
+        var remoteConfiguration = JsonConvert.DeserializeObject<RemoteConfiguration>(remoteConfig.ToString());
 
-        labelText.text = "Initializing GameManager...";
+        FindObjectOfType<GameManager>().SetConfigurations(remoteConfiguration, localConfiguration);
 
-        InitializeGameManager(remoteConfiguration, localConfiguration);
-    }
-
-    private async void InitializeGameManager(RemoteConfiguration remoteConfiguration, LocalConfiguration localConfiguration) {
-        var gameManager = FindObjectOfType<GameManager>();
-        gameManager.SetConfigurations(remoteConfiguration, localConfiguration);
-        await gameManager.Init();
-
-        await gameManager.LoadScene("LoginScene", LoadSceneMode.Single);
+        SceneManager.LoadScene("LoginScene");
     }
 }

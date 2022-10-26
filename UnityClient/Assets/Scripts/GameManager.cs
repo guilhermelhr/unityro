@@ -70,7 +70,11 @@ public class GameManager : MonoBehaviour {
         OnPostRender();
     }
 
-    public async Task Init() {
+    void Start() {
+        Init();
+    }
+
+    private async Task Init() {
         InitManagers();
 
         await DBManager.Init();
