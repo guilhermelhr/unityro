@@ -7,7 +7,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using UnityEngine.ResourceManagement;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -38,7 +37,6 @@ public class SplashScreenController : MonoBehaviour {
     }
 
     private IEnumerator PrefetchAssets() {
-#if !UNITY_EDITOR
         var downloadSize = Addressables.GetDownloadSizeAsync(LabelsToPrefetch).WaitForCompletion();
 
         if (downloadSize <= 0) {
@@ -65,26 +63,32 @@ public class SplashScreenController : MonoBehaviour {
 
             yield return handle;
         }
-#endif
+
         yield return FetchConfigs();
     }
 
     private IEnumerator FetchConfigs() {
         labelText.text = "Fetching remote configuration...";
-        var localRequest = Addressables.LoadAssetAsync<TextAsset>("LocalConfigs.json.txt");
+        var localRequest = Resources.Load<TextAsset>("Configuration/LocalConfigs.json");
         yield return localRequest;
 
-        var localConfig = JObject.Parse(localRequest.Result.text);
-        var localConfiguration = JsonConvert.DeserializeObject<LocalConfiguration>(localConfig.ToString());
+        var localConfiguration = JsonConvert.DeserializeObject<LocalConfiguration>(JObject.Parse(localRequest.text).ToString());
 
         var remoteRequest = UnityWebRequest.Get(localConfiguration.remoteConfigLocation);
         yield return remoteRequest.SendWebRequest();
 
-        var remoteConfig = JObject.Parse(remoteRequest.downloadHandler.text);
-        var remoteConfiguration = JsonConvert.DeserializeObject<RemoteConfiguration>(remoteConfig.ToString());
+        var remoteConfiguration = JsonConvert.DeserializeObject<RemoteConfiguration>(JObject.Parse(remoteRequest.downloadHandler.text).ToString());
 
-        FindObjectOfType<GameManager>().SetConfigurations(remoteConfiguration, localConfiguration);
+        labelText.text = "Initializing GameManager...";
 
-        SceneManager.LoadScene("LoginScene");
+        InitializeGameManager(remoteConfiguration, localConfiguration);
+    }
+
+    private async void InitializeGameManager(RemoteConfiguration remoteConfiguration, LocalConfiguration localConfiguration) {
+        var gameManager = FindObjectOfType<GameManager>();
+        gameManager.SetConfigurations(remoteConfiguration, localConfiguration);
+        await gameManager.Init();
+
+        await gameManager.LoadScene("LoginScene", LoadSceneMode.Single);
     }
 }
