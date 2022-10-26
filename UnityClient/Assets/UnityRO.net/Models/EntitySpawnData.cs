@@ -3,7 +3,7 @@
 
 	public uint AID;
 	public uint GID;
-	public uint GUID;
+	public uint GuildID;
 
 	public short speed;
 	public short bodyState;

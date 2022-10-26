@@ -278,14 +278,16 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     private void SetupCanvas() {
+        Canvas.Init(this);
         Canvas.SetEntityName(Status.name);
         Canvas.SetEntityHP(Status.hp, Status.max_hp);
         Canvas.SetEntitySP(Status.sp, Status.max_sp);
 
         if (HasAuthority) {
-            Canvas.Init(this);
             Canvas.ShowEntityHP();
             Canvas.ShowEntitySP();
+        } else if (Type == EntityType.MOB && Status.hp != Status.max_hp) {
+            Canvas.ShowEntityHP();
         }
     }
 
@@ -393,6 +395,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public void UpdateHitPoints(int hp, int maxHp) {
         Status.hp = hp;
         Status.max_hp = maxHp;
+
+        if (Type == EntityType.MOB && Status.hp != Status.max_hp) {
+            Canvas.ShowEntityHP();
+            Canvas.SetEntityHP(Status.hp, Status.max_hp);
+        }
     }
 
     public void StopMoving() {
