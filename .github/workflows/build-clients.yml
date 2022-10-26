@@ -1,0 +1,43 @@
+name: Build Clients
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 19 * * *"
+
+jobs:
+  build:
+    name: Build ${{ matrix.targetPlatform }} ✨
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          #- StandaloneOSX # Build a macOS standalone (Intel 64-bit).
+          - StandaloneWindows64 # Build a Windows 64-bit standalone.
+          - StandaloneLinux64 # Build a Linux 64-bit standalone.
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          lfs: true
+      
+      - uses: actions/cache@v2
+        with:
+          path: Library
+          key: Library-${{ matrix.targetPlatform }}
+          restore-keys: Library-
+      
+      - uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          projectPath: ./UnityClient/
+          targetPlatform: ${{ matrix.targetPlatform }}
+          
+      - name: Fetch Addressables configs
+        run: sudo wget -O build/${{ matrix.targetPlatform }}/${{ matrix.targetPlatform }}_Data/StreamingAssets/aa/settings.json https://unityro.fra1.digitaloceanspaces.com/${{ matrix.targetPlatform }}.settings.json
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Build-${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
