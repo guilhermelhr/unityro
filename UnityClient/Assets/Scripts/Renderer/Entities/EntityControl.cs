@@ -91,6 +91,41 @@ public class EntityControl : MonoBehaviour {
                 Entity.RequestMove(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.z), 0);
             }
         }
+
+        ProcessInput();
+    }
+
+    private void ProcessInput() {
+        if (Event.current == null)
+            return;
+
+        if (!Event.current.isKey || Event.current.keyCode == KeyCode.None)
+            return;
+
+        switch (Event.current.type) {
+            case EventType.KeyUp:
+                switch(Event.current.keyCode) {
+                    case KeyCode.Insert:
+                        RequestSitStand();
+                        break;
+                    default:
+                        break;
+                };
+                break;
+            default:
+                break;
+        }
+
+        if (Event.current.keyCode == KeyCode.Insert) {
+            
+        }
+    }
+
+    private void RequestSitStand() {
+        new CZ.REQUEST_ACT2() {
+            action = Entity.EntityViewer.State == SpriteState.Sit ? EntityActionType.STAND : EntityActionType.SIT,
+            TargetID = Entity.GID
+        }.Send();
     }
 
     private void ProcessEntityClick(Entity target) {

@@ -598,7 +598,7 @@ public class DataUtility {
 
                 var descriptor = descriptors[i];
                 try {
-                    var audioClip = FileManager.Load(descriptor) as byte[];
+                    var audioClip = FileManager.Load(descriptor) as AudioClip;
 
                     if (audioClip != null) {
                         var filenameWithoutExtension = Path.GetFileNameWithoutExtension(descriptor).SanitizeForAddressables();
@@ -607,7 +607,7 @@ public class DataUtility {
                         Directory.CreateDirectory(assetPath);
 
                         var completePath = Path.Combine(assetPath, filenameWithoutExtension + ".wav");
-                        File.WriteAllBytes(completePath, audioClip);
+                        SavWav.Save(completePath, audioClip);
                     }
                 } catch (Exception e) {
                     Debug.LogError($"Failed to extract {descriptor} {e}");
@@ -835,7 +835,7 @@ public class DataUtility {
         var settings = AddressableAssetSettingsDefaultObject.Settings;
         for (int i = 0; i < guidList.Count; i++) {
             var progress = i / guidList.Count;
-            if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Fixing addressable texture {i+1} of {guidList.Count}\t\t{progress * 100}%", progress)) {
+            if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Fixing addressable texture {i + 1} of {guidList.Count}\t\t{progress * 100}%", progress)) {
                 break;
             }
             var guid = guidList[i];

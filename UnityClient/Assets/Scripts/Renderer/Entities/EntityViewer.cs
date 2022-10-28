@@ -19,6 +19,7 @@ public class EntityViewer : MonoBehaviour {
     public List<EntityViewer> Children = new List<EntityViewer>();
     private Dictionary<ACT.Frame, Mesh> ColliderCache = new Dictionary<ACT.Frame, Mesh>();
     private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
+    private GameObject ShadowObject;
 
     private PaletteData CurrentPaletteData;
     private Sprite[] Sprites;
@@ -311,6 +312,10 @@ public class EntityViewer : MonoBehaviour {
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
         }
 
+        if (Parent == null && ShadowObject != null && State == SpriteState.Dead) {
+            ShadowObject.SetActive(false);
+        }
+
         Entity.Action = newAction;
         ActionId = newAction;
         CurrentFrameIndex = 0;
@@ -326,17 +331,17 @@ public class EntityViewer : MonoBehaviour {
         if (ViewerType != ViewerType.BODY)
             return;
 
-        var shadow = new GameObject("Shadow");
-        shadow.layer = LayerMask.NameToLayer("Characters");
-        shadow.transform.SetParent(transform, false);
-        shadow.transform.localPosition = Vector3.zero;
-        shadow.transform.localScale = new Vector3(Entity.ShadowSize, Entity.ShadowSize, Entity.ShadowSize);
-        var sortingGroup = shadow.AddComponent<SortingGroup>();
+        ShadowObject = new GameObject("Shadow");
+        ShadowObject.layer = LayerMask.NameToLayer("Characters");
+        ShadowObject.transform.SetParent(transform, false);
+        ShadowObject.transform.localPosition = Vector3.zero;
+        ShadowObject.transform.localScale = new Vector3(Entity.ShadowSize, Entity.ShadowSize, Entity.ShadowSize);
+        var sortingGroup = ShadowObject.AddComponent<SortingGroup>();
         sortingGroup.sortingOrder = -20001;
 
         var spriteData = Addressables.LoadAssetAsync<SpriteData>("data/sprite/shadow.asset").WaitForCompletion();
 
-        var spriteRenderer = shadow.AddComponent<SpriteRenderer>();
+        var spriteRenderer = ShadowObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = spriteData.sprites[0];
         spriteRenderer.sortingOrder = -1;
         spriteRenderer.material.renderQueue -= 2;
