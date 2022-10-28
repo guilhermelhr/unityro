@@ -838,7 +838,6 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void SetAttackSpeed(ushort speed) {
         Status.attackSpeed = speed;
-        EntityViewer.SetMotionSpeedMultipler(speed);
     }
 
     public EntityBaseStatus GetBaseStatus() {

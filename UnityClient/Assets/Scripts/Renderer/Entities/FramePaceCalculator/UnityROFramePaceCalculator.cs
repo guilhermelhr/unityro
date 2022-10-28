@@ -13,7 +13,6 @@ internal class UnityROFramePaceCalculator : MonoBehaviour, IFramePaceCalculator 
     [SerializeField] private Entity Entity;
     [SerializeField] private ViewerType ViewerType;
     [SerializeField] private int CurrentFrame = 0;
-    [SerializeField] private float MotionSpeedMultiplier = 1;
     [SerializeField] private long AnimationStart = GameManager.Tick;
     [SerializeField] private float CurrentDelay = 0f;
     [SerializeField] private MotionRequest CurrentMotion;
@@ -62,7 +61,7 @@ internal class UnityROFramePaceCalculator : MonoBehaviour, IFramePaceCalculator 
         if (CurrentFrame >= maxFrame) {
             if (AnimationHelper.IsLoopingMotion(CurrentMotion.Motion)) {
                 CurrentFrame = 0;
-            } else if (NextMotion.HasValue && ViewerType == ViewerType.BODY) { 
+            } else if (NextMotion.HasValue && ViewerType == ViewerType.BODY) {
                 // Since body is the main component, it's the only one "allowed" to ask for the next motion
                 Entity.ChangeMotion(NextMotion.Value);
             } else {
@@ -78,17 +77,13 @@ internal class UnityROFramePaceCalculator : MonoBehaviour, IFramePaceCalculator 
             return CurrentAction.delay / 150 * Entity.Status.walkSpeed;
         }
 
-        return CurrentAction.delay * MotionSpeedMultiplier;
-    }
-
-    public void SetMotionSpeedMultiplier(ushort attackMT) {
-        //if (weapon is bow)
-        if (attackMT > MAX_ATTACK_SPEED) {
-            attackMT = MAX_ATTACK_SPEED;
+        if (CurrentMotion.Motion == SpriteMotion.Attack ||
+            CurrentMotion.Motion == SpriteMotion.Attack1 ||
+            CurrentMotion.Motion == SpriteMotion.Attack2 ||
+            CurrentMotion.Motion == SpriteMotion.Attack3) {
+            return (float) Entity.Status.attackSpeed / CurrentAction.frames.Length;
         }
-        //endif
-
-        MotionSpeedMultiplier = (float) attackMT / AVERAGE_ATTACK_SPEED;
+        return CurrentAction.delay;
     }
 
     private IEnumerator DelayCurrentMotion(MotionRequest currentMotion, MotionRequest? nextMotion, int actionId) {
@@ -108,7 +103,6 @@ internal class UnityROFramePaceCalculator : MonoBehaviour, IFramePaceCalculator 
         }
 
         AnimationStart = GameManager.Tick;
-        MotionSpeedMultiplier = 1;
         CurrentFrame = 0;
         CurrentMotion = currentMotion;
         NextMotion = nextMotion;
