@@ -375,8 +375,4 @@ public class EntityViewer : MonoBehaviour {
         public int hairColor;
         public int clothesColor;
     }
-
-    internal void SetMotionSpeedMultipler(ushort attackMT) {
-        FramePaceCalculator.SetMotionSpeedMultiplier(attackMT);
-    }
 }

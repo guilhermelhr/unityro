@@ -6,6 +6,5 @@ internal interface IFramePaceCalculator {
     int GetCurrentFrame();
     int GetActionIndex();
     float GetDelay();
-    void SetMotionSpeedMultiplier(ushort attackMT);
     void OnMotionChanged(MotionRequest currentMotion, MotionRequest? nextMotion, int actionId);
 }

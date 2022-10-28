@@ -104,8 +104,4 @@ internal class RoBrowserFramePaceCalculator : MonoBehaviour, IFramePaceCalculato
         NextMotion = nextMotion;
         ActionId = actionId;
     }
-
-    public void SetMotionSpeedMultiplier(ushort attackMT) {
-        // do nothing
-    }
 }
