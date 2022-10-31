@@ -54,7 +54,6 @@ public class GridRenderer : MonoBehaviour {
         material.SetFloat("_Glossiness", 0f);
         material.mainTexture = gridIcon;
         material.color = Color.red;
-        material.name = "Cursor material";
         material.doubleSidedGI = false;
         material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
         material.enableInstancing = false;
