@@ -7,6 +7,7 @@ TagManager:
   - Map
   - MainCanvas
   - WorldLight
+  - CursorCamera
   layers:
   - Default
   - TransparentFX
@@ -22,7 +23,7 @@ TagManager:
   - Monsters
   - NPC
   - Items
-  - 
+  - Cursor
   - 
   - 
   - 

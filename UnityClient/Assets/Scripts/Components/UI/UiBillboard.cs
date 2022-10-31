@@ -9,7 +9,7 @@ public class UiBillboard : MonoBehaviour {
         MainCamera = Camera.main;
     }
 
-    private void LateUpdate() {
+    private void Update() {
         if (MainCamera == null) {
             MainCamera = Camera.main;
         }

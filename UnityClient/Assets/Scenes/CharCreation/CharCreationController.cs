@@ -43,7 +43,7 @@ public class CharCreationController : MonoBehaviour {
         HairToggleList = GridLayout.GetComponentsInChildren<ToggleImage>().ToList();
     }
 
-    void LateUpdate() {
+    void Update() {
         if (!IsDirty) {
             HumanSelectionEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
             HairToggleList[0].Toggle.isOn = true;

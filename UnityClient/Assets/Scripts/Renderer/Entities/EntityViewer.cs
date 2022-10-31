@@ -32,8 +32,8 @@ public class EntityViewer : MonoBehaviour {
     private MeshCollider MeshCollider;
     private MeshFilter MeshFilter;
     private MeshRenderer MeshRenderer;
-    private SortingGroup SortingGroup;
     private Material SpriteMaterial;
+    private SortingGroup SortingGroup;
     private Texture2D PaletteTexture;
 
     private IFramePaceCalculator FramePaceCalculator;
@@ -310,6 +310,10 @@ public class EntityViewer : MonoBehaviour {
             }
         } else {
             newAction = AnimationHelper.GetMotionIdForSprite(Entity.Type, motion.Motion);
+        }
+
+        if (newAction == ActionId) {
+            return;
         }
 
         if (Parent == null && ShadowObject != null && State == SpriteState.Dead) {

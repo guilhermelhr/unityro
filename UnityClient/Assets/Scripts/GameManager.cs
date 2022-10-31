@@ -1,5 +1,5 @@
 ﻿#if !DUMP_RECEIVED_PACKET
-    //#define DUMP_RECEIVED_PACKET
+//#define DUMP_RECEIVED_PACKET
 #endif
 
 
@@ -26,6 +26,9 @@ public class GameManager : MonoBehaviour {
     public AudioMixerGroup BGMMixerGroup;
     public AudioMixerGroup EffectsMixerGroup;
     public Light WorldLight;
+
+    public Camera CursorCamera;
+    public Camera MainCamera;
     #endregion
 
     private MapLoader MapLoader;
@@ -41,29 +44,35 @@ public class GameManager : MonoBehaviour {
     public LocalConfiguration LocalConfiguration { get; private set; }
 
     public static long Tick => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
-    public Camera MainCamera { get; private set; }
     public GameMap CurrentMap { get; private set; }
 
     private void Awake() {
-        if (MainCamera == null) {
-            MainCamera = Camera.main;
-        }
         if (AudioSource == null) {
             AudioSource = gameObject.AddComponent<AudioSource>();
             AudioSource.outputAudioMixerGroup = BGMMixerGroup;
         }
 
-        DontDestroyOnLoad(this);
-
         Instance = this;
+
+        DontDestroyOnLoad(this);
     }
 
     private void OnEnable() {
+        SceneManager.activeSceneChanged += OnSceneChanged;
         RenderPipelineManager.endCameraRendering += OnEndCameraRendering;
     }
 
     private void OnDisable() {
         RenderPipelineManager.endCameraRendering -= OnEndCameraRendering;
+        SceneManager.activeSceneChanged -= OnSceneChanged;
+    }
+
+    private void OnSceneChanged(Scene arg0, Scene arg1) {
+        MainCamera = Camera.main;
+        var cameraObject = GameObject.FindGameObjectWithTag("CursorCamera");
+        if (cameraObject != null) {
+            CursorCamera = cameraObject.GetComponent<Camera>();
+        }
     }
 
     private void OnEndCameraRendering(ScriptableRenderContext context, Camera camera) {

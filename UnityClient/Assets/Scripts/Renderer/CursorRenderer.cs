@@ -1,10 +1,10 @@
 ﻿using Assets.Scripts.Renderer.Sprite;
-using ROIO;
 using ROIO.Models.FileTypes;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 public enum CursorAction {
     DEFAULT = 0,
@@ -21,97 +21,143 @@ public enum CursorAction {
 
 public class CursorRenderer : MonoBehaviour {
 
-    private ACT act;
-    private List<Sprite> sprites = new List<Sprite>();
+    private GameManager GameManager;
+    private Camera CursorCamera => GameManager.CursorCamera;
+
+    private ACT CurrentAct;
+    private Sprite[] Sprites;
+
+    private MeshCollider MeshCollider;
+    private MeshFilter MeshFilter;
+    private MeshRenderer MeshRenderer;
+    private Material SpriteMaterial;
+    private SortingGroup SortingGroup;
+
+    private Dictionary<ACT.Frame, Mesh> MeshCache = new Dictionary<ACT.Frame, Mesh>();
 
     private CursorAction type;
-    private double tick;
-    private bool repeat;
 
-    public int currentAction;
-    private int currentFrame;
-    private double currentFrameTime = 0;
-
-    private bool isReady = false;
+    [SerializeField] public int CurrentActionIndex;
+    [SerializeField] private int CurrentFrame;
+    [SerializeField] private bool isReady = false;
+    private long AnimationStart;
+    private ACT.Action CurrentAction;
 
     private void Awake() {
         DontDestroyOnLoad(this);
+        GameManager = FindObjectOfType<GameManager>();
     }
 
-    // Use this for initialization
-    async void Start() {
-        var spriteData = await Addressables.LoadAssetAsync<SpriteData>("data/sprite/cursors.asset").Task;
+    void Start() {
+        gameObject.layer = LayerMask.NameToLayer("Cursor");
+        var spriteData = Addressables.LoadAssetAsync<SpriteData>("data/sprite/cursors.asset").WaitForCompletion();
+        SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
 
-        sprites = spriteData.sprites.ToList();
-        act = spriteData.act;
+        Sprites = spriteData.sprites;
+        CurrentAct = spriteData.act;
 
-        tick = Time.deltaTime;
+        InitRenderers();
 
-        //FlipTextures();
-        SetAction(CursorAction.DEFAULT, true);
+        SetAction(CursorAction.DEFAULT);
 
-        // Leaving this off for now
-        //isReady = true;
+        isReady = true;
     }
 
     void Update() {
         if (!isReady)
             return;
-        if (Input.GetKey(KeyCode.Mouse1)) {
-            SetAction(CursorAction.ROTATE, false);
-        }
-    }
 
-    // Update is called once per frame
-    void LateUpdate() {
-        if (!isReady)
+        if (CursorCamera != null) {
+            Cursor.visible = false;
+        } else {
+            Cursor.visible = true;
             return;
-
-        var action = act.actions[currentAction];
-        currentFrameTime -= Time.deltaTime;
-
-        if (currentFrameTime < 0 || currentFrame > action.frames.Length - 1) {
-            AdvanceFrame();
         }
 
-        var index = action.frames[currentFrame].layers[0].index;
-        Cursor.SetCursor(sprites[index].texture, Vector2.zero, CursorMode.ForceSoftware);
+        if (Input.GetKey(KeyCode.Mouse1)) {
+            SetAction(CursorAction.ROTATE);
+        }
+
+        var frame = GetCurrentFrame();
+        UpdateMesh(frame);
+
+        Vector3 mousePosition = CursorCamera.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = CursorCamera.transform.position.z + CursorCamera.nearClipPlane + 0.02f;
+        transform.position = mousePosition;
     }
 
-    private void AdvanceFrame() {
-        var action = act.actions[currentAction];
-        currentFrame++;
-        if (currentFrame > action.frames.Length - 1) {
-            if (repeat) {
-                currentFrame = 0;
-            } else {
-                currentFrame = action.frames.Length - 1;
+    private void UpdateMesh(ACT.Frame frame) {
+        MeshCache.TryGetValue(frame, out Mesh rendererMesh);
+        if (rendererMesh == null) {
+            rendererMesh = SpriteMeshBuilder.BuildSpriteMesh(frame, Sprites);
+            MeshCache.Add(frame, rendererMesh);
+        }
+
+        MeshFilter.sharedMesh = null;
+        MeshFilter.sharedMesh = rendererMesh;
+    }
+
+    private ACT.Frame GetCurrentFrame() {
+        CurrentAction = CurrentAct.actions[CurrentActionIndex];
+        var maxFrame = CurrentAction.frames.Length - 1;
+        long deltaSinceAnimationStart = GameManager.Tick - AnimationStart;
+
+        if (deltaSinceAnimationStart >= CurrentAction.delay * 1.15) {
+            AnimationStart = GameManager.Tick;
+
+            if (CurrentFrame < maxFrame) {
+                CurrentFrame++;
             }
         }
 
-        if (currentFrameTime < 0)
-            currentFrameTime += action.delay / 1000f;
+        if (CurrentFrame >= maxFrame) {
+            if (IsActionLoop()) {
+                CurrentFrame = 0;
+            } else {
+                CurrentFrame = maxFrame;
+            }
+        }
+
+        return CurrentAction.frames[CurrentFrame];
     }
 
-    public void SetAction(CursorAction type, bool repeat, int? animation = null) {
+    public bool IsActionLoop() {
+        return type switch {
+            CursorAction.DEFAULT => true,
+            CursorAction.TALK => false,
+            CursorAction.CLICK => false,
+            CursorAction.LOCK => false,
+            CursorAction.ROTATE => false,
+            CursorAction.ATTACK => false,
+            CursorAction.WARP => false,
+            CursorAction.INVALID => false,
+            CursorAction.PICK => false,
+            CursorAction.TARGET => true,
+            _ => true,
+        };
+    }
+
+    public void SetAction(CursorAction type, bool repeat = false, int? animation = null) {
         if (type == this.type) {
             return;
         }
 
         this.type = type;
-        this.tick = GameManager.Tick;
-        this.repeat = repeat;
-
-        this.currentAction = animation ?? (int) type;
-        this.currentFrame = 0;
-
-        var action = act.actions[currentAction];
-
-        this.currentFrameTime = action.delay / 1000f;
+        CurrentActionIndex = animation ?? (int) type;
+        CurrentFrame = 0;
+        AnimationStart = GameManager.Tick;
     }
 
-    class CursorActionInfo {
-        public int drawX, drawY, startX, startY;
-        public float delayMult;
+    private void InitRenderers() {
+        var atlas = Addressables.LoadAssetAsync<Texture2D>("data/sprite/cursors.png").WaitForCompletion();
+        MeshFilter = gameObject.GetOrAddComponent<MeshFilter>();
+        MeshRenderer = gameObject.GetOrAddComponent<MeshRenderer>();
+        SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
+
+        MeshRenderer.receiveShadows = false;
+        MeshRenderer.lightProbeUsage = LightProbeUsage.Off;
+        MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
+        MeshRenderer.material = SpriteMaterial;
+        MeshRenderer.material.mainTexture = atlas;
     }
 }

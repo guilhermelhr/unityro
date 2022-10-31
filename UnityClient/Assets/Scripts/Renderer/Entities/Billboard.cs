@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityRO.GameCamera;
 
 public class Billboard : MonoBehaviour {
 
@@ -9,7 +8,7 @@ public class Billboard : MonoBehaviour {
         GameManager = FindObjectOfType<GameManager>();
     }
 
-    public void LateUpdate() {
+    public void Update() {
         transform.localRotation = Camera.main.transform.rotation;
     }
 }
