@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public class NumberInput : MonoBehaviour {
 
@@ -16,7 +17,7 @@ public class NumberInput : MonoBehaviour {
 
     private bool hasConfirmed = false;
 
-    private void LateUpdate() {
+    private void Update() {
         if (Input.GetKeyDown(KeyCode.Return)) {
             hasConfirmed = true;
         }
@@ -32,16 +33,15 @@ public class NumberInput : MonoBehaviour {
         inputField.Select();
     }
 
-    public async Task<int> AwaitConfirmation() {
+    public Task<int> AwaitConfirmation() {
         hasConfirmed = false;
+        var t = new TaskCompletionSource<int>();
+
         btnConfirm.onClick.AddListener(delegate {
             hasConfirmed = true;
+            t.TrySetResult(int.Parse(inputField.text));
         });
 
-        while (!hasConfirmed) {
-            await Task.Delay(1);
-        }
-
-        return int.Parse(inputField.text);
+        return t.Task;
     }
 }

@@ -54,7 +54,7 @@ public class MapUiController : MonoBehaviour {
         details.transform.SetParent(gameObject.transform);
     }
 
-    private void LateUpdate() {
+    private void Update() {
         if (Event.current == null)
             return;
 
