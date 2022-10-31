@@ -159,10 +159,10 @@ MonoBehaviour:
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   pressedTexture:
-    m_AssetGUID: b2a70e2e73fbf43428dfe574d2429264
+    m_AssetGUID: 95b5f740670d03d4cbec824b819bb0df
     m_SubObjectName: 
     m_SubObjectType: 
-    m_EditorAssetChanged: 1
+    m_EditorAssetChanged: 0
   disabledTexture:
     m_AssetGUID: 4fc23b69fa3ef654ba96e2535c176cd1
     m_SubObjectName: 
@@ -367,6 +367,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f46b823f63d42b848bab3b3d495b5012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentFramePaceAlgorithm: 1
   Type: 0
   EntityViewer: {fileID: 0}
   Direction: 1
@@ -783,6 +784,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f46b823f63d42b848bab3b3d495b5012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentFramePaceAlgorithm: 1
   Type: 0
   EntityViewer: {fileID: 0}
   Direction: 0
@@ -1997,6 +1999,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f46b823f63d42b848bab3b3d495b5012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentFramePaceAlgorithm: 1
   Type: 0
   EntityViewer: {fileID: 0}
   Direction: 1
@@ -4018,10 +4021,10 @@ MonoBehaviour:
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   pressedTexture:
-    m_AssetGUID: fd85d6aafb4c6494f8d820a92ed14f16
+    m_AssetGUID: f19448ef3179dd74a8670de7b523ad7b
     m_SubObjectName: 
     m_SubObjectType: 
-    m_EditorAssetChanged: 1
+    m_EditorAssetChanged: 0
   disabledTexture:
     m_AssetGUID: b2692dd967d216243a23501766851c71
     m_SubObjectName: 
