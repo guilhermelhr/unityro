@@ -39,6 +39,7 @@ public class CursorRenderer : MonoBehaviour {
 
     [SerializeField] public int CurrentActionIndex;
     [SerializeField] private int CurrentFrame;
+    [SerializeField] private float CameraPlaneOffset = 0.02f;
     [SerializeField] private bool isReady = false;
     private long AnimationStart;
     private ACT.Action CurrentAction;
@@ -82,7 +83,7 @@ public class CursorRenderer : MonoBehaviour {
         UpdateMesh(frame);
 
         Vector3 mousePosition = CursorCamera.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = CursorCamera.transform.position.z + CursorCamera.nearClipPlane + 0.02f;
+        mousePosition.z = CursorCamera.transform.position.z + CursorCamera.nearClipPlane + CameraPlaneOffset;
         transform.position = mousePosition;
     }
 

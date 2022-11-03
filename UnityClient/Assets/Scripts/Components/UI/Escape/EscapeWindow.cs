@@ -63,7 +63,7 @@ public class EscapeWindow : DraggableUIWindow, IEscapeWindowController {
 
     private void BuildButton(string label, UnityAction onClick) {
         GameObject goButton = Instantiate(ButtonPrefab);
-        goButton.transform.SetParent(Body.transform);
+        goButton.transform.SetParent(Body.transform, false);
 
         TextMeshProUGUI textMeshProUGUI = goButton.GetComponentInChildren<TextMeshProUGUI>();
         textMeshProUGUI.text = label;
