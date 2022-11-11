@@ -29,12 +29,17 @@ public class ShopCart : MonoBehaviour, IDropHandler {
     [SerializeField]
     private Button CancelButton;
 
+    [SerializeField]
+    private Toggle IgnoreQuantityToggle;
+
     private List<CartItem> CurrentCartItems;
     private NpcShopType ShopType;
     private NumberInput QuantityInput;
 
     internal void SetShopType(NpcShopType shopType) {
         ShopType = shopType;
+        SubmitButton.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = ShopType == NpcShopType.BUY ? "Buy" : "Sell";
+        IgnoreQuantityToggle.gameObject.SetActive(ShopType == NpcShopType.SELL);
     }
 
     private int TotalPrice => CurrentCartItems.Sum(it => it.ItemShopInfo.specialPrice * it.Quantity);
@@ -64,7 +69,7 @@ public class ShopCart : MonoBehaviour, IDropHandler {
                 if (ShopType == NpcShopType.BUY) {
                     await ProcessBuyStackable(droppedItem, entity, cartItem);
                 } else if (ShopType == NpcShopType.SELL) {
-                    await ProcessSellStackable(droppedItem, cartItem);
+                    await ProcessSellStackable(droppedItem, entity, cartItem);
                 }
             } else {
                 if (cartItem == null) {
@@ -76,10 +81,14 @@ public class ShopCart : MonoBehaviour, IDropHandler {
         }
     }
 
-    private async Task ProcessSellStackable(ShopItem droppedItem, CartItem cartItem) {
-        // TODO: consider sell all checkbox
-        var quantity = await FindQuantity(droppedItem);
-        Destroy(QuantityInput.gameObject);
+    private async Task ProcessSellStackable(ShopItem droppedItem, Entity entity, CartItem cartItem) {
+        var quantity = 0;
+        if (IgnoreQuantityToggle.isOn) {
+            quantity = entity.Inventory.ItemList.First(it => it.ItemID == droppedItem.Item.id).amount;
+        } else {
+            quantity = await FindQuantity(droppedItem);
+            Destroy(QuantityInput.gameObject);
+        }
 
         var updatedQuantity = (cartItem?.Quantity ?? 0) + quantity;
         if (updatedQuantity > droppedItem.Quantity) {
@@ -101,7 +110,7 @@ public class ShopCart : MonoBehaviour, IDropHandler {
 
     private async Task<int> FindQuantity(ShopItem droppedItem) {
         QuantityInput = Instantiate(QuantityInputPrefab);
-        QuantityInput.transform.SetParent(gameObject.transform);
+        QuantityInput.transform.SetParent(gameObject.transform, false);
         QuantityInput.SetTitle(droppedItem.GetItemName(), 1);
         var quantity = await QuantityInput.AwaitConfirmation();
 
