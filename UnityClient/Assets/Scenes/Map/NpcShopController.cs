@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class NpcShopController : DraggableUIWindow {
+public class NpcShopController : DraggableUIWindow, INPCShopController {
 
     [SerializeField]
     private GameObject CatalogScrollView;
@@ -22,21 +22,13 @@ public class NpcShopController : DraggableUIWindow {
             CurrentShopItems = new List<ShopItem>();
             ShopCart.SetShopType(ShopType);
 
-            foreach (var item in PC_PURCHASE_ITEMLIST.ItemList) {
-                var shopItem = Instantiate(ShopItemPrefab, CatalogScrollView.transform);
-                shopItem.SetItemShopInfo(item, ShopType);
-                CurrentShopItems.Add(shopItem);
-            }
+            SetupShopItemList(PC_PURCHASE_ITEMLIST.ItemList);
         } else if (packet is ZC.PC_SELL_ITEMLIST PC_SELL_ITEMLIST) {
             ShopType = NpcShopType.SELL;
             CurrentShopItems = new List<ShopItem>();
             ShopCart.SetShopType(ShopType);
 
-            foreach (var item in PC_SELL_ITEMLIST.ItemList) {
-                var shopItem = Instantiate(ShopItemPrefab, CatalogScrollView.transform);
-                shopItem.SetItemShopInfo(item, ShopType);
-                CurrentShopItems.Add(shopItem);
-            }
+            SetupShopItemList(PC_SELL_ITEMLIST.ItemList);
         }
 
         gameObject.SetActive(true);
@@ -101,11 +93,7 @@ public class NpcShopController : DraggableUIWindow {
         CurrentShopItems.ForEach(it => Destroy(it.gameObject));
         CurrentShopItems.Clear();
 
-        foreach (var item in itemShopInfoList) {
-            var shopItem = Instantiate(ShopItemPrefab, CatalogScrollView.transform);
-            shopItem.SetItemShopInfo(item, ShopType);
-            CurrentShopItems.Add(shopItem);
-        }
+        SetupShopItemList(itemShopInfoList);
     }
 
     private void ClearAndClose() {
@@ -136,4 +124,21 @@ public class NpcShopController : DraggableUIWindow {
             }.Send();
         }
     }
+
+    public void AddToCart(ShopItem shopItem) {
+        ShopCart.AddItem(shopItem);
+    }
+
+    private void SetupShopItemList(List<ItemNPCShopInfo> itemList) {
+        foreach (var item in itemList) {
+            var shopItem = Instantiate(ShopItemPrefab, CatalogScrollView.transform);
+            shopItem.SetShopController(this);
+            shopItem.SetItemShopInfo(item, ShopType);
+            CurrentShopItems.Add(shopItem);
+        }
+    }
+}
+
+internal interface INPCShopController {
+    void AddToCart(ShopItem shopItem);
 }
