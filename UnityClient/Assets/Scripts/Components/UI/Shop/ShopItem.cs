@@ -1,10 +1,11 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler {
+public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerClickHandler {
 
     [SerializeField]
     private RawImage ItemImage;
@@ -25,6 +26,7 @@ public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
 
     private Canvas Canvas;
     private RectTransform ItemDragImageTransform;
+    private INPCShopController ShopController;
 
     private void Awake() {
         Canvas = Canvas.FindMainCanvas();
@@ -50,6 +52,7 @@ public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
             }
 
             itemShopInfo.itemID = itemInfo.ItemID;
+            itemShopInfo.type = itemInfo.itemType;
             try {
                 ItemImage.texture = await Addressables.LoadAssetAsync<Texture2D>(DBManager.GetItemResPath(itemInfo.ItemID, true)).Task;
             } catch {
@@ -94,5 +97,21 @@ public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
 
     public void OnDrag(PointerEventData eventData) {
         ItemDragImageTransform.anchoredPosition += eventData.delta / Canvas.scaleFactor;
+    }
+
+    public void OnPointerClick(PointerEventData eventData) {
+        if (eventData.clickCount == 2) {
+            ShopController.AddToCart(this);
+        }
+    }
+
+    private void OnDestroy() {
+        if (ItemDragImageTransform != null) {
+            Destroy(ItemDragImageTransform.gameObject);
+        }
+    }
+
+    internal void SetShopController(INPCShopController shopController) {
+        ShopController = shopController;
     }
 }

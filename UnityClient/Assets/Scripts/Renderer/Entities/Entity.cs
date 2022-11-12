@@ -215,7 +215,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             Robe = (short) data.chr_slot_changeCnt
         };
 
-        SetupViewer(EquipInfo, rendererLayer);
+        SetupViewer(EquipInfo, rendererLayer, isFromCharacterSelection);
 
         if (isFromCharacterSelection) {
             ShadowSize = 0f;
@@ -223,6 +223,19 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
 
         HookPackets();
+    }
+
+    public void Clone(Entity entity, int rendererLayer, bool isFromUi = false) {
+        Status = entity.Status;
+        Type = entity.Type;
+        EquipInfo = entity.EquipInfo;
+
+        SetupViewer(EquipInfo, rendererLayer, isFromUi);
+
+        if (isFromUi) {
+            ShadowSize = 0f;
+            return;
+        }
     }
 
     public void SetReady(bool ready, bool isFromCharacterSelection = false) {
@@ -235,7 +248,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         SetupCanvas();
     }
 
-    private void SetupViewer(EntityEquipInfo data, int rendererLayer) {
+    private void SetupViewer(EntityEquipInfo data, int rendererLayer, bool isFromUi = false) {
         if (EntityViewer != null) {
             Destroy(EntityViewer.gameObject);
         }
@@ -263,7 +276,9 @@ public class Entity : MonoBehaviour, INetworkEntity {
             return;
         }
 
-        body.AddComponent<Billboard>();
+        if (!isFromUi) {
+            body.AddComponent<Billboard>();
+        }
         // Any other than PC has Head etc
         if (Type != EntityType.PC) {
             return;
@@ -329,6 +344,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
             layerViewer.ViewerType = viewerType;
 
             bodyViewer.Children.Add(layerViewer);
+        } else if (viewer != null) {
+            viewer.gameObject.SetActive(true);
         } else if (viewId == 0) {
             viewer?.gameObject.SetActive(false);
         }
