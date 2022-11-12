@@ -61,7 +61,7 @@ public class CursorRenderer : MonoBehaviour {
 
         SetAction(CursorAction.DEFAULT);
 
-        isReady = true;
+        isReady = false;
     }
 
     void Update() {
