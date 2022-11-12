@@ -6,8 +6,15 @@ public class NormalEquipmentWindow : MonoBehaviour {
 
     public List<UIEquipSlot> slots;
 
+    [SerializeField] private Entity WindowEntity;
+
     public void UpdateEquipment() {
-        var inventory = (Session.CurrentSession.Entity as Entity).Inventory;
+        var entity = (Session.CurrentSession.Entity as Entity);
+        WindowEntity.Clone(entity, LayerMask.NameToLayer("UI"), true);
+        WindowEntity.SortingGroup.sortingOrder = 3;
+        WindowEntity.SetReady(true, true);
+
+        var inventory = entity.Inventory;
         if (inventory == null || inventory.IsEmpty) return;
 
         Dictionary<EquipLocation, UIEquipSlot> slotDictionary = slots.ToDictionary(it => it.location);

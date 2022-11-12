@@ -82,6 +82,8 @@ public class Inventory {
         if ((equipLocation & (int)EquipLocation.GARMENT) > 0) entity.EquipInfo.Robe = 0;
         if ((equipLocation & (int)EquipLocation.WEAPON) > 0) entity.EquipInfo.Weapon = 0;
         if ((equipLocation & (int)EquipLocation.SHIELD) > 0) entity.EquipInfo.Shield = 0;
+
+        Session.CurrentSession.Entity.UpdateSprites();
     }
 
     public void EquipItem(short index, int equipLocation) {

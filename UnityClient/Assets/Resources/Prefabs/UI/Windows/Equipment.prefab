@@ -681,6 +681,7 @@ MonoBehaviour:
   - {fileID: 1479321180136835840}
   - {fileID: 1479321180952785330}
   - {fileID: 709303918556707942}
+  WindowEntity: {fileID: 1352306871040239509}
 --- !u!114 &1479321180269076634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1058,11 +1059,11 @@ RectTransform:
   m_Father: {fileID: 1479321180269076633}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.4, y: 1}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_SizeDelta: {x: 110, y: 130}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &1479321180517408792
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1136,7 +1137,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_SizeDelta: {x: 280, y: 177}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1479321180601132647
 CanvasRenderer:
@@ -2541,6 +2542,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1479321181174210582}
   - component: {fileID: 1479321181174210576}
+  - component: {fileID: 1352306871040239509}
   m_Layer: 5
   m_Name: Character
   m_TagString: Untagged
@@ -2557,16 +2559,16 @@ RectTransform:
   m_GameObject: {fileID: 1479321181174210581}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 35, y: 35, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1479321180269076633}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.4, y: 1}
-  m_AnchorMax: {x: 0.61, y: 1}
-  m_AnchoredPosition: {x: 0, y: -65}
-  m_SizeDelta: {x: 0, y: 130}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -50}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1479321181174210576
 CanvasRenderer:
@@ -2576,6 +2578,92 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1479321181174210581}
   m_CullTransparentMesh: 0
+--- !u!114 &1352306871040239509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1479321181174210581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f46b823f63d42b848bab3b3d495b5012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentFramePaceAlgorithm: 1
+  Type: 3
+  EntityViewer: {fileID: 0}
+  Direction: 0
+  SortingGroup: {fileID: 0}
+  ShadowSize: 0
+  Action: 0
+  HeadDir: 0
+  IsReady: 0
+  GID: 0
+  AID: 0
+  Status:
+    char_id: 0
+    account_id: 0
+    partner_id: 0
+    father: 0
+    mother: 0
+    child: 0
+    walkSpeed: 0
+    base_exp: 0
+    job_exp: 0
+    zeny: 0
+    attackRange: 0
+    attackSpeed: 0
+    jobId: 0
+    StatusPoints: 0
+    SkillPoints: 0
+    hp: 0
+    max_hp: 0
+    sp: 0
+    max_sp: 0
+    option: 0
+    manner: 0
+    karma: 0
+    hair: 0
+    hair_color: 0
+    clothes_color: 0
+    body: 0
+    party_id: 0
+    guild_id: 0
+    pet_id: 0
+    hom_id: 0
+    mer_id: 0
+    ele_id: 0
+    clan_id: 0
+    fame: 0
+    arch_faith: 0
+    arch_calls: 0
+    spear_faith: 0
+    spear_calls: 0
+    sword_faith: 0
+    sword_calls: 0
+    name: 
+    base_level: 0
+    job_level: 0
+    str: 0
+    agi: 0
+    vit: 0
+    int_: 0
+    dex: 0
+    luk: 0
+    slot: 0
+    sex: 0
+    mapip: 0
+    mapport: 0
+    next_base_exp: 0
+    next_job_exp: 0
+  EquipInfo:
+    Weapon: 0
+    Shield: 0
+    HeadTop: 0
+    HeadBottom: 0
+    HeadMid: 0
+    Robe: 0
 --- !u!1 &1479321181311201996
 GameObject:
   m_ObjectHideFlags: 0
@@ -3532,11 +3620,11 @@ RectTransform:
   m_Father: {fileID: 1479321180269076633}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.61, y: 1}
+  m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -65}
-  m_SizeDelta: {x: 0, y: 130}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 110, y: 130}
+  m_Pivot: {x: 1, y: 1}
 --- !u!222 &1479321182036243068
 CanvasRenderer:
   m_ObjectHideFlags: 0
