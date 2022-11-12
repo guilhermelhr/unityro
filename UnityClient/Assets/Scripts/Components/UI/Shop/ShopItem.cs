@@ -95,4 +95,8 @@ public class ShopItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     public void OnDrag(PointerEventData eventData) {
         ItemDragImageTransform.anchoredPosition += eventData.delta / Canvas.scaleFactor;
     }
+
+    private void OnDestroy() {
+        Destroy(ItemDragImageTransform.gameObject);
+    }
 }

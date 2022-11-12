@@ -74,6 +74,7 @@ public class ShopCart : MonoBehaviour, IDropHandler {
             } else {
                 if (cartItem == null) {
                     AddItemToCart(droppedItem, 1);
+                    SetPriceLabel();
                 }
             }
 
@@ -131,6 +132,7 @@ public class ShopCart : MonoBehaviour, IDropHandler {
             SetPriceLabel();
         } else {
             AddItemToCart(droppedItem, quantity);
+            SetPriceLabel();
         }
     }
 
@@ -138,7 +140,6 @@ public class ShopCart : MonoBehaviour, IDropHandler {
         var shopItem = Instantiate(ShopItemPrefab, CartScrollView.transform);
         shopItem.SetItemShopInfo(droppedItem.ItemShopInfo, quantity);
         CurrentCartItems.Add(shopItem);
-        SetPriceLabel();
     }
 
     public void Clear() {
