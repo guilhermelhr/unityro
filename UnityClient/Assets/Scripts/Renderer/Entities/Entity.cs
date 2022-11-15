@@ -113,8 +113,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         NetworkClient.HookPacket(ZC.ATTACK_FAILURE_FOR_DISTANCE.HEADER, OnAttackFailureForDistance);
     }
 
-    public void Init(SpriteData spriteData) {
-        EntityViewer.Init(spriteData);
+    public void Init(SpriteData spriteData, Texture2D atlas) {
+        EntityViewer.Init(spriteData, atlas);
     }
 
     public void Init(EntitySpawnData data, int rendererLayer, EntityCanvas canvas) {

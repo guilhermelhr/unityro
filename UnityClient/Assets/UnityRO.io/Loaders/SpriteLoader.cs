@@ -6,15 +6,11 @@ using System.Globalization;
 using System.IO;
 using UnityEngine;
 
-namespace ROIO.Loaders
-{
-    public class SpriteLoader
-    {
-        public static SPR Load(MemoryStreamReader data)
-        {
+namespace ROIO.Loaders {
+    public class SpriteLoader {
+        public static SPR Load(MemoryStreamReader data) {
             var header = data.ReadBinaryString(2);
-            if (!header.Equals(SPR.Header))
-            {
+            if (!header.Equals(SPR.Header)) {
                 throw new Exception("SpriteLoader.Load: Header (" + header + ") is not \"SP\"");
             }
 
@@ -29,27 +25,22 @@ namespace ROIO.Loaders
             spr._indexedCount = spr.indexedCount;
 
             var dversion = double.Parse(version, CultureInfo.InvariantCulture);
-            if (dversion > 1.1)
-            {
+            if (dversion > 1.1) {
                 spr.rgbaCount = data.ReadUShort();
             }
 
             spr.frames = new SPR.Frame[spr.indexedCount + spr.rgbaCount];
             spr.rgbaIndex = spr.indexedCount;
 
-            if (dversion < 2.1)
-            {
+            if (dversion < 2.1) {
                 ReadIndexedImage(spr, data);
-            }
-            else
-            {
+            } else {
                 ReadIndexedImageRLE(spr, data);
             }
 
             ReadRgbaImage(spr, data);
 
-            if (dversion > 1.0)
-            {
+            if (dversion > 1.0) {
                 long position = data.Position;
                 data.Seek(-1024, System.IO.SeekOrigin.End);
                 spr.palette = data.ReadBytes(1024);
@@ -59,14 +50,11 @@ namespace ROIO.Loaders
             return spr;
         }
 
-        private static void ReadIndexedImage(SPR spr, MemoryStreamReader data)
-        {
-            for (int i = 0; i < spr.indexedCount; i++)
-            {
+        private static void ReadIndexedImage(SPR spr, MemoryStreamReader data) {
+            for (int i = 0; i < spr.indexedCount; i++) {
                 var width = data.ReadUShort();
                 var height = data.ReadUShort();
-                spr.frames[i] = new SPR.Frame()
-                {
+                spr.frames[i] = new SPR.Frame() {
                     type = SPR.TYPE_PAL,
                     width = width,
                     height = height,
@@ -75,39 +63,30 @@ namespace ROIO.Loaders
             }
         }
 
-        private static void ReadIndexedImageRLE(SPR spr, MemoryStreamReader data)
-        {
-            for (int i = 0; i < spr.indexedCount; i++)
-            {
+        private static void ReadIndexedImageRLE(SPR spr, MemoryStreamReader data) {
+            for (int i = 0; i < spr.indexedCount; i++) {
                 var width = data.ReadUShort();
                 var height = data.ReadUShort();
                 var _data = new byte[width * height];
                 var end = data.ReadUShort() + data.Position;
 
                 var index = 0;
-                while (data.Position < end)
-                {
-                    var c = _data[index++] = (byte)data.ReadByte();
-                    if (c == 0)
-                    {
+                while (data.Position < end) {
+                    var c = _data[index++] = (byte) data.ReadByte();
+                    if (c == 0) {
                         var count = data.ReadByte();
 
-                        if (count == 0)
-                        {
+                        if (count == 0) {
                             _data[index++] = 0;
-                        }
-                        else
-                        {
-                            for (int j = 1; j < count; j++)
-                            {
+                        } else {
+                            for (int j = 1; j < count; j++) {
                                 _data[index++] = c;
                             }
                         }
                     }
                 }
 
-                spr.frames[i] = new SPR.Frame()
-                {
+                spr.frames[i] = new SPR.Frame() {
                     type = SPR.TYPE_PAL,
                     width = width,
                     height = height,
@@ -116,15 +95,12 @@ namespace ROIO.Loaders
             }
         }
 
-        private static void ReadRgbaImage(SPR spr, MemoryStreamReader data)
-        {
-            for (int i = 0; i < spr.rgbaCount; i++)
-            {
+        private static void ReadRgbaImage(SPR spr, MemoryStreamReader data) {
+            for (int i = 0; i < spr.rgbaCount; i++) {
                 var width = data.ReadShort();
                 var height = data.ReadShort();
 
-                spr.frames[i + spr.rgbaIndex] = new SPR.Frame()
-                {
+                spr.frames[i + spr.rgbaIndex] = new SPR.Frame() {
                     type = SPR.TYPE_RGBA,
                     width = width,
                     height = height,
@@ -135,7 +111,7 @@ namespace ROIO.Loaders
     }
 
     #region RagnarokRebuildTcp
-    struct SpriteFrameData {
+    public struct SpriteFrameData {
         public bool IsIndexed;
         public int Width;
         public int Height;
@@ -150,7 +126,7 @@ namespace ROIO.Loaders
         private int indexCount;
         private int rgbaCount;
 
-        private List<SpriteFrameData> spriteFrames;
+        public List<SpriteFrameData> spriteFrames;
         private byte[] paletteData;
 
         public List<Texture2D> Textures = new List<Texture2D>();
@@ -158,6 +134,8 @@ namespace ROIO.Loaders
         public List<Vector2Int> SpriteSizes = new List<Vector2Int>();
 
         public Texture2D Atlas;
+        public Texture2D Palette;
+        public Rect[] SpriteRects;
 
         public int IndexCount => indexCount;
 
@@ -230,6 +208,62 @@ namespace ROIO.Loaders
             }
         }
 
+        private Texture2D RgbaToTexture(SpriteFrameData frame) {
+            var image = new Texture2D(frame.Width, frame.Height, TextureFormat.ARGB32, false);
+            image.wrapMode = TextureWrapMode.Clamp;
+#if UNITY_EDITOR
+            image.alphaIsTransparency = true;
+#endif
+
+            var colors = new Color[frame.Width * frame.Height];
+
+            for (var y = 0; y < frame.Height; y++) {
+                for (var x = 0; x < frame.Width; x++) {
+                    var pos = (x + (frame.Height - y - 1) * frame.Width) * 4;
+
+                    var r = frame.Data[pos + 3];
+                    var g = frame.Data[pos + 2];
+                    var b = frame.Data[pos + 1];
+                    var a = frame.Data[pos + 0];
+
+                    var color = new Color(r / 255f, g / 255f, b / 255f, a / 255f);
+
+                    colors[x + (frame.Height - y - 1) * frame.Width] = color;
+                }
+            }
+
+            ExtendSpriteTextureData(colors, frame);
+
+            image.SetPixels(colors);
+
+            return image;
+        }
+
+        private Texture2D IndexedToTexture(SpriteFrameData frame) {
+            var image = new Texture2D(frame.Width, frame.Height, TextureFormat.R8, false, true);
+            image.wrapMode = TextureWrapMode.Clamp;
+            image.filterMode = FilterMode.Point;
+            image.LoadRawTextureData(frame.Data);
+            image.Apply();
+
+            var flipped = new Texture2D(frame.Width, frame.Height, TextureFormat.R8, false, true);
+            flipped.wrapMode = TextureWrapMode.Clamp;
+            flipped.filterMode = FilterMode.Point;
+            flipped.anisoLevel = 3;
+
+            int width = frame.Width;
+            int height = frame.Height;
+
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    flipped.SetPixel(x, height - y - 1, image.GetPixel(x, y));
+                }
+            }
+            flipped.Apply();
+
+            return flipped;
+        }
+
         private void ExtendSpriteTextureData(Color[] colors, SpriteFrameData frame) {
 
             //we're going to extend the sprite color into the transparent area around the sprite
@@ -272,70 +306,6 @@ namespace ROIO.Loaders
             }
         }
 
-        private Texture2D RgbaToTexture(SpriteFrameData frame) {
-            var image = new Texture2D(frame.Width, frame.Height, TextureFormat.ARGB32, false);
-            image.wrapMode = TextureWrapMode.Clamp;
-#if UNITY_EDITOR
-            image.alphaIsTransparency = true;
-#endif
-
-            var colors = new Color[frame.Width * frame.Height];
-
-            for (var y = 0; y < frame.Height; y++) {
-                for (var x = 0; x < frame.Width; x++) {
-                    var pos = (x + (frame.Height - y - 1) * frame.Width) * 4;
-
-                    var r = frame.Data[pos + 3];
-                    var g = frame.Data[pos + 2];
-                    var b = frame.Data[pos + 1];
-                    var a = frame.Data[pos + 0];
-
-                    var color = new Color(r / 255f, g / 255f, b / 255f, a / 255f);
-
-                    colors[x + (frame.Height - y - 1) * frame.Width] = color;
-                }
-            }
-
-            ExtendSpriteTextureData(colors, frame);
-
-            image.SetPixels(colors);
-
-            return image;
-        }
-
-        private Texture2D IndexedToTexture(SpriteFrameData frame) {
-            var image = new Texture2D(frame.Width, frame.Height, TextureFormat.ARGB32, false);
-            image.wrapMode = TextureWrapMode.Clamp;
-#if UNITY_EDITOR
-            image.alphaIsTransparency = true;
-#endif
-
-            var colors = new Color[frame.Width * frame.Height];
-
-            for (var y = 0; y < frame.Height; y++) {
-                for (var x = 0; x < frame.Width; x++) {
-                    var index1 = frame.Data[x + y * frame.Width] * 4;
-
-                    var r = paletteData[index1 + 0];
-                    var g = paletteData[index1 + 1];
-                    var b = paletteData[index1 + 2];
-                    var a = index1 > 0 ? 255 : 0;
-
-                    var color = new Color(r / 255f, g / 255f, b / 255f, a / 255f);
-
-
-                    colors[x + (frame.Height - y - 1) * frame.Width] = color;
-                    //image.SetPixel(x, frame.Height - y - 1, color);
-                }
-            }
-
-            ExtendSpriteTextureData(colors, frame);
-
-            image.SetPixels(colors);
-
-            return image;
-        }
-
         private void ReadPalette() {
             paletteData = br.ReadBytes(1024);
         }
@@ -376,6 +346,12 @@ namespace ROIO.Loaders
             if (version > 10)
                 ReadPalette();
 
+            Palette = new Texture2D(256, 1, TextureFormat.RGBA32, false, true);
+            Palette.alphaIsTransparency = false;
+            Palette.filterMode = FilterMode.Point;
+            Palette.LoadRawTextureData(paletteData);
+            Palette.Apply();
+
             for (var i = 0; i < spriteFrames.Count; i++) {
                 Texture2D image;
                 if (spriteFrames[i].IsIndexed)
@@ -388,10 +364,12 @@ namespace ROIO.Loaders
                 Textures.Add(image);
             }
 
-            var supertexture = new Texture2D(2, 2);
+            var supertexture = new Texture2D(2, 2, TextureFormat.R8, false);
             supertexture.name = $"{basename}_atlas";
             var rects = supertexture.PackTextures(Textures.ToArray(), 2, 2048, false);
+            SpriteRects = rects;
             supertexture.filterMode = FilterMode.Point;
+            supertexture.anisoLevel = 3;
 
             //ctx.AddObjectToAsset(supertexture.name, supertexture);
 

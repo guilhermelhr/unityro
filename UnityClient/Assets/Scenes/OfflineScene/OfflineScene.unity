@@ -362,8 +362,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OfflineOnly: 1
   LocalHost: 0
-  SoundMixerGroup: {fileID: 243063458056754506, guid: 80607cd4d5abb9d49824975c92ad1afc, type: 2}
+  BGMMixerGroup: {fileID: 0}
+  EffectsMixerGroup: {fileID: 0}
   WorldLight: {fileID: 1425244937}
+  CursorCamera: {fileID: 0}
+  MainCamera: {fileID: 0}
 --- !u!4 &1036250386
 Transform:
   m_ObjectHideFlags: 0

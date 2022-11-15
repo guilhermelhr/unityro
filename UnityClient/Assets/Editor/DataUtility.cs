@@ -16,6 +16,8 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.XR;
+using static EntityViewer;
 using static ROIO.Models.FileTypes.RSW;
 
 [InitializeOnLoad]
@@ -143,7 +145,6 @@ public class DataUtility {
              * After that we go over each sprite and convert its atlas texture to a proper Sprite format 
              * and slice every subsprite on the atlas
              */
-
             #region Extract atlases and acts
             AssetDatabase.StartAssetEditing();
             var spriteDataPaths = new List<string>();
@@ -178,17 +179,22 @@ public class DataUtility {
 
                     var spriteData = ScriptableObject.CreateInstance<SpriteData>();
                     sprLoader.Load(spr, filename);
-                    spriteData.act = act;
-                    spritesList.Add(sprLoader.Sprites);
-
-                    var atlas = sprLoader.Atlas;
-                    atlas.alphaIsTransparency = true;
-                    var bytes = atlas.EncodeToPNG();
 
                     var spritePath = Path.Combine(assetPath, filenameWithoutExtension);
 
+                    spriteData.act = act;
+                    spriteData.rects = sprLoader.SpriteRects;
+                    spritesList.Add(sprLoader.Sprites);
+
+                    var atlas = sprLoader.Atlas;
+                    var bytes = atlas.EncodeToPNG();
                     var atlasPath = spritePath + ".png";
                     File.WriteAllBytes(atlasPath, bytes);
+
+                    var palette = sprLoader.Palette;
+                    var paletteBytes = palette.EncodeToPNG();
+                    var palettePath = spritePath + "_pal.png";
+                    File.WriteAllBytes(palettePath, paletteBytes);
 
                     var fullAssetPath = spritePath + ".asset";
                     AssetDatabase.CreateAsset(spriteData, fullAssetPath);
@@ -224,56 +230,13 @@ public class DataUtility {
                     dataList.Add(spriteData);
 
                     if (spriteData != null) {
-                        TextureImporter importer = AssetImporter.GetAtPath(spritePath + ".png") as TextureImporter;
-                        importer.textureType = TextureImporterType.Sprite;
-                        importer.spriteImportMode = SpriteImportMode.Multiple;
-                        var textureSettings = new TextureImporterSettings();
-                        importer.ReadTextureSettings(textureSettings);
-                        textureSettings.spriteMeshType = SpriteMeshType.FullRect;
-                        textureSettings.spritePixelsPerUnit = SPR.PIXELS_PER_UNIT;
-
-                        var sheetMetaData = sprites.Select(it => {
-                            return new SpriteMetaData {
-                                rect = it.rect,
-                                name = it.name
-                            };
-                        }).ToArray();
-
-                        importer.spritesheet = sheetMetaData;
-                        importer.SetTextureSettings(textureSettings);
-                        importer.SaveAndReimport();
-                        //AssetDatabase.WriteImportSettingsIfDirty(spritePath + ".png"); //Doesnt seem to do anything
+                        ProcessAtlas(spritePath + ".png", sprites);
+                        ProcessPalette(spritePath + "_pal.png");
                     } else {
                         Debug.LogError($"Failed to load atlas of {spritePath}");
                     }
                 } catch (Exception ex) {
                     Debug.LogError($"Failed post processing sprite {ex}");
-                }
-            }
-
-            AssetDatabase.StopAssetEditing();
-            AssetDatabase.Refresh();
-            #endregion
-
-            #region Assign sprites to SpriteData
-            AssetDatabase.StartAssetEditing();
-
-            for (int i = 0; i < spriteDataPaths.Count; i++) {
-                try {
-                    var spritePath = spriteDataPaths[i];
-                    var spriteData = dataList[i];
-                    var savedSprites = AssetDatabase.LoadAllAssetsAtPath(spritePath + ".png")
-                           .Where(it => it is Sprite)
-                           .Select(it => it as Sprite)
-                           .ToArray();
-                    if (savedSprites.Length > 0) {
-                        spriteData.sprites = savedSprites;
-                    } else {
-                        Debug.LogError($"Failed to load sprites of {spritePath}");
-                    }
-                    EditorUtility.SetDirty(spriteData);
-                } catch (Exception ex) {
-                    Debug.LogError($"Failed wrapping up sprite {ex}");
                 }
             }
 
@@ -287,6 +250,108 @@ public class DataUtility {
         } finally {
             EditorUtility.ClearProgressBar();
         }
+    }
+
+    [MenuItem("UnityRO/Utils/Extract/Palette")]
+    static void ExtractPalettes() {
+        var descriptors = FilterDescriptors(FileManager.GetFileDescriptors(), "data/palette/")
+            .Select(it => it[..it.IndexOf(Path.GetExtension(it))])
+            .Where(it => it.Length > 0)
+            .Distinct()
+            .ToList();
+
+        try {
+            // Bulk write all palettes to disk
+            AssetDatabase.StartAssetEditing();
+            var paths = new List<string>();
+            for (int i = 0; i < descriptors.Count; i++) {
+                var progress = i * 1f / descriptors.Count;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Extracting palettes {i} of {descriptors.Count}\t\t{progress * 100}%", progress)) {
+                    break;
+                }
+
+                var descriptor = descriptors[i];
+                try {
+                    var sprPath = descriptor + ".pal";
+                    var memoryReader = FileManager.ReadSync(descriptor + ".pal");
+
+                    if (memoryReader == null) {
+                        Debug.LogError($"Failed to extract {descriptor}");
+                        continue;
+                    }
+
+                    var filename = Path.GetFileName(sprPath);
+                    var filenameWithoutExtension = Path.GetFileNameWithoutExtension(sprPath);
+                    var dir = sprPath.Substring(0, sprPath.IndexOf(filename));
+                    string assetDirectory = Path.Combine(GENERATED_RESOURCES_PATH, dir);
+
+                    Directory.CreateDirectory(assetDirectory);
+
+                    var filepath = Path.Combine(assetDirectory, filenameWithoutExtension);
+
+                    var paletteTexture = new Texture2D(256, 1, TextureFormat.RGBA32, false, true);
+                    paletteTexture.alphaIsTransparency = false;
+                    paletteTexture.filterMode = FilterMode.Point;
+                    paletteTexture.LoadRawTextureData(memoryReader.ToArray());
+                    paletteTexture.Apply();
+
+                    var paletteBytes = paletteTexture.EncodeToPNG();
+                    var palettePath = filepath + ".png";
+                    File.WriteAllBytes(palettePath, paletteBytes);
+                    paths.Add(palettePath);
+                } catch {
+                    Debug.LogError($"Couldnt extract palette {descriptor}");
+                }
+
+            }
+            AssetDatabase.StopAssetEditing();
+            AssetDatabase.Refresh();
+
+            // Process all palettes
+            AssetDatabase.StartAssetEditing();
+            for (int i = 0; i < paths.Count; i++) {
+                var progress = i * 1f / paths.Count;
+                if (EditorUtility.DisplayCancelableProgressBar("UnityRO", $"Processing palettes {i} of {paths.Count}\t\t{progress * 100}%", progress)) {
+                    break;
+                }
+                ProcessPalette(paths[i]);
+            }
+            AssetDatabase.StopAssetEditing();
+            AssetDatabase.Refresh();
+        } finally {
+            AssetDatabase.StopAssetEditing();
+            EditorUtility.ClearProgressBar();
+        }
+    }
+
+    private static void ProcessPalette(string path) {
+        TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+        importer.textureType = TextureImporterType.Default;
+        importer.sRGBTexture = false;
+        importer.alphaIsTransparency = false;
+        importer.wrapMode = TextureWrapMode.Clamp;
+        importer.filterMode = FilterMode.Point;
+        importer.mipmapEnabled = false;
+        var textureSettings = new TextureImporterSettings();
+        importer.ReadTextureSettings(textureSettings);
+        importer.SetTextureSettings(textureSettings);
+        importer.SaveAndReimport();
+    }
+
+    private static void ProcessAtlas(string spritePath, List<Sprite> sprites) {
+        TextureImporter importer = AssetImporter.GetAtPath(spritePath) as TextureImporter;
+        importer.textureType = TextureImporterType.SingleChannel;
+        importer.sRGBTexture = false;
+        importer.alphaIsTransparency = false;
+        importer.wrapMode = TextureWrapMode.Clamp;
+        importer.filterMode = FilterMode.Point;
+        importer.mipmapEnabled = false;
+        var textureSettings = new TextureImporterSettings();
+        importer.ReadTextureSettings(textureSettings);
+        textureSettings.singleChannelComponent = TextureImporterSingleChannelComponent.Red;
+        textureSettings.textureFormat = TextureImporterFormat.R8;
+        importer.SetTextureSettings(textureSettings);
+        importer.SaveAndReimport();
     }
 
     [MenuItem("UnityRO/Utils/Fix interface textures")]
@@ -627,6 +692,7 @@ public class DataUtility {
         CreateTexturesAddressableAssets();
 
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Sprites");
+        EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Palette");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Lua Files");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Effects");
         EditorApplication.ExecuteMenuItem("UnityRO/Utils/Extract/Wav");
@@ -732,7 +798,7 @@ public class DataUtility {
         var sprites = Resources.LoadAll(Path.Join("data", "sprite"))
             .Where(it => it is Texture2D || it is SpriteData) // filter out the thousands of sprites we've created
             .ToList();
-        sprites.SetAddressableGroup("Sprites", "Sprites");
+        sprites.SetAddressableGroup("Sprites", "Sprites", true);
     }
 
     [MenuItem("UnityRO/3. Create Addressable Assets/5. Data Tables")]
@@ -766,6 +832,14 @@ public class DataUtility {
             .Where(it => it is AudioClip)
             .ToList();
         files.SetAddressableGroup("BGM", "BGM");
+    }
+
+    [MenuItem("UnityRO/3. Create Addressable Assets/9. Palette")]
+    static void CreatePaletteAddressableAssets() {
+        var files = Resources.LoadAll(Path.Combine("data", "palette"))
+            .Where(it => it is Texture2D)
+            .ToList();
+        files.SetAddressableGroup("Palettes", "Palettes", true);
     }
 
     [MenuItem("UnityRO/4. Rename Generated Resources folder")]
