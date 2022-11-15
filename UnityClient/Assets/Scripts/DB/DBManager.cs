@@ -184,12 +184,12 @@ public class DBManager {
     }
 
     public static string GetHeadPalPath(int id, int palId, int sex) {
-        return $"data/palette/¸Ó¸®/¸Ó¸®{id}_{SexTable[sex]}_{palId}.pal";
+        return $"data/palette/¸Ó¸®/¸Ó¸®{id}_{SexTable[sex]}_{palId}";
     }
 
     public static string GetBodyPalPath(int job, int palId, int sex) {
         var isPC = ClassTable.TryGetValue(job.ToString(), out var jobPath);
-        return $"data/palette/¸ö/{jobPath}_{SexTable[sex]}_{palId}.pal";
+        return $"data/palette/¸ö/{jobPath}_{SexTable[sex]}_{palId}";
     }
 
     public static string GetShieldPath(int id, int job, int sex) {

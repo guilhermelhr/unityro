@@ -52,12 +52,13 @@ public class CursorRenderer : MonoBehaviour {
     void Start() {
         gameObject.layer = LayerMask.NameToLayer("Cursor");
         var spriteData = Addressables.LoadAssetAsync<SpriteData>("data/sprite/cursors.asset").WaitForCompletion();
+        var atlas = Addressables.LoadAssetAsync<Texture2D>("data/sprite/cursors.png").WaitForCompletion();
         SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
 
-        Sprites = spriteData.sprites;
+        Sprites = spriteData.GetSprites(atlas);
         CurrentAct = spriteData.act;
 
-        InitRenderers();
+        InitRenderers(atlas);
 
         SetAction(CursorAction.DEFAULT);
 
@@ -149,8 +150,7 @@ public class CursorRenderer : MonoBehaviour {
         AnimationStart = GameManager.Tick;
     }
 
-    private void InitRenderers() {
-        var atlas = Addressables.LoadAssetAsync<Texture2D>("data/sprite/cursors.png").WaitForCompletion();
+    private void InitRenderers(Texture2D atlas) {
         MeshFilter = gameObject.GetOrAddComponent<MeshFilter>();
         MeshRenderer = gameObject.GetOrAddComponent<MeshRenderer>();
         SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();

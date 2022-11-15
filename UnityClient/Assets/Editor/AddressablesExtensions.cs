@@ -11,12 +11,12 @@ using UnityEngine;
 
 internal static class AddressablesExtensions {
 
-    private static int GetPrefixLength() {
+    private static int GetPrefixLength(bool useResourcesPath = false) {
         var isAddressablesInitialized = Directory.Exists(DataUtility.GENERATED_ADDRESSABLES_PATH);
-        return (isAddressablesInitialized ? DataUtility.GENERATED_ADDRESSABLES_PATH : DataUtility.GENERATED_RESOURCES_PATH).Length + 1;
+        return ((isAddressablesInitialized && !useResourcesPath) ? DataUtility.GENERATED_ADDRESSABLES_PATH : DataUtility.GENERATED_RESOURCES_PATH).Length + 1;
     }
 
-    internal static void SetAddressableGroup(this UnityEngine.Object obj, string groupName, string labelName) {
+    internal static void SetAddressableGroup(this UnityEngine.Object obj, string groupName, string labelName, bool useResourcesPath = false) {
         var settings = AddressableAssetSettingsDefaultObject.Settings;
 
         if (settings) {
@@ -29,7 +29,7 @@ internal static class AddressablesExtensions {
             
 
             var e = settings.CreateOrMoveEntry(guid, group, false, false);
-            e.SetAddress(e.address[GetPrefixLength()..], false);
+            e.SetAddress(e.address[GetPrefixLength(useResourcesPath)..], false);
             if (labelName != null) {
                 e.SetLabel(labelName, true, true, false);
             }
@@ -40,7 +40,7 @@ internal static class AddressablesExtensions {
         }
     }
 
-    internal static void SetAddressableGroup<T>(this List<T> objs, string groupName, string labelName) where T : UnityEngine.Object {
+    internal static void SetAddressableGroup<T>(this List<T> objs, string groupName, string labelName, bool useResourcesPath = false) where T : UnityEngine.Object {
         var settings = AddressableAssetSettingsDefaultObject.Settings;
 
         if (settings) {
@@ -65,7 +65,7 @@ internal static class AddressablesExtensions {
                     var guid = AssetDatabase.AssetPathToGUID(assetpath);
 
                     var e = settings.CreateOrMoveEntry(guid, group, false, false);
-                    e.SetAddress(e.address[GetPrefixLength()..], false);
+                    e.SetAddress(e.address[GetPrefixLength(useResourcesPath)..], false);
                     if (labelName != null) {
                         e.SetLabel(labelName, true, true, false);
                     }

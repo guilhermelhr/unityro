@@ -91,6 +91,3 @@ crashlytics-build.properties
 /Assets/_Generated**/**
 /Assets/Logs/**
 /ServerData/**
-
-# Addressables Assets data
-/Assets/AddressableAssetsData/AssetGroups/**

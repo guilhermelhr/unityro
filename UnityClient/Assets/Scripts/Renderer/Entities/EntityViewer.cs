@@ -1,8 +1,11 @@
 ﻿using Assets.Scripts.Renderer.Sprite;
+using ROIO;
+using ROIO.Loaders;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
@@ -64,9 +67,9 @@ public class EntityViewer : MonoBehaviour {
         };
     }
 
-    public void Init(SpriteData spriteData) {
+    public void Init(SpriteData spriteData, Texture2D atlas) {
         CurrentACT = spriteData.act;
-        Sprites = spriteData.sprites;
+        Sprites = spriteData.GetSprites(atlas);
 
         if (FramePaceCalculator == null) {
             InitFramePaceCalculator();
@@ -145,7 +148,7 @@ public class EntityViewer : MonoBehaviour {
                 var spriteData = Addressables.LoadAssetAsync<SpriteData>(path + ".asset").WaitForCompletion();
                 var atlas = Addressables.LoadAssetAsync<Texture2D>(path + ".png").WaitForCompletion();
 
-                Sprites = spriteData.sprites;
+                Sprites = spriteData.GetSprites(atlas);
                 CurrentACT = spriteData.act;
 
                 FramePaceCalculator.Init(Entity, ViewerType, CurrentACT);
@@ -157,6 +160,20 @@ public class EntityViewer : MonoBehaviour {
                 MeshRenderer.material = SpriteMaterial;
                 MeshRenderer.material.mainTexture = atlas;
                 MeshRenderer.material.renderQueue -= 2;
+
+                if (palettePath.Length == 0) {
+                    palettePath = path + "_pal";
+                }
+
+                var palette = Addressables.LoadAssetAsync<Texture2D>(palettePath + ".png").WaitForCompletion();
+                if (palette != null) {
+                    MeshRenderer.material.SetTexture("_PaletteTex", palette);
+                } else {
+                    // selected palette doesn't exist, fallback to original
+                    palettePath = path + "_pal";
+                    palette = Addressables.LoadAssetAsync<Texture2D>(palettePath + ".png").WaitForCompletion();
+                    MeshRenderer.material.SetTexture("_PaletteTex", palette);
+                }
             } catch (Exception e) {
                 Debug.LogError($"Could not load sprites for: {path}");
                 Debug.LogException(e);
@@ -279,6 +296,9 @@ public class EntityViewer : MonoBehaviour {
         MeshFilter.sharedMesh = null;
         MeshFilter.sharedMesh = rendererMesh;
         MeshCollider.sharedMesh = colliderMesh;
+        if (frame.layers.Length > 0) {
+            MeshRenderer.material.SetVector("_uTextSize", new Vector2(frame.layers[0].width, frame.layers[0].height));
+        }
     }
 
     public void ChangeMotion(MotionRequest motion, MotionRequest? nextMotion = null) {
@@ -344,9 +364,10 @@ public class EntityViewer : MonoBehaviour {
         sortingGroup.sortingOrder = -20001;
 
         var spriteData = Addressables.LoadAssetAsync<SpriteData>("data/sprite/shadow.asset").WaitForCompletion();
+        var atlas = Addressables.LoadAssetAsync<Texture2D>("data/sprite/shadow.png").WaitForCompletion();
 
         var spriteRenderer = ShadowObject.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = spriteData.sprites[0];
+        spriteRenderer.sprite = spriteData.GetSprites(atlas)[0];
         spriteRenderer.sortingOrder = -1;
         spriteRenderer.material.renderQueue -= 2;
         spriteRenderer.material.color = new Color(1, 1, 1, 0.4f);

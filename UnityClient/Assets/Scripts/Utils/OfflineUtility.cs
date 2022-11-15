@@ -68,7 +68,7 @@ public class OfflineUtility : MonoBehaviour {
     void SpawnCharacter() {
         offlineEntity = EntityManager.SpawnPlayer(new CharacterData() {
             Sex = 1,
-            Job = 3,
+            Job = 12,
             Name = "Player",
             GID = 20001,
             Weapon = 1,
@@ -78,7 +78,7 @@ public class OfflineUtility : MonoBehaviour {
             HP = 100,
             MaxSP = 50,
             SP = 50,
-            BodyPalette = 1,
+            BodyPalette = 2,
         });
         offlineEntity.transform.position = new Vector3(150, 16, 150);
         Session.StartSession(new Session(offlineEntity, 0));

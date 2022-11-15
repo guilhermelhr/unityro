@@ -63,12 +63,13 @@ public class EntityManager : MonoBehaviour {
         entityCache.Remove(AID);
     }
 
-    public async Task<Entity> SpawnItem(ItemSpawnInfo itemSpawnInfo) {
+    public Entity SpawnItem(ItemSpawnInfo itemSpawnInfo) {
 
         Item item = DBManager.GetItem(itemSpawnInfo.AID);
         string itemPath = DBManager.GetItemPath(itemSpawnInfo.AID, itemSpawnInfo.IsIdentified);
 
-        SpriteData spriteData = await Addressables.LoadAssetAsync<SpriteData>($"{itemPath}.asset".SanitizeForAddressables()).Task;
+        SpriteData spriteData = Addressables.LoadAssetAsync<SpriteData>($"{itemPath}.asset".SanitizeForAddressables()).WaitForCompletion();
+        Texture2D atlas = Addressables.LoadAssetAsync<Texture2D>($"{itemPath}.png".SanitizeForAddressables()).WaitForCompletion();
 
         var itemGO = new GameObject(item.identifiedDisplayName);
         itemGO.layer = LayerMask.NameToLayer("Items");
@@ -98,7 +99,7 @@ public class EntityManager : MonoBehaviour {
         bodyViewer.Entity = entity;
         bodyViewer.HeadDirection = 0;
 
-        entity.Init(spriteData);
+        entity.Init(spriteData, atlas);
         entity.AID = (uint) itemSpawnInfo.mapID;
         entityCache.Add(entity.AID, entity);
         entity.SetReady(true);

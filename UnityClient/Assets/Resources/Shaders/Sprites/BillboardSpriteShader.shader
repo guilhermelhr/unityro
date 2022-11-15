@@ -3,7 +3,9 @@ Shader "UnityRO/BillboardSpriteShader"
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
+        _PaletteTex("Texture", 2D) = "white" {}
         _Alpha("Alpha", Range(0.0, 1.0)) = 1.0
+        [ShowAsVector2] _uTextSize("Texture Size", Vector) = (0,0,0,0)
     }
 
     SubShader
@@ -19,6 +21,7 @@ Shader "UnityRO/BillboardSpriteShader"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fog
+            #pragma enable_d3d11_debug_symbols
 
             #include "UnityCG.cginc"
 
@@ -37,6 +40,8 @@ Shader "UnityRO/BillboardSpriteShader"
             };
 
             sampler2D _MainTex;
+            sampler2D _PaletteTex;
+            float2 uTextSize;
             float _Alpha;
             float4 _MainTex_ST;
 
@@ -46,6 +51,28 @@ Shader "UnityRO/BillboardSpriteShader"
                 denom = max(denom, 0.000001);
                 float3 diff = planePos - rayPos;
                 return dot(diff, planeNormal) / denom;
+            }
+
+            fixed4 bilinearSample(sampler2D indexT, sampler2D LUT, float2 uv) {
+                float2 TextInterval = 1.0 / uTextSize;
+
+                float tlLUT = tex2D(indexT, uv).x;
+                float trLUT = tex2D(indexT, uv + float2(TextInterval.x, 0.0)).x;
+                float blLUT = tex2D(indexT, uv + float2(0.0, TextInterval.y)).x;
+                float brLUT = tex2D(indexT, uv + TextInterval).x;
+
+                float4 transparent = float4(0.5, 0.5, 0.5, 0.0);
+
+                float4 tl = tlLUT == 0.0 ? transparent : float4(tex2D(LUT, float2(tlLUT, 1.0)).rgb, 1.0);
+                float4 tr = trLUT == 0.0 ? transparent : float4(tex2D(LUT, float2(trLUT, 1.0)).rgb, 1.0);
+                float4 bl = blLUT == 0.0 ? transparent : float4(tex2D(LUT, float2(blLUT, 1.0)).rgb, 1.0);
+                float4 br = brLUT == 0.0 ? transparent : float4(tex2D(LUT, float2(brLUT, 1.0)).rgb, 1.0);
+
+                float2 f = frac(uv.xy * uTextSize);
+                float4 tA = lerp(tl, tr, f.x);
+                float4 tB = lerp(bl, br, f.x);
+
+                return lerp(tA, tB, f.y);
             }
 
             v2f vert(appdata v)
@@ -86,13 +113,18 @@ Shader "UnityRO/BillboardSpriteShader"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.uv);
+                fixed4 tex;
+                tex = bilinearSample(_MainTex, _PaletteTex, i.uv);
 
-                col.a *= _Alpha;
+                if (tex.a == 0.0) {
+                    discard;
+                }
 
-                UNITY_APPLY_FOG(i.fogCoord, col);
+                tex.a *= _Alpha;
 
-                return col;
+                UNITY_APPLY_FOG(i.fogCoord, tex);
+
+                return tex;
             }
             ENDCG
         }
