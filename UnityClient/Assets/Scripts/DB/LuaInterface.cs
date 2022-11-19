@@ -1,5 +1,4 @@
 ﻿using MoonSharp.Interpreter;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -15,28 +14,29 @@ public class LuaInterface {
         return Environment.Globals[name] as Table;
     }
 
-    private async void InitTables() {
-        await LoadSkillInfoZ();
-        await LoadJobInfo();
-        await LoadAccessoryInfo();
+    private void InitTables() {
+        LoadSkillInfoZ();
+        LoadJobInfo();
+        LoadAccessoryInfo();
 
-        await ItemTable.LoadItemDb();
+        ItemTable.LoadItemDb();
         SkillTable.LoadSkillData();
+        JobItentityTable.LoadTable();
     }
 
-    private async Task LoadSkillInfoZ() {
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/jobinheritlist.lub.txt"));
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/skillid.lub.txt"));
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/skilldescript.lub.txt"));
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/skillinfolist.lub.txt"));
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/skillinfo_f.lub.txt"));
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/skillinfoz/skilltreeview.lub.txt"));
+    private void LoadSkillInfoZ() {
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/skillinfoz/jobinheritlist.lub.txt"));
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/skillinfoz/skillid.lub.txt"));
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/skillinfoz/skilldescript.lub.txt"));
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/skillinfoz/skillinfolist.lub.txt"));
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/skillinfoz/skillinfo_f.lub.txt"));
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/skillinfoz/skilltreeview.lub.txt"));
     }
 
-    private async Task LoadJobInfo() {
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/jobidentity.lub.txt"));
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/npcidentity.lub.txt"));
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/jobname.lub.txt"));
+    private void LoadJobInfo() {
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/datainfo/jobidentity.lub.txt"));
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/datainfo/npcidentity.lub.txt"));
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/datainfo/jobname.lub.txt"));
         //environment.DoStream(Addressables.LoadAssetAsync<TextAsset>("data/luafiles514/lua files/datainfo/pcjobnamegender_f.lub"));
 
         /**
@@ -46,15 +46,15 @@ public class LuaInterface {
         var JTtbl = Environment.Globals["JTtbl"] as Table;
         Environment.Globals["pcJobTbl2"] = JTtbl;
 
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/pcjobnamegender.lub.txt"));
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/datainfo/pcjobnamegender.lub.txt"));
     }
 
-    private async Task LoadAccessoryInfo() {
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/accessoryid.lub.txt"));
-        Environment.DoString(await LoadTable("lua/data/luafiles514/lua files/datainfo/accname.lub.txt"));
+    private void LoadAccessoryInfo() {
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/datainfo/accessoryid.lub.txt"));
+        Environment.DoString(LoadTable("lua/data/luafiles514/lua files/datainfo/accname.lub.txt"));
     }
 
-    private async Task<string> LoadTable(string key) {
-        return (await Addressables.LoadAssetAsync<TextAsset>(key).Task).text;
+    private string LoadTable(string key) {
+        return Addressables.LoadAssetAsync<TextAsset>(key).WaitForCompletion().ToString();
     }
 }

@@ -56,7 +56,7 @@ public class EntityControl : MonoBehaviour {
             return;
         }
 
-        hit.collider.gameObject.TryGetComponent<EntityViewer>(out var target);
+        hit.collider.gameObject.TryGetComponent<SpriteEntityViewer>(out var target);
 
         if (target != null) {
             if (CurrentPendingAction is PendingAction.None) {

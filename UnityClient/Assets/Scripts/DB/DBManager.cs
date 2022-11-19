@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
 using ROIO;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -10,19 +11,19 @@ public class DBManager {
 
     public const string INTERFACE_PATH = "data/texture/À¯ÀúÀÎÅÍÆäÀÌ½º/";
 
-    private static Dictionary<int, string> monsterPathTable = MonsterTable.Table;
+    private static string[] MESH_EXTENSIONS = new string[] { ".gr2", ".prefab" };
     private static string[] SexTable = new string[] { "¿©", "³²" };
     private static JObject WeaponActions;
     private static JObject WeaponJobTable;
     private static JObject ClassTable;
 
-    public async static Task Init() {
+    public static void Init() {
         new LuaInterface();
         Tables.Init();
 
-        var WeaponActionsText = await Addressables.LoadAssetAsync<TextAsset>("WeaponActions").Task;
-        var WeaponJobTableText = await Addressables.LoadAssetAsync<TextAsset>("WeaponJobTable").Task;
-        var ClassTableText = await Addressables.LoadAssetAsync<TextAsset>("ClassTable").Task;
+        var WeaponActionsText = Addressables.LoadAssetAsync<TextAsset>("WeaponActions").WaitForCompletion();
+        var WeaponJobTableText = Addressables.LoadAssetAsync<TextAsset>("WeaponJobTable").WaitForCompletion();
+        var ClassTableText = Addressables.LoadAssetAsync<TextAsset>("ClassTable").WaitForCompletion();
 
         WeaponActions = JObject.Parse(Encoding.UTF8.GetString(WeaponActionsText.bytes));
         WeaponJobTable = JObject.Parse(Encoding.UTF8.GetString(WeaponJobTableText.bytes));
@@ -131,7 +132,7 @@ public class DBManager {
 
     public static string GetBodyPath(int job, int sex) {
         var isPC = ClassTable.TryGetValue(job.ToString(), out var jobPath);
-        var isMonster = MonsterPath.TryGetValue(job, out string monsterPath);
+        var isMonster = JobIdentityPath.TryGetValue(job, out string monsterPath);
         var sexPath = SexTable[sex];
 
         // PC
@@ -150,12 +151,12 @@ public class DBManager {
 
         // NPC
         if (job < 1000) {
-            return "data/sprite/npc/" + (monsterPath ?? MonsterPath[46]).ToLower();
+            return "data/sprite/npc/" + (monsterPath ?? JobIdentityPath[46]).ToLower();
         }
 
         // Monsters
         if (job < 4000) {
-            return "data/sprite/¸ó½ºÅÍ/" + (monsterPath ?? MonsterPath[1001]).ToLower();
+            return "data/sprite/¸ó½ºÅÍ/" + (monsterPath ?? JobIdentityPath[1001]).ToLower();
         }
 
         // PC
@@ -164,7 +165,7 @@ public class DBManager {
         }
 
         // Homunculus
-        return "data/sprite/homun/" + (monsterPath ?? MonsterPath[1001]).ToLower();
+        return "data/sprite/homun/" + (monsterPath ?? JobIdentityPath[1001]).ToLower();
 
         // TODO: add support for mercenary
     }
@@ -220,7 +221,7 @@ public class DBManager {
         return $"data/sprite/¾Ç¼¼»ç¸®/{SexTable[sex]}/{SexTable[sex]}{hatPath}";
     }
 
-    public static Dictionary<int, string> MonsterPath => monsterPathTable;
+    public static Dictionary<int, string> JobIdentityPath => JobItentityTable.Table;
 
     public static Dictionary<int, Item> ItemDB => ItemTable.Items;
 
@@ -228,5 +229,20 @@ public class DBManager {
 
     private static string GetBaseClass(int job) {
         return (WeaponJobTable[$"{job}"] ?? WeaponJobTable["0"]).ToObject<string>();
+    }
+
+    public static GameEntityViewerType GetEntityViewerType(short job) {
+        var fallback = GameEntityViewerType.SPRITE;
+        var found = JobIdentityPath.TryGetValue(job, out string name);
+
+        if (found) {
+            fallback = IsPathMesh(name) ? GameEntityViewerType.MESH : GameEntityViewerType.SPRITE;
+        }
+
+        return fallback;
+    }
+
+    public static bool IsPathMesh(string path) {
+        return MESH_EXTENSIONS.Contains(Path.GetExtension(path));
     }
 }

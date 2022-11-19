@@ -15,11 +15,12 @@ public class Entity : MonoBehaviour, INetworkEntity {
     private AudioSource AudioSource;
 
     public FramePaceAlgorithm CurrentFramePaceAlgorithm = FramePaceAlgorithm.UnityRO;
+    public EntityType Type = EntityType.UNKNOWN;
+    public GameEntityViewerType EntityViewerType = GameEntityViewerType.SPRITE;
 
     public Action OnParameterUpdated;
     public Action AfterMoveAction;
-    public EntityType Type = EntityType.UNKNOWN;
-    public EntityViewer EntityViewer;
+    public GameEntityViewer EntityViewer;
     public Direction Direction = 0;
     public SortingGroup SortingGroup;
     public float ShadowSize;
@@ -86,7 +87,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             Canvas?.HideEntityName();
             return;
         }
-        entityHit.collider.gameObject.TryGetComponent<EntityViewer>(out var target);
+        entityHit.collider.gameObject.TryGetComponent<SpriteEntityViewer>(out var target);
 
         if (didHitAnyEntity && target != null && target.Entity == this) {
             Canvas?.ShowEntityName();
@@ -157,10 +158,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
             case EntitySpawnData.EntitySpawnState.Stand:
                 break;
             case EntitySpawnData.EntitySpawnState.Sit:
-                ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Sit });
+                ChangeMotion(new MotionRequest { Motion = SpriteMotion.Sit });
                 break;
             case EntitySpawnData.EntitySpawnState.Dead:
-                ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Dead });
+                ChangeMotion(new MotionRequest { Motion = SpriteMotion.Dead });
                 break;
             default:
                 break;
@@ -253,6 +254,27 @@ public class Entity : MonoBehaviour, INetworkEntity {
             Destroy(EntityViewer.gameObject);
         }
 
+        if (EntityViewerType == GameEntityViewerType.SPRITE) {
+            InitSpriteViewer(data, rendererLayer, isFromUi);
+        } else if (EntityViewerType == GameEntityViewerType.MESH) {
+            InitMeshViewer(data, rendererLayer, isFromUi);
+        }
+    }
+
+    private void InitMeshViewer(EntityEquipInfo data, int rendererLayer, bool isFromUi = false) {
+        var body = new GameObject("Body");
+        body.layer = rendererLayer;
+        body.transform.SetParent(gameObject.transform, false);
+        body.transform.localPosition = Vector3.zero;
+
+        var bodyViewer = body.AddComponent<MeshEntityViewer>();
+        bodyViewer.ViewerType = ViewerType.MESH;
+        bodyViewer.Entity = this;
+
+        EntityViewer = bodyViewer;
+    }
+
+    private void InitSpriteViewer(EntityEquipInfo data, int rendererLayer, bool isFromUi = false) {
         var body = new GameObject("Body");
         body.layer = rendererLayer;
         body.transform.SetParent(gameObject.transform, false);
@@ -260,7 +282,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         SortingGroup = body.AddComponent<SortingGroup>();
         SortingGroup.sortingOrder = 2;
 
-        var bodyViewer = body.AddComponent<EntityViewer>();
+        var bodyViewer = body.AddComponent<SpriteEntityViewer>();
         bodyViewer.ViewerType = ViewerType.BODY;
         bodyViewer.Entity = this;
         bodyViewer.HeadDirection = 0;
@@ -270,7 +292,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         // Add more options such as sex etc
 
         if (Type == EntityType.WARP) {
-            body.transform.localPosition = new Vector3(0.5f, 0.4f, 0.5f);
+            body.transform.localPosition = new Vector3(0.5f, 0f, 0.5f);
             var warp = body.AddComponent<MapWarpEffect>();
             warp.StartWarp(body);
             return;
@@ -306,12 +328,12 @@ public class Entity : MonoBehaviour, INetworkEntity {
         }
     }
 
-    private void InitHead(int rendererLayer, EntityViewer bodyViewer) {
+    private void InitHead(int rendererLayer, SpriteEntityViewer bodyViewer) {
         var head = new GameObject("Head");
         head.layer = rendererLayer;
         head.transform.SetParent(bodyViewer.transform, false);
         head.transform.localPosition = Vector3.zero;
-        var headViewer = head.AddComponent<EntityViewer>();
+        var headViewer = head.AddComponent<SpriteEntityViewer>();
         var sortingGroup = head.AddComponent<SortingGroup>();
         sortingGroup.sortingOrder = 1;
 
@@ -323,7 +345,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     private void MaybeInitLayer(
         int rendererLayer,
-        EntityViewer bodyViewer,
+        SpriteEntityViewer bodyViewer,
         int viewId,
         ViewerType viewerType,
         int spriteOrder = 2
@@ -335,7 +357,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
             layerObject.transform.SetParent(bodyViewer.transform, false);
             layerObject.transform.localPosition = Vector3.zero;
 
-            var layerViewer = layerObject.AddComponent<EntityViewer>();
+            var layerViewer = layerObject.AddComponent<SpriteEntityViewer>();
             var sortingGroup = layerObject.AddComponent<SortingGroup>();
             sortingGroup.sortingOrder = spriteOrder;
 
@@ -365,7 +387,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
                 break;
             case VanishType.DIED:
                 var isPC = Type == EntityType.PC;
-                ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Dead });
+                ChangeMotion(new MotionRequest { Motion = SpriteMotion.Dead });
                 if (!isPC) {
                     StartCoroutine(DestroyAfterSecondsWithFade());
                 }
@@ -405,7 +427,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
         EntityViewer.Init(reloadSprites: true);
     }
 
-    public void ChangeMotion(EntityViewer.MotionRequest motion, EntityViewer.MotionRequest? nextMotion = null) {
+    public void ChangeMotion(MotionRequest motion, MotionRequest? nextMotion = null) {
         EntityViewer.ChangeMotion(motion, nextMotion);
     }
 
@@ -447,7 +469,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public void CastSkill(float delayTime, uint property) {
         PlayAudio("data/wav/effect/ef_beginspell.wav");
         CastingEffect.StartCasting(delayTime, "data/texture/effect/ring_yellow.png", gameObject);
-        ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Casting, delay = 0 });
+        ChangeMotion(new MotionRequest { Motion = SpriteMotion.Casting, delay = 0 });
     }
 
     public void PlayAudio(string path) {
@@ -481,11 +503,11 @@ public class Entity : MonoBehaviour, INetworkEntity {
                 }
 
                 srcEntity.ChangeMotion(
-                    new EntityViewer.MotionRequest {
+                    new MotionRequest {
                         Motion = SpriteMotion.Attack2,
                         delay = 0
                     },
-                    new EntityViewer.MotionRequest {
+                    new MotionRequest {
                         Motion = SpriteMotion.Idle,
                         delay = 0
                     }
@@ -531,8 +553,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
         if (isAlive) {
             dstEntity.ChangeMotion(
-                new EntityViewer.MotionRequest { Motion = SpriteMotion.Hit, delay = 0 },
-                new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = 0 }
+                new MotionRequest { Motion = SpriteMotion.Hit, delay = 0 },
+                new MotionRequest { Motion = SpriteMotion.Standby, delay = 0 }
             );
         }
     }
@@ -722,15 +744,15 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     private void OnEntityStand(Entity srcEntity) {
-        srcEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
+        srcEntity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
     }
 
     private void OnEntitySit(Entity srcEntity) {
-        srcEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Sit });
+        srcEntity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Sit });
     }
 
     private void OnEntityPickup(Entity srcEntity, Entity dstEntity) {
-        srcEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.PickUp }, new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
+        srcEntity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.PickUp }, new MotionRequest { Motion = SpriteMotion.Idle });
         if (dstEntity) {
             srcEntity.LookTo(dstEntity.transform.position);
         }
@@ -745,8 +767,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
                 pkt.action != ActionRequestType.ATTACK_MULTIPLE_NOMOTION &&
                 pkt.action != ActionRequestType.ATTACK_NOMOTION) {
                 dstEntity.ChangeMotion(
-                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Hit, delay = GameManager.Tick + pkt.sourceSpeed },
-                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = GameManager.Tick + pkt.sourceSpeed * 2 }
+                    new MotionRequest { Motion = SpriteMotion.Hit, delay = GameManager.Tick + pkt.sourceSpeed },
+                    new MotionRequest { Motion = SpriteMotion.Standby, delay = GameManager.Tick + pkt.sourceSpeed * 2 }
                     );
             }
 
@@ -790,8 +812,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
         srcEntity.SetAttackSpeed(pkt.sourceSpeed);
         srcEntity.ChangeMotion(
-            new EntityViewer.MotionRequest { Motion = SpriteMotion.Attack },
-            new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby, delay = GameManager.Tick + pkt.sourceSpeed }
+            new MotionRequest { Motion = SpriteMotion.Attack },
+            new MotionRequest { Motion = SpriteMotion.Standby, delay = GameManager.Tick + pkt.sourceSpeed }
         );
         srcEntity.SetAttackSpeed(pkt.sourceSpeed);
     }
@@ -866,11 +888,13 @@ public class Entity : MonoBehaviour, INetworkEntity {
             return;
         }
 
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Weapon, ViewerType.WEAPON);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.Shield, ViewerType.SHIELD);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadTop, ViewerType.HEAD_TOP);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadMid, ViewerType.HEAD_MID);
-        MaybeInitLayer(gameObject.layer, EntityViewer, EquipInfo.HeadBottom, ViewerType.HEAD_BOTTOM);
+        if (EntityViewer is SpriteEntityViewer SpriteViewer) {
+            MaybeInitLayer(gameObject.layer, SpriteViewer, EquipInfo.Weapon, ViewerType.WEAPON);
+            MaybeInitLayer(gameObject.layer, SpriteViewer, EquipInfo.Shield, ViewerType.SHIELD);
+            MaybeInitLayer(gameObject.layer, SpriteViewer, EquipInfo.HeadTop, ViewerType.HEAD_TOP);
+            MaybeInitLayer(gameObject.layer, SpriteViewer, EquipInfo.HeadMid, ViewerType.HEAD_MID);
+            MaybeInitLayer(gameObject.layer, SpriteViewer, EquipInfo.HeadBottom, ViewerType.HEAD_BOTTOM);
+        }
         EntityViewer.Init(reloadSprites: true);
     }
 

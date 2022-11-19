@@ -17,7 +17,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.XR;
-using static EntityViewer;
+using static SpriteEntityViewer;
 using static ROIO.Models.FileTypes.RSW;
 
 [InitializeOnLoad]

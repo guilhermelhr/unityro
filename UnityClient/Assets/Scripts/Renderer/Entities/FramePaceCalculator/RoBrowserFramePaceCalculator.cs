@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityRO.GameCamera;
-using static EntityViewer;
+using static SpriteEntityViewer;
 
 internal class RoBrowserFramePaceCalculator : MonoBehaviour, IFramePaceCalculator {
 

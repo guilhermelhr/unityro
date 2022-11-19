@@ -83,10 +83,10 @@ public class GameManager : MonoBehaviour {
         Init();
     }
 
-    private async Task Init() {
+    private void Init() {
         InitManagers();
 
-        await DBManager.Init();
+        DBManager.Init();
 
         MaybeInitOfflineUtils();
 
