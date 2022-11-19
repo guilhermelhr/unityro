@@ -130,11 +130,6 @@ public class DBManager {
     }
 
     public static string GetBodyPath(int job, int sex) {
-        // Dirty hack to workaround guild flags
-        if (job == 722) {
-            job = 973;
-        }
-
         var isPC = ClassTable.TryGetValue(job.ToString(), out var jobPath);
         var isMonster = MonsterPath.TryGetValue(job, out string monsterPath);
         var sexPath = SexTable[sex];
@@ -167,7 +162,6 @@ public class DBManager {
         if (job < 6000) {
             return $"data/sprite/ÀÎ°£Á·/¸öÅë/{sexPath}/{jobPath}_{sexPath}";
         }
-
 
         // Homunculus
         return "data/sprite/homun/" + (monsterPath ?? MonsterPath[1001]).ToLower();

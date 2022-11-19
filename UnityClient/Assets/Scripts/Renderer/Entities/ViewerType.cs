@@ -8,5 +8,6 @@
     HEAD_TOP,
     HEAD_MID,
     HEAD_BOTTOM,
-    ROBE
+    ROBE,
+    MESH
 }

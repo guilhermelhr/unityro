@@ -1,6 +1,4 @@
 ﻿using Assets.Scripts.Renderer.Sprite;
-using ROIO;
-using ROIO.Loaders;
 using ROIO.Models.FileTypes;
 using System;
 using System.Collections;
@@ -40,6 +38,7 @@ public class EntityViewer : MonoBehaviour {
     private Texture2D PaletteTexture;
 
     private IFramePaceCalculator FramePaceCalculator;
+    private GameObject Mesh3D;
 
     private bool IsReady = false;
 
@@ -144,40 +143,24 @@ public class EntityViewer : MonoBehaviour {
                 return;
             }
 
-            try {
-                var spriteData = Addressables.LoadAssetAsync<SpriteData>(path + ".asset").WaitForCompletion();
-                var atlas = Addressables.LoadAssetAsync<Texture2D>(path + ".png").WaitForCompletion();
+            if (Path.GetExtension(path) == ".gr2") {
+                ViewerType = ViewerType.MESH;
+                Destroy(gameObject.GetComponent<Billboard>());
+                var entityPosition = Entity.gameObject.transform.position;
+                var position = transform.position;
+                entityPosition.y = 0f;
+                Entity.gameObject.transform.position = entityPosition;
 
-                Sprites = spriteData.GetSprites(atlas);
-                CurrentACT = spriteData.act;
-
-                FramePaceCalculator.Init(Entity, ViewerType, CurrentACT);
-
-                if (SpriteMaterial == null) {
-                    SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
+                position.y = 0f;
+                transform.position = position;
+                transform.rotation = Quaternion.identity;
+                var meshPath = $"data/model/3dmodel/{Path.GetFileNameWithoutExtension(path)}.prefab";
+                var model = Addressables.LoadAssetAsync<GameObject>(meshPath).WaitForCompletion();
+                if (model != null) {
+                    Mesh3D = Instantiate(model, transform);
                 }
-
-                MeshRenderer.material = SpriteMaterial;
-                MeshRenderer.material.mainTexture = atlas;
-                MeshRenderer.material.renderQueue -= 2;
-
-                if (palettePath.Length == 0) {
-                    palettePath = path + "_pal";
-                }
-
-                var palette = Addressables.LoadAssetAsync<Texture2D>(palettePath + ".png").WaitForCompletion();
-                if (palette != null) {
-                    MeshRenderer.material.SetTexture("_PaletteTex", palette);
-                } else {
-                    // selected palette doesn't exist, fallback to original
-                    palettePath = path + "_pal";
-                    palette = Addressables.LoadAssetAsync<Texture2D>(palettePath + ".png").WaitForCompletion();
-                    MeshRenderer.material.SetTexture("_PaletteTex", palette);
-                }
-            } catch (Exception e) {
-                Debug.LogError($"Could not load sprites for: {path}");
-                Debug.LogException(e);
-                CurrentACT = null;
+            } else {
+                InitSpriteViewerType(path, palettePath);
             }
         }
 
@@ -187,15 +170,50 @@ public class EntityViewer : MonoBehaviour {
         }
     }
 
+    private void InitSpriteViewerType(string path, string palettePath) {
+        try {
+            var spriteData = Addressables.LoadAssetAsync<SpriteData>(path + ".asset").WaitForCompletion();
+            var atlas = Addressables.LoadAssetAsync<Texture2D>(path + ".png").WaitForCompletion();
+
+            Sprites = spriteData.GetSprites(atlas);
+            CurrentACT = spriteData.act;
+
+            FramePaceCalculator.Init(Entity, ViewerType, CurrentACT);
+
+            if (SpriteMaterial == null) {
+                SpriteMaterial = Resources.Load("Materials/Sprites/SpriteMaterial") as Material;
+            }
+
+            MeshRenderer.material = SpriteMaterial;
+            MeshRenderer.material.mainTexture = atlas;
+            MeshRenderer.material.renderQueue -= 2;
+            MeshRenderer.material.SetVector("_uTextSize", new Vector2(atlas.width, atlas.height));
+
+            if (palettePath.Length == 0) {
+                palettePath = path + "_pal";
+            }
+
+            var palette = Addressables.LoadAssetAsync<Texture2D>(palettePath + ".png").WaitForCompletion();
+            if (palette != null) {
+                MeshRenderer.material.SetTexture("_PaletteTex", palette);
+            } else {
+                // selected palette doesn't exist, fallback to original
+                palettePath = path + "_pal";
+                palette = Addressables.LoadAssetAsync<Texture2D>(palettePath + ".png").WaitForCompletion();
+                MeshRenderer.material.SetTexture("_PaletteTex", palette);
+            }
+        } catch (Exception e) {
+            Debug.LogError($"Could not load sprites for: {path}");
+            Debug.LogException(e);
+            CurrentACT = null;
+        }
+    }
+
     private void InitRenderers() {
         MeshCollider = gameObject.GetOrAddComponent<MeshCollider>();
         MeshFilter = gameObject.GetOrAddComponent<MeshFilter>();
         MeshRenderer = gameObject.GetOrAddComponent<MeshRenderer>();
         SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
-
-        MeshRenderer.receiveShadows = false;
-        MeshRenderer.lightProbeUsage = LightProbeUsage.Off;
-        MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
     }
 
     void FixedUpdate() {
@@ -206,20 +224,24 @@ public class EntityViewer : MonoBehaviour {
             ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
         }
 
-        if (CheckForEntityViewsUpdates()) {
-            Init(reloadSprites: true);
-            return;
+        if (ViewerType == ViewerType.MESH) {
+
+        } else {
+            if (CheckForEntityViewsUpdates()) {
+                Init(reloadSprites: true);
+                return;
+            }
+
+            ACT.Frame frame = UpdateFrame();
+
+            if (CurrentAction == null) {
+                return;
+            }
+
+            UpdateMesh(frame);
+            PlaySound(frame);
+            UpdateAnchorPoints();
         }
-
-        ACT.Frame frame = UpdateFrame();
-
-        if (CurrentAction == null) {
-            return;
-        }
-
-        UpdateMesh(frame);
-        PlaySound(frame);
-        UpdateAnchorPoints();
     }
 
     private ACT.Frame UpdateFrame() {
@@ -296,9 +318,6 @@ public class EntityViewer : MonoBehaviour {
         MeshFilter.sharedMesh = null;
         MeshFilter.sharedMesh = rendererMesh;
         MeshCollider.sharedMesh = colliderMesh;
-        if (frame.layers.Length > 0) {
-            MeshRenderer.material.SetVector("_uTextSize", new Vector2(frame.layers[0].width, frame.layers[0].height));
-        }
     }
 
     public void ChangeMotion(MotionRequest motion, MotionRequest? nextMotion = null) {
