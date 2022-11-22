@@ -158,7 +158,6 @@ public class SpriteEntityViewer : GameEntityViewer {
                 MeshRenderer.material = SpriteMaterial;
                 MeshRenderer.material.mainTexture = atlas;
                 MeshRenderer.material.renderQueue -= 2;
-                MeshRenderer.material.SetVector("_uTextSize", new Vector2(atlas.width, atlas.height));
 
                 if (palettePath.Length == 0) {
                     palettePath = path + "_pal";

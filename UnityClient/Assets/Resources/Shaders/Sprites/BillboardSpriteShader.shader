@@ -5,7 +5,6 @@ Shader "UnityRO/BillboardSpriteShader"
         _MainTex("Texture", 2D) = "white" {}
         _PaletteTex("Texture", 2D) = "white" {}
         _Alpha("Alpha", Range(0.0, 1.0)) = 1.0
-        _uTextSize("Texture Size", Vector) = (0,0,0,0)
     }
 
         SubShader
@@ -41,7 +40,7 @@ Shader "UnityRO/BillboardSpriteShader"
                 sampler2D _MainTex;
                 sampler2D _PaletteTex;
 
-                float2 _uTextSize;
+                float4 _MainTex_TexelSize;
                 float _Alpha;
 
                 float rayPlaneIntersection(float3 rayDir, float3 rayPos, float3 planeNormal, float3 planePos)
@@ -52,8 +51,8 @@ Shader "UnityRO/BillboardSpriteShader"
                     return dot(diff, planeNormal) / denom;
                 }
 
-                fixed4 bilinearSample(sampler2D indexT, sampler2D LUT, float2 uv) {
-                    float2 TextInterval = 1.0 / _uTextSize.xy;
+                fixed4 bilinearSample(sampler2D indexT, sampler2D LUT, float2 uv, float4 indexT_TexelSize) {
+                    float2 TextInterval = 1.0 / indexT_TexelSize.zw;
 
                     float tlLUT = tex2D(indexT, uv).x;
                     float trLUT = tex2D(indexT, uv + float2(TextInterval.x, 0.0)).x;
@@ -67,7 +66,7 @@ Shader "UnityRO/BillboardSpriteShader"
                     float4 bl = blLUT == 0.0 ? transparent : float4(tex2D(LUT, float2(blLUT, 1.0)).rgb, 1.0);
                     float4 br = brLUT == 0.0 ? transparent : float4(tex2D(LUT, float2(brLUT, 1.0)).rgb, 1.0);
 
-                    float2 f = frac(uv.xy * _uTextSize.xy);
+                    float2 f = frac(uv.xy * indexT_TexelSize.zw);
                     float4 tA = lerp(tl, tr, f.x);
                     float4 tB = lerp(bl, br, f.x);
 
@@ -112,7 +111,7 @@ Shader "UnityRO/BillboardSpriteShader"
 
                 fixed4 frag(v2f i) : SV_Target
                 {
-                    fixed4 tex = bilinearSample(_MainTex, _PaletteTex, i.uv);
+                    fixed4 tex = bilinearSample(_MainTex, _PaletteTex, i.uv, _MainTex_TexelSize);
 
                     if (tex.a == 0.0) {
                         discard;
