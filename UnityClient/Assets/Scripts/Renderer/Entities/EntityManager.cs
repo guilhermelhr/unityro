@@ -89,7 +89,7 @@ public class EntityManager : MonoBehaviour {
             animator.runtimeAnimatorController = Instantiate(Resources.Load("Animations/ItemDropAnimator")) as RuntimeAnimatorController;
         }
 
-        var bodyViewer = body.AddComponent<EntityViewer>();
+        var bodyViewer = body.AddComponent<SpriteEntityViewer>();
 
         entity.EntityViewer = bodyViewer;
         entity.Type = EntityType.ITEM;
@@ -115,7 +115,7 @@ public class EntityManager : MonoBehaviour {
         player.transform.localScale = Vector3.one;
 
         var entity = player.AddComponent<Entity>();
-
+        entity.EntityViewerType = DBManager.GetEntityViewerType(data.job);
         entityCache.Add(data.AID, entity);
         entity.Init(data, layer, canvas);
 
@@ -129,6 +129,7 @@ public class EntityManager : MonoBehaviour {
         npc.layer = layer;
         npc.transform.localScale = Vector3.one;
         var entity = npc.AddComponent<Entity>();
+        entity.EntityViewerType = DBManager.GetEntityViewerType(data.job);
 
         entityCache.Add(data.AID, entity);
         entity.Init(data, layer, canvas);
@@ -143,6 +144,7 @@ public class EntityManager : MonoBehaviour {
         mob.layer = layer;
         mob.transform.localScale = Vector3.one;
         var entity = mob.AddComponent<Entity>();
+        entity.EntityViewerType = DBManager.GetEntityViewerType(data.job);
 
         entityCache.Add(data.AID, entity);
         entity.Init(data, layer, canvas);
@@ -157,6 +159,7 @@ public class EntityManager : MonoBehaviour {
         player.layer = layer;
         player.transform.localScale = Vector3.one;
         var entity = player.AddComponent<Entity>();
+        entity.EntityViewerType = DBManager.GetEntityViewerType(data.Job);
         entity.Init(data, layer, canvas);
 
         var controller = player.AddComponent<EntityControl>();

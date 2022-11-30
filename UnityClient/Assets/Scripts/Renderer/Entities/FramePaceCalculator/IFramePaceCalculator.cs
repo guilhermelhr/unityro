@@ -1,5 +1,5 @@
 ﻿using ROIO.Models.FileTypes;
-using static EntityViewer;
+using static SpriteEntityViewer;
 
 internal interface IFramePaceCalculator {
     void Init(Entity entity, ViewerType viewerType, ACT currentACT);

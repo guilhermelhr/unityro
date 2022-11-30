@@ -90,7 +90,7 @@ public class EntityWalk : MonoBehaviour {
         nodes = PathFinder.GetPath(startX, startY, endX, endY).Select(node => new Vector3(node.x, (float) node.y, node.z)).ToList();
 
         if (!nodes.IsEmpty()) {
-            Entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
+            Entity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Walk });
             isWalking = true;
         }
 
@@ -98,7 +98,7 @@ public class EntityWalk : MonoBehaviour {
     }
 
     public void StopMoving() {
-        Entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
+        Entity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
         isWalking = false;
         nodes?.Clear();
     }

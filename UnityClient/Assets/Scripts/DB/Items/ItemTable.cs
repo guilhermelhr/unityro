@@ -333,11 +333,11 @@ public class ItemTable {
         { WeaponType.WEAPONTYPE_FOXTAIL_METAL, WeaponType.WEAPONTYPE_ROD }
     };
 
-    public async static Task LoadItemDb() {
+    public static void LoadItemDb() {
         Script script = new Script();
         script.Options.ScriptLoader = new CustomScriptLoader();
 
-        var itemInfoText = await Addressables.LoadAssetAsync<TextAsset>("lua/itemInfo_true.lub.txt").Task;
+        var itemInfoText = Addressables.LoadAssetAsync<TextAsset>("lua/itemInfo_true.lub.txt").WaitForCompletion();
         script.DoString(itemInfoText.text);
         Table table = (Table)script.Globals["tbl"];
 

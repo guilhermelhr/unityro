@@ -4,24 +4,24 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(EntityViewer))]
+[CustomEditor(typeof(SpriteEntityViewer))]
 public class EntityViewerEditor : Editor {
 
     public override void OnInspectorGUI() {
-        var component = (EntityViewer)target;
+        var component = (SpriteEntityViewer)target;
         base.OnInspectorGUI();
 
         if (GUILayout.Button("Attack > Standby")) {
             component.ChangeMotion(
-                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Attack },
-                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby }
+                    new MotionRequest { Motion = SpriteMotion.Attack },
+                    new MotionRequest { Motion = SpriteMotion.Standby }
                 );
         }
 
         if (GUILayout.Button("Hit > Standby")) {
             component.ChangeMotion(
-                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Hit },
-                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Standby }
+                    new MotionRequest { Motion = SpriteMotion.Hit },
+                    new MotionRequest { Motion = SpriteMotion.Standby }
                 );
         }
 
@@ -31,8 +31,8 @@ public class EntityViewerEditor : Editor {
                     component.Entity.SetAttackSpeed(380);
                 }
                 component.ChangeMotion(
-                    new EntityViewer.MotionRequest { Motion = (SpriteMotion)motion },
-                    new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle }
+                    new MotionRequest { Motion = (SpriteMotion)motion },
+                    new MotionRequest { Motion = SpriteMotion.Idle }
                 );
             }
         }

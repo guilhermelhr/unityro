@@ -109,7 +109,7 @@ public class MapController : MonoBehaviour {
     private void OnEntityResurrected(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.RESURRECTION RESURRECTION) {
             var entity = EntityManager.GetEntity(RESURRECTION.GID);
-            entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
+            entity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
             
             // If it's our main character update Escape ui
             if (entity.AID == Session.CurrentSession.AccountID) {
@@ -194,7 +194,7 @@ public class MapController : MonoBehaviour {
             var pkt = packet as ZC.NOTIFY_MOVEENTRY11;
             var entity = EntityManager.Spawn(pkt.entityData);
 
-            entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
+            entity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Walk });
             entity.StartMoving(pkt.entityData.PosDir[0], pkt.entityData.PosDir[1], pkt.entityData.PosDir[2], pkt.entityData.PosDir[3]);
         }
     }
@@ -206,14 +206,14 @@ public class MapController : MonoBehaviour {
             var entity = EntityManager.GetEntity(pkt.GID);
             if (entity == null) return;
 
-            entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
+            entity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Walk });
             entity.StartMoving(pkt.StartPosition[0], pkt.StartPosition[1], pkt.EndPosition[0], pkt.EndPosition[1]);
         } else if (packet is ZC.STOPMOVE) {
             var pkt = packet as ZC.STOPMOVE;
             var entity = EntityManager.GetEntity(pkt.AID);
             if (entity == null) return;
 
-            entity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
+            entity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Walk });
             entity.StartMoving((int)entity.transform.position.x, (int)entity.transform.position.z, pkt.PosX, pkt.PosY);
         }
     }

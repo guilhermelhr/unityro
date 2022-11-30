@@ -45,7 +45,7 @@ public class CharCreationController : MonoBehaviour {
 
     void Update() {
         if (!IsDirty) {
-            HumanSelectionEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
+            HumanSelectionEntity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Walk });
             HairToggleList[0].Toggle.isOn = true;
             SexToggleGroup.ActiveToggles().First().isOn = true;
             SetHairstyles();
@@ -57,12 +57,12 @@ public class CharCreationController : MonoBehaviour {
     public void SetRace(bool isHuman) {
         IsHumanSelected = isHuman;
         if (isHuman) {
-            DoramSelecionEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
-            HumanSelectionEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
+            DoramSelecionEntity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
+            HumanSelectionEntity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Walk });
             InitEntity(StyleEntity, sex: SelectedSex, job: 0);
         } else {
-            DoramSelecionEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Walk });
-            HumanSelectionEntity.ChangeMotion(new EntityViewer.MotionRequest { Motion = SpriteMotion.Idle });
+            DoramSelecionEntity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Walk });
+            HumanSelectionEntity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Idle });
             InitEntity(StyleEntity, sex: SelectedSex, job: 4218);
         }
 
