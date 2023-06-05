@@ -1,0 +1,21 @@
+{
+    "name": "UnityRO.core",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8da2ed8a849f0c84e8e2fbf59ed26887",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:84651a3751eca9349aac36a66bba901b",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:431aa144d157544be9fba89dc52244bb",
+        "GUID:57cbbb73bd33f464883a7c0c5e75f932"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

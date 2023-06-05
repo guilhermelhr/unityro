@@ -1,0 +1,19 @@
+{
+    "name": "UnityRO.Core.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:791ad2efab470104b91f17f0e11e2a60",
+        "GUID:8da2ed8a849f0c84e8e2fbf59ed26887"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

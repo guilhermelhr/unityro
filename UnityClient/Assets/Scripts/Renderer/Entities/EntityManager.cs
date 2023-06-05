@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
+using UnityRO.Core.GameEntity;
 using static ZC.NOTIFY_VANISH;
 
 public class EntityManager : MonoBehaviour {
@@ -19,7 +20,7 @@ public class EntityManager : MonoBehaviour {
     }
 
     public Entity Spawn(EntitySpawnData data) {
-        switch (data.objecttype) {
+        switch ((EntityType)data.objecttype) {
             case EntityType.PC:
                 entityCache.TryGetValue(data.AID, out var pc);
                 pc?.gameObject.SetActive(true);

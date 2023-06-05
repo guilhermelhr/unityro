@@ -1,0 +1,1006 @@
+--[[
+****************************************************************************
+*                                                                          *
+*   Copyright (C) 2021-2022 Neo-Mind                                       *
+*                                                                          *
+*   This file is a part of WARP project (specific to RO clients)           *
+*                                                                          *
+*   WARP is free software: you can redistribute it and/or modify           *
+*   it under the terms of the GNU General Public License as published by   *
+*   the Free Software Foundation, either version 3 of the License, or      *
+*   (at your option) any later version.                                    *
+*                                                                          *
+*   This program is distributed in the hope that it will be useful,        *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+*   GNU General Public License for more details.                           *
+*                                                                          *
+*   You should have received a copy of the GNU General Public License      *
+*   along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
+*                                                                          *
+*                                                                          *
+|**************************************************************************|
+*                                                                          *
+*   Author(s)     : Neo-Mind                                               *
+*   Created Date  : 2021-03-21                                             *
+*   Last Modified : 2022-08-23                                             *
+*                                                                          *
+****************************************************************************
+]]--
+
+--[[
+    _   ___   ___     ___  ___   ___
+ _ | | / _ \ | _ )   |_ _||   \ / __|
+| || || (_) || _ \    | | | |) |\__ \
+ \__/  \___/ |___/   |___||___/ |___/
+
+]]--
+
+PCIds =
+{
+	--IDs need to be within 0 - 44 or 4001 - 4400
+
+	-----------------
+	-- 1st Classes --
+	-----------------
+	NOVICE   = 0,
+	SWORDMAN = 1,
+	MAGICIAN = 2,
+	ARCHER   = 3,
+	ACOLYTE  = 4,
+	MERCHANT = 5,
+	THIEF    = 6,
+
+	----------------------
+	-- Baby 1st Classes --
+	----------------------
+	NOVICE_B   = 4023,
+	SWORDMAN_B = 4024,
+	MAGICIAN_B = 4025,
+	ARCHER_B   = 4026,
+	ACOLYTE_B  = 4027,
+	MERCHANT_B = 4028,
+	THIEF_B    = 4029,
+
+	------------------------------
+	-- Transcendent 1st Classes --
+	------------------------------
+	NOVICE_H   = 4001,
+	SWORDMAN_H = 4002,
+	MAGICIAN_H = 4003,
+	ARCHER_H   = 4004,
+	ACOLYTE_H  = 4005,
+	MERCHANT_H = 4006,
+	THIEF_H    = 4007,
+
+	--------------------------
+	-- Extended 1st Classes --
+	--------------------------
+	SUPERNOVICE  = 23,
+	SUPERNOVICE2 = 4190,   --Extended SuperNovice (so is it 2nd class?)
+	GUNSLINGER   = 24,
+	NINJA        = 25,
+	TAEKWON      = 4046,
+
+	-------------------------------
+	-- Baby Extended 1st Classes --
+	-------------------------------
+	SUPERNOVICE_B  = 4045,
+	SUPERNOVICE2_B = 4191,
+	GUNSLINGER_B   = 4228,
+	NINJA_B        = 4222,
+	TAEKWON_B      = 4225,
+
+	-----------------
+	-- 2nd Classes --
+	-----------------
+	KNIGHT       = 7,
+	KNIGHT_MOUNT = 13, --Peco mount for Knight
+	PRIEST       = 8,
+	WIZARD       = 9,
+	BLACKSMITH   = 10,
+	HUNTER       = 11,
+	ASSASSIN     = 12,
+
+	CRUSADER     = 14,
+	CRUS_MOUNT   = 21, --Peco mount for Crusader
+	MONK         = 15,
+	SAGE         = 16,
+	ROGUE        = 17,
+	ALCHEMIST    = 18,
+	BARD         = 19,
+	DANCER       = 20,
+
+	----------------------
+	-- Baby 2nd Classes --
+	----------------------
+	KNIGHT_B       = 4030,
+	KNIGHT_MOUNT_B = 4036, --Peco mount for Baby Knight
+	PRIEST_B       = 4031,
+	WIZARD_B       = 4032,
+	BLACKSMITH_B   = 4033,
+	HUNTER_B       = 4034,
+	ASSASSIN_B     = 4035,
+
+	CRUSADER_B     = 4037,
+	CRUS_MOUNT_B   = 4044, --Peco mount for Baby Crusader
+	MONK_B         = 4038,
+	SAGE_B         = 4039,
+	ROGUE_B        = 4040,
+	ALCHEMIST_B    = 4041,
+	BARD_B         = 4042,
+	DANCER_B       = 4043,
+
+	------------------------------
+	-- Transcendent 2nd Classes --
+	------------------------------
+	LORD_KNIGHT = 4008,
+	LORD_MOUNT  = 4014, --Peco mount for Lord Knight
+	HIGH_PRIEST = 4009,
+	HIGH_WIZARD = 4010,
+	WHITESMITH  = 4011,
+	SNIPER      = 4012,
+	ASSASSIN_X  = 4013,
+
+	PALADIN     = 4015,
+	PAL_MOUNT   = 4022, --Peco mount for Paladin
+	CHAMPION    = 4016,
+	PROFESSOR   = 4017,
+	STALKER     = 4018,
+	CREATOR     = 4019,
+	CLOWN       = 4020,
+	GYPSY       = 4021,
+
+	--------------------------
+	-- Extended 2nd Classes --
+	--------------------------
+	HYPER_NOVICE = 4307,
+	REBELLION    = 4215,
+	KAGEROU      = 4211,
+	OBORO        = 4212,
+	STAR_GLAD    = 4047,
+	STAR_GLAD_F  = 4048, --Union mode (Flying)
+	SOUL_LINKER  = 4049,
+
+	-------------------------------
+	-- Baby Extended 2nd Classes --
+	-------------------------------
+	REBELLION_B    = 4229,
+	KAGEROU_B      = 4223,
+	OBORO_B        = 4224,
+	STAR_GLAD_B    = 4226,
+	STAR_GLAD_F_B  = 4238, --Union mode (Flying)
+	SOUL_LINKER_B  = 4227,
+
+	-----------------
+	-- 3rd Classes --
+	-----------------
+	RUNE_KNIGHT    = 4054,
+	RUNE_MOUNT     = 4080, --Dragon mounts for Rune Knight
+	RUNE_MOUNT2    = 4088,
+	RUNE_MOUNT3    = 4090,
+	RUNE_MOUNT4    = 4092,
+	RUNE_MOUNT5    = 4094,
+	WARLOCK        = 4055,
+	RANGER         = 4056,
+	RANGER_MOUNT   = 4084, --Wolf mount for Ranger
+	ARCHBISHOP     = 4057,
+	MECHANIC       = 4058,
+	MADOGEAR       = 4086,
+	GUILLOTINE_X   = 4059,
+
+	ROYAL_GUARD    = 4066,
+	ROYAL_MOUNT    = 4082,  --Peco mount for Royal Guard
+	SORCERER       = 4067,
+	MINSTREL       = 4068,
+	WANDERER       = 4069,
+	SURA           = 4070,
+	GENETIC        = 4071,
+	SHADOW_CHASER  = 4072,
+
+	----------------------
+	-- Baby 3rd Classes --
+	----------------------
+	RUNE_KNIGHT_B   = 4096,
+	RUNE_MOUNT_B    = 4109, --Dragon mount for Baby Rune Knight
+	WARLOCK_B       = 4097,
+	RANGER_B        = 4098,
+	RANGER_MOUNT_B  = 4111, --Wolf mount for Baby Ranger
+	ARCHBISHOP_B    = 4099,
+	MECHANIC_B      = 4100,
+	MADOGEAR_B      = 4112,
+	GUILLOTINE_X_B  = 4101,
+
+	ROYAL_GUARD_B   = 4102,
+	ROYAL_MOUNT_B   = 4110,
+	SORCERER_B      = 4103,
+	MINSTREL_B      = 4104,
+	WANDERER_B      = 4105,
+	SURA_B          = 4106,
+	GENETIC_B       = 4107,
+	SHADOW_CHASER_B = 4108,
+
+	------------------------------
+	-- Transcendent 3rd Classes --
+	------------------------------
+	RUNE_KNIGHT_H   = 4060,
+	RUNE_MOUNT_H    = 4081, --Dragon mounts for Rune Knight (Transcendent)
+	RUNE_MOUNT2_H   = 4089,
+	RUNE_MOUNT3_H   = 4091,
+	RUNE_MOUNT4_H   = 4093,
+	RUNE_MOUNT5_H   = 4095,
+	WARLOCK_H       = 4061,
+	RANGER_H        = 4062,
+	RANGER_MOUNT_H  = 4085, --Wolf mount for Ranger (Transcendent)
+	ARCHBISHOP_H    = 4063,
+	MECHANIC_H      = 4064,
+	MADOGEAR_H      = 4087,
+	GUILLOTINE_X_H  = 4065,
+
+	ROYAL_GUARD_H   = 4073,
+	ROYAL_MOUNT_H   = 4083, --Peco mount for Royal Guard (Transcendent)
+	SORCERER_H      = 4074,
+	MINSTREL_H      = 4075,
+	WANDERER_H      = 4076,
+	SURA_H          = 4077,
+	GENETIC_H       = 4078,
+	SHADOW_CHASER_H = 4079,
+
+	--------------------------
+	-- Extended 3rd Classes --
+	--------------------------
+	NIGHT_WATCH    = 4306,
+	SHINKIRO       = 4304,
+	SHIRANUI       = 4305,
+	STAR_EMPEROR   = 4239,
+	STAR_EMPEROR_F = 4243, --Union mode (Flying)
+	SOUL_REAPER    = 4240,
+
+	-------------------------------
+	-- Baby Extended 3rd Classes --
+	-------------------------------
+	STAR_EMPEROR_B   = 4241,
+	STAR_EMPEROR_F_B = 4244, --Union mode (Flying)
+	SOUL_REAPER_B    = 4242,
+
+	-----------------
+	-- 4th Classes --
+	-----------------
+	DRAGON_KNIGHT   = 4252,
+	DRAGON_MOUNT    = 4280, --Dragon mount for Dragon Knight
+	MEISTER         = 4253,
+	MEISTER_MADO    = 4279, --Madogear for Meister
+	SHADOW_CROSS    = 4254,
+	ARCH_MAGE       = 4255,
+	CARDINAL        = 4256,
+	WINDHAWK        = 4257,
+	WINDHAWK_MOUNT  = 4278, --Wolf mount for Windhawk
+
+	IMPERIAL_GUARD  = 4258,
+	IMPERIAL_MOUNT  = 4281, --Peco mount for Imperial Guard
+	BIOLO           = 4259,
+	ABYSS_CHASER    = 4260,
+	ELEMENT_MASTER  = 4261,
+	INQUISITOR      = 4262,
+	TROUBADOUR      = 4263,
+	TROUVERE        = 4264,
+
+	--------------------------
+	-- Extended 4th Classes --
+	--------------------------
+	SKY_EMPEROR   = 4302,
+	SKY_EMPEROR_F = 4316,
+	SOUL_ASCETIC  = 4303,
+
+	--------------
+	-- Costumes --
+	--------------
+	MARRIED      = 22,
+	SANTA        = 26,
+	SUMMER       = 27,
+	HANBOK       = 28,
+	OKTOBERFEST  = 29,
+	SUMMER2      = 30,
+	-- Can go till 44
+
+	---------------------
+	-- Unused classes? --
+	---------------------
+	GANGSI      = 4050,
+	DEATHKNIGHT = 4051,
+	COLLECTOR   = 4052,
+
+	-----------------------
+	-- Doram 1st Classes --
+	-----------------------
+	SUMMONER   = 4218,
+
+	----------------------------
+	-- Baby Doram 1st Classes --
+	----------------------------
+	SUMMONER_B   = 4220,
+
+	-----------------------
+	-- Doram 2nd Classes --
+	-----------------------
+	SPIRIT_HANDLER   = 4308,
+}
+
+--[[
+ __  __   ___   _   _  _  _  _____     ___  ___   ___
+|  \/  | / _ \ | | | || \| ||_   _|   |_ _||   \ / __|
+| |\/| || (_) || |_| || .  |  | |      | | | |) |\__ \
+|_|  |_| \___/  \___/ |_|\_|  |_|     |___||___/ |___/
+
+]]--
+
+PCMounts =
+{
+	--IDs need to be within 0 - 44 or 4001 - 4400 and not already used as a job id
+
+	-----------------
+	-- 1st Classes --
+	-----------------
+	PORING_NOVICE         = 4124,
+	PECO_SWORD            = 4116,
+	FOX_MAGICIAN          = 4130,
+	OSTRICH_ARCHER        = 4122,
+	SHEEP_ACO             = 4126,
+	PIG_MERCHANT          = 4119,
+	HYENA_THIEF           = 4141,
+
+	----------------------
+	-- Baby 1st Classes --
+	----------------------
+	PORING_NOVICE_B       = 4158,
+	PECO_SWORD_B          = 4159,
+	FOX_MAGICIAN_B        = 4160,
+	OSTRICH_ARCHER_B      = 4161,
+	SHEEP_ACO_B           = 4162,
+	PIG_MERCHANT_B        = 4163,
+	HYENA_THIEF_B         = 4181,
+
+	------------------------------
+	-- Transcendent 1st Classes --
+	------------------------------
+	PORING_NOVICE_H       = 4183,
+	PECO_SWORD_H          = 4184,
+	FOX_MAGICIAN_H        = 4185,
+	OSTRICH_ARCHER_H      = 4186,
+	SHEEP_ACO_H           = 4187,
+	PIG_MERCHANT_H        = 4188,
+	HYENA_THIEF_H         = 4189,
+
+	--------------------------
+	-- Extended 1st Classes --
+	--------------------------
+	PORING_S_NOVICE       = 4128,
+	PORING_S_NOVICE2      = 4192,
+	BIKE_GUNNER           = 4115,
+	FROG_NINJA            = 4114,
+	PORING_TAEKWON        = 4155,
+
+	-------------------------------
+	-- Baby Extended 1st Classes --
+	-------------------------------
+	PORING_S_NOVICE_B     = 4172,
+	PORING_S_NOVICE2_B    = 4193,
+	BIKE_GUNNER_B         = 4236,
+	FROG_NINJA_B          = 4230,
+	PORING_TAEKWON_B      = 4233,
+
+	-----------------
+	-- 2nd Classes --
+	-----------------
+	LION_KNIGHT           = 4199,
+	SHEEP_PRIEST          = 4156,
+	FOX_WIZARD            = 4134,
+	PIG_BLACKSMITH        = 4138,
+	OSTRICH_HUNTER        = 4154,
+	HYENA_ASSASSIN        = 4145,
+
+	LION_CRUSADER         = 4203,
+	SHEEP_MONK            = 4125,
+	FOX_SAGE              = 4131,
+	HYENA_ROGUE           = 4142,
+	PIG_ALCHE             = 4137,
+	OSTRICH_BARD          = 4149,
+	OSTRICH_DANCER        = 4147,
+
+	----------------------
+	-- Baby 2nd Classes --
+	----------------------
+	LION_KNIGHT_B         = 4207,
+	SHEEP_PRIEST_B        = 4194,
+	FOX_WIZARD_B          = 4195,
+	PIG_BLACKSMITH_B      = 4196,
+	OSTRICH_HUNTER_B      = 4164,
+	HYENA_ASSASSIN_B      = 4165,
+
+	LION_CRUSADER_B       = 4210,
+	SHEEP_MONK_B          = 4166,
+	FOX_SAGE_B            = 4167,
+	HYENA_ROGUE_B         = 4168,
+	PIG_ALCHE_B           = 4169,
+	OSTRICH_BARD_B        = 4170,
+	OSTRICH_DANCER_B      = 4171,
+
+	------------------------------
+	-- Transcendent 2nd Classes --
+	------------------------------
+	LION_LORD_KNIGHT      = 4200,
+	SHEEP_HI_PRIEST       = 4157,
+	FOX_HI_WIZ            = 4136,
+	PIG_WHITESMITH        = 4118,
+	OSTRICH_SNIPER        = 4150,
+	HYENA_SIN_X           = 4146,
+
+	LION_PALADIN          = 4204,
+	SHEEP_CHAMP           = 4139,
+	FOX_PROF              = 4135,
+	HYENA_STALKER         = 4144,
+	PIG_CREATOR           = 4121,
+	OSTRICH_CLOWN         = 4153,
+	OSTRICH_GYPSY         = 4152,
+
+	--------------------------
+	-- Extended 2nd Classes --
+	--------------------------
+	PORING_H_NOVICE       = 4314,
+	BIKE_REBELLION        = 4216,
+	FROG_KAGEROU          = 4213,
+	FROG_OBORO            = 4214,
+	PORING_STAR           = 4123, --same one is used for Union mode
+	FROG_LINKER           = 4117,
+
+	-------------------------------
+	-- Baby Extended 2nd Classes --
+	-------------------------------
+	BIKE_REBELLION_B      = 4237,
+	FROG_KAGEROU_B        = 4231,
+	FROG_OBORO_B          = 4232,
+	PORING_STAR_B         = 4234, --same one is used for Union mode
+	FROG_LINKER_B         = 4235,
+
+	--------------------------------------------------
+	-- 3rd Classes (Transcendent also use the same) --
+	--------------------------------------------------
+	LION_RUNE_KNIGHT      = 4202,
+	FOX_WARLOCK           = 4133,
+	OSTRICH_RANGER        = 4198,
+	SHEEP_BISHOP          = 4129,
+	PIG_MECHANIC          = 4197,
+	HYENA_G_CROSS         = 4140,
+
+	LION_ROYAL_GUARD      = 4201,
+	FOX_SORCERER          = 4132,
+	OSTRICH_MINSTREL      = 4148,
+	OSTRICH_WANDERER      = 4151,
+	SHEEP_SURA            = 4127,
+	PIG_GENETIC           = 4120,
+	HYENA_S_CHASER        = 4143,
+
+	----------------------
+	-- Baby 3rd Classes --
+	----------------------
+	LION_RUNE_KNIGHT_B    = 4209,
+	FOX_WARLOCK_B         = 4173,
+	OSTRICH_RANGER_B      = 4206,
+	SHEEP_BISHOP_B        = 4174,
+	PIG_MECHANIC_B        = 4205,
+	HYENA_G_CROSS_B       = 4175,
+
+	LION_ROYAL_GUARD_B    = 4208,
+	FOX_SORCERER_B        = 4176,
+	OSTRICH_MINSTREL_B    = 4177,
+	OSTRICH_WANDERER_B    = 4178,
+	SHEEP_SURA_B          = 4179,
+	PIG_GENETIC_B         = 4180,
+	HYENA_S_CHASER_B      = 4182,
+
+	--------------------------
+	-- Extended 3rd Classes --
+	--------------------------
+	BIKE_NIGHT_WATCH      = 4313,
+	FROG_SHINKIRO         = 4311,
+	FROG_SHIRANUI         = 4312,
+	HAETAE_STAR_EMPEROR   = 4245, --same one is used for Union mode
+	HAETAE_SOUL_REAPER    = 4246,
+
+	-------------------------------
+	-- Baby Extended 3rd Classes --
+	-------------------------------
+	HAETAE_STAR_EMPEROR_B = 4247, --same one is used for Union mode
+	HAETAE_SOUL_REAPER_B  = 4248,
+
+	-----------------
+	-- 4th Classes --
+	-----------------
+	LION_DRAGON_KNIGHT    = 4265,
+	PIG_MEISTER           = 4266,
+	HYENA_SHADOW_CROSS    = 4267,
+	FOX_ARCH_MAGE         = 4268,
+	SHEEP_CARDINAL        = 4269,
+	OSTRICH_WINDHAWK      = 4270,
+
+	LION_IMPERIAL_GUARD   = 4271,
+	PIG_BIOLO             = 4272,
+	HYENA_ABYSS_CHASER    = 4273,
+	FOX_ELEMENT_MASTER    = 4274,
+	SHEEP_INQUISITOR      = 4275,
+	OSTRICH_TROUBADOUR    = 4276,
+	OSTRICH_TROUVERE      = 4277,
+
+	--------------------------
+	-- Extended 4th Classes --
+	--------------------------
+	HAETAE_SKY_EMPEROR    = 4309,
+	HAETAE_SOUL_ASCETIC   = 4310,
+
+	-----------------------
+	-- Doram 1st Classes --
+	-----------------------
+	SUMM_MOUNT = 4219, --Cart mount
+
+	----------------------------
+	-- Baby Doram 1st Classes --
+	----------------------------
+	SUMM_MOUNT_B = 4221, --Cart mount
+
+	-----------------------
+	-- Doram 2nd Classes --
+	-----------------------
+	SP_HANDLER_MOUNT = 4315, --Cart mount
+}
+
+--[[
+
+(¯`·¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯)
+( \                                                      / )
+ ( ) Mapping of Job Ids to corresponding Cash Mount IDs ( )
+  (/                                                    \)
+   (.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.)
+
+]]--
+
+Halter_Table =
+{
+	--Name is based on Halter Lead (the item which activates the mount)
+
+	-----------------
+	-- 1st Classes --
+	-----------------
+	[PCIds.NOVICE]   = PCMounts.PORING_NOVICE,
+	[PCIds.SWORDMAN] = PCMounts.PECO_SWORD,
+	[PCIds.MAGICIAN] = PCMounts.FOX_MAGICIAN,
+	[PCIds.ARCHER]   = PCMounts.OSTRICH_ARCHER,
+	[PCIds.ACOLYTE]  = PCMounts.SHEEP_ACO,
+	[PCIds.MERCHANT] = PCMounts.PIG_MERCHANT,
+	[PCIds.THIEF]    = PCMounts.HYENA_THIEF,
+
+	----------------------
+	-- Baby 1st Classes --
+	----------------------
+	[PCIds.NOVICE_B]   = PCMounts.PORING_NOVICE_B,
+	[PCIds.SWORDMAN_B] = PCMounts.PECO_SWORD_B,
+	[PCIds.MAGICIAN_B] = PCMounts.FOX_MAGICIAN_B,
+	[PCIds.ARCHER_B]   = PCMounts.OSTRICH_ARCHER_B,
+	[PCIds.ACOLYTE_B]  = PCMounts.SHEEP_ACO_B,
+	[PCIds.MERCHANT_B] = PCMounts.PIG_MERCHANT_B,
+	[PCIds.THIEF_B]    = PCMounts.HYENA_THIEF_B,
+
+	------------------------------
+	-- Transcendent 1st Classes --
+	------------------------------
+	[PCIds.NOVICE_H]   = PCMounts.PORING_NOVICE_H,
+	[PCIds.SWORDMAN_H] = PCMounts.PECO_SWORD_H,
+	[PCIds.MAGICIAN_H] = PCMounts.FOX_MAGICIAN_H,
+	[PCIds.ARCHER_H]   = PCMounts.OSTRICH_ARCHER_H,
+	[PCIds.ACOLYTE_H]  = PCMounts.SHEEP_ACO_H,
+	[PCIds.MERCHANT_H] = PCMounts.PIG_MERCHANT_H,
+	[PCIds.THIEF_H]    = PCMounts.HYENA_THIEF_H,
+
+	--------------------------
+	-- Extended 1st Classes --
+	--------------------------
+	[PCIds.SUPERNOVICE]  = PCMounts.PORING_S_NOVICE,
+	[PCIds.SUPERNOVICE2] = PCMounts.PORING_S_NOVICE2,
+	[PCIds.GUNSLINGER]   = PCMounts.BIKE_GUNNER,
+	[PCIds.NINJA]        = PCMounts.FROG_NINJA,
+	[PCIds.TAEKWON]      = PCMounts.PORING_TAEKWON,
+
+	-------------------------------
+	-- Baby Extended 1st Classes --
+	-------------------------------
+	[PCIds.SUPERNOVICE_B]  = PCMounts.PORING_S_NOVICE_B,
+	[PCIds.SUPERNOVICE2_B] = PCMounts.PORING_S_NOVICE2_B,
+	[PCIds.GUNSLINGER_B]   = PCMounts.BIKE_GUNNER_B,
+	[PCIds.NINJA_B]        = PCMounts.FROG_NINJA_B,
+	[PCIds.TAEKWON_B]      = PCMounts.PORING_TAEKWON_B,
+
+	-----------------
+	-- 2nd Classes --
+	-----------------
+	[PCIds.KNIGHT]       = PCMounts.LION_KNIGHT,
+	[PCIds.PRIEST]       = PCMounts.SHEEP_PRIEST,
+	[PCIds.WIZARD]       = PCMounts.FOX_WIZARD,
+	[PCIds.BLACKSMITH]   = PCMounts.PIG_BLACKSMITH,
+	[PCIds.HUNTER]       = PCMounts.OSTRICH_HUNTER,
+	[PCIds.ASSASSIN]     = PCMounts.HYENA_ASSASSIN,
+
+	[PCIds.CRUSADER]     = PCMounts.LION_CRUSADER,
+	[PCIds.MONK]         = PCMounts.SHEEP_MONK,
+	[PCIds.SAGE]         = PCMounts.FOX_SAGE,
+	[PCIds.ROGUE]        = PCMounts.HYENA_ROGUE,
+	[PCIds.ALCHEMIST]    = PCMounts.PIG_ALCHE,
+	[PCIds.BARD]         = PCMounts.OSTRICH_BARD,
+	[PCIds.DANCER]       = PCMounts.OSTRICH_DANCER,
+
+	----------------------
+	-- Baby 2nd Classes --
+	----------------------
+	[PCIds.KNIGHT_B]     = PCMounts.LION_KNIGHT_B,
+	[PCIds.PRIEST_B]     = PCMounts.SHEEP_PRIEST_B,
+	[PCIds.WIZARD_B]     = PCMounts.FOX_WIZARD_B,
+	[PCIds.BLACKSMITH_B] = PCMounts.PIG_BLACKSMITH_B,
+	[PCIds.HUNTER_B]     = PCMounts.OSTRICH_HUNTER_B,
+	[PCIds.ASSASSIN_B]   = PCMounts.HYENA_ASSASSIN_B,
+
+	[PCIds.CRUSADER_B]   = PCMounts.LION_CRUSADER_B,
+	[PCIds.MONK_B]       = PCMounts.SHEEP_MONK_B,
+	[PCIds.SAGE_B]       = PCMounts.FOX_SAGE_B,
+	[PCIds.ROGUE_B]      = PCMounts.HYENA_ROGUE_B,
+	[PCIds.ALCHEMIST_B]  = PCMounts.PIG_ALCHE_B,
+	[PCIds.BARD_B]       = PCMounts.OSTRICH_BARD_B,
+	[PCIds.DANCER_B]     = PCMounts.OSTRICH_DANCER_B,
+
+	------------------------------
+	-- Transcendent 2nd Classes --
+	------------------------------
+	[PCIds.LORD_KNIGHT]  = PCMounts.LION_LORD_KNIGHT,
+	[PCIds.HIGH_PRIEST]  = PCMounts.SHEEP_HI_PRIEST,
+	[PCIds.HIGH_WIZARD]  = PCMounts.FOX_HI_WIZ,
+	[PCIds.WHITESMITH]   = PCMounts.PIG_WHITESMITH,
+	[PCIds.SNIPER]       = PCMounts.OSTRICH_SNIPER,
+	[PCIds.ASSASSIN_X]   = PCMounts.HYENA_SIN_X,
+
+	[PCIds.PALADIN]      = PCMounts.LION_PALADIN,
+	[PCIds.CHAMPION]     = PCMounts.SHEEP_CHAMP,
+	[PCIds.PROFESSOR]    = PCMounts.FOX_PROF,
+	[PCIds.STALKER]      = PCMounts.HYENA_STALKER,
+	[PCIds.CREATOR]      = PCMounts.PIG_CREATOR,
+	[PCIds.CLOWN]        = PCMounts.OSTRICH_CLOWN,
+	[PCIds.GYPSY]        = PCMounts.OSTRICH_GYPSY,
+
+	--------------------------
+	-- Extended 2nd Classes --
+	--------------------------
+	[PCIds.HYPER_NOVICE] = PCMounts.PORING_H_NOVICE,
+	[PCIds.REBELLION]    = PCMounts.BIKE_REBELLION,
+	[PCIds.KAGEROU]      = PCMounts.FROG_KAGEROU,
+	[PCIds.OBORO]        = PCMounts.FROG_OBORO,
+	[PCIds.STAR_GLAD]    = PCMounts.PORING_STAR,
+	[PCIds.STAR_GLAD_F]  = PCMounts.PORING_STAR,
+	[PCIds.SOUL_LINKER]  = PCMounts.FROG_LINKER,
+
+	-------------------------------
+	-- Baby Extended 2nd Classes --
+	-------------------------------
+	[PCIds.REBELLION_B]    = PCMounts.BIKE_REBELLION_B,
+	[PCIds.KAGEROU_B]      = PCMounts.FROG_KAGEROU_B,
+	[PCIds.OBORO_B]        = PCMounts.FROG_OBORO_B,
+	[PCIds.STAR_GLAD_B]    = PCMounts.PORING_STAR_B,
+	[PCIds.STAR_GLAD_F_B]  = PCMounts.PORING_STAR_B,
+	[PCIds.SOUL_LINKER_B]  = PCMounts.FROG_LINKER_B,
+
+	-----------------
+	-- 3rd Classes --
+	-----------------
+	[PCIds.RUNE_KNIGHT]   = PCMounts.LION_RUNE_KNIGHT,
+	[PCIds.WARLOCK]       = PCMounts.FOX_WARLOCK,
+	[PCIds.RANGER]        = PCMounts.OSTRICH_RANGER,
+	[PCIds.ARCHBISHOP]    = PCMounts.SHEEP_BISHOP,
+	[PCIds.MECHANIC]      = PCMounts.PIG_MECHANIC,
+	[PCIds.GUILLOTINE_X]  = PCMounts.HYENA_G_CROSS,
+
+	[PCIds.ROYAL_GUARD]   = PCMounts.LION_ROYAL_GUARD,
+	[PCIds.SORCERER]      = PCMounts.FOX_SORCERER,
+	[PCIds.MINSTREL]      = PCMounts.OSTRICH_MINSTREL,
+	[PCIds.WANDERER]      = PCMounts.OSTRICH_WANDERER,
+	[PCIds.SURA]          = PCMounts.SHEEP_SURA,
+	[PCIds.GENETIC]       = PCMounts.PIG_GENETIC,
+	[PCIds.SHADOW_CHASER] = PCMounts.HYENA_S_CHASER,
+
+	----------------------
+	-- Baby 3rd Classes --
+	----------------------
+	[PCIds.RUNE_KNIGHT_B]   = PCMounts.LION_RUNE_KNIGHT_B,
+	[PCIds.WARLOCK_B]       = PCMounts.FOX_WARLOCK_B,
+	[PCIds.RANGER_B]        = PCMounts.OSTRICH_RANGER_B,
+	[PCIds.ARCHBISHOP_B]    = PCMounts.SHEEP_BISHOP_B,
+	[PCIds.MECHANIC_B]      = PCMounts.PIG_MECHANIC_B,
+	[PCIds.GUILLOTINE_X_B]  = PCMounts.HYENA_G_CROSS_B,
+
+	[PCIds.ROYAL_GUARD_B]   = PCMounts.LION_ROYAL_GUARD_B,
+	[PCIds.SORCERER_B]      = PCMounts.FOX_SORCERER_B,
+	[PCIds.MINSTREL_B]      = PCMounts.OSTRICH_MINSTREL_B,
+	[PCIds.WANDERER_B]      = PCMounts.OSTRICH_WANDERER_B,
+	[PCIds.SURA_B]          = PCMounts.SHEEP_SURA_B,
+	[PCIds.GENETIC_B]       = PCMounts.PIG_GENETIC_B,
+	[PCIds.SHADOW_CHASER_B] = PCMounts.HYENA_S_CHASER_B,
+
+	------------------------------
+	-- Transcendent 3rd Classes --
+	------------------------------
+	[PCIds.RUNE_KNIGHT_H]   = PCMounts.LION_RUNE_KNIGHT,
+	[PCIds.WARLOCK_H]       = PCMounts.FOX_WARLOCK,
+	[PCIds.RANGER_H]        = PCMounts.OSTRICH_RANGER,
+	[PCIds.ARCHBISHOP_H]    = PCMounts.SHEEP_BISHOP,
+	[PCIds.MECHANIC_H]      = PCMounts.PIG_MECHANIC,
+	[PCIds.GUILLOTINE_X_H]  = PCMounts.HYENA_G_CROSS,
+
+	[PCIds.ROYAL_GUARD_H]   = PCMounts.LION_ROYAL_GUARD,
+	[PCIds.SORCERER_H]      = PCMounts.FOX_SORCERER,
+	[PCIds.MINSTREL_H]      = PCMounts.OSTRICH_MINSTREL,
+	[PCIds.WANDERER_H]      = PCMounts.OSTRICH_WANDERER,
+	[PCIds.SURA_H]          = PCMounts.SHEEP_SURA,
+	[PCIds.GENETIC_H]       = PCMounts.PIG_GENETIC,
+	[PCIds.SHADOW_CHASER_H] = PCMounts.HYENA_S_CHASER,
+
+	--------------------------
+	-- Extended 3rd Classes --
+	--------------------------
+	[PCIds.NIGHT_WATCH]    = PCMounts.BIKE_NIGHT_WATCH,
+	[PCIds.SHINKIRO]       = PCMounts.FROG_SHINKIRO,
+	[PCIds.SHIRANUI]       = PCMounts.FROG_SHIRANUI,
+	[PCIds.STAR_EMPEROR]   = PCMounts.HAETAE_STAR_EMPEROR,
+	[PCIds.STAR_EMPEROR_F] = PCMounts.HAETAE_STAR_EMPEROR,
+	[PCIds.SOUL_REAPER]    = PCMounts.HAETAE_SOUL_REAPER,
+
+	-------------------------------
+	-- Baby Extended 3rd Classes --
+	-------------------------------
+	[PCIds.STAR_EMPEROR_B]   = PCMounts.HAETAE_STAR_EMPEROR_B,
+	[PCIds.STAR_EMPEROR_F_B] = PCMounts.HAETAE_STAR_EMPEROR_B,
+	[PCIds.SOUL_REAPER_B]    = PCMounts.HAETAE_SOUL_REAPER_B,
+
+	-----------------
+	-- 4th Classes --
+	-----------------
+	[PCIds.DRAGON_KNIGHT]  = PCMounts.LION_DRAGON_KNIGHT,
+	[PCIds.MEISTER]        = PCMounts.PIG_MEISTER,
+	[PCIds.SHADOW_CROSS]   = PCMounts.HYENA_SHADOW_CROSS,
+	[PCIds.ARCH_MAGE]      = PCMounts.FOX_ARCH_MAGE,
+	[PCIds.CARDINAL]       = PCMounts.SHEEP_CARDINAL,
+	[PCIds.WINDHAWK]       = PCMounts.OSTRICH_WINDHAWK,
+
+	[PCIds.IMPERIAL_GUARD] = PCMounts.LION_IMPERIAL_GUARD,
+	[PCIds.BIOLO]          = PCMounts.PIG_BIOLO,
+	[PCIds.ABYSS_CHASER]   = PCMounts.HYENA_ABYSS_CHASER,
+	[PCIds.ELEMENT_MASTER] = PCMounts.FOX_ELEMENT_MASTER,
+	[PCIds.INQUISITOR]     = PCMounts.SHEEP_INQUISITOR,
+	[PCIds.TROUBADOUR]     = PCMounts.OSTRICH_TROUBADOUR,
+	[PCIds.TROUVERE]       = PCMounts.OSTRICH_TROUVERE,
+
+	-----------------------
+	-- Doram 1st Classes --
+	-----------------------
+	[PCIds.SUMMONER]       = PCMounts.SUMM_MOUNT,
+
+	----------------------------
+	-- Baby Doram 1st Classes --
+	----------------------------
+	[PCIds.SUMMONER_B]     = PCMounts.SUMM_MOUNT_B,
+
+	-----------------------
+	-- Doram 2nd Classes --
+	-----------------------
+	[PCIds.SPIRIT_HANDLER] = PCMounts.SP_HANDLER_MOUNT
+}
+
+--[[
+
+(¯`·¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯)
+( \                           / )
+ ( ) List of scaling factors ( )
+  (/                         \)
+   (.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.)
+
+]]--
+
+Scales =
+{
+	"3F400000", --0.75
+	"3F51EB85", --0.82
+	"3F4CCCCD", --0.80
+}
+DefScale = 0    --Default (no scaling or not applicable)
+
+--[[
+
+(¯`·¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.··´¯)
+( \                                              / )
+ ( ) Mapping of Baby Jobs to Spr scaling factor ( )
+  (/                                            \)
+   (.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸)
+
+]]--
+
+Shrink_Map =
+{
+	--[[
+	    _   ___   ___     ___  ___   ___
+	 _ | | / _ \ | _ )   |_ _||   \ / __|
+	| || || (_) || _ \    | | | |) |\__ \
+	 \__/  \___/ |___/   |___||___/ |___/
+
+	]]--
+
+	----------------------
+	-- Baby 1st Classes --
+	----------------------
+	[PCIds.NOVICE_B]   = Scales[1],
+	[PCIds.SWORDMAN_B] = Scales[1],
+	[PCIds.MAGICIAN_B] = Scales[1],
+	[PCIds.ARCHER_B]   = Scales[1],
+	[PCIds.ACOLYTE_B]  = Scales[1],
+	[PCIds.MERCHANT_B] = Scales[1],
+	[PCIds.THIEF_B]    = Scales[1],
+
+	-------------------------------
+	-- Baby Extended 1st Classes --
+	-------------------------------
+	[PCIds.SUPERNOVICE_B]  = Scales[1],
+	[PCIds.SUPERNOVICE2_B] = Scales[1],
+	[PCIds.GUNSLINGER_B]   = Scales[2],
+	[PCIds.NINJA_B]        = Scales[2],
+	[PCIds.TAEKWON_B]      = Scales[2],
+
+	----------------------
+	-- Baby 2nd Classes --
+	----------------------
+	[PCIds.KNIGHT_B]       = Scales[2],
+	[PCIds.KNIGHT_MOUNT_B] = Scales[2],
+	[PCIds.PRIEST_B]       = Scales[2],
+	[PCIds.WIZARD_B]       = Scales[2],
+	[PCIds.BLACKSMITH_B]   = Scales[2],
+	[PCIds.HUNTER_B]       = Scales[2],
+	[PCIds.ASSASSIN_B]     = Scales[2],
+
+	[PCIds.CRUSADER_B]     = Scales[2],
+	[PCIds.CRUS_MOUNT_B]   = Scales[2],
+	[PCIds.MONK_B]         = Scales[2],
+	[PCIds.SAGE_B]         = Scales[2],
+	[PCIds.ROGUE_B]        = Scales[2],
+	[PCIds.ALCHEMIST_B]    = Scales[2],
+	[PCIds.BARD_B]         = Scales[2],
+	[PCIds.DANCER_B]       = Scales[2],
+
+	-------------------------------
+	-- Baby Extended 2nd Classes --
+	-------------------------------
+	[PCIds.REBELLION_B]   = Scales[2],
+	[PCIds.KAGEROU_B]     = Scales[2],
+	[PCIds.OBORO_B]       = Scales[2],
+	[PCIds.STAR_GLAD_B]   = Scales[2],
+	[PCIds.STAR_GLAD_F_B] = Scales[2],
+	[PCIds.SOUL_LINKER_B] = Scales[2],
+
+	----------------------
+	-- Baby 3rd Classes --
+	----------------------
+	[PCIds.RUNE_KNIGHT_B]   = Scales[2],
+	[PCIds.RUNE_MOUNT_B]    = Scales[2],
+	[PCIds.WARLOCK_B]       = Scales[2],
+	[PCIds.RANGER_B]        = Scales[2],
+	[PCIds.RANGER_MOUNT_B]  = Scales[2],
+	[PCIds.ARCHBISHOP_B]    = Scales[2],
+	[PCIds.MECHANIC_B]      = Scales[2],
+	[PCIds.MADOGEAR_B]      = Scales[2],
+	[PCIds.GUILLOTINE_X_B]  = Scales[2],
+
+	[PCIds.ROYAL_GUARD_B]   = Scales[2],
+	[PCIds.ROYAL_MOUNT_B]   = Scales[2],
+	[PCIds.SORCERER_B]      = Scales[2],
+	[PCIds.MINSTREL_B]      = Scales[2],
+	[PCIds.WANDERER_B]      = Scales[2],
+	[PCIds.SURA_B]          = Scales[2],
+	[PCIds.GENETIC_B]       = Scales[2],
+	[PCIds.SHADOW_CHASER_B] = Scales[2],
+
+	-------------------------------
+	-- Baby Extended 3rd Classes --
+	-------------------------------
+	[PCIds.STAR_EMPEROR_B]   = Scales[2],
+	[PCIds.STAR_EMPEROR_F_B] = Scales[2],
+	[PCIds.SOUL_REAPER_B]    = Scales[2],
+
+	----------------------------
+	-- Baby Doram 1st Classes --
+	----------------------------
+	[PCIds.SUMMONER_B]   = Scales[3],
+
+	--[[
+	 __  __   ___   _   _  _  _  _____     ___  ___   ___
+	|  \/  | / _ \ | | | || \| ||_   _|   |_ _||   \ / __|
+	| |\/| || (_) || |_| || .  |  | |      | | | |) |\__ \
+	|_|  |_| \___/  \___/ |_|\_|  |_|     |___||___/ |___/
+
+	]]--
+
+	----------------------
+	-- Baby 1st Classes --
+	----------------------
+	[PCMounts.PORING_NOVICE_B]  = DefScale,
+	[PCMounts.PECO_SWORD_B]     = DefScale,
+	[PCMounts.FOX_MAGICIAN_B]   = DefScale,
+	[PCMounts.OSTRICH_ARCHER_B] = DefScale,
+	[PCMounts.SHEEP_ACO_B]      = DefScale,
+	[PCMounts.PIG_MERCHANT_B]   = DefScale,
+	[PCMounts.HYENA_THIEF_B]    = DefScale,
+
+	-------------------------------
+	-- Baby Extended 1st Classes --
+	-------------------------------
+	[PCMounts.PORING_S_NOVICE_B]  = DefScale,
+	[PCMounts.PORING_S_NOVICE2_B] = DefScale,
+	[PCMounts.BIKE_GUNNER_B]      = DefScale,
+	[PCMounts.FROG_NINJA_B]       = DefScale,
+	[PCMounts.PORING_TAEKWON_B]   = DefScale,
+
+	----------------------
+	-- Baby 2nd Classes --
+	----------------------
+	[PCMounts.LION_KNIGHT_B]    = DefScale,
+	[PCMounts.SHEEP_PRIEST_B]   = DefScale,
+	[PCMounts.FOX_WIZARD_B]     = DefScale,
+	[PCMounts.PIG_BLACKSMITH_B] = DefScale,
+	[PCMounts.OSTRICH_HUNTER_B] = DefScale,
+	[PCMounts.HYENA_ASSASSIN_B] = DefScale,
+
+	[PCMounts.LION_CRUSADER_B]  = DefScale,
+	[PCMounts.SHEEP_MONK_B]     = DefScale,
+	[PCMounts.FOX_SAGE_B]       = DefScale,
+	[PCMounts.HYENA_ROGUE_B]    = DefScale,
+	[PCMounts.PIG_ALCHE_B]      = DefScale,
+	[PCMounts.OSTRICH_BARD_B]   = DefScale,
+	[PCMounts.OSTRICH_DANCER_B] = DefScale,
+
+	-------------------------------
+	-- Baby Extended 2nd Classes --
+	-------------------------------
+	[PCMounts.BIKE_REBELLION_B] = DefScale,
+	[PCMounts.FROG_KAGEROU_B]   = DefScale,
+	[PCMounts.FROG_OBORO_B]     = DefScale,
+	[PCMounts.PORING_STAR_B]    = DefScale,
+	[PCMounts.FROG_LINKER_B]    = DefScale,
+
+	----------------------
+	-- Baby 3rd Classes --
+	----------------------
+	[PCMounts.LION_RUNE_KNIGHT_B] = DefScale,
+	[PCMounts.FOX_WARLOCK_B]      = DefScale,
+	[PCMounts.OSTRICH_RANGER_B]   = DefScale,
+	[PCMounts.SHEEP_BISHOP_B]     = DefScale,
+	[PCMounts.PIG_MECHANIC_B]     = DefScale,
+	[PCMounts.HYENA_G_CROSS_B]    = DefScale,
+
+	[PCMounts.LION_ROYAL_GUARD_B] = DefScale,
+	[PCMounts.FOX_SORCERER_B]     = DefScale,
+	[PCMounts.OSTRICH_MINSTREL_B] = DefScale,
+	[PCMounts.OSTRICH_WANDERER_B] = DefScale,
+	[PCMounts.SHEEP_SURA_B]       = DefScale,
+	[PCMounts.PIG_GENETIC_B]      = DefScale,
+	[PCMounts.HYENA_S_CHASER_B]   = DefScale,
+
+	-------------------------------
+	-- Baby Extended 3rd Classes --
+	-------------------------------
+	[PCMounts.HAETAE_STAR_EMPEROR_B] = DefScale,
+	[PCMounts.HAETAE_SOUL_REAPER_B]  = DefScale,
+
+	----------------------------
+	-- Baby Doram 1st Classes --
+	----------------------------
+	[PCMounts.SUMM_MOUNT_B] = DefScale,
+}

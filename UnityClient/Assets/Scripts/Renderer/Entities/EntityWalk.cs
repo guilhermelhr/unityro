@@ -76,7 +76,7 @@ public class EntityWalk : MonoBehaviour {
         if (packet is ZC.NOTIFY_PLAYERMOVE) {
             var pkt = packet as ZC.NOTIFY_PLAYERMOVE;
 
-            StartMoving(pkt.startPosition[0], pkt.startPosition[1], pkt.endPosition[0], pkt.endPosition[1]);
+            StartMoving(pkt.StartPosition[0], pkt.StartPosition[1], pkt.EndPosition[0], pkt.EndPosition[1]);
         }
     }
 

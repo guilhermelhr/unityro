@@ -1,0 +1,217 @@
+--[[
+****************************************************************************
+*                                                                          *
+*   Copyright (C) 2013-2021 Neo-Mind                                       *
+*                                                                          *
+*   This file is a part of WARP project (specific to RO clients)           *
+*                                                                          *
+*   WARP is free software: you can redistribute it and/or modify           *
+*   it under the terms of the GNU General Public License as published by   *
+*   the Free Software Foundation, either version 3 of the License, or      *
+*   (at your option) any later version.                                    *
+*                                                                          *
+*   This program is distributed in the hope that it will be useful,        *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+*   GNU General Public License for more details.                           *
+*                                                                          *
+*   You should have received a copy of the GNU General Public License      *
+*   along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
+*                                                                          *
+*                                                                          *
+|**************************************************************************|
+*                                                                          *
+*   Author(s)     : Neo-Mind                                               *
+*   Created Date  : 2021-01-15                                             *
+*   Last Modified : 2021-04-05                                             *
+*                                                                          *
+****************************************************************************
+]]--
+
+--[[
+
+(¯`·¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´·´¯)
+( \                                      / )
+ ( ) Set of IDs associated with Shields ( )
+  (/                                    \)
+   (.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸)
+
+]]--
+
+Shield_IDs =
+{
+	--[[
+	 ___  _  _  ___  ___  _     ___     _____ __   __ ___  ___  ___
+	/ __|| || ||_ _|| __|| |   |   \   |_   _|\ \ / /| _ \| __|/ __|
+	\__ \| __ | | | | _| | |__ | |) |    | |   \   / |  _/| _| \__ \
+	|___/|_||_||___||___||____||___/     |_|    |_|  |_|  |___||___/
+
+	]]--
+
+	ST_GUARD        = 1,
+	ST_BUCKLER      = 2,
+	ST_SHIELD       = 3,
+	ST_MIRRORSHIELD = 4,
+	ST_BLANK        = 5,
+	ST_BLANK2       = 6,
+
+	--[[
+
+	 ___  _  _  ___  ___  _     ___   ___
+	/ __|| || ||_ _|| __|| |   |   \ / __|
+	\__ \| __ | | | | _| | |__ | |) |\__ \
+	|___/|_||_||___||___||____||___/ |___/
+
+	]]--
+
+	Guard                  = 2101,
+	Guard_S                = 2102,
+	Buckler                = 2103,
+	Buckler_S              = 2104,
+	Shield                 = 2105,
+	Shield_S               = 2106,
+	Mirror_Shield          = 2107,
+	Mirror_Shield_S        = 2108,
+	Memorize_Book          = 2109,
+	Holy_Guard             = 2110,
+	Herald_Of_GOD          = 2111,
+	Novice_Guard           = 2112,
+	Novice_Shield          = 2113,
+	Stone_Buckler          = 2114,
+	Valkyrjas_Shield       = 2115,
+	Angels_Safeguard       = 2116,
+	Arm_Guard              = 2117,
+	Arm_Guard_S            = 2118,
+	Improved_Arm_Guard     = 2119,
+	Improved_Arm_Guard_S   = 2120,
+	Memorize_Book_S        = 2121,
+	Platinum_Shield        = 2122,
+	Orleans_Server         = 2123,
+	Thorny_Buckler         = 2124,
+	Strong_Shield          = 2125,
+	Guyak_Shield           = 2126,
+	Secular_Mission        = 2127,
+	Herald_Of_GOD_S        = 2128,
+	Exorcism_Bible         = 2129,
+	Cross_Shield           = 2130,
+	Magic_Study_Vol1       = 2131,
+	Shelter_Resistance     = 2132,
+	Tournament_Shield      = 2133,
+	Shield_Of_Naga         = 2134,
+	Shadow_Guard           = 2135,
+	Cracked_Buckler        = 2136,
+	Neo_Valkyrjas_Shield   = 2137,
+	Bradium_Shield         = 2138,
+	Flame_Thrower          = 2139,
+	Energy_Rune_Guard      = 2140,
+	Freyja_SShield7        = 2141,
+	Freyja_SShield30       = 2142,
+	Freyja_SShield60       = 2143,
+	Freyja_SShield90       = 2144,
+	Time_Keepr_Shield      = 2145,
+	Siver_Guard            = 2146,
+	Round_Buckler          = 2147,
+	Rotha_Shield           = 2148,
+	Upg_Guard              = 2149,
+	Upg_Buckler            = 2150,
+	Upg_Shield             = 2151,
+	Anti_Demon_Shield      = 2152,
+	Imperial_Guard         = 2153,
+	Toy_Shield             = 2154,
+	Bible_Of_Promise1      = 2156,
+	Giant_Shield           = 2160,
+	Geffenia_Tomb_of_Water = 2161,
+	Bible_Of_Promise2      = 2162,
+	Immuned_Shield         = 2168,
+	Kalasak                = 2169,
+	Bayani_Kalasak         = 2170,
+	Fox_Armguard           = 2171,
+	Wolf_Armguard          = 2172,
+	Crescent_Armguard      = 2173,
+	Ahura_Mazda            = 2199
+}
+
+--[[
+
+(¯`·¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.·´¯)
+( \                                                   / )
+ ( ) Suffixes for shield types for displaying sprite ( )
+  (/                                                 \)
+   (.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯)
+
+]]--
+
+ShieldNameTable =
+{
+	[Shield_IDs.ST_GUARD] = "_°¡µå",
+	[Shield_IDs.ST_BUCKLER] = "_¹öÅ¬·¯",
+	[Shield_IDs.ST_SHIELD] = "_½¯µå",
+	[Shield_IDs.ST_MIRRORSHIELD] = "_¹Ì·¯½¯µå",
+}
+
+--[[
+
+(¯`·¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.··´¯)
+( \                                     / )
+ ( ) Mapping of shields to their types ( )
+  (/                                   \)
+   (.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.¸)
+
+]]--
+
+ShieldMapTable =
+{
+	[Shield_IDs.Guard]                 = Shield_IDs.ST_GUARD,
+	[Shield_IDs.Guard_S]               = Shield_IDs.ST_GUARD,
+	[Shield_IDs.Buckler]               = Shield_IDs.ST_BUCKLER,
+	[Shield_IDs.Buckler_S]             = Shield_IDs.ST_BUCKLER,
+	[Shield_IDs.Shield]                = Shield_IDs.ST_SHIELD,
+	[Shield_IDs.Shield_S]              = Shield_IDs.ST_SHIELD,
+	[Shield_IDs.Mirror_Shield]         = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Mirror_Shield_S]       = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Memorize_Book]         = Shield_IDs.ST_BLANK,
+	[Shield_IDs.Holy_Guard]            = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Herald_Of_GOD]         = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Novice_Guard]          = Shield_IDs.ST_GUARD,
+	[Shield_IDs.Novice_Shield]         = Shield_IDs.ST_SHIELD,
+	[Shield_IDs.Stone_Buckler]         = Shield_IDs.ST_BUCKLER,
+	[Shield_IDs.Valkyrjas_Shield]      = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Angels_Safeguard]      = Shield_IDs.ST_GUARD,
+	[Shield_IDs.Arm_Guard]             = Shield_IDs.ST_GUARD,
+	[Shield_IDs.Arm_Guard_S]           = Shield_IDs.ST_GUARD,
+	[Shield_IDs.Improved_Arm_Guard]    = Shield_IDs.ST_GUARD,
+	[Shield_IDs.Improved_Arm_Guard_S]  = Shield_IDs.ST_GUARD,
+	[Shield_IDs.Memorize_Book_S]       = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Platinum_Shield]       = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Orleans_Server]        = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Thorny_Buckler]        = Shield_IDs.ST_BUCKLER,
+	[Shield_IDs.Strong_Shield]         = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Guyak_Shield]          = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Secular_Mission]       = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Herald_Of_GOD_S]       = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Exorcism_Bible]        = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Cross_Shield]          = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Magic_Study_Vol1]      = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Shelter_Resistance]    = Shield_IDs.ST_BUCKLER,
+	[Shield_IDs.Tournament_Shield]     = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Shield_Of_Naga]        = Shield_IDs.ST_BUCKLER,
+	[Shield_IDs.Shadow_Guard]          = Shield_IDs.ST_BUCKLER,
+	[Shield_IDs.Cracked_Buckler]       = Shield_IDs.ST_BUCKLER,
+	[Shield_IDs.Neo_Valkyrjas_Shield]  = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Bradium_Shield]        = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Flame_Thrower]         = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Energy_Rune_Guard]     = Shield_IDs.ST_MIRRORSHIELD,
+	[Shield_IDs.Freyja_SShield7]       = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Freyja_SShield30]      = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Freyja_SShield60]      = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Freyja_SShield90]      = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Time_Keepr_Shield]     = Shield_IDs.ST_SHIELD,
+	[Shield_IDs.Siver_Guard]           = Shield_IDs.ST_GUARD,
+	[Shield_IDs.Round_Buckler]         = Shield_IDs.ST_BUCKLER,
+	[Shield_IDs.Rotha_Shield]          = Shield_IDs.ST_SHIELD,
+	[Shield_IDs.Upg_Guard]             = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Upg_Buckler]           = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Upg_Shield]            = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Anti_Demon_Shield]     = Shield_IDs.ST_BLANK2,
+	[Shield_IDs.Imperial_Guard]        = Shield_IDs.ST_GUARD,
+}
