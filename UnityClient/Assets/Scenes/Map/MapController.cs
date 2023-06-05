@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityRO.Core.GameEntity;
 using UnityRO.GameCamera;
 
 public class MapController : MonoBehaviour {
@@ -173,10 +174,10 @@ public class MapController : MonoBehaviour {
     private void OnEntityVanish(ushort cmd, int size, InPacket packet) {
         if (packet is ZC.NOTIFY_VANISH) {
             var pkt = packet as ZC.NOTIFY_VANISH;
-            EntityManager.VanishEntity(pkt.AID, pkt.Type);
+            EntityManager.VanishEntity(pkt.AID, (VanishType)pkt.Type);
 
             // Show escape menu
-            if (pkt.AID == Session.CurrentSession.AccountID && pkt.Type == ZC.NOTIFY_VANISH.VanishType.DIED) {
+            if (pkt.AID == Session.CurrentSession.AccountID && (VanishType)pkt.Type == VanishType.DIED) {
                 UIController.EscapeWindow.BuildButtons(true);
                 UIController.EscapeWindow.Show();
             }
@@ -203,7 +204,7 @@ public class MapController : MonoBehaviour {
         if (packet is ZC.NOTIFY_MOVE) {
             var pkt = packet as ZC.NOTIFY_MOVE;
 
-            var entity = EntityManager.GetEntity(pkt.GID);
+            var entity = EntityManager.GetEntity(pkt.AID);
             if (entity == null) return;
 
             entity.ChangeMotion(new MotionRequest { Motion = SpriteMotion.Walk });

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
+using UnityRO.Core.GameEntity;
+using UnityRO.Net;
 using static ZC.NOTIFY_VANISH;
 
 public class Entity : MonoBehaviour, INetworkEntity {
@@ -28,7 +30,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
     public int HeadDir;
 
     public bool IsReady = false;
-    public bool HasAuthority => GID == Session.CurrentSession.Entity?.GetEntityGID();
+    public bool HasAuthority => GID == SessionManager.CurrentSession.Entity?.GetEntityGID();
 
     public uint GID;
     public uint AID;
@@ -41,6 +43,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
     private NetworkClient NetworkClient;
     private EntityManager EntityManager;
     private PathFinder PathFinder;
+    private SessionManager SessionManager;
+    
     private EntityCanvas Canvas;
     private Camera MainCamera;
     private LayerMask EntityMask;
@@ -52,6 +56,8 @@ public class Entity : MonoBehaviour, INetworkEntity {
         EntityManager = FindObjectOfType<EntityManager>();
         PathFinder = FindObjectOfType<PathFinder>();
         GameManager = FindObjectOfType<GameManager>();
+        SessionManager = FindObjectOfType<SessionManager>();
+        
         EntityMask = LayerMask.GetMask("NPC", "Monsters", "Characters");
         DamageNumbers = new List<DamageRenderer>();
 
@@ -97,21 +103,21 @@ public class Entity : MonoBehaviour, INetworkEntity {
     }
 
     private void HookPackets() {
-        NetworkClient.HookPacket(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
-        NetworkClient.HookPacket(ZC.NOTIFY_ACT.HEADER, OnEntityAction);
-        NetworkClient.HookPacket(ZC.PAR_CHANGE.HEADER, OnParameterChange);
-        NetworkClient.HookPacket(ZC.LONGPAR_CHANGE.HEADER, OnParameterChange);
-        NetworkClient.HookPacket(ZC.LONGPAR_CHANGE2.HEADER, OnParameterChange);
-        NetworkClient.HookPacket(ZC.COUPLESTATUS.HEADER, OnParameterChange);
-        NetworkClient.HookPacket(ZC.STATUS.HEADER, OnStatsWindowData);
-        NetworkClient.HookPacket(ZC.NOTIFY_EXP2.HEADER, OnExpReceived);
-        NetworkClient.HookPacket(ZC.SKILLINFO_LIST.HEADER, OnSkillsUpdated);
-        NetworkClient.HookPacket(ZC.SKILLINFO_UPDATE.HEADER, OnSkillsUpdated);
-        NetworkClient.HookPacket(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
-        NetworkClient.HookPacket(ZC.ACK_TOUSESKILL.HEADER, OnUseSkillResult);
-        NetworkClient.HookPacket(ZC.NOTIFY_SKILL2.HEADER, OnEntityUseSkillToAttack);
-        NetworkClient.HookPacket(ZC.USESKILL_ACK2.HEADER, OnEntityCastSkill);
-        NetworkClient.HookPacket(ZC.ATTACK_FAILURE_FOR_DISTANCE.HEADER, OnAttackFailureForDistance);
+        NetworkClient.HookPacket<ZC.NOTIFY_ACT3>(ZC.NOTIFY_ACT3.HEADER, OnEntityAction);
+        NetworkClient.HookPacket<ZC.NOTIFY_ACT>(ZC.NOTIFY_ACT.HEADER, OnEntityAction);
+        NetworkClient.HookPacket<ZC.PAR_CHANGE>(ZC.PAR_CHANGE.HEADER, OnParameterChange);
+        NetworkClient.HookPacket<ZC.LONGPAR_CHANGE>(ZC.LONGPAR_CHANGE.HEADER, OnParameterChange);
+        NetworkClient.HookPacket<ZC.LONGPAR_CHANGE2>(ZC.LONGPAR_CHANGE2.HEADER, OnParameterChange);
+        NetworkClient.HookPacket<ZC.COUPLESTATUS>(ZC.COUPLESTATUS.HEADER, OnParameterChange);
+        NetworkClient.HookPacket<ZC.STATUS>(ZC.STATUS.HEADER, OnStatsWindowData);
+        NetworkClient.HookPacket<ZC.NOTIFY_EXP2>(ZC.NOTIFY_EXP2.HEADER, OnExpReceived);
+        NetworkClient.HookPacket<ZC.SKILLINFO_LIST>(ZC.SKILLINFO_LIST.HEADER, OnSkillsUpdated);
+        NetworkClient.HookPacket<ZC.SKILLINFO_UPDATE>(ZC.SKILLINFO_UPDATE.HEADER, OnSkillsUpdated);
+        NetworkClient.HookPacket<ZC.ATTACK_RANGE>(ZC.ATTACK_RANGE.HEADER, OnAttackRangeReceived);
+        NetworkClient.HookPacket<ZC.ACK_TOUSESKILL>(ZC.ACK_TOUSESKILL.HEADER, OnUseSkillResult);
+        NetworkClient.HookPacket<ZC.NOTIFY_SKILL2>(ZC.NOTIFY_SKILL2.HEADER, OnEntityUseSkillToAttack);
+        NetworkClient.HookPacket<ZC.USESKILL_ACK2>(ZC.USESKILL_ACK2.HEADER, OnEntityCastSkill);
+        NetworkClient.HookPacket<ZC.ATTACK_FAILURE_FOR_DISTANCE>(ZC.ATTACK_FAILURE_FOR_DISTANCE.HEADER, OnAttackFailureForDistance);
     }
 
     public void Init(SpriteData spriteData, Texture2D atlas) {
@@ -120,7 +126,7 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public void Init(EntitySpawnData data, int rendererLayer, EntityCanvas canvas) {
         Canvas = canvas;
-        Type = data.job == 45 ? EntityType.WARP : data.objecttype;
+        Type = data.job == 45 ? EntityType.WARP : (EntityType)data.objecttype;
         Direction = ((NpcDirection) data.PosDir[2]).ToDirection();
 
         GID = data.GID;
@@ -486,10 +492,10 @@ public class Entity : MonoBehaviour, INetworkEntity {
             var srcEntity = EntityManager.GetEntity(NOTIFY_SKILL2.AID);
             var dstEntity = EntityManager.GetEntity(NOTIFY_SKILL2.targetID);
 
-            if (NOTIFY_SKILL2.AID == Session.CurrentSession.Entity.GetEntityGID() || NOTIFY_SKILL2.AID == Session.CurrentSession.AccountID) {
-                srcEntity = Session.CurrentSession.Entity as Entity;
-            } else if (NOTIFY_SKILL2.targetID == Session.CurrentSession.Entity.GetEntityGID() || NOTIFY_SKILL2.targetID == Session.CurrentSession.AccountID) {
-                dstEntity = Session.CurrentSession.Entity as Entity;
+            if (NOTIFY_SKILL2.AID == SessionManager.CurrentSession.Entity.GetEntityGID() || NOTIFY_SKILL2.AID == SessionManager.CurrentSession.AccountID) {
+                srcEntity = SessionManager.CurrentSession.Entity as Entity;
+            } else if (NOTIFY_SKILL2.targetID == SessionManager.CurrentSession.Entity.GetEntityGID() || NOTIFY_SKILL2.targetID == SessionManager.CurrentSession.AccountID) {
+                dstEntity = SessionManager.CurrentSession.Entity as Entity;
             }
 
             if (srcEntity != null) {
@@ -699,13 +705,13 @@ public class Entity : MonoBehaviour, INetworkEntity {
         if (actionRequest == null)
             return;
 
-        var srcEntity = EntityManager.GetEntity(actionRequest.GID);
-        var dstEntity = actionRequest.action != ActionRequestType.STAND && actionRequest.action != ActionRequestType.SIT ? EntityManager.GetEntity(actionRequest.targetGID) : null;
+        var srcEntity = EntityManager.GetEntity(actionRequest.AID);
+        var dstEntity = actionRequest.action != ActionRequestType.STAND && actionRequest.action != ActionRequestType.SIT ? EntityManager.GetEntity(actionRequest.targetAID) : null;
 
-        if (actionRequest.GID == Session.CurrentSession.Entity.GetEntityGID() || actionRequest.GID == Session.CurrentSession.AccountID) {
-            srcEntity = Session.CurrentSession.Entity as Entity;
-        } else if (actionRequest.targetGID == Session.CurrentSession.Entity.GetEntityGID() || actionRequest.targetGID == Session.CurrentSession.AccountID) {
-            dstEntity = Session.CurrentSession.Entity as Entity;
+        if (actionRequest.AID == SessionManager.CurrentSession.Entity.GetEntityGID() || actionRequest.AID == SessionManager.CurrentSession.AccountID) {
+            srcEntity = SessionManager.CurrentSession.Entity as Entity;
+        } else if (actionRequest.targetAID == SessionManager.CurrentSession.Entity.GetEntityGID() || actionRequest.targetAID == SessionManager.CurrentSession.AccountID) {
+            dstEntity = SessionManager.CurrentSession.Entity as Entity;
         }
 
         // entity out of screen
@@ -869,6 +875,22 @@ public class Entity : MonoBehaviour, INetworkEntity {
 
     public EntityType GetEntityType() {
         return Type;
+    }
+
+    int INetworkEntity.GetEntityGID() {
+        throw new NotImplementedException();
+    }
+
+    public int GetEntityAID() {
+        throw new NotImplementedException();
+    }
+
+    public string GetEntityName() {
+        throw new NotImplementedException();
+    }
+
+    int INetworkEntity.GetEntityType() {
+        throw new NotImplementedException();
     }
 
     public uint GetEntityGID() {

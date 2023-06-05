@@ -1,0 +1,6 @@
+[submodule "UnityClient/Assets/3rdparty/unityro-sdk"]
+	path = UnityClient/Assets/3rdparty/unityro-sdk
+	url = https://github.com/def-not-a-game-studio/unityro-sdk.git
+[submodule "UnityClient/Assets/3rdparty/unityro-resources"]
+	path = UnityClient/Assets/3rdparty/unityro-resources
+	url = https://github.com/def-not-a-game-studio/unityro-resources.git

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.artnas.meshsplit": "https://github.com/artnas/Unity-Plane-Mesh-Splitter.git",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.addressables": "1.20.5",
     "com.unity.collab-proxy": "1.17.1",
